@@ -7,14 +7,25 @@ struct StockRow: View {
 
   var body: some View {
     HStack {
-      Text(stock.name)
+      VStack(alignment: .leading) {
+        Text(stock.ticker.uppercased())
+          .font(.title)
+        Text(stock.name)
+          .font(.subheadline)
+          .foregroundColor(.secondary)
+      }
 
       Spacer()
 
       Text(String(format: "%.2f", stock.expectedPrice))
+        .font(.title)
+
+      Spacer()
 
       Text(String(format: "%.2f", stock.currentPrice))
+        .font(.title)
     }
+    .padding()
   }
 }
 

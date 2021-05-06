@@ -2,7 +2,7 @@
 
 import Foundation
 
-struct Stock {
+struct Stock: Codable {
   let ticker: String
   let name: String
   let currentPrice: Double
