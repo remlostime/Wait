@@ -2,11 +2,24 @@
 
 import SwiftUI
 
+extension Binding {
+  func onChange(_ handler: @escaping (Value) -> Void) -> Binding<Value> {
+    Binding(
+      get: { self.wrappedValue },
+      set: { newValue in
+        self.wrappedValue = newValue
+        handler(newValue)
+      }
+    )
+  }
+}
+
 struct ContentView: View {
 
-  let stocks: [Stock]
+  var stocks: [Stock]
 
   @State private var showingWaitStockView = false
+  @State private var newStock: Stock?
 
   var body: some View {
     NavigationView {
@@ -22,11 +35,23 @@ struct ContentView: View {
       })
       .sheet(isPresented: $showingWaitStockView, content: {
         NavigationView {
-          WaitStockView(ticker: .constant("FB"), price: .constant("100"))
+//          WaitStockView(stock: $stock, .constant("FB"), isPresented: .constant("100"), ticker: $showingWaitStockView)
+          WaitStockView(stock: $newStock.onChange(stockChanged), isPresented: $showingWaitStockView, ticker: .constant("fb"), price: .constant("1.0"))
+
         }
       })
     }
 
+  }
+
+  func stockChanged(to value: Stock?) {
+    guard let value = value else {
+      return
+    }
+
+    print(value)
+
+//    stocks.append(value)
   }
 }
 
