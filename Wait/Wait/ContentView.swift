@@ -14,12 +14,12 @@ extension Binding {
   }
 }
 
+// MARK: - ContentView
+
 struct ContentView: View {
+  // MARK: Internal
 
   var stocks: [Stock]
-
-  @State private var showingWaitStockView = false
-  @State private var newStock: Stock?
 
   var body: some View {
     NavigationView {
@@ -37,11 +37,9 @@ struct ContentView: View {
         NavigationView {
 //          WaitStockView(stock: $stock, .constant("FB"), isPresented: .constant("100"), ticker: $showingWaitStockView)
           WaitStockView(stock: $newStock.onChange(stockChanged), isPresented: $showingWaitStockView, ticker: .constant("fb"), price: .constant("1.0"))
-
         }
       })
     }
-
   }
 
   func stockChanged(to value: Stock?) {
@@ -53,7 +51,14 @@ struct ContentView: View {
 
 //    stocks.append(value)
   }
+
+  // MARK: Private
+
+  @State private var showingWaitStockView = false
+  @State private var newStock: Stock?
 }
+
+// MARK: - ContentView_Previews
 
 struct ContentView_Previews: PreviewProvider {
   static var previews: some View {
@@ -61,7 +66,8 @@ struct ContentView_Previews: PreviewProvider {
       ticker: "fb",
       name: "Facebook",
       currentPrice: 1.0,
-      expectedPrice: 2.0)
+      expectedPrice: 2.0
+    )
 
     ContentView(stocks: [stock])
   }
