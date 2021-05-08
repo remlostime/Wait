@@ -82,6 +82,7 @@ struct ContentView: View {
 
     AF.request(url).validate().responseData { response in
       switch response.result {
+
         case let .success(data):
           let decoder = JSONDecoder()
 
