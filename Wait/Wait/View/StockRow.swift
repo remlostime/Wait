@@ -2,6 +2,8 @@
 
 import SwiftUI
 
+// MARK: - StockRow
+
 struct StockRow: View {
   let stock: Stock
 
@@ -29,13 +31,16 @@ struct StockRow: View {
   }
 }
 
+// MARK: - StockRow_Previews
+
 struct StockRow_Previews: PreviewProvider {
   static var previews: some View {
     let stock = Stock(
       ticker: "fb",
       name: "Facebook",
       currentPrice: 1.0,
-      expectedPrice: 2.0)
+      expectedPrice: 2.0
+    )
 
     StockRow(stock: stock)
   }

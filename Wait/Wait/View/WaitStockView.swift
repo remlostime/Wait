@@ -2,6 +2,8 @@
 
 import SwiftUI
 
+// MARK: - WaitStockView
+
 struct WaitStockView: View {
   @Binding var stock: Stock?
   @Binding var isPresented: Bool
@@ -35,6 +37,8 @@ struct WaitStockView: View {
     }
   }
 }
+
+// MARK: - WaitStockView_Previews
 
 struct WaitStockView_Previews: PreviewProvider {
   static var previews: some View {
