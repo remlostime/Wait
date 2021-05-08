@@ -44,13 +44,20 @@ struct ContentView: View {
   }
 
   func stockChanged(to value: Stock) {
-    fetchStockDetails(stock: value)
+    fetchStockDetails(stock: value) { stock in
+      stocks.append(stock)
+      saveStocks()
+    }
   }
 
   // MARK: Private
 
   @State private var showingWaitStockView = false
   @State private var newStock = Stock(ticker: "FB", name: "Facebook", currentPrice: 1.0, expectedPrice: 1.0)
+
+  private func saveStocks() {
+    StockCache.shared.saveStocks(stocks)
+  }
 
   private func buildStockQuoteURL(stock: Stock) -> URL? {
     guard let url = URL(string: "https://www.alphavantage.co/query") else {
@@ -68,13 +75,14 @@ struct ContentView: View {
     return urlComponents?.url
   }
 
-  private func fetchStockDetails(stock: Stock) {
+  private func fetchStockDetails(stock: Stock, completion: @escaping ((Stock) -> Void)) {
     guard let url = buildStockQuoteURL(stock: stock) else {
       return
     }
 
     AF.request(url).validate().responseData { response in
       switch response.result {
+
         case let .success(data):
           let decoder = JSONDecoder()
 
@@ -89,7 +97,7 @@ struct ContentView: View {
 
           let newStock = Stock(ticker: stockQuote.symbol, name: "haha", currentPrice: Double(stockQuote.price) ?? 0.0, expectedPrice: stock.expectedPrice)
 
-          stocks.append(newStock)
+          completion(newStock)
         case let .failure(error):
           logger.error("Failed to fetch stock quote: \(error.localizedDescription)")
       }
