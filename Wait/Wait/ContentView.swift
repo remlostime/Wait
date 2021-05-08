@@ -48,7 +48,7 @@ struct ContentView: View {
   // MARK: Private
 
   @State private var showingWaitStockView = false
-  @State private var newStock: Stock = Stock(ticker: "FB", name: "Facebook", currentPrice: 1.0, expectedPrice: 1.0)
+  @State private var newStock = Stock(ticker: "FB", name: "Facebook", currentPrice: 1.0, expectedPrice: 1.0)
 }
 
 // MARK: - ContentView_Previews

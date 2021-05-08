@@ -5,6 +5,8 @@ import SwiftUI
 // MARK: - WaitStockView
 
 struct WaitStockView: View {
+  // MARK: Internal
+
   @Binding var stock: Stock
   @Binding var isPresented: Bool
 
@@ -34,6 +36,8 @@ struct WaitStockView: View {
       Spacer()
     }
   }
+
+  // MARK: Private
 
   @State private var ticker = "FB"
   @State private var expectedPrice = "1.0"
