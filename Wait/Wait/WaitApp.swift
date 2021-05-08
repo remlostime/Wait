@@ -9,13 +9,22 @@ let logger = SwiftyBeaver.self
 
 @main
 struct WaitApp: App {
+
+  init() {
+    setupLogger()
+  }
+
   var body: some Scene {
     WindowGroup {
       let stocks = StockCache.shared.getStocks()
-
       ContentView(stocks: stocks)
     }
   }
 
-  func setupLogger() {}
+  func setupLogger() {
+    let console = ConsoleDestination()
+    let file = FileDestination()
+    SwiftyBeaver.addDestination(console)
+    SwiftyBeaver.addDestination(file)
+  }
 }
