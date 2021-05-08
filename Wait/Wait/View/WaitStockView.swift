@@ -5,10 +5,8 @@ import SwiftUI
 // MARK: - WaitStockView
 
 struct WaitStockView: View {
-  @Binding var stock: Stock?
+  @Binding var stock: Stock
   @Binding var isPresented: Bool
-  @Binding var ticker: String
-  @Binding var price: String
 
   var body: some View {
     VStack {
@@ -22,26 +20,29 @@ struct WaitStockView: View {
       HStack {
         Text("Price")
         Spacer()
-        TextField("Price", text: $price)
+        TextField("Price", text: $expectedPrice)
       }
       .padding()
 
       Spacer()
 
       Button("Add") {
-        stock = Stock(ticker: ticker, name: "xx", currentPrice: 1.0, expectedPrice: Double(price) ?? 0.0)
+        stock = Stock(ticker: ticker, name: "XX", currentPrice: 1.0, expectedPrice: Double(expectedPrice) ?? 0.0)
         isPresented.toggle()
       }
 
       Spacer()
     }
   }
+
+  @State private var ticker = "FB"
+  @State private var expectedPrice = "1.0"
 }
 
 // MARK: - WaitStockView_Previews
 
 struct WaitStockView_Previews: PreviewProvider {
   static var previews: some View {
-    WaitStockView(stock: .constant(nil), isPresented: .constant(true), ticker: .constant("fb"), price: .constant("1.0"))
+    WaitStockView(stock: .constant(Stock(ticker: "fb", name: "Facebook", currentPrice: 1.0, expectedPrice: 1.0)), isPresented: .constant(true))
   }
 }

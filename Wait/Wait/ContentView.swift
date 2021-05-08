@@ -19,7 +19,7 @@ extension Binding {
 struct ContentView: View {
   // MARK: Internal
 
-  var stocks: [Stock]
+  @State var stocks: [Stock]
 
   var body: some View {
     NavigationView {
@@ -35,27 +35,20 @@ struct ContentView: View {
       })
       .sheet(isPresented: $showingWaitStockView, content: {
         NavigationView {
-//          WaitStockView(stock: $stock, .constant("FB"), isPresented: .constant("100"), ticker: $showingWaitStockView)
-          WaitStockView(stock: $newStock.onChange(stockChanged), isPresented: $showingWaitStockView, ticker: .constant("fb"), price: .constant("1.0"))
+          WaitStockView(stock: $newStock.onChange(stockChanged), isPresented: $showingWaitStockView)
         }
       })
     }
   }
 
-  func stockChanged(to value: Stock?) {
-    guard let value = value else {
-      return
-    }
-
-    print(value)
-
-//    stocks.append(value)
+  func stockChanged(to value: Stock) {
+    stocks.append(value)
   }
 
   // MARK: Private
 
   @State private var showingWaitStockView = false
-  @State private var newStock: Stock?
+  @State private var newStock: Stock = Stock(ticker: "FB", name: "Facebook", currentPrice: 1.0, expectedPrice: 1.0)
 }
 
 // MARK: - ContentView_Previews
