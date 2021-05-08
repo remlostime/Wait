@@ -1,9 +1,14 @@
 // Created by kai_chen on 5/8/21.
 
-import Foundation
 import Cache
+import Foundation
 
 class StockCache {
+  // MARK: Lifecycle
+
+  private init() {}
+
+  // MARK: Internal
 
   static let shared = StockCache()
 
@@ -20,13 +25,13 @@ class StockCache {
       switch result {
         case .value:
           logger.verbose("Successfully store stocks")
-        case .error(let error):
+        case let .error(error):
           logger.error("Failed to store stocks: \(error.localizedDescription)")
       }
     }
   }
 
-  private init() {}
+  // MARK: Private
 
   private let key = "stocks"
 
