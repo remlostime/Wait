@@ -8,6 +8,8 @@ class StockCache {
 
   private init() {}
 
+  // MARK: Internal
+
   static let shared = StockCache()
 
   func getStocks() -> [Stock] {
@@ -28,6 +30,8 @@ class StockCache {
       }
     }
   }
+
+  // MARK: Private
 
   private let key = "stocks"
 
