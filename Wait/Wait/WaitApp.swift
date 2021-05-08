@@ -9,10 +9,13 @@ let logger = SwiftyBeaver.self
 
 @main
 struct WaitApp: App {
+  // MARK: Lifecycle
 
   init() {
     setupLogger()
   }
+
+  // MARK: Internal
 
   var body: some Scene {
     WindowGroup {
