@@ -1,5 +1,4 @@
 // Created by kai_chen on 5/8/21.
-// Copyright © 2021 Airbnb Inc. All rights reserved.
 
 import Foundation
 
