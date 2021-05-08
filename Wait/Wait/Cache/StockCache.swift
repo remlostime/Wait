@@ -29,7 +29,6 @@ class StockCache {
     }
   }
 
-
   private let key = "stocks"
 
   private lazy var storage: Storage<String, [Stock]>? = {
