@@ -4,8 +4,6 @@
 import Foundation
 
 struct StockQuote: Decodable {
-  let symbol: String
-  let price: String
 //  let date: Date
 
   enum CodingKeys: String, CodingKey {
@@ -13,4 +11,7 @@ struct StockQuote: Decodable {
     case price = "05. price"
 //    case date = "07. latest trading day"
   }
+
+  let symbol: String
+  let price: String
 }

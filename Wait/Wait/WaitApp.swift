@@ -6,6 +6,8 @@ import SwiftyBeaver
 
 let logger = SwiftyBeaver.self
 
+// MARK: - WaitApp
+
 @main
 struct WaitApp: App {
   var body: some Scene {
@@ -16,9 +18,7 @@ struct WaitApp: App {
     }
   }
 
-  func setupLogger() {
-
-  }
+  func setupLogger() {}
 
   func getStocks() -> [Stock] {
     let diskConfig = DiskConfig(name: "stocks")

@@ -1,7 +1,7 @@
 // Created by kai_chen on 5/4/21.
 
-import SwiftUI
 import Alamofire
+import SwiftUI
 import SwiftyJSON
 
 extension Binding {
@@ -43,6 +43,15 @@ struct ContentView: View {
     }
   }
 
+  func stockChanged(to value: Stock) {
+    fetchStockDetails(stock: value)
+  }
+
+  // MARK: Private
+
+  @State private var showingWaitStockView = false
+  @State private var newStock = Stock(ticker: "FB", name: "Facebook", currentPrice: 1.0, expectedPrice: 1.0)
+
   private func buildStockQuoteURL(stock: Stock) -> URL? {
     guard let url = URL(string: "https://www.alphavantage.co/query") else {
       return nil
@@ -66,14 +75,14 @@ struct ContentView: View {
 
     AF.request(url).validate().responseData { response in
       switch response.result {
-        case .success(let data):
+        case let .success(data):
           let decoder = JSONDecoder()
 
           guard
             let json = try? JSON(data: data),
             let rawData = try? json["Global Quote"].rawData(),
-            let stockQuote = try? decoder.decode(StockQuote.self, from: rawData) else
-          {
+            let stockQuote = try? decoder.decode(StockQuote.self, from: rawData)
+          else {
             logger.error("Failed to decode stock quote")
             return
           }
@@ -81,20 +90,11 @@ struct ContentView: View {
           let newStock = Stock(ticker: stockQuote.symbol, name: "haha", currentPrice: Double(stockQuote.price) ?? 0.0, expectedPrice: stock.expectedPrice)
 
           stocks.append(newStock)
-        case .failure(let error):
+        case let .failure(error):
           logger.error("Failed to fetch stock quote: \(error.localizedDescription)")
       }
     }
   }
-
-  func stockChanged(to value: Stock) {
-    fetchStockDetails(stock: value)
-  }
-
-  // MARK: Private
-
-  @State private var showingWaitStockView = false
-  @State private var newStock = Stock(ticker: "FB", name: "Facebook", currentPrice: 1.0, expectedPrice: 1.0)
 }
 
 // MARK: - ContentView_Previews
