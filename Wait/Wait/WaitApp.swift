@@ -2,6 +2,9 @@
 
 import Cache
 import SwiftUI
+import SwiftyBeaver
+
+let logger = SwiftyBeaver.self
 
 @main
 struct WaitApp: App {
@@ -11,6 +14,10 @@ struct WaitApp: App {
 
       ContentView(stocks: stocks)
     }
+  }
+
+  func setupLogger() {
+
   }
 
   func getStocks() -> [Stock] {
