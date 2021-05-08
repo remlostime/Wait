@@ -2,6 +2,11 @@
 
 import Cache
 import SwiftUI
+import SwiftyBeaver
+
+let logger = SwiftyBeaver.self
+
+// MARK: - WaitApp
 
 @main
 struct WaitApp: App {
@@ -12,6 +17,8 @@ struct WaitApp: App {
       ContentView(stocks: stocks)
     }
   }
+
+  func setupLogger() {}
 
   func getStocks() -> [Stock] {
     let diskConfig = DiskConfig(name: "stocks")

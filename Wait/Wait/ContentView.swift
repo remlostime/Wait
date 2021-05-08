@@ -1,6 +1,8 @@
 // Created by kai_chen on 5/4/21.
 
+import Alamofire
 import SwiftUI
+import SwiftyJSON
 
 extension Binding {
   func onChange(_ handler: @escaping (Value) -> Void) -> Binding<Value> {
@@ -42,13 +44,57 @@ struct ContentView: View {
   }
 
   func stockChanged(to value: Stock) {
-    stocks.append(value)
+    fetchStockDetails(stock: value)
   }
 
   // MARK: Private
 
   @State private var showingWaitStockView = false
   @State private var newStock = Stock(ticker: "FB", name: "Facebook", currentPrice: 1.0, expectedPrice: 1.0)
+
+  private func buildStockQuoteURL(stock: Stock) -> URL? {
+    guard let url = URL(string: "https://www.alphavantage.co/query") else {
+      return nil
+    }
+
+    var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true)
+
+    let functionItem = URLQueryItem(name: "function", value: "GLOBAL_QUOTE")
+    let symbolItem = URLQueryItem(name: "symbol", value: stock.ticker)
+    let apiKeyItem = URLQueryItem(name: "apikey", value: "L51Y2HE61NU1YU0G")
+
+    urlComponents?.queryItems = [functionItem, symbolItem, apiKeyItem]
+
+    return urlComponents?.url
+  }
+
+  private func fetchStockDetails(stock: Stock) {
+    guard let url = buildStockQuoteURL(stock: stock) else {
+      return
+    }
+
+    AF.request(url).validate().responseData { response in
+      switch response.result {
+        case let .success(data):
+          let decoder = JSONDecoder()
+
+          guard
+            let json = try? JSON(data: data),
+            let rawData = try? json["Global Quote"].rawData(),
+            let stockQuote = try? decoder.decode(StockQuote.self, from: rawData)
+          else {
+            logger.error("Failed to decode stock quote")
+            return
+          }
+
+          let newStock = Stock(ticker: stockQuote.symbol, name: "haha", currentPrice: Double(stockQuote.price) ?? 0.0, expectedPrice: stock.expectedPrice)
+
+          stocks.append(newStock)
+        case let .failure(error):
+          logger.error("Failed to fetch stock quote: \(error.localizedDescription)")
+      }
+    }
+  }
 }
 
 // MARK: - ContentView_Previews
