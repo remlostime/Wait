@@ -2,9 +2,12 @@
 
 import SwiftUI
 
+// MARK: - SearchBar
+
 struct SearchBar: View {
+  // MARK: Internal
+
   @Binding var keyword: String
-  @State private var isEditing = false
 
   var body: some View {
     HStack {
@@ -25,13 +28,19 @@ struct SearchBar: View {
         }, label: {
           Text("Cancel")
         })
-        .padding(.trailing, 8)
-        .transition(.move(edge: .trailing))
-        .animation(.default)
+          .padding(.trailing, 8)
+          .transition(.move(edge: .trailing))
+          .animation(.default)
       }
     }
   }
+
+  // MARK: Private
+
+  @State private var isEditing = false
 }
+
+// MARK: - SearchBar_Previews
 
 struct SearchBar_Previews: PreviewProvider {
   static var previews: some View {

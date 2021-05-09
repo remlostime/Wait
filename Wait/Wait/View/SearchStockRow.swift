@@ -2,9 +2,11 @@
 
 import SwiftUI
 
+// MARK: - SearchStockRow
+
 struct SearchStockRow: View {
   var stock: SearchStock
-  
+
   var body: some View {
     HStack {
       Text(stock.symbol)
@@ -18,6 +20,8 @@ struct SearchStockRow: View {
     }
   }
 }
+
+// MARK: - SearchStockRow_Previews
 
 struct SearchStockRow_Previews: PreviewProvider {
   static var previews: some View {

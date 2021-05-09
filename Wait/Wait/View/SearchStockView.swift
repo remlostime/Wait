@@ -4,6 +4,8 @@ import Alamofire
 import SwiftUI
 import SwiftyJSON
 
+// MARK: - SearchStockView
+
 struct SearchStockView: View {
   @State private var keyword: String = ""
   @State private var searchStocks: [SearchStock] = []
@@ -47,20 +49,20 @@ struct SearchStockView: View {
 
     AF.request(url).validate().responseData { response in
       switch response.result {
-        case .success(let data):
+        case let .success(data):
           let decoder = JSONDecoder()
 
           guard
             let json = try? JSON(data: data),
             let rawData = try? json["bestMatches"].rawData(),
-            let newSearchStocks = try? decoder.decode([SearchStock].self, from: rawData) else
-          {
+            let newSearchStocks = try? decoder.decode([SearchStock].self, from: rawData)
+          else {
             logger.error("Failed to decode search stock")
             return
           }
 
           searchStocks = newSearchStocks
-        case .failure(let error):
+        case let .failure(error):
           logger.error("Failed to search stock: \(error.localizedDescription)")
       }
     }
@@ -70,6 +72,8 @@ struct SearchStockView: View {
     searchStocks(for: newKeyword)
   }
 }
+
+// MARK: - SearchStockView_Previews
 
 struct SearchStockView_Previews: PreviewProvider {
   static var previews: some View {
