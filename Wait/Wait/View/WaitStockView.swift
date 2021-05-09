@@ -7,6 +7,7 @@ import SwiftUI
 struct WaitStockView: View {
   // MARK: Internal
 
+  var searchStock: SearchStock
   @Binding var stock: Stock
   @Binding var isPresented: Bool
 
@@ -15,7 +16,7 @@ struct WaitStockView: View {
       HStack {
         Text("Ticker")
         Spacer()
-        TextField("Ticker", text: $ticker)
+        Text(searchStock.symbol)
       }
       .padding()
 
@@ -29,7 +30,7 @@ struct WaitStockView: View {
       Spacer()
 
       Button("Add") {
-        stock = Stock(ticker: ticker, name: "XX", currentPrice: 1.0, expectedPrice: Double(expectedPrice) ?? 0.0)
+        stock = Stock(ticker: searchStock.symbol, name: searchStock.name, currentPrice: 1.0, expectedPrice: Double(expectedPrice) ?? 0.0)
         isPresented.toggle()
       }
 
@@ -39,7 +40,6 @@ struct WaitStockView: View {
 
   // MARK: Private
 
-  @State private var ticker = "FB"
   @State private var expectedPrice = "1.0"
 }
 
@@ -47,6 +47,6 @@ struct WaitStockView: View {
 
 struct WaitStockView_Previews: PreviewProvider {
   static var previews: some View {
-    WaitStockView(stock: .constant(Stock(ticker: "fb", name: "Facebook", currentPrice: 1.0, expectedPrice: 1.0)), isPresented: .constant(true))
+    WaitStockView(searchStock: SearchStock(symbol: "fb", name: "facebook", matchScore: "23.0", region: "US"), stock: .constant(Stock(ticker: "fb", name: "Facebook", currentPrice: 1.0, expectedPrice: 1.0)), isPresented: .constant(true))
   }
 }

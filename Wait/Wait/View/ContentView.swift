@@ -37,7 +37,7 @@ struct ContentView: View {
       })
       .sheet(isPresented: $showingWaitStockView, content: {
         NavigationView {
-          WaitStockView(stock: $newStock.onChange(stockChanged), isPresented: $showingWaitStockView)
+          SearchStockView(isPresented: $showingWaitStockView, stock: $newStock.onChange(stockChanged))
         }
       })
     }
@@ -94,7 +94,7 @@ struct ContentView: View {
             return
           }
 
-          let newStock = Stock(ticker: stockQuote.symbol, name: "haha", currentPrice: Double(stockQuote.price) ?? 0.0, expectedPrice: stock.expectedPrice)
+          let newStock = Stock(ticker: stockQuote.symbol, name: stock.name, currentPrice: Double(stockQuote.price) ?? 0.0, expectedPrice: stock.expectedPrice)
 
           completion(newStock)
         case let .failure(error):

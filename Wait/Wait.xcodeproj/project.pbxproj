@@ -12,6 +12,10 @@
 		E2123A652647158800A29222 /* SwiftyBeaver in Frameworks */ = {isa = PBXBuildFile; productRef = E2123A642647158800A29222 /* SwiftyBeaver */; };
 		E2123A682647198000A29222 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E2123A672647198000A29222 /* SwiftyJSON */; };
 		E2123A6B26472F9400A29222 /* StockCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2123A6A26472F9400A29222 /* StockCache.swift */; };
+		E275EDFD264835F000752D8A /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EDFC264835F000752D8A /* SearchBar.swift */; };
+		E275EDFF26483D6600752D8A /* SearchStockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EDFE26483D6600752D8A /* SearchStockView.swift */; };
+		E275EE0126483EBF00752D8A /* SearchStock.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EE0026483EBF00752D8A /* SearchStock.swift */; };
+		E275EE0326483FE300752D8A /* SearchStockRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EE0226483FE300752D8A /* SearchStockRow.swift */; };
 		E2BE76582641FC3300645629 /* WaitStockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BE76572641FC3300645629 /* WaitStockView.swift */; };
 		E2C859B426438EE500F93321 /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = E2C859B326438EE500F93321 /* Cache */; };
 		E2E637AD2641A5FB00F872A4 /* WaitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E637AC2641A5FB00F872A4 /* WaitApp.swift */; };
@@ -25,6 +29,10 @@
 /* Begin PBXFileReference section */
 		E2123A61264713CC00A29222 /* StockQuote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockQuote.swift; sourceTree = "<group>"; };
 		E2123A6A26472F9400A29222 /* StockCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCache.swift; sourceTree = "<group>"; };
+		E275EDFC264835F000752D8A /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
+		E275EDFE26483D6600752D8A /* SearchStockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchStockView.swift; sourceTree = "<group>"; };
+		E275EE0026483EBF00752D8A /* SearchStock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchStock.swift; sourceTree = "<group>"; };
+		E275EE0226483FE300752D8A /* SearchStockRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchStockRow.swift; sourceTree = "<group>"; };
 		E2BE76572641FC3300645629 /* WaitStockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitStockView.swift; sourceTree = "<group>"; };
 		E2E637A92641A5FB00F872A4 /* Wait.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Wait.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2E637AC2641A5FB00F872A4 /* WaitApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitApp.swift; sourceTree = "<group>"; };
@@ -102,6 +110,7 @@
 			children = (
 				E2E637BC2641A7F400F872A4 /* Stock.swift */,
 				E2123A61264713CC00A29222 /* StockQuote.swift */,
+				E275EE0026483EBF00752D8A /* SearchStock.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -112,6 +121,9 @@
 				E2E637AE2641A5FB00F872A4 /* ContentView.swift */,
 				E2E637BF2641A92A00F872A4 /* StockRow.swift */,
 				E2BE76572641FC3300645629 /* WaitStockView.swift */,
+				E275EDFC264835F000752D8A /* SearchBar.swift */,
+				E275EDFE26483D6600752D8A /* SearchStockView.swift */,
+				E275EE0226483FE300752D8A /* SearchStockRow.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -202,8 +214,12 @@
 				E2E637C02641A92A00F872A4 /* StockRow.swift in Sources */,
 				E2E637BD2641A7F400F872A4 /* Stock.swift in Sources */,
 				E2E637AD2641A5FB00F872A4 /* WaitApp.swift in Sources */,
+				E275EDFD264835F000752D8A /* SearchBar.swift in Sources */,
+				E275EE0126483EBF00752D8A /* SearchStock.swift in Sources */,
 				E2123A62264713CC00A29222 /* StockQuote.swift in Sources */,
+				E275EE0326483FE300752D8A /* SearchStockRow.swift in Sources */,
 				E2123A6B26472F9400A29222 /* StockCache.swift in Sources */,
+				E275EDFF26483D6600752D8A /* SearchStockView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
