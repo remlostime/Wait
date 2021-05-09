@@ -50,6 +50,7 @@ struct WaitStockView_Previews: PreviewProvider {
     WaitStockView(
       searchStock: SearchStock(symbol: "fb", name: "facebook", matchScore: "23.0", region: "US"),
       stock: .constant(Stock(ticker: "fb", name: "Facebook", currentPrice: 1.0, expectedPrice: 1.0)),
-      isPresented: .constant(true))
+      isPresented: .constant(true)
+    )
   }
 }
