@@ -32,7 +32,7 @@ struct StockDetailsView: View {
 
           Spacer()
         }
-        .navigationTitle(searchStock.name)
+        .navigationTitle(searchStock.symbol)
       }
     }
   }
