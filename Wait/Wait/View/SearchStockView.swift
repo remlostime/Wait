@@ -18,7 +18,7 @@ struct SearchStockView: View {
 
       List {
         ForEach(searchStocks, id: \.symbol) { searchStock in
-          NavigationLink(destination: WaitStockView(searchStock: searchStock, stock: $stock, isPresented: $isPresented)) {
+          NavigationLink(destination: StockDetailsView(searchStock: searchStock, stock: $stock, isPresented: $isPresented)) {
             SearchStockRow(stock: searchStock)
           }
         }
