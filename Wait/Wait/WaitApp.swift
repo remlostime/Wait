@@ -2,6 +2,7 @@
 
 import SwiftUI
 import SwiftyBeaver
+import Shake
 
 let logger = SwiftyBeaver.self
 
@@ -12,6 +13,7 @@ struct WaitApp: App {
   // MARK: Lifecycle
 
   init() {
+    setupShake()
     setupLogger()
   }
 
@@ -24,7 +26,13 @@ struct WaitApp: App {
     }
   }
 
-  func setupLogger() {
+  private func setupShake() {
+    Shake.start(
+      clientId: "EMFDruyQ3NpZJixuCtgi2LiTl83hjfngf3tRFL3F",
+      clientSecret: "wh1riTvDR93wmB0itrbltVmOKMsFToZyM4O6Y65pPtARpvdiLq4Xtd1")
+  }
+
+  private func setupLogger() {
     let console = ConsoleDestination()
     let file = FileDestination()
     SwiftyBeaver.addDestination(console)
