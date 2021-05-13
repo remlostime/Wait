@@ -17,6 +17,8 @@
 		E275EE0126483EBF00752D8A /* SearchStock.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EE0026483EBF00752D8A /* SearchStock.swift */; };
 		E275EE0326483FE300752D8A /* SearchStockRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EE0226483FE300752D8A /* SearchStockRow.swift */; };
 		E2901FA5264CAC8B003A2C01 /* Shake in Frameworks */ = {isa = PBXBuildFile; productRef = E2901FA4264CAC8B003A2C01 /* Shake */; };
+		E2901FA7264CD22E003A2C01 /* bitrise_configuration.plist in Resources */ = {isa = PBXBuildFile; fileRef = E2901FA6264CD22E003A2C01 /* bitrise_configuration.plist */; };
+		E2901FAA264D77EF003A2C01 /* Trace in Frameworks */ = {isa = PBXBuildFile; productRef = E2901FA9264D77EF003A2C01 /* Trace */; };
 		E2BE76582641FC3300645629 /* StockDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BE76572641FC3300645629 /* StockDetailsView.swift */; };
 		E2C859B426438EE500F93321 /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = E2C859B326438EE500F93321 /* Cache */; };
 		E2E637AD2641A5FB00F872A4 /* WaitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E637AC2641A5FB00F872A4 /* WaitApp.swift */; };
@@ -34,6 +36,7 @@
 		E275EDFE26483D6600752D8A /* SearchStockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchStockView.swift; sourceTree = "<group>"; };
 		E275EE0026483EBF00752D8A /* SearchStock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchStock.swift; sourceTree = "<group>"; };
 		E275EE0226483FE300752D8A /* SearchStockRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchStockRow.swift; sourceTree = "<group>"; };
+		E2901FA6264CD22E003A2C01 /* bitrise_configuration.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = bitrise_configuration.plist; sourceTree = "<group>"; };
 		E2BE76572641FC3300645629 /* StockDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailsView.swift; sourceTree = "<group>"; };
 		E2E637A92641A5FB00F872A4 /* Wait.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Wait.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2E637AC2641A5FB00F872A4 /* WaitApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitApp.swift; sourceTree = "<group>"; };
@@ -50,6 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E2901FAA264D77EF003A2C01 /* Trace in Frameworks */,
 				E2C859B426438EE500F93321 /* Cache in Frameworks */,
 				E2123A602647115400A29222 /* Alamofire in Frameworks */,
 				E2123A682647198000A29222 /* SwiftyJSON in Frameworks */,
@@ -72,6 +76,7 @@
 		E2E637A02641A5FB00F872A4 = {
 			isa = PBXGroup;
 			children = (
+				E2901FA6264CD22E003A2C01 /* bitrise_configuration.plist */,
 				E2E637AB2641A5FB00F872A4 /* Wait */,
 				E2E637AA2641A5FB00F872A4 /* Products */,
 			);
@@ -152,6 +157,7 @@
 				E2123A642647158800A29222 /* SwiftyBeaver */,
 				E2123A672647198000A29222 /* SwiftyJSON */,
 				E2901FA4264CAC8B003A2C01 /* Shake */,
+				E2901FA9264D77EF003A2C01 /* Trace */,
 			);
 			productName = Wait;
 			productReference = E2E637A92641A5FB00F872A4 /* Wait.app */;
@@ -186,6 +192,7 @@
 				E2123A632647158800A29222 /* XCRemoteSwiftPackageReference "SwiftyBeaver" */,
 				E2123A662647198000A29222 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 				E2901FA3264CAC8B003A2C01 /* XCRemoteSwiftPackageReference "shake-ios" */,
+				E2901FA8264D77EE003A2C01 /* XCRemoteSwiftPackageReference "trace-cocoa-sdk" */,
 			);
 			productRefGroup = E2E637AA2641A5FB00F872A4 /* Products */;
 			projectDirPath = "";
@@ -203,6 +210,7 @@
 			files = (
 				E2E637B42641A5FD00F872A4 /* Preview Assets.xcassets in Resources */,
 				E2E637B12641A5FD00F872A4 /* Assets.xcassets in Resources */,
+				E2901FA7264CD22E003A2C01 /* bitrise_configuration.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -361,6 +369,14 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				OTHER_LDFLAGS = "";
+				"OTHER_LDFLAGS[arch=*]" = (
+					"-ObjC",
+					"-l",
+					z,
+					"-l",
+					"c++",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.chenkai.wait;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -382,6 +398,14 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = "";
+				"OTHER_LDFLAGS[arch=*]" = (
+					"-ObjC",
+					"-l",
+					z,
+					"-l",
+					"c++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.chenkai.wait;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -446,6 +470,14 @@
 				minimumVersion = 14.2.1;
 			};
 		};
+		E2901FA8264D77EE003A2C01 /* XCRemoteSwiftPackageReference "trace-cocoa-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/bitrise-io/trace-cocoa-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.7.33;
+			};
+		};
 		E2C859B226438EE500F93321 /* XCRemoteSwiftPackageReference "Cache" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/hyperoslo/Cache";
@@ -476,6 +508,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2901FA3264CAC8B003A2C01 /* XCRemoteSwiftPackageReference "shake-ios" */;
 			productName = Shake;
+		};
+		E2901FA9264D77EF003A2C01 /* Trace */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E2901FA8264D77EE003A2C01 /* XCRemoteSwiftPackageReference "trace-cocoa-sdk" */;
+			productName = Trace;
 		};
 		E2C859B326438EE500F93321 /* Cache */ = {
 			isa = XCSwiftPackageProductDependency;
