@@ -3,6 +3,7 @@
 import Shake
 import SwiftUI
 import SwiftyBeaver
+import Trace
 
 let logger = SwiftyBeaver.self
 
@@ -27,6 +28,8 @@ struct WaitApp: App {
   }
 
   // MARK: Private
+
+  private let trace = Trace.shared
 
   private func setupShake() {
     Shake.start(
