@@ -1,8 +1,8 @@
 // Created by kai_chen on 5/4/21.
 
+import Shake
 import SwiftUI
 import SwiftyBeaver
-import Shake
 
 let logger = SwiftyBeaver.self
 
@@ -26,10 +26,13 @@ struct WaitApp: App {
     }
   }
 
+  // MARK: Private
+
   private func setupShake() {
     Shake.start(
       clientId: "EMFDruyQ3NpZJixuCtgi2LiTl83hjfngf3tRFL3F",
-      clientSecret: "wh1riTvDR93wmB0itrbltVmOKMsFToZyM4O6Y65pPtARpvdiLq4Xtd1")
+      clientSecret: "wh1riTvDR93wmB0itrbltVmOKMsFToZyM4O6Y65pPtARpvdiLq4Xtd1"
+    )
   }
 
   private func setupLogger() {
