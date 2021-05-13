@@ -1,5 +1,6 @@
 // Created by kai_chen on 5/4/21.
 
+import Shake
 import SwiftUI
 import SwiftyBeaver
 
@@ -12,6 +13,7 @@ struct WaitApp: App {
   // MARK: Lifecycle
 
   init() {
+    setupShake()
     setupLogger()
   }
 
@@ -24,7 +26,16 @@ struct WaitApp: App {
     }
   }
 
-  func setupLogger() {
+  // MARK: Private
+
+  private func setupShake() {
+    Shake.start(
+      clientId: "EMFDruyQ3NpZJixuCtgi2LiTl83hjfngf3tRFL3F",
+      clientSecret: "wh1riTvDR93wmB0itrbltVmOKMsFToZyM4O6Y65pPtARpvdiLq4Xtd1"
+    )
+  }
+
+  private func setupLogger() {
     let console = ConsoleDestination()
     let file = FileDestination()
     SwiftyBeaver.addDestination(console)

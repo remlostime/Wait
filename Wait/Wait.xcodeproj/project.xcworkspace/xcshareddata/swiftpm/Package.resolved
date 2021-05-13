@@ -20,6 +20,15 @@
         }
       },
       {
+        "package": "Shake",
+        "repositoryURL": "https://github.com/shakebugs/shake-ios",
+        "state": {
+          "branch": null,
+          "revision": "bece3fa332e5ff51c5bfd0795629475dcf8af164",
+          "version": "14.2.1"
+        }
+      },
+      {
         "package": "SwiftyBeaver",
         "repositoryURL": "https://github.com/SwiftyBeaver/SwiftyBeaver",
         "state": {

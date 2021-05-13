@@ -16,6 +16,7 @@
 		E275EDFF26483D6600752D8A /* SearchStockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EDFE26483D6600752D8A /* SearchStockView.swift */; };
 		E275EE0126483EBF00752D8A /* SearchStock.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EE0026483EBF00752D8A /* SearchStock.swift */; };
 		E275EE0326483FE300752D8A /* SearchStockRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EE0226483FE300752D8A /* SearchStockRow.swift */; };
+		E2901FA5264CAC8B003A2C01 /* Shake in Frameworks */ = {isa = PBXBuildFile; productRef = E2901FA4264CAC8B003A2C01 /* Shake */; };
 		E2BE76582641FC3300645629 /* StockDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BE76572641FC3300645629 /* StockDetailsView.swift */; };
 		E2C859B426438EE500F93321 /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = E2C859B326438EE500F93321 /* Cache */; };
 		E2E637AD2641A5FB00F872A4 /* WaitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E637AC2641A5FB00F872A4 /* WaitApp.swift */; };
@@ -53,6 +54,7 @@
 				E2123A602647115400A29222 /* Alamofire in Frameworks */,
 				E2123A682647198000A29222 /* SwiftyJSON in Frameworks */,
 				E2123A652647158800A29222 /* SwiftyBeaver in Frameworks */,
+				E2901FA5264CAC8B003A2C01 /* Shake in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -149,6 +151,7 @@
 				E2123A5F2647115400A29222 /* Alamofire */,
 				E2123A642647158800A29222 /* SwiftyBeaver */,
 				E2123A672647198000A29222 /* SwiftyJSON */,
+				E2901FA4264CAC8B003A2C01 /* Shake */,
 			);
 			productName = Wait;
 			productReference = E2E637A92641A5FB00F872A4 /* Wait.app */;
@@ -182,6 +185,7 @@
 				E2123A5E2647115400A29222 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				E2123A632647158800A29222 /* XCRemoteSwiftPackageReference "SwiftyBeaver" */,
 				E2123A662647198000A29222 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
+				E2901FA3264CAC8B003A2C01 /* XCRemoteSwiftPackageReference "shake-ios" */,
 			);
 			productRefGroup = E2E637AA2641A5FB00F872A4 /* Products */;
 			projectDirPath = "";
@@ -434,6 +438,14 @@
 				minimumVersion = 5.0.1;
 			};
 		};
+		E2901FA3264CAC8B003A2C01 /* XCRemoteSwiftPackageReference "shake-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/shakebugs/shake-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 14.2.1;
+			};
+		};
 		E2C859B226438EE500F93321 /* XCRemoteSwiftPackageReference "Cache" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/hyperoslo/Cache";
@@ -459,6 +471,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2123A662647198000A29222 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
 			productName = SwiftyJSON;
+		};
+		E2901FA4264CAC8B003A2C01 /* Shake */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E2901FA3264CAC8B003A2C01 /* XCRemoteSwiftPackageReference "shake-ios" */;
+			productName = Shake;
 		};
 		E2C859B326438EE500F93321 /* Cache */ = {
 			isa = XCSwiftPackageProductDependency;
