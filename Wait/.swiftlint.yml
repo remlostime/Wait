@@ -58,7 +58,7 @@ only_rules:
 
 excluded: # paths to ignore during linting.
   - Pods
-  - Dime/Generated
+  - Wait/Generated
 
 colon:
   apply_to_dictionaries: false
