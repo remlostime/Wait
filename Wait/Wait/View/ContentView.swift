@@ -26,7 +26,9 @@ struct ContentView: View {
   var body: some View {
     NavigationView {
       List(stocks, id: \.symbol) { stock in
-        StockRow(stock: stock)
+        NavigationLink(destination: StockDetailsView(stock: stock)) {
+          StockRow(stock: stock)
+        }
       }
       .navigationTitle("Waitlist")
       .listStyle(InsetListStyle())
