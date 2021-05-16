@@ -58,7 +58,8 @@ struct ContentView: View {
     name: "Facebook",
     currentPrice: 1.0,
     expectedPrice: 1.0,
-    changePercent: "1.8%")
+    changePercent: "1.8%"
+  )
 
   private func saveStocks() {
     StockCache.shared.saveStocks(stocks)

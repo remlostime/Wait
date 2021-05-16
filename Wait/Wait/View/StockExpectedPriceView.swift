@@ -2,7 +2,7 @@
 
 import SwiftUI
 
-// MARK: - StockDetailsView
+// MARK: - StockExpectedPriceView
 
 struct StockExpectedPriceView: View {
   // MARK: Internal
@@ -29,7 +29,8 @@ struct StockExpectedPriceView: View {
               name: searchStock.name,
               currentPrice: 1.0,
               expectedPrice: Double(expectedPrice) ?? 0.0,
-              changePercent: "1.8%")
+              changePercent: "1.8%"
+            )
 
             isPresented.toggle()
           }

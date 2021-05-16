@@ -5,6 +5,8 @@ import SwiftUI
 // MARK: - StockRow
 
 struct StockRow: View {
+  // MARK: Internal
+
   let stock: Stock
 
   var body: some View {
@@ -30,6 +32,8 @@ struct StockRow: View {
     }
     .padding()
   }
+
+  // MARK: Private
 
   private func isNegativeNumber(_ number: String) -> Bool {
     guard !number.isEmpty else {
