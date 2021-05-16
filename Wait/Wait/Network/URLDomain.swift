@@ -3,6 +3,8 @@
 
 import Foundation
 
+// MARK: - URLDomain
+
 enum URLDomain: String {
   case alphaVantage = "https://www.alphavantage.co"
 }

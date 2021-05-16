@@ -70,7 +70,7 @@ struct ContentView: View {
   private func buildStockQuoteURL(stock: Stock) -> URL? {
     let params = [
       "function": "GLOBAL_QUOTE",
-      "symbol": stock.symbol
+      "symbol": stock.symbol,
     ]
 
     let url = NetworkingURLBuilder.buildURL(api: "query", params: params)

@@ -29,7 +29,7 @@ struct SearchStockView: View {
   private func buildStockSearchURL(keyword: String) -> URL? {
     let params = [
       "function": "SYMBOL_SEARCH",
-      "keywords": keyword
+      "keywords": keyword,
     ]
 
     let url = NetworkingURLBuilder.buildURL(api: "query", params: params)
