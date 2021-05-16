@@ -108,9 +108,10 @@ struct ContentView: View {
           let newStock = Stock(
             symbol: stockQuote.symbol,
             name: stock.name, currentPrice:
-              Double(stockQuote.price) ?? 0.0,
+            Double(stockQuote.price) ?? 0.0,
             expectedPrice: stock.expectedPrice,
-            changePercent: stockQuote.changePercent)
+            changePercent: stockQuote.changePercent
+          )
 
           completion(newStock)
         case let .failure(error):
