@@ -25,7 +25,7 @@ struct ContentView: View {
 
   var body: some View {
     NavigationView {
-      List(stocks, id: \.ticker) { stock in
+      List(stocks, id: \.symbol) { stock in
         StockRow(stock: stock)
       }
       .navigationTitle("Waitlist")
@@ -53,7 +53,12 @@ struct ContentView: View {
   // MARK: Private
 
   @State private var showingWaitStockView = false
-  @State private var newStock = Stock(ticker: "FB", name: "Facebook", currentPrice: 1.0, expectedPrice: 1.0)
+  @State private var newStock = Stock(
+    symbol: "FB",
+    name: "Facebook",
+    currentPrice: 1.0,
+    expectedPrice: 1.0,
+    changePercent: "1.8%")
 
   private func saveStocks() {
     StockCache.shared.saveStocks(stocks)
@@ -67,7 +72,7 @@ struct ContentView: View {
     var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true)
 
     let functionItem = URLQueryItem(name: "function", value: "GLOBAL_QUOTE")
-    let symbolItem = URLQueryItem(name: "symbol", value: stock.ticker)
+    let symbolItem = URLQueryItem(name: "symbol", value: stock.symbol)
     let apiKeyItem = URLQueryItem(name: "apikey", value: "L51Y2HE61NU1YU0G")
 
     urlComponents?.queryItems = [functionItem, symbolItem, apiKeyItem]
@@ -84,6 +89,9 @@ struct ContentView: View {
       switch response.result {
         case let .success(data):
           let decoder = JSONDecoder()
+          let dateFormatter = DateFormatter()
+          dateFormatter.dateFormat = "yyyy-mm-dd"
+          decoder.dateDecodingStrategy = .formatted(dateFormatter)
 
           guard
             let json = try? JSON(data: data),
@@ -94,7 +102,7 @@ struct ContentView: View {
             return
           }
 
-          let newStock = Stock(ticker: stockQuote.symbol, name: stock.name, currentPrice: Double(stockQuote.price) ?? 0.0, expectedPrice: stock.expectedPrice)
+          let newStock = Stock(symbol: stockQuote.symbol, name: stock.name, currentPrice: Double(stockQuote.price) ?? 0.0, expectedPrice: stock.expectedPrice, changePercent: stockQuote.changePercent)
 
           completion(newStock)
         case let .failure(error):
@@ -109,10 +117,11 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
   static var previews: some View {
     let stock = Stock(
-      ticker: "fb",
+      symbol: "fb",
       name: "Facebook",
       currentPrice: 1.0,
-      expectedPrice: 2.0
+      expectedPrice: 2.0,
+      changePercent: "1.8%"
     )
 
     ContentView(stocks: [stock])

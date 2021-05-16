@@ -18,7 +18,7 @@ struct SearchStockView: View {
 
       List {
         ForEach(searchStocks, id: \.symbol) { searchStock in
-          NavigationLink(destination: StockDetailsView(searchStock: searchStock, stock: $stock, isPresented: $isPresented)) {
+          NavigationLink(destination: StockExpectedPriceView(searchStock: searchStock, stock: $stock, isPresented: $isPresented)) {
             SearchStockRow(stock: searchStock)
           }
         }
@@ -77,6 +77,13 @@ struct SearchStockView: View {
 
 struct SearchStockView_Previews: PreviewProvider {
   static var previews: some View {
-    SearchStockView(isPresented: .constant(true), stock: .constant(Stock(ticker: "FB", name: "Facebook", currentPrice: 1.0, expectedPrice: 1.0)))
+    SearchStockView(
+      isPresented: .constant(true),
+      stock: .constant(
+        Stock(symbol: "FB",
+              name: "Facebook",
+              currentPrice: 1.0,
+              expectedPrice: 1.0,
+              changePercent: "1.8%")))
   }
 }

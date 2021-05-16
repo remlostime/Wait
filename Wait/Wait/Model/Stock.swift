@@ -3,8 +3,9 @@
 import Foundation
 
 struct Stock: Codable {
-  let ticker: String
+  let symbol: String
   let name: String
   let currentPrice: Double
   let expectedPrice: Double
+  let changePercent: String
 }
