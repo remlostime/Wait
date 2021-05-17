@@ -1,9 +1,9 @@
 // Created by kai_chen on 5/4/21.
 
 import Alamofire
+import Money
 import SwiftUI
 import SwiftyJSON
-import Money
 
 extension Binding {
   func onChange(_ handler: @escaping (Value) -> Void) -> Binding<Value> {

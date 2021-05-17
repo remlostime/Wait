@@ -1,7 +1,7 @@
 // Created by kai_chen on 5/4/21.
 
-import SwiftUI
 import Money
+import SwiftUI
 
 // MARK: - StockExpectedPriceView
 

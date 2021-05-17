@@ -14,8 +14,8 @@ extension Money {
     let formatter = NumberFormatter()
 
     formatter.numberStyle = .currency
-    formatter.currencyCode = self.currency.code
-    formatter.maximumFractionDigits = self.currency.minorUnit
+    formatter.currencyCode = currency.code
+    formatter.maximumFractionDigits = currency.minorUnit
 
     return formatter.string(for: amount) ?? amount.string
   }
