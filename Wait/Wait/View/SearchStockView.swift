@@ -64,7 +64,13 @@ struct SearchStockView: View {
   }
 
   func keywordDidChange(to newKeyword: String) {
-    searchStocks(for: newKeyword)
+    DispatchQueue.global().asyncAfter(deadline: .now() + 1.0) {
+      guard newKeyword == keyword else {
+        return
+      }
+
+      searchStocks(for: newKeyword)
+    }
   }
 }
 
