@@ -2,7 +2,7 @@
 
 import Foundation
 
-class NetworkingURLBuilder {
+enum NetworkingURLBuilder {
   static func buildURL(
     domain: URLDomain = .alphaVantage,
     api: String,

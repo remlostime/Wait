@@ -24,6 +24,7 @@ struct WaitApp: App {
     WindowGroup {
       let stocks = StockCache.shared.getStocks()
       ContentView(stocks: stocks)
+        .accentColor(.avocado)
     }
   }
 

@@ -41,6 +41,7 @@ struct ContentView: View {
         NavigationView {
           SearchStockView(isPresented: $showingWaitStockView, stock: $newStock.onChange(stockChanged))
         }
+        .accentColor(.avocado)
       })
     }
   }
