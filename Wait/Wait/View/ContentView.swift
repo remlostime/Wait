@@ -41,6 +41,7 @@ struct ContentView: View {
         NavigationView {
           SearchStockView(isPresented: $showingWaitStockView, stock: $newStock.onChange(stockChanged))
         }
+        .accentColor(.avocado)
       })
     }
   }
@@ -68,19 +69,14 @@ struct ContentView: View {
   }
 
   private func buildStockQuoteURL(stock: Stock) -> URL? {
-    guard let url = URL(string: "https://www.alphavantage.co/query") else {
-      return nil
-    }
+    let params = [
+      "function": "GLOBAL_QUOTE",
+      "symbol": stock.symbol,
+    ]
 
-    var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true)
+    let url = NetworkingURLBuilder.buildURL(api: "query", params: params)
 
-    let functionItem = URLQueryItem(name: "function", value: "GLOBAL_QUOTE")
-    let symbolItem = URLQueryItem(name: "symbol", value: stock.symbol)
-    let apiKeyItem = URLQueryItem(name: "apikey", value: "L51Y2HE61NU1YU0G")
-
-    urlComponents?.queryItems = [functionItem, symbolItem, apiKeyItem]
-
-    return urlComponents?.url
+    return url
   }
 
   private func fetchStockDetails(stock: Stock, completion: @escaping ((Stock) -> Void)) {

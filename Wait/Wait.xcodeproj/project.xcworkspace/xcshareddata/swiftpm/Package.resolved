@@ -20,6 +20,15 @@
         }
       },
       {
+        "package": "Hue",
+        "repositoryURL": "https://github.com/zenangst/Hue",
+        "state": {
+          "branch": null,
+          "revision": "b9d920cee4ba795fefb828d130744eee1e3d2feb",
+          "version": "5.0.1"
+        }
+      },
+      {
         "package": "Money",
         "repositoryURL": "https://github.com/Flight-School/Money",
         "state": {

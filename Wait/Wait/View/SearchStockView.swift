@@ -27,19 +27,14 @@ struct SearchStockView: View {
   }
 
   private func buildStockSearchURL(keyword: String) -> URL? {
-    guard let url = URL(string: "https://www.alphavantage.co/query") else {
-      return nil
-    }
+    let params = [
+      "function": "SYMBOL_SEARCH",
+      "keywords": keyword,
+    ]
 
-    var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true)
+    let url = NetworkingURLBuilder.buildURL(api: "query", params: params)
 
-    let functionItem = URLQueryItem(name: "function", value: "SYMBOL_SEARCH")
-    let keywordItem = URLQueryItem(name: "keywords", value: keyword)
-    let apiKeyItem = URLQueryItem(name: "apikey", value: "L51Y2HE61NU1YU0G")
-
-    urlComponents?.queryItems = [functionItem, keywordItem, apiKeyItem]
-
-    return urlComponents?.url
+    return url
   }
 
   func searchStocks(for keyword: String) {
