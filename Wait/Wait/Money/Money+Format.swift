@@ -6,8 +6,8 @@ import Money
 import SwifterSwift
 
 extension Money {
-  var amountDoubleValue: Double {
-    amount.string.double()!
+  var amountDoubleValue: Double? {
+    amount.string.double()
   }
 
   var formattedCurrency: String {

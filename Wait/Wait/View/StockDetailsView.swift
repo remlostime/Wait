@@ -50,12 +50,15 @@ struct StockDetailsView: View {
   }
 
   var comparedToCurrentPriceRate: String {
+    let currentPrice = stock.currentPrice.amountDoubleValue ?? 0.0
+    let expectedPrice = stock.expectedPrice.amountDoubleValue ?? 0.0
+
     if stock.currentPrice > stock.expectedPrice {
-      let rate = (stock.currentPrice.amountDoubleValue - stock.expectedPrice.amountDoubleValue) / stock.expectedPrice.amountDoubleValue
+      let rate = (currentPrice - expectedPrice) / expectedPrice
       let percentage = "\(rate * 100.0)%"
       return "Above \(percentage)"
     } else {
-      let rate = (stock.expectedPrice.amountDoubleValue - stock.currentPrice.amountDoubleValue) / stock.expectedPrice.amountDoubleValue
+      let rate = (expectedPrice - currentPrice) / expectedPrice
       let percentage = "\(rate * 100.0)%"
       return "Below \(percentage)"
     }
