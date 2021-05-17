@@ -5,7 +5,7 @@ import SwiftUI
 // MARK: - SearchStockRow
 
 struct SearchStockRow: View {
-  var stock: SearchStock
+  var stock: SearchStockResult
 
   var body: some View {
     HStack {
@@ -25,6 +25,6 @@ struct SearchStockRow: View {
 
 struct SearchStockRow_Previews: PreviewProvider {
   static var previews: some View {
-    SearchStockRow(stock: SearchStock(symbol: "FB", name: "Facebook", matchScore: "1.0", region: "US"))
+    SearchStockRow(stock: SearchStockResult(symbol: "FB", name: "Facebook", matchScore: "1.0", region: "US"))
   }
 }

@@ -23,7 +23,7 @@ struct StockRow: View {
       Spacer()
 
       VStack(alignment: .trailing) {
-        Text(String(format: "%.2f", stock.currentPrice))
+        Text(stock.currentPrice.formattedCurrency)
           .font(.title3)
         Text(stock.changePercent)
           .font(.subheadline)

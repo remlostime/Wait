@@ -13,7 +13,7 @@ struct StockDetailsView: View {
         .font(.subheadline)
       Text(stock.name)
         .font(.largeTitle)
-      Text(String(stock.currentPrice))
+      Text(stock.currentPrice.formattedCurrency)
         .font(.largeTitle)
 
       Spacer()
@@ -25,7 +25,7 @@ struct StockDetailsView: View {
       HStack {
         Text("Expected Price")
         Spacer()
-        Text(String(stock.expectedPrice))
+        Text(stock.expectedPrice.formattedCurrency)
       }
 
       HStack {
@@ -50,14 +50,17 @@ struct StockDetailsView: View {
   }
 
   var comparedToCurrentPriceRate: String {
+    let currentPrice = stock.currentPrice.amountDoubleValue ?? 0.0
+    let expectedPrice = stock.expectedPrice.amountDoubleValue ?? 0.0
+
     if stock.currentPrice > stock.expectedPrice {
-      let rate = (stock.currentPrice - stock.expectedPrice) / stock.expectedPrice
-      let percentage = "\(rate * 100.0)%"
-      return "Above \(percentage)"
+      let rate = (currentPrice - expectedPrice) / expectedPrice
+      let percentage = String(format: "%.2f", rate * 100.0)
+      return "Above \(percentage)%"
     } else {
-      let rate = (stock.expectedPrice - stock.currentPrice) / stock.expectedPrice
-      let percentage = "\(rate * 100.0)%"
-      return "Below \(percentage)"
+      let rate = (expectedPrice - currentPrice) / expectedPrice
+      let percentage = String(format: "%.2f", rate * 100.0)
+      return "Below \(percentage)%"
     }
   }
 

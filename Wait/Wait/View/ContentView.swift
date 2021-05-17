@@ -1,6 +1,7 @@
 // Created by kai_chen on 5/4/21.
 
 import Alamofire
+import Money
 import SwiftUI
 import SwiftyJSON
 
@@ -103,8 +104,8 @@ struct ContentView: View {
 
           let newStock = Stock(
             symbol: stockQuote.symbol,
-            name: stock.name, currentPrice:
-            Double(stockQuote.price) ?? 0.0,
+            name: stock.name,
+            currentPrice: stockQuote.price,
             expectedPrice: stock.expectedPrice,
             changePercent: stockQuote.changePercent
           )

@@ -1,6 +1,7 @@
 // Created by kai_chen on 5/8/21.
 
 import Foundation
+import Money
 
 struct StockQuote: Decodable {
   enum CodingKeys: String, CodingKey {
@@ -11,7 +12,7 @@ struct StockQuote: Decodable {
   }
 
   let symbol: String
-  let price: String
+  let price: Money<USD>
   let changePercent: String
   let date: Date
 }

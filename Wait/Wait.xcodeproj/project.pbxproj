@@ -12,6 +12,8 @@
 		E2123A652647158800A29222 /* SwiftyBeaver in Frameworks */ = {isa = PBXBuildFile; productRef = E2123A642647158800A29222 /* SwiftyBeaver */; };
 		E2123A682647198000A29222 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E2123A672647198000A29222 /* SwiftyJSON */; };
 		E2123A6B26472F9400A29222 /* StockCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2123A6A26472F9400A29222 /* StockCache.swift */; };
+		E23B93E12652D38D00E039D9 /* Money+Format.swift in Sources */ = {isa = PBXBuildFile; fileRef = E23B93E02652D38D00E039D9 /* Money+Format.swift */; };
+		E23B93E42652D52800E039D9 /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E23B93E32652D52800E039D9 /* SwifterSwift */; };
 		E275EDFD264835F000752D8A /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EDFC264835F000752D8A /* SearchBar.swift */; };
 		E275EDFF26483D6600752D8A /* SearchStockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EDFE26483D6600752D8A /* SearchStockView.swift */; };
 		E275EE0126483EBF00752D8A /* SearchStock.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EE0026483EBF00752D8A /* SearchStock.swift */; };
@@ -38,6 +40,7 @@
 /* Begin PBXFileReference section */
 		E2123A61264713CC00A29222 /* StockQuote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockQuote.swift; sourceTree = "<group>"; };
 		E2123A6A26472F9400A29222 /* StockCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCache.swift; sourceTree = "<group>"; };
+		E23B93E02652D38D00E039D9 /* Money+Format.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Money+Format.swift"; sourceTree = "<group>"; };
 		E275EDFC264835F000752D8A /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 		E275EDFE26483D6600752D8A /* SearchStockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchStockView.swift; sourceTree = "<group>"; };
 		E275EE0026483EBF00752D8A /* SearchStock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchStock.swift; sourceTree = "<group>"; };
@@ -66,6 +69,7 @@
 				E2901FAA264D77EF003A2C01 /* Trace in Frameworks */,
 				E2C859B426438EE500F93321 /* Cache in Frameworks */,
 				E2123A602647115400A29222 /* Alamofire in Frameworks */,
+				E23B93E42652D52800E039D9 /* SwifterSwift in Frameworks */,
 				E2BDFCA726518CB90075E619 /* Money in Frameworks */,
 				E2123A682647198000A29222 /* SwiftyJSON in Frameworks */,
 				E2A07D9B26520BDD0075E271 /* Hue in Frameworks */,
@@ -83,6 +87,14 @@
 				E2123A6A26472F9400A29222 /* StockCache.swift */,
 			);
 			path = Cache;
+			sourceTree = "<group>";
+		};
+		E23B93DF2652D37600E039D9 /* Money */ = {
+			isa = PBXGroup;
+			children = (
+				E23B93E02652D38D00E039D9 /* Money+Format.swift */,
+			);
+			path = Money;
 			sourceTree = "<group>";
 		};
 		E2A07D942651BE120075E271 /* Network */ = {
@@ -123,6 +135,7 @@
 			isa = PBXGroup;
 			children = (
 				E2E637AC2641A5FB00F872A4 /* WaitApp.swift */,
+				E23B93DF2652D37600E039D9 /* Money */,
 				E2A07D9C26520BE50075E271 /* Color */,
 				E2A07D942651BE120075E271 /* Network */,
 				E2123A6926472F7F00A29222 /* Cache */,
@@ -192,6 +205,7 @@
 				E2901FA9264D77EF003A2C01 /* Trace */,
 				E2BDFCA626518CB90075E619 /* Money */,
 				E2A07D9A26520BDD0075E271 /* Hue */,
+				E23B93E32652D52800E039D9 /* SwifterSwift */,
 			);
 			productName = Wait;
 			productReference = E2E637A92641A5FB00F872A4 /* Wait.app */;
@@ -229,6 +243,7 @@
 				E2901FA8264D77EE003A2C01 /* XCRemoteSwiftPackageReference "trace-cocoa-sdk" */,
 				E2BDFCA526518CB90075E619 /* XCRemoteSwiftPackageReference "Money" */,
 				E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */,
+				E23B93E22652D52800E039D9 /* XCRemoteSwiftPackageReference "SwifterSwift" */,
 			);
 			productRefGroup = E2E637AA2641A5FB00F872A4 /* Products */;
 			projectDirPath = "";
@@ -266,6 +281,7 @@
 				E2E637AD2641A5FB00F872A4 /* WaitApp.swift in Sources */,
 				E275EDFD264835F000752D8A /* SearchBar.swift in Sources */,
 				E275EE0126483EBF00752D8A /* SearchStock.swift in Sources */,
+				E23B93E12652D38D00E039D9 /* Money+Format.swift in Sources */,
 				E2123A62264713CC00A29222 /* StockQuote.swift in Sources */,
 				E275EE0326483FE300752D8A /* SearchStockRow.swift in Sources */,
 				E2A07D962651BF270075E271 /* NetworkingURLBuilder.swift in Sources */,
@@ -502,6 +518,14 @@
 				minimumVersion = 5.0.1;
 			};
 		};
+		E23B93E22652D52800E039D9 /* XCRemoteSwiftPackageReference "SwifterSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwifterSwift/SwifterSwift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.2.0;
+			};
+		};
 		E2901FA3264CAC8B003A2C01 /* XCRemoteSwiftPackageReference "shake-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/shakebugs/shake-ios";
@@ -559,6 +583,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2123A662647198000A29222 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
 			productName = SwiftyJSON;
+		};
+		E23B93E32652D52800E039D9 /* SwifterSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E23B93E22652D52800E039D9 /* XCRemoteSwiftPackageReference "SwifterSwift" */;
+			productName = SwifterSwift;
 		};
 		E2901FA4264CAC8B003A2C01 /* Shake */ = {
 			isa = XCSwiftPackageProductDependency;
