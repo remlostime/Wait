@@ -8,7 +8,7 @@ import SwiftyJSON
 
 struct SearchStockView: View {
   @State private var keyword: String = ""
-  @State private var searchStocks: [SearchStock] = []
+  @State private var searchStocks: [SearchStockResult] = []
   @Binding var isPresented: Bool
   @Binding var stock: Stock
 
@@ -50,7 +50,7 @@ struct SearchStockView: View {
           guard
             let json = try? JSON(data: data),
             let rawData = try? json["bestMatches"].rawData(),
-            let newSearchStocks = try? decoder.decode([SearchStock].self, from: rawData)
+            let newSearchStocks = try? decoder.decode([SearchStockResult].self, from: rawData)
           else {
             logger.error("Failed to decode search stock")
             return

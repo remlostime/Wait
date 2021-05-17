@@ -3,7 +3,7 @@
 
 import Foundation
 
-struct SearchStock: Decodable {
+struct SearchStockResult: Decodable {
   enum CodingKeys: String, CodingKey {
     case symbol = "1. symbol"
     case name = "2. name"

@@ -3,6 +3,7 @@
 import Alamofire
 import SwiftUI
 import SwiftyJSON
+import Money
 
 extension Binding {
   func onChange(_ handler: @escaping (Value) -> Void) -> Binding<Value> {
@@ -103,8 +104,8 @@ struct ContentView: View {
 
           let newStock = Stock(
             symbol: stockQuote.symbol,
-            name: stock.name, currentPrice:
-            Double(stockQuote.price) ?? 0.0,
+            name: stock.name,
+            currentPrice: stockQuote.price,
             expectedPrice: stock.expectedPrice,
             changePercent: stockQuote.changePercent
           )
