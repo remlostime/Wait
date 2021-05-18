@@ -3,7 +3,7 @@
 import Foundation
 import Money
 
-struct StockQuote: Decodable {
+struct StockQuote: Codable {
   enum CodingKeys: String, CodingKey {
     case symbol = "01. symbol"
     case price = "05. price"

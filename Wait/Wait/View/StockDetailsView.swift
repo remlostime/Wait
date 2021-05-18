@@ -16,6 +16,8 @@ struct StockDetailsView: View {
       Text(stock.currentPrice.formattedCurrency)
         .font(.largeTitle)
 
+      SwiftUIChartViewController()
+
       Spacer()
 
       Text(action)
