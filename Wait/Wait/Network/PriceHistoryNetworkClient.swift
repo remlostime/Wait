@@ -2,5 +2,4 @@
 
 import Foundation
 
-class PriceHistoryNetworkClient {
-}
+class PriceHistoryNetworkClient {}

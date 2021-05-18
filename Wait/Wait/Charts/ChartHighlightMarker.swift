@@ -142,4 +142,3 @@ class ChartHighlightMarker: MarkerImage {
     self.size = size
   }
 }
-

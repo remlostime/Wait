@@ -4,6 +4,7 @@ import Charts
 import Money
 
 // MARK: - ChartViewDataSource
+
 public protocol ChartViewDataSource {
   var chartData: [TimeSection: ChartData] { get }
 
@@ -22,6 +23,7 @@ public protocol ChartViewDataSource {
 }
 
 // MARK: - ChartViewDataSourceDelegate
+
 public protocol ChartViewDataSourceDelegate: AnyObject {
   func dataDidUpdate(_ data: [TimeSection: ChartData])
   func currentPriceDidUpdate(_ currentPrice: Money<USD>)

@@ -7,6 +7,7 @@ import UIKit
 
 final class PriceHistoryDataSource: ChartViewDataSource {
   // MARK: Lifecycle
+
   init(symbol: String) {
     self.symbol = symbol
     chartCache = ChartCache<ChartModelType>(
@@ -17,6 +18,7 @@ final class PriceHistoryDataSource: ChartViewDataSource {
   }
 
   // MARK: Internal
+
   typealias ChartModelType = [TimeSection: [StockQuote]]
 
   var chartData: [TimeSection: ChartData]
@@ -34,17 +36,7 @@ final class PriceHistoryDataSource: ChartViewDataSource {
     self.delegate = delegate
   }
 
-  // MARK: Private
-
-  private let symbol: String
-  private let currentQuoteNetworkClient = StockQuoteNetworkClient()
-  private let priceNetworkClient = PriceHistoryNetworkClient()
-  private var models: ChartModelType = [:]
-  private var priceHistories: [TimeSection: ChartData] = [:]
-  private let chartCache: ChartCache<ChartModelType>
-
-  func fetchCurrentQuotes() {
-  }
+  func fetchCurrentQuotes() {}
 
   func fetchData(for timeSections: [TimeSection]) {
     models = [:]
@@ -77,6 +69,15 @@ final class PriceHistoryDataSource: ChartViewDataSource {
       self.chartCache.setChartData(self.models)
     }
   }
+
+  // MARK: Private
+
+  private let symbol: String
+  private let currentQuoteNetworkClient = StockQuoteNetworkClient()
+  private let priceNetworkClient = PriceHistoryNetworkClient()
+  private var models: ChartModelType = [:]
+  private var priceHistories: [TimeSection: ChartData] = [:]
+  private let chartCache: ChartCache<ChartModelType>
 
   private func buildChartData(quotes: [StockQuote]) -> ChartData {
     let entries = quotes.compactMap { quote -> ChartDataEntry? in

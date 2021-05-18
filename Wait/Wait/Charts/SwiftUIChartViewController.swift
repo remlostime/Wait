@@ -4,6 +4,8 @@ import Foundation
 import SwiftUI
 import UIKit
 
+// MARK: - SwiftUIChartViewController
+
 struct SwiftUIChartViewController: UIViewControllerRepresentable {
   func makeCoordinator() -> ChartCoordinator {
     ChartCoordinator(self)
@@ -14,19 +16,25 @@ struct SwiftUIChartViewController: UIViewControllerRepresentable {
       symbol: "FB",
       dataSource: PriceHistoryDataSource(symbol: "FB"),
       showPercent: true,
-      selectedTimeSection: .day)
+      selectedTimeSection: .day
+    )
 
     return chartViewController
   }
 
-  func updateUIViewController(_ viewController: ChartViewController, context: Context) {
-  }
+  func updateUIViewController(_ viewController: ChartViewController, context: Context) {}
 }
 
+// MARK: - ChartCoordinator
+
 class ChartCoordinator: NSObject {
-  let viewController: SwiftUIChartViewController
+  // MARK: Lifecycle
 
   init(_ viewController: SwiftUIChartViewController) {
     self.viewController = viewController
   }
+
+  // MARK: Internal
+
+  let viewController: SwiftUIChartViewController
 }

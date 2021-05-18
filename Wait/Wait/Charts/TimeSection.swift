@@ -9,6 +9,7 @@ public enum TimeSection: Int, CaseIterable, Codable {
   case all
 
   // MARK: Internal
+
   var timeSectionDescription: String {
     switch self {
       case .day:

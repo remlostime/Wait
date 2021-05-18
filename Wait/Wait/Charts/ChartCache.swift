@@ -45,4 +45,3 @@ class ChartCache<ChartData: Codable> {
   private let storage: Storage<String, ChartData>?
   private let symbol: String
 }
-
