@@ -26,7 +26,6 @@
 		E2A07D982651C0A20075E271 /* URLDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A07D972651C0A20075E271 /* URLDomain.swift */; };
 		E2A07D9B26520BDD0075E271 /* Hue in Frameworks */ = {isa = PBXBuildFile; productRef = E2A07D9A26520BDD0075E271 /* Hue */; };
 		E2A07D9E26520BF20075E271 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A07D9D26520BF20075E271 /* Colors.swift */; };
-		E2ABEDE426531DC70001F0F9 /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = E2ABEDE326531DC70001F0F9 /* Algorithms */; };
 		E2ABEDE926531E9D0001F0F9 /* ChartsDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = E2ABEDE826531E9D0001F0F9 /* ChartsDynamic */; };
 		E2ABEDEA26531E9D0001F0F9 /* ChartsDynamic in Embed Frameworks */ = {isa = PBXBuildFile; productRef = E2ABEDE826531E9D0001F0F9 /* ChartsDynamic */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		E2ABEDED26531F0A0001F0F9 /* SwiftUIChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEDEC26531F0A0001F0F9 /* SwiftUIChartViewController.swift */; };
@@ -103,7 +102,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E2ABEDE426531DC70001F0F9 /* Algorithms in Frameworks */,
 				E2901FAA264D77EF003A2C01 /* Trace in Frameworks */,
 				E2ABEDF5265322FA0001F0F9 /* SnapKit in Frameworks */,
 				E2ABEDE926531E9D0001F0F9 /* ChartsDynamic in Frameworks */,
@@ -265,7 +263,6 @@
 				E2BDFCA626518CB90075E619 /* Money */,
 				E2A07D9A26520BDD0075E271 /* Hue */,
 				E23B93E32652D52800E039D9 /* SwifterSwift */,
-				E2ABEDE326531DC70001F0F9 /* Algorithms */,
 				E2ABEDE826531E9D0001F0F9 /* ChartsDynamic */,
 				E2ABEDEF265322670001F0F9 /* HMSegmentedControl */,
 				E2ABEDF4265322FA0001F0F9 /* SnapKit */,
@@ -307,7 +304,6 @@
 				E2BDFCA526518CB90075E619 /* XCRemoteSwiftPackageReference "Money" */,
 				E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */,
 				E23B93E22652D52800E039D9 /* XCRemoteSwiftPackageReference "SwifterSwift" */,
-				E2ABEDE226531DC70001F0F9 /* XCRemoteSwiftPackageReference "swift-algorithms" */,
 				E2ABEDE726531E9D0001F0F9 /* XCRemoteSwiftPackageReference "Charts" */,
 				E2ABEDEE265322670001F0F9 /* XCRemoteSwiftPackageReference "HMSegmentedControl" */,
 				E2ABEDF3265322FA0001F0F9 /* XCRemoteSwiftPackageReference "SnapKit" */,
@@ -626,14 +622,6 @@
 				minimumVersion = 5.0.1;
 			};
 		};
-		E2ABEDE226531DC70001F0F9 /* XCRemoteSwiftPackageReference "swift-algorithms" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-algorithms";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.2.0;
-			};
-		};
 		E2ABEDE726531E9D0001F0F9 /* XCRemoteSwiftPackageReference "Charts" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/danielgindi/Charts";
@@ -711,11 +699,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */;
 			productName = Hue;
-		};
-		E2ABEDE326531DC70001F0F9 /* Algorithms */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2ABEDE226531DC70001F0F9 /* XCRemoteSwiftPackageReference "swift-algorithms" */;
-			productName = Algorithms;
 		};
 		E2ABEDE826531E9D0001F0F9 /* ChartsDynamic */ = {
 			isa = XCSwiftPackageProductDependency;
