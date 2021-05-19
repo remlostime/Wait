@@ -2,14 +2,16 @@
 
 import Foundation
 
+// MARK: - TimeSection
+
 public enum TimeSection: Int, CaseIterable, Codable {
   case day
   case week
   case month
   case all
+}
 
-  // MARK: Internal
-
+extension TimeSection {
   var timeSectionDescription: String {
     switch self {
       case .day:
@@ -34,5 +36,44 @@ public enum TimeSection: Int, CaseIterable, Codable {
       case .all:
         return "All"
     }
+  }
+
+  var priceHistoryAPIParams: [String: String] {
+    switch self {
+      case .day:
+        return ["function": "TIME_SERIES_INTRADAY", "interval": "5min"]
+      case .week:
+        return ["function": "TIME_SERIES_DAILY"]
+      case .month:
+        return ["function": "TIME_SERIES_DAILY"]
+      case .all:
+        return ["function": "TIME_SERIES_WEEKLY"]
+    }
+  }
+
+  var priceHistoryResourceKey: String {
+    switch self {
+      case .day:
+        return "Time Series (5min)"
+      case .week:
+        return "Time Series (Daily)"
+      case .month:
+        return "Time Series (Daily)"
+      case .all:
+        return "Weekly Time Series"
+    }
+  }
+
+  var dateFormatter: DateFormatter {
+    let dateFormatter = DateFormatter()
+
+    switch self {
+      case .day:
+        dateFormatter.dateFormat = "yyyy-mm-dd hh:mm:ss"
+      case .week, .month, .all:
+        dateFormatter.dateFormat = "yyyy-mm-dd"
+    }
+
+    return dateFormatter
   }
 }

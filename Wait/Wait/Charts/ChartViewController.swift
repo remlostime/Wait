@@ -74,7 +74,6 @@ public class ChartViewController: UIViewController {
     timeRangeSegmentedControl.backgroundColor = .clear
     timeRangeSegmentedControl.selectionIndicatorHeight = 2.0
     timeRangeSegmentedControl.titleTextAttributes = [
-      NSAttributedString.Key.foregroundColor: UIColor.white,
       NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12, weight: .semibold),
     ]
     timeRangeSegmentedControl.selectionIndicatorColor = .avocado
@@ -223,10 +222,9 @@ public class ChartViewController: UIViewController {
 
   private func fetchData() {
     dataSource.fetchData(for: [.day, .week, .month, .all])
-//    dataSource.fetchCurrentQuotes()
   }
 
-  private func updateChart(data: [TimeSection: ChartData], isFromTapping: Bool = false) {
+  private func updateChart(data: [TimeSection: ChartData]) {
     guard let timeSection = timeSection else {
       logger.error("Failed to convert timeRangeSegmentedControl.selectedSegmentIndex to timeSection")
       return
@@ -250,9 +248,7 @@ public class ChartViewController: UIViewController {
       return
     }
 
-    if isFromTapping {
-      updateDisplayPriceInfo(currentPrice: lastPrice, comparedPrice: openPrice)
-    }
+    updateDisplayPriceInfo(currentPrice: lastPrice, comparedPrice: openPrice)
 
     if lastPrice >= openPrice {
       chartHighlightMarker.circleColor = UIColor.green
@@ -291,7 +287,7 @@ public class ChartViewController: UIViewController {
   private func timeRangeSegmentedControl(control: HMSegmentedControl) {
     let section = TimeSection(rawValue: Int(control.selectedSegmentIndex))
     dateLabel.text = section?.dateLabelDescription
-    updateChart(data: dataSource.chartData, isFromTapping: true)
+    updateChart(data: dataSource.chartData)
   }
 }
 
@@ -348,9 +344,6 @@ extension ChartViewController: ChartViewDataSourceDelegate {
   }
 
   public func dataDidUpdate(_ data: [TimeSection: ChartData]) {
-    guard !isMovingTheChart else {
-      return
-    }
     DispatchQueue.main.async {
 //      self.hideActivityIndicator()
       self.pricePercentageStackView.isHidden = false
