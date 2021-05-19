@@ -96,7 +96,7 @@ struct ContentView: View {
           guard
             let json = try? JSON(data: data),
             let rawData = try? json["Global Quote"].rawData(),
-            let stockQuote = try? decoder.decode(StockQuote.self, from: rawData)
+            let stockQuote = try? decoder.decode(StockCurrentQuote.self, from: rawData)
           else {
             logger.error("Failed to decode stock quote")
             return

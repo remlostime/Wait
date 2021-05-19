@@ -12,9 +12,11 @@ struct SwiftUIChartViewController: UIViewControllerRepresentable {
   }
 
   func makeUIViewController(context: Context) -> ChartViewController {
+    let dataSource = PriceHistoryDataSource(symbol: "FB")
+
     let chartViewController = ChartViewController(
       symbol: "FB",
-      dataSource: PriceHistoryDataSource(symbol: "FB"),
+      dataSource: dataSource,
       showPercent: true,
       selectedTimeSection: .day
     )

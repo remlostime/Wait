@@ -21,7 +21,7 @@ final class PriceHistoryDataSource: ChartViewDataSource {
 
   typealias ChartModelType = [TimeSection: [StockQuote]]
 
-  var chartData: [TimeSection: ChartData]
+  private(set) var chartData: [TimeSection: ChartData]
   weak var delegate: ChartViewDataSourceDelegate?
 
   var currentPrice: Money<USD> {
@@ -29,7 +29,7 @@ final class PriceHistoryDataSource: ChartViewDataSource {
       return 0.0
     }
 
-    return quote.price
+    return quote.close
   }
 
   func setDelegate(delegate: ChartViewDataSourceDelegate) {
@@ -55,10 +55,10 @@ final class PriceHistoryDataSource: ChartViewDataSource {
     for timeSection in timeSections {
       group.enter()
 
-//      priceNetworkClient.fetchHistory(symbol: symbol, timeSection: timeSection) { [weak self] models in
-//        self?.models[timeSection] = models
-//        group.leave()
-//      }
+      priceNetworkClient.fetchHistory(symbol: symbol, timeSection: timeSection) { [weak self] models in
+        self?.models[timeSection] = models
+        group.leave()
+      }
     }
 
     group.notify(queue: .main) { [weak self] in
@@ -81,7 +81,7 @@ final class PriceHistoryDataSource: ChartViewDataSource {
 
   private func buildChartData(quotes: [StockQuote]) -> ChartData {
     let entries = quotes.compactMap { quote -> ChartDataEntry? in
-      if let y = quote.price.amountDoubleValue {
+      if let y = quote.close.amountDoubleValue {
         return ChartDataEntry(x: quote.date.timeIntervalSince1970, y: y)
       } else {
         return nil
@@ -101,8 +101,8 @@ final class PriceHistoryDataSource: ChartViewDataSource {
 
     let chartColor: UIColor
     if
-      let firstPrice = quotes.first?.price,
-      let lastPrice = quotes.last?.price
+      let firstPrice = quotes.first?.close,
+      let lastPrice = quotes.last?.close
     {
       chartColor = lastPrice >= firstPrice ? .green : .red
     } else {
@@ -122,6 +122,7 @@ final class PriceHistoryDataSource: ChartViewDataSource {
       priceHistories[timeSection] = buildChartData(quotes: quotes)
     }
 
+    chartData = priceHistories
     delegate?.dataDidUpdate(priceHistories)
   }
 }
