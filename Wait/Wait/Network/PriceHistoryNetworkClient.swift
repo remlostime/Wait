@@ -1,15 +1,17 @@
 // Created by kai_chen on 5/17/21.
 
-import Foundation
 import Alamofire
+import Foundation
 import SwiftyJSON
 
 class PriceHistoryNetworkClient {
+  // MARK: Internal
+
   func fetchHistory(
     symbol: String,
     timeSection: TimeSection,
-    completion: @escaping (([StockQuote]) -> Void))
-  {
+    completion: @escaping (([StockQuote]) -> Void)
+  ) {
     guard let url = makeHistoryURL(symbol: symbol, timeSection: timeSection) else {
       logger.error("Error to fetch price history")
       return
@@ -17,15 +19,15 @@ class PriceHistoryNetworkClient {
 
     AF.request(url).validate().responseData { response in
       switch response.result {
-        case .success(let data):
+        case let .success(data):
           let decoder = JSONDecoder()
           decoder.dateDecodingStrategy = .formatted(timeSection.dateFormatter)
 
           guard
             let json = try? JSON(data: data),
             let rawData = try? json[timeSection.priceHistoryResourceKey].rawData(),
-            let stockQuotesDict = try? decoder.decode([String: StockQuote].self, from: rawData) else
-          {
+            let stockQuotesDict = try? decoder.decode([String: StockQuote].self, from: rawData)
+          else {
             logger.error("Failed to decode price history")
             completion([])
             return
@@ -42,7 +44,8 @@ class PriceHistoryNetworkClient {
               high: quote.high,
               low: quote.low,
               close: quote.close,
-              date: date)
+              date: date
+            )
 
             stockQuotes.append(stockQuote)
           }
@@ -50,12 +53,14 @@ class PriceHistoryNetworkClient {
           stockQuotes.sort(by: \.date)
 
           completion(stockQuotes)
-        case .failure(let error):
+        case let .failure(error):
           logger.error("Failed to decode price history: \(error.localizedDescription)")
           completion([])
       }
     }
   }
+
+  // MARK: Private
 
   private func makeHistoryURL(symbol: String, timeSection: TimeSection) -> URL? {
     var priceHistoryAPIParams = timeSection.priceHistoryAPIParams

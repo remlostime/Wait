@@ -2,6 +2,8 @@
 
 import Foundation
 
+// MARK: - TimeSection
+
 public enum TimeSection: Int, CaseIterable, Codable {
   case day
   case week
