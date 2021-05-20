@@ -65,7 +65,7 @@ class PriceHistoryNetworkClient {
   private func makeHistoryURL(symbol: String, timeSection: TimeSection) -> URL? {
     var priceHistoryAPIParams = [
       "symbol": symbol,
-      "outputsize": "full"
+      "outputsize": "full",
     ]
 
     priceHistoryAPIParams.merge(timeSection.priceHistoryAPIParams) { current, _ in
