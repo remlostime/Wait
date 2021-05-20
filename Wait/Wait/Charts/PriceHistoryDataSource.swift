@@ -41,14 +41,14 @@ final class PriceHistoryDataSource: ChartViewDataSource {
   func fetchData(for timeSections: [TimeSection]) {
     models = [:]
 
-    chartCache.getChartData { [weak self] chartCacheData in
-      guard let self = self, let chartCacheData = chartCacheData else {
-        return
-      }
-
-      self.models = chartCacheData
-      self.updateChartData()
-    }
+//    chartCache.getChartData { [weak self] chartCacheData in
+//      guard let self = self, let chartCacheData = chartCacheData else {
+//        return
+//      }
+//
+//      self.models = chartCacheData
+//      self.updateChartData()
+//    }
 
     let group = DispatchGroup()
 
