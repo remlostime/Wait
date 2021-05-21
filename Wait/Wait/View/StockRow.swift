@@ -27,7 +27,7 @@ struct StockRow: View {
           .font(.title3)
         Text(stock.changePercent)
           .font(.subheadline)
-          .foregroundColor(isNegativeNumber(stock.changePercent) ? .red : .green)
+          .foregroundColor(isNegativeNumber(stock.changePercent) ? .stockRed : .stockGreen)
       }
     }
     .padding()

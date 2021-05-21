@@ -104,9 +104,9 @@ final class PriceHistoryDataSource: ChartViewDataSource {
       let firstPrice = quotes.first?.close,
       let lastPrice = quotes.last?.close
     {
-      chartColor = lastPrice >= firstPrice ? .green : .red
+      chartColor = lastPrice >= firstPrice ? .stockGreen : .stockRed
     } else {
-      chartColor = .green
+      chartColor = .stockGreen
     }
 
     chartDataSet.setColor(chartColor)

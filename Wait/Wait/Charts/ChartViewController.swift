@@ -251,9 +251,9 @@ public class ChartViewController: UIViewController {
     updateDisplayPriceInfo(currentPrice: lastPrice, comparedPrice: openPrice)
 
     if lastPrice >= openPrice {
-      chartHighlightMarker.circleColor = UIColor.green
+      chartHighlightMarker.circleColor = .stockGreen
     } else {
-      chartHighlightMarker.circleColor = UIColor.red
+      chartHighlightMarker.circleColor = .stockRed
     }
   }
 
@@ -272,7 +272,7 @@ public class ChartViewController: UIViewController {
 
     let priceDifference = currentPrice - comparedPrice
     let isPositive = priceDifference >= 0
-    let newColor: UIColor = isPositive ? .green : .red
+    let newColor: UIColor = isPositive ? .stockGreen : .stockRed
     priceChangeLabel.textColor = newColor
     priceChangeLabel.text = (isPositive ? "+" : "") + Money<USD>(floatLiteral: priceDifference).formattedCurrency
 

@@ -2,13 +2,14 @@
 // Copyright © 2021 Airbnb Inc. All rights reserved.
 
 import Foundation
-import Hue
 import SwiftUI
 
 extension Color {
+  static let blackberry = Color(.blackberry)
+  static let kiwi = Color(.kiwi)
+  static let orange = Color(.orange)
   static let avocado = Color(.avocado)
-}
-
-extension UIColor {
-  static let avocado = UIColor(hex: "#23b8bb")
+  static let banana = Color(.banana)
+  static let olive = Color(.olive)
+  static let cherry = Color(.cherry)
 }

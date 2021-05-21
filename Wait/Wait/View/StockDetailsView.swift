@@ -48,7 +48,7 @@ struct StockDetailsView: View {
   }
 
   var actionColor: Color {
-    stock.currentPrice > stock.expectedPrice ? .red : .green
+    stock.currentPrice > stock.expectedPrice ? .stockRed : .stockGreen
   }
 
   var comparedToCurrentPriceRate: String {
@@ -67,7 +67,7 @@ struct StockDetailsView: View {
   }
 
   var comparedToCurrentPriceRateColor: Color {
-    stock.currentPrice > stock.expectedPrice ? .red : .green
+    stock.currentPrice > stock.expectedPrice ? .stockRed : .stockGreen
   }
 }
 
