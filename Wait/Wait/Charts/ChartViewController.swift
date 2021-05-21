@@ -106,6 +106,7 @@ public class ChartViewController: UIViewController {
 
   private lazy var chart: LineChartView = {
     let chart = LineChartView()
+    chart.isUserInteractionEnabled = true
     chart.setScaleEnabled(false)
     chart.xAxis.avoidFirstLastClippingEnabled = true
     chart.minOffset = 0

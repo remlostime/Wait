@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E2039B4B265750B3004B3BEF /* Charts in Frameworks */ = {isa = PBXBuildFile; productRef = E2039B4A265750B3004B3BEF /* Charts */; };
 		E2123A602647115400A29222 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E2123A5F2647115400A29222 /* Alamofire */; };
 		E2123A62264713CC00A29222 /* StockCurrentQuote.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2123A61264713CC00A29222 /* StockCurrentQuote.swift */; };
 		E2123A652647158800A29222 /* SwiftyBeaver in Frameworks */ = {isa = PBXBuildFile; productRef = E2123A642647158800A29222 /* SwiftyBeaver */; };
@@ -27,8 +28,6 @@
 		E2A07D982651C0A20075E271 /* URLDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A07D972651C0A20075E271 /* URLDomain.swift */; };
 		E2A07D9B26520BDD0075E271 /* Hue in Frameworks */ = {isa = PBXBuildFile; productRef = E2A07D9A26520BDD0075E271 /* Hue */; };
 		E2A07D9E26520BF20075E271 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A07D9D26520BF20075E271 /* Colors.swift */; };
-		E2ABEDE926531E9D0001F0F9 /* ChartsDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = E2ABEDE826531E9D0001F0F9 /* ChartsDynamic */; };
-		E2ABEDEA26531E9D0001F0F9 /* ChartsDynamic in Embed Frameworks */ = {isa = PBXBuildFile; productRef = E2ABEDE826531E9D0001F0F9 /* ChartsDynamic */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		E2ABEDED26531F0A0001F0F9 /* SwiftUIChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEDEC26531F0A0001F0F9 /* SwiftUIChartViewController.swift */; };
 		E2ABEDF0265322670001F0F9 /* HMSegmentedControl in Frameworks */ = {isa = PBXBuildFile; productRef = E2ABEDEF265322670001F0F9 /* HMSegmentedControl */; };
 		E2ABEDF2265322AE0001F0F9 /* ChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEDF1265322AE0001F0F9 /* ChartViewController.swift */; };
@@ -60,7 +59,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				E2ABEDEA26531E9D0001F0F9 /* ChartsDynamic in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -110,12 +108,12 @@
 			files = (
 				E2901FAA264D77EF003A2C01 /* Trace in Frameworks */,
 				E2ABEDF5265322FA0001F0F9 /* SnapKit in Frameworks */,
-				E2ABEDE926531E9D0001F0F9 /* ChartsDynamic in Frameworks */,
 				E2C859B426438EE500F93321 /* Cache in Frameworks */,
 				E2123A602647115400A29222 /* Alamofire in Frameworks */,
 				E23B93E42652D52800E039D9 /* SwifterSwift in Frameworks */,
 				E2BDFCA726518CB90075E619 /* Money in Frameworks */,
 				E2123A682647198000A29222 /* SwiftyJSON in Frameworks */,
+				E2039B4B265750B3004B3BEF /* Charts in Frameworks */,
 				E2ABEDF0265322670001F0F9 /* HMSegmentedControl in Frameworks */,
 				E2A07D9B26520BDD0075E271 /* Hue in Frameworks */,
 				E2123A652647158800A29222 /* SwiftyBeaver in Frameworks */,
@@ -272,9 +270,9 @@
 				E2BDFCA626518CB90075E619 /* Money */,
 				E2A07D9A26520BDD0075E271 /* Hue */,
 				E23B93E32652D52800E039D9 /* SwifterSwift */,
-				E2ABEDE826531E9D0001F0F9 /* ChartsDynamic */,
 				E2ABEDEF265322670001F0F9 /* HMSegmentedControl */,
 				E2ABEDF4265322FA0001F0F9 /* SnapKit */,
+				E2039B4A265750B3004B3BEF /* Charts */,
 			);
 			productName = Wait;
 			productReference = E2E637A92641A5FB00F872A4 /* Wait.app */;
@@ -313,9 +311,9 @@
 				E2BDFCA526518CB90075E619 /* XCRemoteSwiftPackageReference "Money" */,
 				E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */,
 				E23B93E22652D52800E039D9 /* XCRemoteSwiftPackageReference "SwifterSwift" */,
-				E2ABEDE726531E9D0001F0F9 /* XCRemoteSwiftPackageReference "Charts" */,
 				E2ABEDEE265322670001F0F9 /* XCRemoteSwiftPackageReference "HMSegmentedControl" */,
 				E2ABEDF3265322FA0001F0F9 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				E2039B49265750B3004B3BEF /* XCRemoteSwiftPackageReference "Charts" */,
 			);
 			productRefGroup = E2E637AA2641A5FB00F872A4 /* Products */;
 			projectDirPath = "";
@@ -578,6 +576,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		E2039B49265750B3004B3BEF /* XCRemoteSwiftPackageReference "Charts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/danielgindi/Charts";
+			requirement = {
+				kind = exactVersion;
+				version = 3.4.0;
+			};
+		};
 		E2123A5E2647115400A29222 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire";
@@ -634,14 +640,6 @@
 				minimumVersion = 5.0.1;
 			};
 		};
-		E2ABEDE726531E9D0001F0F9 /* XCRemoteSwiftPackageReference "Charts" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/danielgindi/Charts";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.0.1;
-			};
-		};
 		E2ABEDEE265322670001F0F9 /* XCRemoteSwiftPackageReference "HMSegmentedControl" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/HeshamMegid/HMSegmentedControl";
@@ -677,6 +675,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		E2039B4A265750B3004B3BEF /* Charts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E2039B49265750B3004B3BEF /* XCRemoteSwiftPackageReference "Charts" */;
+			productName = Charts;
+		};
 		E2123A5F2647115400A29222 /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E2123A5E2647115400A29222 /* XCRemoteSwiftPackageReference "Alamofire" */;
@@ -711,11 +714,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */;
 			productName = Hue;
-		};
-		E2ABEDE826531E9D0001F0F9 /* ChartsDynamic */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2ABEDE726531E9D0001F0F9 /* XCRemoteSwiftPackageReference "Charts" */;
-			productName = ChartsDynamic;
 		};
 		E2ABEDEF265322670001F0F9 /* HMSegmentedControl */ = {
 			isa = XCSwiftPackageProductDependency;
