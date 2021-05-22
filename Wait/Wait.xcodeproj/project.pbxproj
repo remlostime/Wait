@@ -20,6 +20,7 @@
 		E275EE0126483EBF00752D8A /* SearchStock.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EE0026483EBF00752D8A /* SearchStock.swift */; };
 		E275EE0326483FE300752D8A /* SearchStockRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EE0226483FE300752D8A /* SearchStockRow.swift */; };
 		E27C62E42653612000DD063C /* ChartHighlightMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E27C62E32653612000DD063C /* ChartHighlightMarker.swift */; };
+		E284F9202659A2DD002CB3BF /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = E284F91F2659A2DD002CB3BF /* Introspect */; };
 		E28E475E265584C800C1D60E /* StockQuote.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28E475D265584C800C1D60E /* StockQuote.swift */; };
 		E2901FA5264CAC8B003A2C01 /* Shake in Frameworks */ = {isa = PBXBuildFile; productRef = E2901FA4264CAC8B003A2C01 /* Shake */; };
 		E2901FA7264CD22E003A2C01 /* bitrise_configuration.plist in Resources */ = {isa = PBXBuildFile; fileRef = E2901FA6264CD22E003A2C01 /* bitrise_configuration.plist */; };
@@ -107,6 +108,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E2901FAA264D77EF003A2C01 /* Trace in Frameworks */,
+				E284F9202659A2DD002CB3BF /* Introspect in Frameworks */,
 				E2ABEDF5265322FA0001F0F9 /* SnapKit in Frameworks */,
 				E2C859B426438EE500F93321 /* Cache in Frameworks */,
 				E2123A602647115400A29222 /* Alamofire in Frameworks */,
@@ -273,6 +275,7 @@
 				E2ABEDEF265322670001F0F9 /* HMSegmentedControl */,
 				E2ABEDF4265322FA0001F0F9 /* SnapKit */,
 				E2039B4A265750B3004B3BEF /* Charts */,
+				E284F91F2659A2DD002CB3BF /* Introspect */,
 			);
 			productName = Wait;
 			productReference = E2E637A92641A5FB00F872A4 /* Wait.app */;
@@ -314,6 +317,7 @@
 				E2ABEDEE265322670001F0F9 /* XCRemoteSwiftPackageReference "HMSegmentedControl" */,
 				E2ABEDF3265322FA0001F0F9 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				E2039B49265750B3004B3BEF /* XCRemoteSwiftPackageReference "Charts" */,
+				E284F91E2659A2DD002CB3BF /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
 			);
 			productRefGroup = E2E637AA2641A5FB00F872A4 /* Products */;
 			projectDirPath = "";
@@ -616,6 +620,14 @@
 				minimumVersion = 5.2.0;
 			};
 		};
+		E284F91E2659A2DD002CB3BF /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/siteline/SwiftUI-Introspect";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.3;
+			};
+		};
 		E2901FA3264CAC8B003A2C01 /* XCRemoteSwiftPackageReference "shake-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/shakebugs/shake-ios";
@@ -699,6 +711,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E23B93E22652D52800E039D9 /* XCRemoteSwiftPackageReference "SwifterSwift" */;
 			productName = SwifterSwift;
+		};
+		E284F91F2659A2DD002CB3BF /* Introspect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E284F91E2659A2DD002CB3BF /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
+			productName = Introspect;
 		};
 		E2901FA4264CAC8B003A2C01 /* Shake */ = {
 			isa = XCSwiftPackageProductDependency;
