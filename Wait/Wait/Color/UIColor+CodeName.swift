@@ -13,6 +13,6 @@ extension UIColor {
   static let banana = UIColor(hex: "#F6C624")
 
   // Stock Them
-  static let olive = UIColor(hex: "#47B347")
-  static let cherry = UIColor(hex: "#E01E37")
+  static let olive = UIColor(hex: "#00BF83")
+  static let cherry = UIColor(hex: "#DE3745")
 }
