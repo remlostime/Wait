@@ -3,7 +3,7 @@
 import Foundation
 import Money
 
-struct Stock: Codable {
+struct Stock: Codable, Equatable {
   let symbol: String
   let name: String
   let currentPrice: Money<USD>

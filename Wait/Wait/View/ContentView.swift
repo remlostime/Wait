@@ -40,11 +40,17 @@ struct ContentView: View {
       })
       .sheet(isPresented: $showingWaitStockView, content: {
         NavigationView {
-          SearchStockView(isPresented: $showingWaitStockView, stock: $newStock.onChange(stockChanged))
+          SearchStockView(isPresented: $showingWaitStockView, stock: $newStock)
         }
         .accentColor(.avocado)
       })
     }
+    .onChange(of: newStock, perform: { value in
+      fetchStockDetails(stock: value) { stock in
+        stocks.append(stock)
+        saveStocks()
+      }
+    })
   }
 
   func stockChanged(to value: Stock) {
