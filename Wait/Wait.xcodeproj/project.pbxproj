@@ -21,8 +21,6 @@
 		E275EE0326483FE300752D8A /* SearchStockRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EE0226483FE300752D8A /* SearchStockRow.swift */; };
 		E27C62E42653612000DD063C /* ChartHighlightMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E27C62E32653612000DD063C /* ChartHighlightMarker.swift */; };
 		E27C72C626603A8100AB008A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E27C72C526603A7B00AB008A /* GoogleService-Info.plist */; };
-		E27C72C926603FC100AB008A /* FirebaseAnalyticsSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = E27C72C826603FC100AB008A /* FirebaseAnalyticsSwift-Beta */; };
-		E27C72CB26603FC100AB008A /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = E27C72CA26603FC100AB008A /* FirebaseCrashlytics */; };
 		E284F9202659A2DD002CB3BF /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = E284F91F2659A2DD002CB3BF /* Introspect */; };
 		E28E475E265584C800C1D60E /* StockQuote.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28E475D265584C800C1D60E /* StockQuote.swift */; };
 		E2901FA5264CAC8B003A2C01 /* Shake in Frameworks */ = {isa = PBXBuildFile; productRef = E2901FA4264CAC8B003A2C01 /* Shake */; };
@@ -32,6 +30,8 @@
 		E2A07D982651C0A20075E271 /* URLDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A07D972651C0A20075E271 /* URLDomain.swift */; };
 		E2A07D9B26520BDD0075E271 /* Hue in Frameworks */ = {isa = PBXBuildFile; productRef = E2A07D9A26520BDD0075E271 /* Hue */; };
 		E2A07D9E26520BF20075E271 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A07D9D26520BF20075E271 /* Colors.swift */; };
+		E2A16F9526618B2100CCA8F4 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = E2A16F9426618B2100CCA8F4 /* FirebaseAnalytics */; };
+		E2A16F9726618B2100CCA8F4 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = E2A16F9626618B2100CCA8F4 /* FirebaseCrashlytics */; };
 		E2ABEDED26531F0A0001F0F9 /* SwiftUIChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEDEC26531F0A0001F0F9 /* SwiftUIChartViewController.swift */; };
 		E2ABEDF0265322670001F0F9 /* HMSegmentedControl in Frameworks */ = {isa = PBXBuildFile; productRef = E2ABEDEF265322670001F0F9 /* HMSegmentedControl */; };
 		E2ABEDF2265322AE0001F0F9 /* ChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEDF1265322AE0001F0F9 /* ChartViewController.swift */; };
@@ -111,11 +111,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E2A16F9526618B2100CCA8F4 /* FirebaseAnalytics in Frameworks */,
 				E2901FAA264D77EF003A2C01 /* Trace in Frameworks */,
 				E284F9202659A2DD002CB3BF /* Introspect in Frameworks */,
 				E2ABEDF5265322FA0001F0F9 /* SnapKit in Frameworks */,
 				E2C859B426438EE500F93321 /* Cache in Frameworks */,
-				E27C72C926603FC100AB008A /* FirebaseAnalyticsSwift-Beta in Frameworks */,
 				E2123A602647115400A29222 /* Alamofire in Frameworks */,
 				E23B93E42652D52800E039D9 /* SwifterSwift in Frameworks */,
 				E2BDFCA726518CB90075E619 /* Money in Frameworks */,
@@ -123,7 +123,7 @@
 				E2039B4B265750B3004B3BEF /* Charts in Frameworks */,
 				E2ABEDF0265322670001F0F9 /* HMSegmentedControl in Frameworks */,
 				E2A07D9B26520BDD0075E271 /* Hue in Frameworks */,
-				E27C72CB26603FC100AB008A /* FirebaseCrashlytics in Frameworks */,
+				E2A16F9726618B2100CCA8F4 /* FirebaseCrashlytics in Frameworks */,
 				E2123A652647158800A29222 /* SwiftyBeaver in Frameworks */,
 				E2901FA5264CAC8B003A2C01 /* Shake in Frameworks */,
 			);
@@ -283,8 +283,8 @@
 				E2ABEDF4265322FA0001F0F9 /* SnapKit */,
 				E2039B4A265750B3004B3BEF /* Charts */,
 				E284F91F2659A2DD002CB3BF /* Introspect */,
-				E27C72C826603FC100AB008A /* FirebaseAnalyticsSwift-Beta */,
-				E27C72CA26603FC100AB008A /* FirebaseCrashlytics */,
+				E2A16F9426618B2100CCA8F4 /* FirebaseAnalytics */,
+				E2A16F9626618B2100CCA8F4 /* FirebaseCrashlytics */,
 			);
 			productName = Wait;
 			productReference = E2E637A92641A5FB00F872A4 /* Wait.app */;
@@ -327,7 +327,7 @@
 				E2ABEDF3265322FA0001F0F9 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				E2039B49265750B3004B3BEF /* XCRemoteSwiftPackageReference "Charts" */,
 				E284F91E2659A2DD002CB3BF /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
-				E27C72C726603FC100AB008A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				E2A16F9326618B2100CCA8F4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = E2E637AA2641A5FB00F872A4 /* Products */;
 			projectDirPath = "";
@@ -631,14 +631,6 @@
 				minimumVersion = 5.2.0;
 			};
 		};
-		E27C72C726603FC100AB008A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 8.0.0;
-			};
-		};
 		E284F91E2659A2DD002CB3BF /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/siteline/SwiftUI-Introspect";
@@ -669,6 +661,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 5.0.1;
+			};
+		};
+		E2A16F9326618B2100CCA8F4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
 			};
 		};
 		E2ABEDEE265322670001F0F9 /* XCRemoteSwiftPackageReference "HMSegmentedControl" */ = {
@@ -731,16 +731,6 @@
 			package = E23B93E22652D52800E039D9 /* XCRemoteSwiftPackageReference "SwifterSwift" */;
 			productName = SwifterSwift;
 		};
-		E27C72C826603FC100AB008A /* FirebaseAnalyticsSwift-Beta */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E27C72C726603FC100AB008A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = "FirebaseAnalyticsSwift-Beta";
-		};
-		E27C72CA26603FC100AB008A /* FirebaseCrashlytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E27C72C726603FC100AB008A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseCrashlytics;
-		};
 		E284F91F2659A2DD002CB3BF /* Introspect */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E284F91E2659A2DD002CB3BF /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
@@ -760,6 +750,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */;
 			productName = Hue;
+		};
+		E2A16F9426618B2100CCA8F4 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E2A16F9326618B2100CCA8F4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		E2A16F9626618B2100CCA8F4 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E2A16F9326618B2100CCA8F4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 		E2ABEDEF265322670001F0F9 /* HMSegmentedControl */ = {
 			isa = XCSwiftPackageProductDependency;
