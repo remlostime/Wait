@@ -1,6 +1,5 @@
 // Created by kai_chen on 5/4/21.
 
-import Firebase
 import Shake
 import SwiftUI
 import SwiftyBeaver
@@ -35,7 +34,7 @@ struct WaitApp: App {
   private let trace = Trace.shared
 
   private func setupFirebase() {
-    FirebaseApp.configure()
+//    FirebaseApp.configure()
   }
 
   private func setupShake() {
