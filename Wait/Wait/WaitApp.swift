@@ -16,6 +16,7 @@ struct WaitApp: App {
   init() {
     setupShake()
     setupLogger()
+    setupFirebase()
   }
 
   // MARK: Internal
@@ -31,6 +32,10 @@ struct WaitApp: App {
   // MARK: Private
 
   private let trace = Trace.shared
+
+  private func setupFirebase() {
+//    FirebaseApp.configure()
+  }
 
   private func setupShake() {
     Shake.start(
