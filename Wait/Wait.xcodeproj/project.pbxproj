@@ -15,6 +15,7 @@
 		E2123A6B26472F9400A29222 /* StockCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2123A6A26472F9400A29222 /* StockCache.swift */; };
 		E23B93E12652D38D00E039D9 /* Money+Format.swift in Sources */ = {isa = PBXBuildFile; fileRef = E23B93E02652D38D00E039D9 /* Money+Format.swift */; };
 		E23B93E42652D52800E039D9 /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E23B93E32652D52800E039D9 /* SwifterSwift */; };
+		E23EFB282662A82D0038022B /* MBProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = E23EFB272662A82D0038022B /* MBProgressHUD */; };
 		E275EDFD264835F000752D8A /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EDFC264835F000752D8A /* SearchBar.swift */; };
 		E275EDFF26483D6600752D8A /* SearchStockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EDFE26483D6600752D8A /* SearchStockView.swift */; };
 		E275EE0126483EBF00752D8A /* SearchStock.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EE0026483EBF00752D8A /* SearchStock.swift */; };
@@ -30,8 +31,6 @@
 		E2A07D982651C0A20075E271 /* URLDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A07D972651C0A20075E271 /* URLDomain.swift */; };
 		E2A07D9B26520BDD0075E271 /* Hue in Frameworks */ = {isa = PBXBuildFile; productRef = E2A07D9A26520BDD0075E271 /* Hue */; };
 		E2A07D9E26520BF20075E271 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A07D9D26520BF20075E271 /* Colors.swift */; };
-		E2A16F9526618B2100CCA8F4 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = E2A16F9426618B2100CCA8F4 /* FirebaseAnalytics */; };
-		E2A16F9726618B2100CCA8F4 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = E2A16F9626618B2100CCA8F4 /* FirebaseCrashlytics */; };
 		E2ABEDED26531F0A0001F0F9 /* SwiftUIChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEDEC26531F0A0001F0F9 /* SwiftUIChartViewController.swift */; };
 		E2ABEDF0265322670001F0F9 /* HMSegmentedControl in Frameworks */ = {isa = PBXBuildFile; productRef = E2ABEDEF265322670001F0F9 /* HMSegmentedControl */; };
 		E2ABEDF2265322AE0001F0F9 /* ChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEDF1265322AE0001F0F9 /* ChartViewController.swift */; };
@@ -111,7 +110,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E2A16F9526618B2100CCA8F4 /* FirebaseAnalytics in Frameworks */,
 				E2901FAA264D77EF003A2C01 /* Trace in Frameworks */,
 				E284F9202659A2DD002CB3BF /* Introspect in Frameworks */,
 				E2ABEDF5265322FA0001F0F9 /* SnapKit in Frameworks */,
@@ -122,8 +120,8 @@
 				E2123A682647198000A29222 /* SwiftyJSON in Frameworks */,
 				E2039B4B265750B3004B3BEF /* Charts in Frameworks */,
 				E2ABEDF0265322670001F0F9 /* HMSegmentedControl in Frameworks */,
+				E23EFB282662A82D0038022B /* MBProgressHUD in Frameworks */,
 				E2A07D9B26520BDD0075E271 /* Hue in Frameworks */,
-				E2A16F9726618B2100CCA8F4 /* FirebaseCrashlytics in Frameworks */,
 				E2123A652647158800A29222 /* SwiftyBeaver in Frameworks */,
 				E2901FA5264CAC8B003A2C01 /* Shake in Frameworks */,
 			);
@@ -283,8 +281,7 @@
 				E2ABEDF4265322FA0001F0F9 /* SnapKit */,
 				E2039B4A265750B3004B3BEF /* Charts */,
 				E284F91F2659A2DD002CB3BF /* Introspect */,
-				E2A16F9426618B2100CCA8F4 /* FirebaseAnalytics */,
-				E2A16F9626618B2100CCA8F4 /* FirebaseCrashlytics */,
+				E23EFB272662A82D0038022B /* MBProgressHUD */,
 			);
 			productName = Wait;
 			productReference = E2E637A92641A5FB00F872A4 /* Wait.app */;
@@ -327,7 +324,7 @@
 				E2ABEDF3265322FA0001F0F9 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				E2039B49265750B3004B3BEF /* XCRemoteSwiftPackageReference "Charts" */,
 				E284F91E2659A2DD002CB3BF /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
-				E2A16F9326618B2100CCA8F4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				E23EFB262662A82D0038022B /* XCRemoteSwiftPackageReference "MBProgressHUD" */,
 			);
 			productRefGroup = E2E637AA2641A5FB00F872A4 /* Products */;
 			projectDirPath = "";
@@ -631,6 +628,14 @@
 				minimumVersion = 5.2.0;
 			};
 		};
+		E23EFB262662A82D0038022B /* XCRemoteSwiftPackageReference "MBProgressHUD" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/jdg/MBProgressHUD";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.0;
+			};
+		};
 		E284F91E2659A2DD002CB3BF /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/siteline/SwiftUI-Introspect";
@@ -661,14 +666,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 5.0.1;
-			};
-		};
-		E2A16F9326618B2100CCA8F4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 8.0.0;
 			};
 		};
 		E2ABEDEE265322670001F0F9 /* XCRemoteSwiftPackageReference "HMSegmentedControl" */ = {
@@ -731,6 +728,11 @@
 			package = E23B93E22652D52800E039D9 /* XCRemoteSwiftPackageReference "SwifterSwift" */;
 			productName = SwifterSwift;
 		};
+		E23EFB272662A82D0038022B /* MBProgressHUD */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E23EFB262662A82D0038022B /* XCRemoteSwiftPackageReference "MBProgressHUD" */;
+			productName = MBProgressHUD;
+		};
 		E284F91F2659A2DD002CB3BF /* Introspect */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E284F91E2659A2DD002CB3BF /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
@@ -750,16 +752,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */;
 			productName = Hue;
-		};
-		E2A16F9426618B2100CCA8F4 /* FirebaseAnalytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2A16F9326618B2100CCA8F4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalytics;
-		};
-		E2A16F9626618B2100CCA8F4 /* FirebaseCrashlytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2A16F9326618B2100CCA8F4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseCrashlytics;
 		};
 		E2ABEDEF265322670001F0F9 /* HMSegmentedControl */ = {
 			isa = XCSwiftPackageProductDependency;
