@@ -16,6 +16,10 @@
 		E23B93E12652D38D00E039D9 /* Money+Format.swift in Sources */ = {isa = PBXBuildFile; fileRef = E23B93E02652D38D00E039D9 /* Money+Format.swift */; };
 		E23B93E42652D52800E039D9 /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E23B93E32652D52800E039D9 /* SwifterSwift */; };
 		E23EFB282662A82D0038022B /* MBProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = E23EFB272662A82D0038022B /* MBProgressHUD */; };
+		E267B86F2667FEBC009979C8 /* NVActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = E267B86E2667FEBC009979C8 /* NVActivityIndicatorView */; };
+		E267B8712667FEBC009979C8 /* NVActivityIndicatorViewExtended in Frameworks */ = {isa = PBXBuildFile; productRef = E267B8702667FEBC009979C8 /* NVActivityIndicatorViewExtended */; };
+		E267B8742667FEE8009979C8 /* FloatingPanel in Frameworks */ = {isa = PBXBuildFile; productRef = E267B8732667FEE8009979C8 /* FloatingPanel */; };
+		E267B8772667FF66009979C8 /* SkeletonView in Frameworks */ = {isa = PBXBuildFile; productRef = E267B8762667FF66009979C8 /* SkeletonView */; };
 		E275EDFD264835F000752D8A /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EDFC264835F000752D8A /* SearchBar.swift */; };
 		E275EDFF26483D6600752D8A /* SearchStockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EDFE26483D6600752D8A /* SearchStockView.swift */; };
 		E275EE0126483EBF00752D8A /* SearchStock.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EE0026483EBF00752D8A /* SearchStock.swift */; };
@@ -119,10 +123,14 @@
 				E2BDFCA726518CB90075E619 /* Money in Frameworks */,
 				E2123A682647198000A29222 /* SwiftyJSON in Frameworks */,
 				E2039B4B265750B3004B3BEF /* Charts in Frameworks */,
+				E267B8712667FEBC009979C8 /* NVActivityIndicatorViewExtended in Frameworks */,
 				E2ABEDF0265322670001F0F9 /* HMSegmentedControl in Frameworks */,
 				E23EFB282662A82D0038022B /* MBProgressHUD in Frameworks */,
+				E267B86F2667FEBC009979C8 /* NVActivityIndicatorView in Frameworks */,
 				E2A07D9B26520BDD0075E271 /* Hue in Frameworks */,
+				E267B8742667FEE8009979C8 /* FloatingPanel in Frameworks */,
 				E2123A652647158800A29222 /* SwiftyBeaver in Frameworks */,
+				E267B8772667FF66009979C8 /* SkeletonView in Frameworks */,
 				E2901FA5264CAC8B003A2C01 /* Shake in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -282,6 +290,10 @@
 				E2039B4A265750B3004B3BEF /* Charts */,
 				E284F91F2659A2DD002CB3BF /* Introspect */,
 				E23EFB272662A82D0038022B /* MBProgressHUD */,
+				E267B86E2667FEBC009979C8 /* NVActivityIndicatorView */,
+				E267B8702667FEBC009979C8 /* NVActivityIndicatorViewExtended */,
+				E267B8732667FEE8009979C8 /* FloatingPanel */,
+				E267B8762667FF66009979C8 /* SkeletonView */,
 			);
 			productName = Wait;
 			productReference = E2E637A92641A5FB00F872A4 /* Wait.app */;
@@ -325,6 +337,9 @@
 				E2039B49265750B3004B3BEF /* XCRemoteSwiftPackageReference "Charts" */,
 				E284F91E2659A2DD002CB3BF /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
 				E23EFB262662A82D0038022B /* XCRemoteSwiftPackageReference "MBProgressHUD" */,
+				E267B86D2667FEBC009979C8 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */,
+				E267B8722667FEE8009979C8 /* XCRemoteSwiftPackageReference "FloatingPanel" */,
+				E267B8752667FF66009979C8 /* XCRemoteSwiftPackageReference "SkeletonView" */,
 			);
 			productRefGroup = E2E637AA2641A5FB00F872A4 /* Products */;
 			projectDirPath = "";
@@ -636,6 +651,30 @@
 				minimumVersion = 1.2.0;
 			};
 		};
+		E267B86D2667FEBC009979C8 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ninjaprox/NVActivityIndicatorView";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.1;
+			};
+		};
+		E267B8722667FEE8009979C8 /* XCRemoteSwiftPackageReference "FloatingPanel" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/scenee/FloatingPanel";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.3.1;
+			};
+		};
+		E267B8752667FF66009979C8 /* XCRemoteSwiftPackageReference "SkeletonView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Juanpe/SkeletonView";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.16.0;
+			};
+		};
 		E284F91E2659A2DD002CB3BF /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/siteline/SwiftUI-Introspect";
@@ -732,6 +771,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E23EFB262662A82D0038022B /* XCRemoteSwiftPackageReference "MBProgressHUD" */;
 			productName = MBProgressHUD;
+		};
+		E267B86E2667FEBC009979C8 /* NVActivityIndicatorView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E267B86D2667FEBC009979C8 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */;
+			productName = NVActivityIndicatorView;
+		};
+		E267B8702667FEBC009979C8 /* NVActivityIndicatorViewExtended */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E267B86D2667FEBC009979C8 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */;
+			productName = NVActivityIndicatorViewExtended;
+		};
+		E267B8732667FEE8009979C8 /* FloatingPanel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E267B8722667FEE8009979C8 /* XCRemoteSwiftPackageReference "FloatingPanel" */;
+			productName = FloatingPanel;
+		};
+		E267B8762667FF66009979C8 /* SkeletonView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E267B8752667FF66009979C8 /* XCRemoteSwiftPackageReference "SkeletonView" */;
+			productName = SkeletonView;
 		};
 		E284F91F2659A2DD002CB3BF /* Introspect */ = {
 			isa = XCSwiftPackageProductDependency;

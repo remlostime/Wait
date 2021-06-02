@@ -29,6 +29,15 @@
         }
       },
       {
+        "package": "FloatingPanel",
+        "repositoryURL": "https://github.com/scenee/FloatingPanel",
+        "state": {
+          "branch": null,
+          "revision": "da4668aa2b8277dd8ce2741ac5c39394431400fc",
+          "version": "2.3.1"
+        }
+      },
+      {
         "package": "HMSegmentedControl",
         "repositoryURL": "https://github.com/HeshamMegid/HMSegmentedControl",
         "state": {
@@ -65,12 +74,30 @@
         }
       },
       {
+        "package": "NVActivityIndicatorView",
+        "repositoryURL": "https://github.com/ninjaprox/NVActivityIndicatorView",
+        "state": {
+          "branch": null,
+          "revision": "bcb52371f2259254bac6690f92bb474a61768c47",
+          "version": "5.1.1"
+        }
+      },
+      {
         "package": "Shake",
         "repositoryURL": "https://github.com/shakebugs/shake-ios",
         "state": {
           "branch": null,
           "revision": "bece3fa332e5ff51c5bfd0795629475dcf8af164",
           "version": "14.2.1"
+        }
+      },
+      {
+        "package": "SkeletonView",
+        "repositoryURL": "https://github.com/Juanpe/SkeletonView",
+        "state": {
+          "branch": null,
+          "revision": "74b5172ea5ff0e66e4377d42d7967e1d239c4aba",
+          "version": "1.16.0"
         }
       },
       {
