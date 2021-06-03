@@ -17,7 +17,7 @@ enum NetworkingURLBuilder {
     var finalQueryItems = domain.queryItems
 
     if let params = params {
-      let queryItems: [URLQueryItem] = params.compactMap { (key, value) -> URLQueryItem in
+      let queryItems: [URLQueryItem] = params.compactMap { key, value -> URLQueryItem in
         URLQueryItem(name: key, value: value)
       }
 
