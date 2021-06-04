@@ -18,18 +18,27 @@ extension Binding {
   }
 }
 
+// MARK: - StockRowDetailType
+
+enum StockRowDetailType {
+  case price
+  case priceChange
+  case actionStatus
+}
+
 // MARK: - ContentView
 
 struct ContentView: View {
   // MARK: Internal
 
   @State var stocks: [Stock]
+  @State var stockRowDetailType: StockRowDetailType = .price
 
   var body: some View {
     NavigationView {
       List(stocks, id: \.symbol) { stock in
         NavigationLink(destination: StockDetailsView(stock: stock)) {
-          StockRow(stock: stock)
+          StockRow(stockRowDetailType: $stockRowDetailType, stock: stock)
         }
       }
       .navigationTitle("Waitlist")
