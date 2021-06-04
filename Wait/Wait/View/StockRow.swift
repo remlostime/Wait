@@ -1,11 +1,14 @@
 // Created by kai_chen on 5/4/21.
 
 import SwiftUI
+import PartialSheet
 
 // MARK: - StockRow
 
 struct StockRow: View {
   // MARK: Internal
+
+  @EnvironmentObject var sheetManager: PartialSheetManager
 
   let stock: Stock
 
@@ -22,13 +25,25 @@ struct StockRow: View {
 
       Spacer()
 
-      VStack(alignment: .trailing) {
-        Text(stock.currentPrice.formattedCurrency)
-          .font(.title3)
-        Text(stock.changePercent)
-          .font(.subheadline)
-          .foregroundColor(isNegativeNumber(stock.changePercent) ? .stockRed : .stockGreen)
+//      VStack(alignment: .trailing) {
+//        Text(stock.currentPrice.formattedCurrency)
+//          .font(.title3)
+//        Text(stock.changePercent)
+//          .font(.subheadline)
+//          .foregroundColor(isNegativeNumber(stock.changePercent) ? .stockRed : .stockGreen)
+//      }
+
+      Button(stock.currentPrice.formattedCurrency) {
+        self.sheetManager.showPartialSheet {
+          // TODO(kai) - fix this
+          print("dismiss")
+        } content: {
+          // TODO(kai) - fix this view
+          Text("This is a view")
+        }
       }
+      .foregroundColor(isNegativeNumber(stock.changePercent) ? .stockRed : .stockGreen)
+      .buttonStyle(PlainButtonStyle())
     }
     .padding()
   }

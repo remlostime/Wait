@@ -4,6 +4,7 @@ import Shake
 import SwiftUI
 import SwiftyBeaver
 import Trace
+import PartialSheet
 
 let logger = SwiftyBeaver.self
 
@@ -24,8 +25,10 @@ struct WaitApp: App {
   var body: some Scene {
     WindowGroup {
       let stocks = StockCache.shared.getStocks()
+      let sheetManager = PartialSheetManager()
       ContentView(stocks: stocks)
         .accentColor(.avocado)
+        .environmentObject(sheetManager)
     }
   }
 
