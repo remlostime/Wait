@@ -35,8 +35,7 @@ struct StockRow: View {
 //      }
 
       Button(buttonText) {
-        self.sheetManager.showPartialSheet {
-        } content: {
+        self.sheetManager.showPartialSheet {} content: {
           List {
             Button("Price") {
               stockRowDetailType = .price
@@ -61,6 +60,8 @@ struct StockRow: View {
     .padding()
   }
 
+  // MARK: Private
+
   private var buttonText: String {
     let buttonText: String
     switch stockRowDetailType {
@@ -75,8 +76,6 @@ struct StockRow: View {
 
     return buttonText
   }
-
-  // MARK: Private
 
   private func isNegativeNumber(_ number: String) -> Bool {
     guard !number.isEmpty else {

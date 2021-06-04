@@ -18,6 +18,8 @@ extension Binding {
   }
 }
 
+// MARK: - StockRowDetailType
+
 enum StockRowDetailType {
   case price
   case priceChange
