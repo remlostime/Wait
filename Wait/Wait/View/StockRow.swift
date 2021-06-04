@@ -9,6 +9,7 @@ struct StockRow: View {
   // MARK: Internal
 
   @EnvironmentObject var sheetManager: PartialSheetManager
+  @Binding var stockRowDetailType: StockRowDetailType
 
   let stock: Stock
 
@@ -33,19 +34,46 @@ struct StockRow: View {
 //          .foregroundColor(isNegativeNumber(stock.changePercent) ? .stockRed : .stockGreen)
 //      }
 
-      Button(stock.currentPrice.formattedCurrency) {
+      Button(buttonText) {
         self.sheetManager.showPartialSheet {
-          // TODO(kai) - fix this
-          print("dismiss")
         } content: {
-          // TODO(kai) - fix this view
-          Text("This is a view")
+          List {
+            Button("Price") {
+              stockRowDetailType = .price
+              self.sheetManager.closePartialSheet()
+            }
+
+            Button("Price Change") {
+              stockRowDetailType = .priceChange
+              self.sheetManager.closePartialSheet()
+            }
+
+            Button("Action Status") {
+              stockRowDetailType = .actionStatus
+              self.sheetManager.closePartialSheet()
+            }
+          }
         }
       }
       .foregroundColor(isNegativeNumber(stock.changePercent) ? .stockRed : .stockGreen)
       .buttonStyle(PlainButtonStyle())
     }
     .padding()
+  }
+
+  private var buttonText: String {
+    let buttonText: String
+    switch stockRowDetailType {
+      case .price:
+        buttonText = stock.currentPrice.formattedCurrency
+      case .priceChange:
+        buttonText = stock.changePercent
+      case .actionStatus:
+        // todo(kai) - update the right action
+        buttonText = "Wait"
+    }
+
+    return buttonText
   }
 
   // MARK: Private
@@ -71,6 +99,6 @@ struct StockRow_Previews: PreviewProvider {
       changePercent: "1.8%"
     )
 
-    StockRow(stock: stock)
+    StockRow(stockRowDetailType: .constant(.price), stock: stock)
   }
 }
