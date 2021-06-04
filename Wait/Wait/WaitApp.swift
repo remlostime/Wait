@@ -38,6 +38,9 @@ struct WaitApp: App {
   }
 
   private func setupShake() {
+    Shake.configuration.isInvokedByShakeDeviceEvent = true
+    Shake.configuration.isInvokedByScreenshot = true
+    Shake.configuration.isCrashReportingEnabled = true
     Shake.start(
       clientId: "EMFDruyQ3NpZJixuCtgi2LiTl83hjfngf3tRFL3F",
       clientSecret: "wh1riTvDR93wmB0itrbltVmOKMsFToZyM4O6Y65pPtARpvdiLq4Xtd1"
