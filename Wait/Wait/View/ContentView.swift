@@ -2,9 +2,9 @@
 
 import Alamofire
 import Money
+import PartialSheet
 import SwiftUI
 import SwiftyJSON
-import PartialSheet
 
 extension Binding {
   func onChange(_ handler: @escaping (Value) -> Void) -> Binding<Value> {
