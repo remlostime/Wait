@@ -13,6 +13,7 @@
 		E2123A652647158800A29222 /* SwiftyBeaver in Frameworks */ = {isa = PBXBuildFile; productRef = E2123A642647158800A29222 /* SwiftyBeaver */; };
 		E2123A682647198000A29222 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E2123A672647198000A29222 /* SwiftyJSON */; };
 		E2123A6B26472F9400A29222 /* StockCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2123A6A26472F9400A29222 /* StockCache.swift */; };
+		E22A84222669C8B60099F107 /* PartialSheet in Frameworks */ = {isa = PBXBuildFile; productRef = E22A84212669C8B60099F107 /* PartialSheet */; };
 		E23B93E12652D38D00E039D9 /* Money+Format.swift in Sources */ = {isa = PBXBuildFile; fileRef = E23B93E02652D38D00E039D9 /* Money+Format.swift */; };
 		E23B93E42652D52800E039D9 /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E23B93E32652D52800E039D9 /* SwifterSwift */; };
 		E23EFB282662A82D0038022B /* MBProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = E23EFB272662A82D0038022B /* MBProgressHUD */; };
@@ -121,6 +122,7 @@
 				E2123A602647115400A29222 /* Alamofire in Frameworks */,
 				E23B93E42652D52800E039D9 /* SwifterSwift in Frameworks */,
 				E2BDFCA726518CB90075E619 /* Money in Frameworks */,
+				E22A84222669C8B60099F107 /* PartialSheet in Frameworks */,
 				E2123A682647198000A29222 /* SwiftyJSON in Frameworks */,
 				E2039B4B265750B3004B3BEF /* Charts in Frameworks */,
 				E267B8712667FEBC009979C8 /* NVActivityIndicatorViewExtended in Frameworks */,
@@ -294,6 +296,7 @@
 				E267B8702667FEBC009979C8 /* NVActivityIndicatorViewExtended */,
 				E267B8732667FEE8009979C8 /* FloatingPanel */,
 				E267B8762667FF66009979C8 /* SkeletonView */,
+				E22A84212669C8B60099F107 /* PartialSheet */,
 			);
 			productName = Wait;
 			productReference = E2E637A92641A5FB00F872A4 /* Wait.app */;
@@ -340,6 +343,7 @@
 				E267B86D2667FEBC009979C8 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */,
 				E267B8722667FEE8009979C8 /* XCRemoteSwiftPackageReference "FloatingPanel" */,
 				E267B8752667FF66009979C8 /* XCRemoteSwiftPackageReference "SkeletonView" */,
+				E22A84202669C8B60099F107 /* XCRemoteSwiftPackageReference "PartialSheet" */,
 			);
 			productRefGroup = E2E637AA2641A5FB00F872A4 /* Products */;
 			projectDirPath = "";
@@ -635,6 +639,14 @@
 				minimumVersion = 5.0.1;
 			};
 		};
+		E22A84202669C8B60099F107 /* XCRemoteSwiftPackageReference "PartialSheet" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AndreaMiotto/PartialSheet";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.1.11;
+			};
+		};
 		E23B93E22652D52800E039D9 /* XCRemoteSwiftPackageReference "SwifterSwift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SwifterSwift/SwifterSwift";
@@ -761,6 +773,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2123A662647198000A29222 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
 			productName = SwiftyJSON;
+		};
+		E22A84212669C8B60099F107 /* PartialSheet */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E22A84202669C8B60099F107 /* XCRemoteSwiftPackageReference "PartialSheet" */;
+			productName = PartialSheet;
 		};
 		E23B93E32652D52800E039D9 /* SwifterSwift */ = {
 			isa = XCSwiftPackageProductDependency;

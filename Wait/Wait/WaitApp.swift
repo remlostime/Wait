@@ -1,5 +1,6 @@
 // Created by kai_chen on 5/4/21.
 
+import PartialSheet
 import Shake
 import SwiftUI
 import SwiftyBeaver
@@ -24,8 +25,10 @@ struct WaitApp: App {
   var body: some Scene {
     WindowGroup {
       let stocks = StockCache.shared.getStocks()
+      let sheetManager = PartialSheetManager()
       ContentView(stocks: stocks)
         .accentColor(.avocado)
+        .environmentObject(sheetManager)
     }
   }
 

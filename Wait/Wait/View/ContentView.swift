@@ -2,6 +2,7 @@
 
 import Alamofire
 import Money
+import PartialSheet
 import SwiftUI
 import SwiftyJSON
 
@@ -45,6 +46,7 @@ struct ContentView: View {
         .accentColor(.avocado)
       })
     }
+    .addPartialSheet(style: .defaultStyle())
     .onChange(of: newStock, perform: { value in
       fetchStockDetails(stock: value) { stock in
         stocks.append(stock)
