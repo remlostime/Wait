@@ -5,14 +5,16 @@ import Foundation
 
 struct SearchStockResult: Decodable {
   enum CodingKeys: String, CodingKey {
-    case symbol = "1. symbol"
-    case name = "2. name"
-    case region = "4. region"
-    case matchScore = "9. matchScore"
+    case symbol
+    case name = "instrument_name"
+    case exchange
+    case country
+    case currency
   }
 
   let symbol: String
   let name: String
-  let matchScore: String
-  let region: String
+  let exchange: String
+  let country: String
+  let currency: String
 }

@@ -25,34 +25,17 @@ class PriceHistoryNetworkClient {
 
           guard
             let json = try? JSON(data: data),
-            let rawData = try? json[timeSection.priceHistoryResourceKey].rawData(),
-            let stockQuotesDict = try? decoder.decode([String: StockQuote].self, from: rawData)
-          else {
-            logger.error("Failed to decode price history")
-            completion([])
+            let rawData = try? json["values"].rawData() else {
             return
           }
 
-          var stockQuotes: [StockQuote] = []
-          for (dateStr, quote) in stockQuotesDict {
-            guard let date = timeSection.dateFormatter.date(from: dateStr) else {
-              continue
-            }
-
-            let stockQuote = StockQuote(
-              open: quote.open,
-              high: quote.high,
-              low: quote.low,
-              close: quote.close,
-              date: date
-            )
-
-            stockQuotes.append(stockQuote)
+          do {
+            let stockQuotes = try decoder.decode([StockQuote].self, from: rawData)
+            completion(stockQuotes.reversed())
+          } catch {
+            logger.error("Failed to decode price history: \(error.localizedDescription)")
+            completion([])
           }
-
-          stockQuotes.sort(by: \.date)
-
-          completion(stockQuotes)
         case let .failure(error):
           logger.error("Failed to decode price history: \(error.localizedDescription)")
           completion([])
@@ -63,16 +46,13 @@ class PriceHistoryNetworkClient {
   // MARK: Private
 
   private func makeHistoryURL(symbol: String, timeSection: TimeSection) -> URL? {
-    var priceHistoryAPIParams = [
+    let priceHistoryAPIParams = [
       "symbol": symbol,
-      "outputsize": "full",
+      "outputsize": String(timeSection.dataSize),
+      "interval": timeSection.dataInterval
     ]
 
-    priceHistoryAPIParams.merge(timeSection.priceHistoryAPIParams) { current, _ in
-      current
-    }
-
-    let url = NetworkingURLBuilder.buildURL(api: "query", params: priceHistoryAPIParams)
+    let url = NetworkingURLBuilder.buildURL(api: "time_series", params: priceHistoryAPIParams)
 
     return url
   }

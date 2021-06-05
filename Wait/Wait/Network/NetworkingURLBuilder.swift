@@ -4,7 +4,7 @@ import Foundation
 
 enum NetworkingURLBuilder {
   static func buildURL(
-    domain: URLDomain = .alphaVantage,
+    domain: URLDomain = .twelveData,
     api: String,
     params: [String: String?]? = nil
   ) -> URL? {
