@@ -7,12 +7,16 @@ import Foundation
 
 enum URLDomain: String {
   case alphaVantage = "https://www.alphavantage.co"
+  case twelveData = "https://api.twelvedata.com"
 }
 
 extension URLDomain {
   var queryItems: [URLQueryItem] {
     switch self {
       case .alphaVantage:
+        let apiKeyItem = URLQueryItem(name: "apikey", value: "L51Y2HE61NU1YU0G")
+        return [apiKeyItem]
+      case .twelveData:
         let apiKeyItem = URLQueryItem(name: "apikey", value: "L51Y2HE61NU1YU0G")
         return [apiKeyItem]
     }

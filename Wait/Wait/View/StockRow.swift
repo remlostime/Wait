@@ -26,13 +26,9 @@ struct StockRow: View {
 
       Spacer()
 
-//      VStack(alignment: .trailing) {
-//        Text(stock.currentPrice.formattedCurrency)
-//          .font(.title3)
-//        Text(stock.changePercent)
-//          .font(.subheadline)
-//          .foregroundColor(isNegativeNumber(stock.changePercent) ? .stockRed : .stockGreen)
-//      }
+      Image(systemName: "plus")
+
+      Spacer()
 
       Button(buttonText) {
         self.sheetManager.showPartialSheet {} content: {
