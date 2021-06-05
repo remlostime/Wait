@@ -25,7 +25,8 @@ class PriceHistoryNetworkClient {
 
           guard
             let json = try? JSON(data: data),
-            let rawData = try? json["values"].rawData() else {
+            let rawData = try? json["values"].rawData()
+          else {
             return
           }
 
@@ -49,7 +50,7 @@ class PriceHistoryNetworkClient {
     let priceHistoryAPIParams = [
       "symbol": symbol,
       "outputsize": String(timeSection.dataSize),
-      "interval": timeSection.dataInterval
+      "interval": timeSection.dataInterval,
     ]
 
     let url = NetworkingURLBuilder.buildURL(api: "time_series", params: priceHistoryAPIParams)
