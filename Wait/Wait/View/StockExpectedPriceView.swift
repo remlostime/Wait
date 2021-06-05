@@ -55,7 +55,7 @@ struct StockExpectedPriceView: View {
 struct WaitStockView_Previews: PreviewProvider {
   static var previews: some View {
     StockExpectedPriceView(
-      searchStock: SearchStockResult(symbol: "fb", name: "facebook", matchScore: "23.0", region: "US"),
+      searchStock: SearchStockResult(symbol: "FB", name: "Facebook", exchange: "NYSE", country: "US", currency: "USD"),
       stock: .constant(Stock(symbol: "fb", name: "Facebook", currentPrice: 1.0, expectedPrice: 1.0, changePercent: "1.8%")),
       isPresented: .constant(true)
     )

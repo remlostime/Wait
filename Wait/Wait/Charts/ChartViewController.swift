@@ -222,7 +222,7 @@ public class ChartViewController: UIViewController {
   }
 
   private func fetchData() {
-    dataSource.fetchData(for: [.day, .week, .month, .all])
+    dataSource.fetchData(for: TimeSection.allCases)
   }
 
   private func updateChart(data: [TimeSection: ChartData]) {

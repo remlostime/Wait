@@ -25,6 +25,6 @@ struct SearchStockRow: View {
 
 struct SearchStockRow_Previews: PreviewProvider {
   static var previews: some View {
-    SearchStockRow(stock: SearchStockResult(symbol: "FB", name: "Facebook", matchScore: "1.0", region: "US"))
+    SearchStockRow(stock: SearchStockResult(symbol: "FB", name: "Facebook", exchange: "NYSE", country: "US", currency: "USD"))
   }
 }

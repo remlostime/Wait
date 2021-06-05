@@ -8,6 +8,7 @@ public enum TimeSection: Int, CaseIterable, Codable {
   case day
   case week
   case month
+  case year
   case all
 }
 
@@ -20,6 +21,8 @@ extension TimeSection {
         return "1W"
       case .month:
         return "1M"
+      case .year:
+        return "1Y"
       case .all:
         return "All"
     }
@@ -33,44 +36,50 @@ extension TimeSection {
         return "Week"
       case .month:
         return "Month"
+      case .year:
+        return "Year"
       case .all:
         return "All"
     }
   }
 
-  var priceHistoryAPIParams: [String: String] {
+  var dataSize: Int {
     switch self {
       case .day:
-        return ["function": "TIME_SERIES_INTRADAY", "interval": "5min"]
+        return 80
       case .week:
-        return ["function": "TIME_SERIES_DAILY"]
+        return 130
       case .month:
-        return ["function": "TIME_SERIES_DAILY"]
+        return 31
+      case .year:
+        return 365
       case .all:
-        return ["function": "TIME_SERIES_WEEKLY"]
+        return 365
     }
   }
 
-  var priceHistoryResourceKey: String {
+  var dataInterval: String {
     switch self {
       case .day:
-        return "Time Series (5min)"
+        return "5min"
       case .week:
-        return "Time Series (Daily)"
+        return "15min"
       case .month:
-        return "Time Series (Daily)"
+        return "1day"
+      case .year:
+        return "1day"
       case .all:
-        return "Weekly Time Series"
+        return "1week"
     }
   }
 
   var dateFormatter: DateFormatter {
+    // Date format - http://www.sdfonlinetester.info
     let dateFormatter = DateFormatter()
-
     switch self {
-      case .day:
-        dateFormatter.dateFormat = "yyyy-mm-dd hh:mm:ss"
-      case .week, .month, .all:
+      case .day, .week:
+        dateFormatter.dateFormat = "yyyy-mm-dd HH:mm:ss"
+      case .month, .year, .all:
         dateFormatter.dateFormat = "yyyy-mm-dd"
     }
 

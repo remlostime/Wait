@@ -28,11 +28,10 @@ struct SearchStockView: View {
 
   private func buildStockSearchURL(keyword: String) -> URL? {
     let params = [
-      "function": "SYMBOL_SEARCH",
-      "keywords": keyword,
+      "symbol": keyword,
     ]
 
-    let url = NetworkingURLBuilder.buildURL(api: "query", params: params)
+    let url = NetworkingURLBuilder.buildURL(api: "symbol_search", params: params)
 
     return url
   }
@@ -49,14 +48,21 @@ struct SearchStockView: View {
 
           guard
             let json = try? JSON(data: data),
-            let rawData = try? json["bestMatches"].rawData(),
+            let rawData = try? json["data"].rawData(),
             let newSearchStocks = try? decoder.decode([SearchStockResult].self, from: rawData)
           else {
             logger.error("Failed to decode search stock")
             return
           }
 
-          searchStocks = newSearchStocks
+          let acceptedExchange: Set<Exchange> = Set(Exchange.allCases)
+          searchStocks = newSearchStocks.filter {
+            guard let exchangeType = Exchange(rawValue: $0.exchange) else {
+              return false
+            }
+
+            return acceptedExchange.contains(exchangeType)
+          }
         case let .failure(error):
           logger.error("Failed to search stock: \(error.localizedDescription)")
       }

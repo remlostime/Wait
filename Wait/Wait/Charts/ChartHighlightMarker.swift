@@ -43,9 +43,9 @@ class ChartHighlightMarker: MarkerImage {
       switch timeSection {
         case .day:
           dateFormat = "h:mm a"
-        case .week, .month:
+        case .week:
           dateFormat = "MMM dd, h:mm a"
-        case .all:
+        case .month, .year, .all:
           dateFormat = "MMM dd, yyyy"
       }
       dateFormatter.dateFormat = dateFormat

@@ -17,7 +17,7 @@ extension URLDomain {
         let apiKeyItem = URLQueryItem(name: "apikey", value: "L51Y2HE61NU1YU0G")
         return [apiKeyItem]
       case .twelveData:
-        let apiKeyItem = URLQueryItem(name: "apikey", value: "L51Y2HE61NU1YU0G")
+        let apiKeyItem = URLQueryItem(name: "apikey", value: "58c41ef6d56249e5921d89f4b0c55fef")
         return [apiKeyItem]
     }
   }
