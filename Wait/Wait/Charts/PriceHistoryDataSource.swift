@@ -80,12 +80,25 @@ final class PriceHistoryDataSource: ChartViewDataSource {
   private let chartCache: ChartCache<ChartModelType>
 
   private func buildChartData(quotes: [StockQuote]) -> ChartData {
-    let entries = quotes.compactMap { quote -> ChartDataEntry? in
-      if let y = quote.close.amountDoubleValue {
-        return ChartDataEntry(x: quote.date.timeIntervalSince1970, y: y)
-      } else {
-        return nil
+//    let entries = quotes.compactMap { quote -> ChartDataEntry? in
+//      if let y = quote.close.amountDoubleValue {
+//        return ChartDataEntry(x: quote.date.timeIntervalSince1970, y: y)
+//      } else {
+//        return nil
+//      }
+//    }
+    var entries: [ChartDataEntry] = []
+    var index = 0
+    for quote in quotes {
+      guard let y = quote.close.amountDoubleValue else {
+        continue
       }
+
+      let data = ChartDataEntry(x: Double(index), y: y, data: quote)
+
+      entries.append(data)
+
+      index += 1
     }
 
     let chartDataSet = LineChartDataSet(entries: entries)

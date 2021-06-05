@@ -113,8 +113,11 @@ class ChartHighlightMarker: MarkerImage {
   }
 
   override func refreshContent(entry: ChartDataEntry, highlight: Highlight) {
-    let time = entry.x
-    let date = Date(timeIntervalSince1970: time)
+    guard let quote = entry.data as? StockQuote else {
+      return
+    }
+
+    let date = quote.date
     let dateStr = dateFormatter.string(from: date)
     setLabel(dateStr)
   }
