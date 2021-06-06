@@ -8,39 +8,40 @@ struct StockDetailsView: View {
   var stock: Stock
 
   var body: some View {
-    VStack(alignment: .leading) {
-      Text(stock.symbol)
-        .font(.subheadline)
-      Text(stock.name)
-        .font(.largeTitle)
-      Text(stock.currentPrice.formattedCurrency)
-        .font(.largeTitle)
+    ScrollView {
+      VStack(alignment: .leading) {
+        Text(stock.symbol)
+          .font(.subheadline)
+        Text(stock.name)
+          .font(.largeTitle)
 
-      SwiftUIChartViewController()
+        SwiftUIChartViewController()
+          .frame(minHeight: 420.0)
 
-      Spacer()
-
-      Text(action)
-        .foregroundColor(actionColor)
-        .font(.largeTitle)
-
-      HStack {
-        Text("Expected Price")
         Spacer()
-        Text(stock.expectedPrice.formattedCurrency)
-      }
 
-      HStack {
-        Text("Current price")
+        Text(action)
+          .foregroundColor(actionColor)
+          .font(.largeTitle)
+
+        HStack {
+          Text("Expected Price")
+          Spacer()
+          Text(stock.expectedPrice.formattedCurrency)
+        }
+
+        HStack {
+          Text("Current price")
+          Spacer()
+          Text(comparedToCurrentPriceRate)
+            .foregroundColor(comparedToCurrentPriceRateColor)
+        }
+
         Spacer()
-        Text(comparedToCurrentPriceRate)
-          .foregroundColor(comparedToCurrentPriceRateColor)
       }
-
-      Spacer()
+      .multilineTextAlignment(.leading)
+      .padding()
     }
-    .multilineTextAlignment(.leading)
-    .padding()
   }
 
   var action: String {
