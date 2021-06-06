@@ -5,6 +5,8 @@
 
 import SwiftUI
 
+// MARK: - StockStatsView
+
 struct StockStatsView: View {
   var title: String
   var value: String
@@ -18,6 +20,8 @@ struct StockStatsView: View {
     }
   }
 }
+
+// MARK: - StockStatsView_Previews
 
 struct StockStatsView_Previews: PreviewProvider {
   static var previews: some View {
