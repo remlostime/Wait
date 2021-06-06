@@ -557,7 +557,7 @@ public class NumberScrollCounter: UIView {
   private func updateScrollers(add count: Int) {
     var newScrollers = [DigitScrollCounter]()
 
-    for _ in 0..<count {
+    for _ in 0 ..< count {
       let digitScrollCounter = DigitScrollCounter(
         font: font,
         textColor: textColor,
