@@ -16,7 +16,27 @@ struct StockDetailsView: View {
           .font(.largeTitle)
 
         SwiftUIChartViewController()
-          .frame(minHeight: 420.0)
+          .frame(minHeight: 320.0)
+
+        Spacer()
+
+        // TODO(kai) - fill the real data
+        VStack(alignment: .leading, spacing: 10.0) {
+          Text("Stats")
+            .font(.headline)
+
+          HStack {
+            StockStatsView(title: "Market Cap", value: "174.1B")
+            StockStatsView(title: "Avg Div", value: "9.0")
+          }
+          .font(.subheadline)
+
+          HStack {
+            StockStatsView(title: "PE", value: "184.1")
+            StockStatsView(title: "PB", value: "8.0")
+          }
+          .font(.subheadline)
+        }
 
         Spacer()
 
