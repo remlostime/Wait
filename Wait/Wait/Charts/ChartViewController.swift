@@ -42,14 +42,8 @@ public class ChartViewController: UIViewController {
       make.edges.equalToSuperview()
     }
 
-//    showActivityIndicator()
+    showActivityIndicator()
     pricePercentageStackView.isHidden = true
-  }
-
-  public override func viewDidDisappear(_ animated: Bool) {
-    super.viewDidDisappear(animated)
-
-//    dataSource.stopFetchingData()
   }
 
   public override func viewWillAppear(_ animated: Bool) {
@@ -132,7 +126,7 @@ public class ChartViewController: UIViewController {
     stackView.axis = .vertical
     stackView.layoutMargins = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
     stackView.isLayoutMarginsRelativeArrangement = true
-//    stackView.addArrangedSubview(priceLabel)
+    stackView.addArrangedSubview(priceLabel)
     if showPercent {
       stackView.addArrangedSubview(pricePercentageStackView)
     }
@@ -140,9 +134,9 @@ public class ChartViewController: UIViewController {
     stackView.addArrangedSubview(chart)
     stackView.addArrangedSubview(timeRangeSegmentedControl)
 
-//    priceLabel.snp.makeConstraints { make in
-//      make.leading.trailing.equalTo(stackView.layoutMargins)
-//    }
+    priceLabel.snp.makeConstraints { make in
+      make.leading.trailing.equalTo(stackView.layoutMargins)
+    }
 
     chart.snp.makeConstraints { make in
       make.leading.trailing.equalToSuperview()
@@ -161,23 +155,22 @@ public class ChartViewController: UIViewController {
     return priceChangeLabel
   }()
 
-//  private lazy var priceLabel: NumberScrollCounter = {
-//    let priceLabel = NumberScrollCounter(
-//      value: currentPrice.amountDoubleValue ?? 0.0,
-//      scrollDuration: 0.1,
-//      decimalPlaces: 2,
-//      prefix: "$",
-//      font: .systemFont(ofSize: 32.0),
-//      textColor: .white
-//    )
-//
-//    let height = priceLabel.bounds.height
-//    priceLabel.snp.makeConstraints { make in
-//      make.height.equalTo(height)
-//    }
-//
-//    return priceLabel
-//  }()
+  private lazy var priceLabel: NumberScrollCounter = {
+    let priceLabel = NumberScrollCounter(
+      value: currentPrice.amountDoubleValue ?? 0.0,
+      scrollDuration: 0.1,
+      decimalPlaces: 2,
+      prefix: "$",
+      font: .systemFont(ofSize: 32.0)
+    )
+
+    let height = priceLabel.bounds.height
+    priceLabel.snp.makeConstraints { make in
+      make.height.equalTo(height)
+    }
+
+    return priceLabel
+  }()
 
   private lazy var pricePercentageChangeLabel: UILabel = {
     let pricePercentageChangeLabel = UILabel()
@@ -268,7 +261,7 @@ public class ChartViewController: UIViewController {
     let diff = now - lastNow
     if diff > 1 || isMovingTheChart {
       lastNow = now
-//      priceLabel.setValue(currentPrice, animated: true)
+      priceLabel.setValue(currentPrice, animated: true)
     }
 
     let priceDifference = currentPrice - comparedPrice
@@ -346,7 +339,7 @@ extension ChartViewController: ChartViewDataSourceDelegate {
 
   public func dataDidUpdate(_ data: [TimeSection: ChartData]) {
     DispatchQueue.main.async {
-//      self.hideActivityIndicator()
+      self.hideActivityIndicator()
       self.pricePercentageStackView.isHidden = false
       self.updateChart(data: data)
     }
