@@ -4,15 +4,12 @@ import Foundation
 import Money
 
 struct StockCurrentQuote: Codable {
-  enum CodingKeys: String, CodingKey {
-    case symbol = "01. symbol"
-    case price = "05. price"
-    case date = "07. latest trading day"
-    case changePercent = "10. change percent"
-  }
-
   let symbol: String
-  let price: Money<USD>
-  let changePercent: String
-  let date: Date
+  let name: String
+  let open: Money<USD>
+  let high: Money<USD>
+  let low: Money<USD>
+  let close: Money<USD>
+  let volume: String
+  let datetime: Date
 }

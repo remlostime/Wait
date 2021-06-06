@@ -88,11 +88,10 @@ struct ContentView: View {
 
   private func buildStockQuoteURL(stock: Stock) -> URL? {
     let params = [
-      "function": "GLOBAL_QUOTE",
       "symbol": stock.symbol,
     ]
 
-    let url = NetworkingURLBuilder.buildURL(api: "query", params: params)
+    let url = NetworkingURLBuilder.buildURL(api: "quote", params: params)
 
     return url
   }
@@ -111,20 +110,19 @@ struct ContentView: View {
           decoder.dateDecodingStrategy = .formatted(dateFormatter)
 
           guard
-            let json = try? JSON(data: data),
-            let rawData = try? json["Global Quote"].rawData(),
-            let stockQuote = try? decoder.decode(StockCurrentQuote.self, from: rawData)
+            let stockQuote = try? decoder.decode(StockCurrentQuote.self, from: data)
           else {
             logger.error("Failed to decode stock quote")
             return
           }
 
+          // TODO(kai) - fix change percent
           let newStock = Stock(
             symbol: stockQuote.symbol,
             name: stock.name,
-            currentPrice: stockQuote.price,
+            currentPrice: stockQuote.close,
             expectedPrice: stock.expectedPrice,
-            changePercent: stockQuote.changePercent
+            changePercent: ""
           )
 
           completion(newStock)

@@ -109,14 +109,6 @@ public class ScrollableCounter: UIView {
 
   var gradientView: UIView?
 
-//  var height: CGFloat {
-//    frame.height
-//  }
-//
-//  var width: CGFloat {
-//    frame.width
-//  }
-
   /**
    Sets up the `itemsBeingAnimated` array with all of the elements that need to be animated, and set the initial position of each element.
    - parameters:
@@ -246,8 +238,6 @@ public class ScrollableCounter: UIView {
 
     let animator = buildAnimations(direction: direction, duration: animationDuration, index: index)
 
-//    animationCompletionIsExecuted = false
-
     animator.addCompletion { [weak self] _ in
       self?.animationCompletion(newCurrentIndex: index)
       self?.setNeedsLayout()
@@ -261,15 +251,11 @@ public class ScrollableCounter: UIView {
     setNeedsLayout()
   }
 
-//  private var animationCompletionIsExecuted: Bool = false
-
   /**
    The completion to execute when `animator` finishes running.
    This updates `currentIndex`, `itemsBeingAnimated`, and removes all of the items in `items`  that are not needed from the superview.
    */
   private func animationCompletion(newCurrentIndex index: Int) {
-//    animationCompletionIsExecuted = true
-
     currentIndex = index
     for i in 0 ..< items.count {
       if i != index {
@@ -301,10 +287,6 @@ public class ScrollableCounter: UIView {
 
     if itemsBeingAnimated.isEmpty {
       animationCompletion(newCurrentIndex: index)
-    }
-
-    if itemsBeingAnimated.count == 1 {
-      print("haha:")
     }
 
     return animator
