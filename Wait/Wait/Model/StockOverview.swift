@@ -6,15 +6,15 @@
 import Foundation
 
 struct StockOverview: Decodable {
-  let PERatio: String
-  let PBRatio: String
-  let marketCap: String
-  let dividendPerShare: String
-
   enum CodingKeys: String, CodingKey {
-    case PERatio = "PERatio"
+    case PERatio
     case PBRatio = "PriceToBookRatio"
     case marketCap = "MarketCapitalization"
     case dividendPerShare = "DividendPerShare"
   }
+
+  let PERatio: String
+  let PBRatio: String
+  let marketCap: String
+  let dividendPerShare: String
 }

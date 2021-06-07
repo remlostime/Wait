@@ -73,7 +73,7 @@ struct ContentView: View {
 
   // MARK: Private
 
-  private let stockCurrentQuoteNetworkClient: StockCurrentQuoteNetworkClient = StockCurrentQuoteNetworkClient()
+  private let stockCurrentQuoteNetworkClient = StockCurrentQuoteNetworkClient()
 
   @State private var showingWaitStockView = false
   @State private var newStock = Stock(

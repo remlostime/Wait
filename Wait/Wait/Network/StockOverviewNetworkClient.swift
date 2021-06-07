@@ -3,10 +3,12 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import Foundation
 import Alamofire
+import Foundation
 
 final class StockOverviewNetworkClient {
+  // MARK: Internal
+
   func fetchStockDetails(stock: Stock, completion: @escaping ((StockOverview) -> Void)) {
     guard let url = buildURL(stock: stock) else {
       return
@@ -31,10 +33,12 @@ final class StockOverviewNetworkClient {
     }
   }
 
+  // MARK: Private
+
   private func buildURL(stock: Stock) -> URL? {
     let params = [
       "symbol": stock.symbol,
-      "function": "OVERVIEW"
+      "function": "OVERVIEW",
     ]
 
     let url = NetworkingURLBuilder.buildURL(domain: .alphaVantage, api: "query", params: params)
@@ -42,4 +46,3 @@ final class StockOverviewNetworkClient {
     return url
   }
 }
-

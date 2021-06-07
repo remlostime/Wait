@@ -3,10 +3,12 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import Foundation
 import Alamofire
+import Foundation
 
 final class StockCurrentQuoteNetworkClient {
+  // MARK: Internal
+
   func fetchStockDetails(stock: Stock, completion: @escaping ((Stock) -> Void)) {
     guard let url = buildStockQuoteURL(stock: stock) else {
       return
@@ -42,6 +44,8 @@ final class StockCurrentQuoteNetworkClient {
       }
     }
   }
+
+  // MARK: Private
 
   private func buildStockQuoteURL(stock: Stock) -> URL? {
     let params = [
