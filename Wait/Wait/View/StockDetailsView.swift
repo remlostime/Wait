@@ -10,10 +10,13 @@ struct StockDetailsView: View {
   var body: some View {
     ScrollView {
       VStack(alignment: .leading) {
-        Text(stock.symbol)
-          .font(.subheadline)
-        Text(stock.name)
-          .font(.largeTitle)
+        VStack(alignment: .leading) {
+          Text(stock.symbol)
+            .font(.subheadline)
+          Text(stock.name)
+            .font(.title)
+        }
+        .padding()
 
         SwiftUIChartViewController()
           .frame(minHeight: 320.0)
@@ -21,34 +24,37 @@ struct StockDetailsView: View {
         Spacer()
 
         // TODO(kai) - fill the real data
-        VStack(alignment: .leading, spacing: 10.0) {
+        VStack(alignment: .leading, spacing: 12.0) {
           Text("Stats")
-            .font(.headline)
+            .font(.title)
 
-          HStack {
+          HStack(spacing: 12.0) {
             StockStatsView(title: "Market Cap", value: "174.1B")
             StockStatsView(title: "Avg Div", value: "9.0")
           }
           .font(.subheadline)
 
-          HStack {
+          HStack(spacing: 12.0) {
             StockStatsView(title: "PE", value: "184.1")
             StockStatsView(title: "PB", value: "8.0")
           }
           .font(.subheadline)
         }
+        .padding()
 
         Spacer()
 
         Text(action)
           .foregroundColor(actionColor)
           .font(.largeTitle)
+          .padding()
 
         HStack {
           Text("Expected Price")
           Spacer()
           Text(stock.expectedPrice.formattedCurrency)
         }
+        .padding()
 
         HStack {
           Text("Current price")
@@ -56,11 +62,11 @@ struct StockDetailsView: View {
           Text(comparedToCurrentPriceRate)
             .foregroundColor(comparedToCurrentPriceRateColor)
         }
+        .padding()
 
         Spacer()
       }
       .multilineTextAlignment(.leading)
-      .padding()
     }
   }
 
