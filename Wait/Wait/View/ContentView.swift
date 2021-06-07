@@ -57,7 +57,7 @@ struct ContentView: View {
     }
     .addPartialSheet(style: .defaultStyle())
     .onChange(of: newStock, perform: { value in
-      fetchStockDetails(stock: value) { stock in
+      stockCurrentQuoteNetworkClient.fetchStockDetails(stock: value) { stock in
         stocks.append(stock)
         saveStocks()
       }
@@ -65,13 +65,15 @@ struct ContentView: View {
   }
 
   func stockChanged(to value: Stock) {
-    fetchStockDetails(stock: value) { stock in
+    stockCurrentQuoteNetworkClient.fetchStockDetails(stock: value) { stock in
       stocks.append(stock)
       saveStocks()
     }
   }
 
   // MARK: Private
+
+  private let stockCurrentQuoteNetworkClient = StockCurrentQuoteNetworkClient()
 
   @State private var showingWaitStockView = false
   @State private var newStock = Stock(
@@ -84,52 +86,6 @@ struct ContentView: View {
 
   private func saveStocks() {
     StockCache.shared.saveStocks(stocks)
-  }
-
-  private func buildStockQuoteURL(stock: Stock) -> URL? {
-    let params = [
-      "symbol": stock.symbol,
-    ]
-
-    let url = NetworkingURLBuilder.buildURL(api: "quote", params: params)
-
-    return url
-  }
-
-  private func fetchStockDetails(stock: Stock, completion: @escaping ((Stock) -> Void)) {
-    guard let url = buildStockQuoteURL(stock: stock) else {
-      return
-    }
-
-    AF.request(url).validate().responseData { response in
-      switch response.result {
-        case let .success(data):
-          let decoder = JSONDecoder()
-          let dateFormatter = DateFormatter()
-          dateFormatter.dateFormat = "yyyy-mm-dd"
-          decoder.dateDecodingStrategy = .formatted(dateFormatter)
-
-          guard
-            let stockQuote = try? decoder.decode(StockCurrentQuote.self, from: data)
-          else {
-            logger.error("Failed to decode stock quote")
-            return
-          }
-
-          // TODO(kai) - fix change percent
-          let newStock = Stock(
-            symbol: stockQuote.symbol,
-            name: stock.name,
-            currentPrice: stockQuote.close,
-            expectedPrice: stock.expectedPrice,
-            changePercent: ""
-          )
-
-          completion(newStock)
-        case let .failure(error):
-          logger.error("Failed to fetch stock quote: \(error.localizedDescription)")
-      }
-    }
   }
 }
 
