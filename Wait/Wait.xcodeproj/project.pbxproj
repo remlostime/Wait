@@ -13,6 +13,10 @@
 		E2123A652647158800A29222 /* SwiftyBeaver in Frameworks */ = {isa = PBXBuildFile; productRef = E2123A642647158800A29222 /* SwiftyBeaver */; };
 		E2123A682647198000A29222 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E2123A672647198000A29222 /* SwiftyJSON */; };
 		E2123A6B26472F9400A29222 /* StockCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2123A6A26472F9400A29222 /* StockCache.swift */; };
+		E22428A32675165500F399B2 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = E22428A22675165500F399B2 /* SDWebImageSwiftUI */; };
+		E22428A62675168700F399B2 /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = E22428A52675168700F399B2 /* PopupView */; };
+		E22428A92675170100F399B2 /* ConcentricOnboarding in Frameworks */ = {isa = PBXBuildFile; productRef = E22428A82675170100F399B2 /* ConcentricOnboarding */; };
+		E22428AC2675170E00F399B2 /* ActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = E22428AB2675170E00F399B2 /* ActivityIndicatorView */; };
 		E22A84222669C8B60099F107 /* PartialSheet in Frameworks */ = {isa = PBXBuildFile; productRef = E22A84212669C8B60099F107 /* PartialSheet */; };
 		E23B93E12652D38D00E039D9 /* Money+Format.swift in Sources */ = {isa = PBXBuildFile; fileRef = E23B93E02652D38D00E039D9 /* Money+Format.swift */; };
 		E23B93E42652D52800E039D9 /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E23B93E32652D52800E039D9 /* SwifterSwift */; };
@@ -133,7 +137,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E22428A32675165500F399B2 /* SDWebImageSwiftUI in Frameworks */,
+				E22428A92675170100F399B2 /* ConcentricOnboarding in Frameworks */,
 				E2901FAA264D77EF003A2C01 /* Trace in Frameworks */,
+				E22428AC2675170E00F399B2 /* ActivityIndicatorView in Frameworks */,
 				E284F9202659A2DD002CB3BF /* Introspect in Frameworks */,
 				E2ABEDF5265322FA0001F0F9 /* SnapKit in Frameworks */,
 				E2C859B426438EE500F93321 /* Cache in Frameworks */,
@@ -147,6 +154,7 @@
 				E2ABEDF0265322670001F0F9 /* HMSegmentedControl in Frameworks */,
 				E23EFB282662A82D0038022B /* MBProgressHUD in Frameworks */,
 				E267B86F2667FEBC009979C8 /* NVActivityIndicatorView in Frameworks */,
+				E22428A62675168700F399B2 /* PopupView in Frameworks */,
 				E2A07D9B26520BDD0075E271 /* Hue in Frameworks */,
 				E267B8742667FEE8009979C8 /* FloatingPanel in Frameworks */,
 				E2123A652647158800A29222 /* SwiftyBeaver in Frameworks */,
@@ -332,6 +340,10 @@
 				E267B8732667FEE8009979C8 /* FloatingPanel */,
 				E267B8762667FF66009979C8 /* SkeletonView */,
 				E22A84212669C8B60099F107 /* PartialSheet */,
+				E22428A22675165500F399B2 /* SDWebImageSwiftUI */,
+				E22428A52675168700F399B2 /* PopupView */,
+				E22428A82675170100F399B2 /* ConcentricOnboarding */,
+				E22428AB2675170E00F399B2 /* ActivityIndicatorView */,
 			);
 			productName = Wait;
 			productReference = E2E637A92641A5FB00F872A4 /* Wait.app */;
@@ -379,6 +391,10 @@
 				E267B8722667FEE8009979C8 /* XCRemoteSwiftPackageReference "FloatingPanel" */,
 				E267B8752667FF66009979C8 /* XCRemoteSwiftPackageReference "SkeletonView" */,
 				E22A84202669C8B60099F107 /* XCRemoteSwiftPackageReference "PartialSheet" */,
+				E22428A12675165500F399B2 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
+				E22428A42675168700F399B2 /* XCRemoteSwiftPackageReference "PopupView" */,
+				E22428A72675170100F399B2 /* XCRemoteSwiftPackageReference "ConcentricOnboarding" */,
+				E22428AA2675170E00F399B2 /* XCRemoteSwiftPackageReference "ActivityIndicatorView" */,
 			);
 			productRefGroup = E2E637AA2641A5FB00F872A4 /* Products */;
 			projectDirPath = "";
@@ -683,6 +699,38 @@
 				minimumVersion = 5.0.1;
 			};
 		};
+		E22428A12675165500F399B2 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.2;
+			};
+		};
+		E22428A42675168700F399B2 /* XCRemoteSwiftPackageReference "PopupView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/exyte/PopupView";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+		E22428A72675170100F399B2 /* XCRemoteSwiftPackageReference "ConcentricOnboarding" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/exyte/ConcentricOnboarding";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.6;
+			};
+		};
+		E22428AA2675170E00F399B2 /* XCRemoteSwiftPackageReference "ActivityIndicatorView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/exyte/ActivityIndicatorView";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.7;
+			};
+		};
 		E22A84202669C8B60099F107 /* XCRemoteSwiftPackageReference "PartialSheet" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/AndreaMiotto/PartialSheet";
@@ -817,6 +865,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2123A662647198000A29222 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
 			productName = SwiftyJSON;
+		};
+		E22428A22675165500F399B2 /* SDWebImageSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E22428A12675165500F399B2 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
+			productName = SDWebImageSwiftUI;
+		};
+		E22428A52675168700F399B2 /* PopupView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E22428A42675168700F399B2 /* XCRemoteSwiftPackageReference "PopupView" */;
+			productName = PopupView;
+		};
+		E22428A82675170100F399B2 /* ConcentricOnboarding */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E22428A72675170100F399B2 /* XCRemoteSwiftPackageReference "ConcentricOnboarding" */;
+			productName = ConcentricOnboarding;
+		};
+		E22428AB2675170E00F399B2 /* ActivityIndicatorView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E22428AA2675170E00F399B2 /* XCRemoteSwiftPackageReference "ActivityIndicatorView" */;
+			productName = ActivityIndicatorView;
 		};
 		E22A84212669C8B60099F107 /* PartialSheet */ = {
 			isa = XCSwiftPackageProductDependency;
