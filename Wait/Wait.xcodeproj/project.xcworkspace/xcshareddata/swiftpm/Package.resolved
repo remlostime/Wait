@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "ActivityIndicatorView",
+        "repositoryURL": "https://github.com/exyte/ActivityIndicatorView",
+        "state": {
+          "branch": null,
+          "revision": "04be6321d482f6bce9e3c9412e419831d88a5327",
+          "version": "0.0.7"
+        }
+      },
+      {
         "package": "Alamofire",
         "repositoryURL": "https://github.com/Alamofire/Alamofire",
         "state": {
@@ -26,6 +35,15 @@
           "branch": null,
           "revision": "dbf7fa2891270f88aeafc872ea0beddb344af94b",
           "version": "3.4.0"
+        }
+      },
+      {
+        "package": "ConcentricOnboarding",
+        "repositoryURL": "https://github.com/exyte/ConcentricOnboarding",
+        "state": {
+          "branch": null,
+          "revision": "8ec6051f638f7de72c629368014777ad1346d653",
+          "version": "0.0.6"
         }
       },
       {
@@ -89,6 +107,33 @@
           "branch": null,
           "revision": "936465232b6399e402e79d5b031622af9a5e9960",
           "version": "2.1.11"
+        }
+      },
+      {
+        "package": "PopupView",
+        "repositoryURL": "https://github.com/exyte/PopupView",
+        "state": {
+          "branch": null,
+          "revision": "400826155e93d56cd623ef14df23d7aaa59a3659",
+          "version": "1.0.0"
+        }
+      },
+      {
+        "package": "SDWebImage",
+        "repositoryURL": "https://github.com/SDWebImage/SDWebImage.git",
+        "state": {
+          "branch": null,
+          "revision": "76dd4b49110b8624317fc128e7fa0d8a252018bc",
+          "version": "5.11.1"
+        }
+      },
+      {
+        "package": "SDWebImageSwiftUI",
+        "repositoryURL": "https://github.com/SDWebImage/SDWebImageSwiftUI",
+        "state": {
+          "branch": null,
+          "revision": "cd8625b7cf11a97698e180d28bb7d5d357196678",
+          "version": "2.0.2"
         }
       },
       {
