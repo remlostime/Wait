@@ -9,7 +9,7 @@ extension UIColor {
   static let blackberry = UIColor(hex: "#11222C")
   static let kiwi = UIColor(hex: "#1C5858")
   static let orange = UIColor(hex: "#F69000")
-  static let avocado = UIColor(hex: "#23b8bb")
+  static let mint = UIColor(hex: "#23b8bb")
   static let banana = UIColor(hex: "#F6C624")
 
   // Stock Them

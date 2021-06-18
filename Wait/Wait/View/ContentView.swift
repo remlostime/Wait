@@ -52,7 +52,7 @@ struct ContentView: View {
         NavigationView {
           SearchStockView(isPresented: $showingWaitStockView, stock: $newStock)
         }
-        .accentColor(.avocado)
+        .accentColor(.mint)
       })
     }
     .addPartialSheet(style: .defaultStyle())

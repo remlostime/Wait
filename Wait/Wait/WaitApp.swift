@@ -27,7 +27,7 @@ struct WaitApp: App {
       let stocks = StockCache.shared.getStocks()
       let sheetManager = PartialSheetManager()
       ContentView(stocks: stocks)
-        .accentColor(.avocado)
+        .accentColor(.mint)
         .environmentObject(sheetManager)
     }
   }
