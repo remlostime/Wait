@@ -62,10 +62,6 @@ public class ChartViewController: UIViewController {
 
   private let symbol: String
   private let dataSource: ChartViewDataSource
-  private var isLightMode: Bool {
-    traitCollection.userInterfaceStyle == .light
-  }
-
   private lazy var timeRangeSegmentedControl: HMSegmentedControl = {
     let titles = TimeSection.allCases.map { $0.timeSectionDescription }
     let timeRangeSegmentedControl = HMSegmentedControl(sectionTitles: titles)
@@ -73,7 +69,7 @@ public class ChartViewController: UIViewController {
     timeRangeSegmentedControl.selectionIndicatorHeight = 2.0
     timeRangeSegmentedControl.titleTextAttributes = [
       NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12, weight: .semibold),
-      NSAttributedString.Key.foregroundColor: isLightMode ? UIColor.black : UIColor.white
+      NSAttributedString.Key.foregroundColor: isLightMode ? UIColor.black : UIColor.white,
     ]
     timeRangeSegmentedControl.selectionIndicatorColor = .mint
     timeRangeSegmentedControl.selectedTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.mint]
@@ -204,6 +200,10 @@ public class ChartViewController: UIViewController {
   }()
 
   private var lastNow: TimeInterval = Date().timeIntervalSinceReferenceDate
+
+  private var isLightMode: Bool {
+    traitCollection.userInterfaceStyle == .light
+  }
 
   private var currentPrice: Money<USD> {
     dataSource.currentPrice
