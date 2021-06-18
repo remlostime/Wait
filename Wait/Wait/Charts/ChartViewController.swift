@@ -5,6 +5,7 @@ import Foundation
 import HMSegmentedControl
 import Money
 import SnapKit
+import UIKit
 
 // MARK: - ChartViewController
 
@@ -61,7 +62,6 @@ public class ChartViewController: UIViewController {
 
   private let symbol: String
   private let dataSource: ChartViewDataSource
-
   private lazy var timeRangeSegmentedControl: HMSegmentedControl = {
     let titles = TimeSection.allCases.map { $0.timeSectionDescription }
     let timeRangeSegmentedControl = HMSegmentedControl(sectionTitles: titles)
@@ -69,9 +69,10 @@ public class ChartViewController: UIViewController {
     timeRangeSegmentedControl.selectionIndicatorHeight = 2.0
     timeRangeSegmentedControl.titleTextAttributes = [
       NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12, weight: .semibold),
+      NSAttributedString.Key.foregroundColor: isLightMode ? UIColor.black : UIColor.white,
     ]
-    timeRangeSegmentedControl.selectionIndicatorColor = .avocado
-    timeRangeSegmentedControl.selectedTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.avocado]
+    timeRangeSegmentedControl.selectionIndicatorColor = .mint
+    timeRangeSegmentedControl.selectedTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.mint]
     timeRangeSegmentedControl.selectionIndicatorLocation = .bottom
 
     timeRangeSegmentedControl.snp.makeConstraints { make in
@@ -90,7 +91,7 @@ public class ChartViewController: UIViewController {
       font: .systemFont(ofSize: 14),
       textColor: .gray,
       insets: UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4),
-      circleColor: UIColor.avocado,
+      circleColor: UIColor.mint,
       circleRadius: 4.0,
       timeSection: timeSection ?? .day
     )
@@ -199,6 +200,10 @@ public class ChartViewController: UIViewController {
   }()
 
   private var lastNow: TimeInterval = Date().timeIntervalSinceReferenceDate
+
+  private var isLightMode: Bool {
+    traitCollection.userInterfaceStyle == .light
+  }
 
   private var currentPrice: Money<USD> {
     dataSource.currentPrice

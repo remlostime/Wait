@@ -8,7 +8,7 @@ extension Color {
   static let blackberry = Color(.blackberry)
   static let kiwi = Color(.kiwi)
   static let orange = Color(.orange)
-  static let avocado = Color(.avocado)
+  static let mint = Color(.mint)
   static let banana = Color(.banana)
   static let olive = Color(.olive)
   static let cherry = Color(.cherry)
