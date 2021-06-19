@@ -5,7 +5,7 @@ import Foundation
 import Money
 import UIKit
 
-final class PriceHistoryDataSource: ChartViewDataSource {
+final class PriceHistoryDataSource: ObservableObject, ChartViewDataSource {
   // MARK: Lifecycle
 
   init(symbol: String) {
@@ -21,8 +21,10 @@ final class PriceHistoryDataSource: ChartViewDataSource {
 
   typealias ChartModelType = [TimeSection: [StockQuote]]
 
-  private(set) var chartData: [TimeSection: ChartData]
+  @Published private(set) var chartData: [TimeSection: ChartData]
   weak var delegate: ChartViewDataSourceDelegate?
+
+  var symbol: String
 
   var currentPrice: Money<USD> {
     guard let quote = models[.day]?.first else {
@@ -41,14 +43,14 @@ final class PriceHistoryDataSource: ChartViewDataSource {
   func fetchData(for timeSections: [TimeSection]) {
     models = [:]
 
-//    chartCache.getChartData { [weak self] chartCacheData in
-//      guard let self = self, let chartCacheData = chartCacheData else {
-//        return
-//      }
-//
-//      self.models = chartCacheData
-//      self.updateChartData()
-//    }
+    chartCache.getChartData { [weak self] chartCacheData in
+      guard let self = self, let chartCacheData = chartCacheData else {
+        return
+      }
+
+      self.models = chartCacheData
+      self.updateChartData()
+    }
 
     let group = DispatchGroup()
 
@@ -72,7 +74,6 @@ final class PriceHistoryDataSource: ChartViewDataSource {
 
   // MARK: Private
 
-  private let symbol: String
   private let currentQuoteNetworkClient = StockQuoteNetworkClient()
   private let priceNetworkClient = PriceHistoryNetworkClient()
   private var models: ChartModelType = [:]
@@ -80,13 +81,6 @@ final class PriceHistoryDataSource: ChartViewDataSource {
   private let chartCache: ChartCache<ChartModelType>
 
   private func buildChartData(quotes: [StockQuote]) -> ChartData {
-//    let entries = quotes.compactMap { quote -> ChartDataEntry? in
-//      if let y = quote.close.amountDoubleValue {
-//        return ChartDataEntry(x: quote.date.timeIntervalSince1970, y: y)
-//      } else {
-//        return nil
-//      }
-//    }
     var entries: [ChartDataEntry] = []
     var index = 0
     for quote in quotes {

@@ -81,7 +81,8 @@ struct ContentView: View {
     name: "Facebook",
     currentPrice: 1.0,
     expectedPrice: 1.0,
-    changePercent: "1.8%"
+    changePercent: "1.8%",
+    priceChartImage: nil
   )
 
   private func saveStocks() {
@@ -98,7 +99,8 @@ struct ContentView_Previews: PreviewProvider {
       name: "Facebook",
       currentPrice: 1.0,
       expectedPrice: 2.0,
-      changePercent: "1.8%"
+      changePercent: "1.8%",
+      priceChartImage: nil
     )
 
     ContentView(stocks: [stock])

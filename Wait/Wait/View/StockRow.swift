@@ -1,5 +1,7 @@
 // Created by kai_chen on 5/4/21.
 
+import Charts
+import Combine
 import PartialSheet
 import SwiftUI
 
@@ -11,7 +13,10 @@ struct StockRow: View {
   @EnvironmentObject var sheetManager: PartialSheetManager
   @Binding var stockRowDetailType: StockRowDetailType
 
-  let stock: Stock
+  @State var stock: Stock
+
+  // TODO(kai) - fix this init symbol issue
+  @ObservedObject var priceHistoryDataSource = PriceHistoryDataSource(symbol: "")
 
   var body: some View {
     HStack {
@@ -26,7 +31,17 @@ struct StockRow: View {
 
       Spacer()
 
-      Image(systemName: "plus")
+//      if let priceChartImage = stock.priceChartImage {
+//        if let image = priceChartImage.image {
+//          Image(uiImage: image)
+//        }
+//      }
+
+      if let chartData = priceHistoryDataSource.chartData[.day] {
+        if let image = buildPriceChartImage(chartData: chartData) {
+          Image(uiImage: image)
+        }
+      }
 
       Spacer()
 
@@ -54,6 +69,10 @@ struct StockRow: View {
       .buttonStyle(PlainButtonStyle())
     }
     .padding()
+    .onAppear {
+      priceHistoryDataSource.symbol = stock.symbol
+      priceHistoryDataSource.fetchData(for: [.day])
+    }
   }
 
   // MARK: Private
@@ -71,6 +90,29 @@ struct StockRow: View {
     }
 
     return buttonText
+  }
+
+  private func buildPriceChartImage(chartData: ChartData?) -> UIImage? {
+    guard let chartData = chartData else {
+      return nil
+    }
+
+    let chart = LineChartView(frame: CGRect(x: 0, y: 0, width: 80.0, height: 32.0))
+    chart.setScaleEnabled(false)
+    chart.xAxis.avoidFirstLastClippingEnabled = true
+    chart.minOffset = 0
+    chart.highlightPerTapEnabled = false
+    chart.pinchZoomEnabled = false
+    chart.legend.enabled = false
+    chart.xAxis.enabled = false
+    chart.leftAxis.enabled = false
+    chart.rightAxis.enabled = false
+    chart.isOpaque = false
+
+    chart.data = chartData
+    let image = chart.getChartImage(transparent: true)
+
+    return image
   }
 
   private func isNegativeNumber(_ number: String) -> Bool {
@@ -91,7 +133,8 @@ struct StockRow_Previews: PreviewProvider {
       name: "Facebook Inc - Class A Share",
       currentPrice: 100.0,
       expectedPrice: 200.0,
-      changePercent: "1.8%"
+      changePercent: "1.8%",
+      priceChartImage: nil
     )
 
     StockRow(stockRowDetailType: .constant(.price), stock: stock)
