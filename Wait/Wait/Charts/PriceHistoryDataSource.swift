@@ -4,6 +4,7 @@ import Charts
 import Foundation
 import Money
 import UIKit
+import Color
 
 final class PriceHistoryDataSource: ObservableObject, ChartViewDataSource {
   // MARK: Lifecycle

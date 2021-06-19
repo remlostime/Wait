@@ -4,7 +4,7 @@
 import Foundation
 import SwiftUI
 
-extension Color {
+public extension Color {
   static let blackberry = Color(.blackberry)
   static let kiwi = Color(.kiwi)
   static let orange = Color(.orange)

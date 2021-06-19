@@ -7,6 +7,8 @@ import Foundation
 import NVActivityIndicatorView
 import SnapKit
 import UIKit
+import Color
+import Hue
 
 // MARK: - ActivityIndicatorManager
 

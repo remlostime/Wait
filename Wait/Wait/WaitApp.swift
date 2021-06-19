@@ -5,6 +5,7 @@ import Shake
 import SwiftUI
 import SwiftyBeaver
 import Trace
+import Color
 
 let logger = SwiftyBeaver.self
 
