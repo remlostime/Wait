@@ -24,6 +24,8 @@ final class PriceHistoryDataSource: ObservableObject, ChartViewDataSource {
   @Published private(set) var chartData: [TimeSection: ChartData]
   weak var delegate: ChartViewDataSourceDelegate?
 
+  var symbol: String
+
   var currentPrice: Money<USD> {
     guard let quote = models[.day]?.first else {
       return 0.0
@@ -72,7 +74,6 @@ final class PriceHistoryDataSource: ObservableObject, ChartViewDataSource {
 
   // MARK: Private
 
-  var symbol: String
   private let currentQuoteNetworkClient = StockQuoteNetworkClient()
   private let priceNetworkClient = PriceHistoryNetworkClient()
   private var models: ChartModelType = [:]

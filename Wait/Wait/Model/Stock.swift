@@ -4,6 +4,8 @@ import Foundation
 import Money
 import UIKit
 
+// MARK: - Stock
+
 struct Stock: Codable, Equatable {
   let symbol: String
   let name: String
@@ -19,12 +21,21 @@ struct Stock: Codable, Equatable {
       currentPrice: currentPrice,
       expectedPrice: expectedPrice,
       changePercent: changePercent,
-      priceChartImage: priceChartImage)
+      priceChartImage: priceChartImage
+    )
   }
 }
 
+// MARK: - PriceChartImage
+
 struct PriceChartImage: Codable, Equatable {
-  private let data: Data?
+  // MARK: Lifecycle
+
+  init(image: UIImage) {
+    data = image.pngData()
+  }
+
+  // MARK: Internal
 
   var image: UIImage? {
     guard let data = data else {
@@ -34,7 +45,7 @@ struct PriceChartImage: Codable, Equatable {
     return UIImage(data: data)
   }
 
-  init(image: UIImage) {
-    data = image.pngData()
-  }
+  // MARK: Private
+
+  private let data: Data?
 }

@@ -1,9 +1,9 @@
 // Created by kai_chen on 5/4/21.
 
-import PartialSheet
-import SwiftUI
 import Charts
 import Combine
+import PartialSheet
+import SwiftUI
 
 // MARK: - StockRow
 
@@ -14,6 +14,9 @@ struct StockRow: View {
   @Binding var stockRowDetailType: StockRowDetailType
 
   @State var stock: Stock
+
+  // TODO(kai) - fix this init symbol issue
+  @ObservedObject var priceHistoryDataSource = PriceHistoryDataSource(symbol: "")
 
   var body: some View {
     HStack {
@@ -74,8 +77,20 @@ struct StockRow: View {
 
   // MARK: Private
 
-  // TODO(kai) - fix this init symbol issue
-  @ObservedObject var priceHistoryDataSource: PriceHistoryDataSource = PriceHistoryDataSource(symbol: "")
+  private var buttonText: String {
+    let buttonText: String
+    switch stockRowDetailType {
+      case .price:
+        buttonText = stock.currentPrice.formattedCurrency
+      case .priceChange:
+        buttonText = stock.changePercent
+      case .actionStatus:
+        // todo(kai) - update the right action
+        buttonText = "Wait"
+    }
+
+    return buttonText
+  }
 
   private func buildPriceChartImage(chartData: ChartData?) -> UIImage? {
     guard let chartData = chartData else {
@@ -98,21 +113,6 @@ struct StockRow: View {
     let image = chart.getChartImage(transparent: true)
 
     return image
-  }
-
-  private var buttonText: String {
-    let buttonText: String
-    switch stockRowDetailType {
-      case .price:
-        buttonText = stock.currentPrice.formattedCurrency
-      case .priceChange:
-        buttonText = stock.changePercent
-      case .actionStatus:
-        // todo(kai) - update the right action
-        buttonText = "Wait"
-    }
-
-    return buttonText
   }
 
   private func isNegativeNumber(_ number: String) -> Bool {
