@@ -1,10 +1,10 @@
 // Created by kai_chen on 5/4/21.
 
 import Alamofire
+import Model
 import Money
 import PartialSheet
 import SwiftUI
-import Model
 import SwiftyJSON
 
 extension Binding {

@@ -7,6 +7,26 @@ import UIKit
 // MARK: - Stock
 
 public struct Stock: Codable, Equatable {
+  // MARK: Lifecycle
+
+  public init(
+    symbol: String,
+    name: String,
+    currentPrice: Money<USD>,
+    expectedPrice: Money<USD>,
+    changePercent: String,
+    priceChartImage: PriceChartImage?
+  ) {
+    self.symbol = symbol
+    self.name = name
+    self.currentPrice = currentPrice
+    self.expectedPrice = expectedPrice
+    self.changePercent = changePercent
+    self.priceChartImage = priceChartImage
+  }
+
+  // MARK: Public
+
   public let symbol: String
   public let name: String
   public let currentPrice: Money<USD>
@@ -24,22 +44,6 @@ public struct Stock: Codable, Equatable {
       priceChartImage: priceChartImage
     )
   }
-
-  public init(
-    symbol: String,
-    name: String,
-    currentPrice: Money<USD>,
-    expectedPrice: Money<USD>,
-    changePercent: String,
-    priceChartImage: PriceChartImage?)
-  {
-    self.symbol = symbol
-    self.name = name
-    self.currentPrice = currentPrice
-    self.expectedPrice = expectedPrice
-    self.changePercent = changePercent
-    self.priceChartImage = priceChartImage
-  }
 }
 
 // MARK: - PriceChartImage
@@ -51,7 +55,7 @@ public struct PriceChartImage: Codable, Equatable {
     data = image.pngData()
   }
 
-  // MARK: Internal
+  // MARK: Public
 
   public var image: UIImage? {
     guard let data = data else {

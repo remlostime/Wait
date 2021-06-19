@@ -4,13 +4,23 @@
 import Foundation
 
 public struct SearchStockResult: Decodable {
-  enum CodingKeys: String, CodingKey {
-    case symbol
-    case name = "instrument_name"
-    case exchange
-    case country
-    case currency
+  // MARK: Lifecycle
+
+  public init(
+    symbol: String,
+    name: String,
+    exchange: String,
+    country: String,
+    currency: String
+  ) {
+    self.symbol = symbol
+    self.name = name
+    self.exchange = exchange
+    self.country = country
+    self.currency = currency
   }
+
+  // MARK: Public
 
   public let symbol: String
   public let name: String
@@ -18,17 +28,13 @@ public struct SearchStockResult: Decodable {
   public let country: String
   public let currency: String
 
-  public init(
-    symbol: String,
-    name: String,
-    exchange: String,
-    country: String,
-    currency: String)
-  {
-    self.symbol = symbol
-    self.name = name
-    self.exchange = exchange
-    self.country = country
-    self.currency = currency
+  // MARK: Internal
+
+  enum CodingKeys: String, CodingKey {
+    case symbol
+    case name = "instrument_name"
+    case exchange
+    case country
+    case currency
   }
 }

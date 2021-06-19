@@ -2,9 +2,9 @@
 
 import Charts
 import Combine
+import Model
 import PartialSheet
 import SwiftUI
-import Model
 
 // MARK: - StockRow
 

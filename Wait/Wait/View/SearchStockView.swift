@@ -1,9 +1,9 @@
 // Created by kai_chen on 5/9/21.
 
 import Alamofire
+import Model
 import SwiftUI
 import SwiftyJSON
-import Model
 
 // MARK: - SearchStockView
 

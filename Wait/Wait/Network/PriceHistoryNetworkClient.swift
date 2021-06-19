@@ -2,8 +2,8 @@
 
 import Alamofire
 import Foundation
-import SwiftyJSON
 import Model
+import SwiftyJSON
 
 class PriceHistoryNetworkClient {
   // MARK: Internal

@@ -2,8 +2,8 @@
 
 import Charts
 import Foundation
-import UIKit
 import Model
+import UIKit
 
 class ChartHighlightMarker: MarkerImage {
   // MARK: Lifecycle

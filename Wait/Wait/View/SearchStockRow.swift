@@ -1,7 +1,7 @@
 // Created by kai_chen on 5/9/21.
 
-import SwiftUI
 import Model
+import SwiftUI
 
 // MARK: - SearchStockRow
 

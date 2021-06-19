@@ -4,6 +4,16 @@ import Foundation
 import Money
 
 public struct StockQuote: Codable {
+  // MARK: Public
+
+  public let open: Money<USD>
+  public let high: Money<USD>
+  public let low: Money<USD>
+  public let close: Money<USD>
+  public let date: Date
+
+  // MARK: Internal
+
   enum CodingKeys: String, CodingKey {
     case open
     case high
@@ -11,10 +21,4 @@ public struct StockQuote: Codable {
     case close
     case date = "datetime"
   }
-
-  public let open: Money<USD>
-  public let high: Money<USD>
-  public let low: Money<USD>
-  public let close: Money<USD>
-  public let date: Date
 }
