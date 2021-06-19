@@ -44,23 +44,19 @@ struct StockDetailsView: View {
 
         Spacer()
 
-        Text(action)
-          .foregroundColor(actionColor)
-          .font(.largeTitle)
-          .padding()
+        VStack(alignment: .leading, spacing: 12.0) {
+          Text("Analysis")
+            .font(.title)
 
-        HStack {
-          Text("Expected Price")
-          Spacer()
-          Text(stock.expectedPrice.formattedCurrency)
-        }
-        .padding()
+          HStack(spacing: 12.0) {
+            StockStatsView(title: "Action", value: action)
+            StockStatsView(title: "Expected", value: stock.expectedPrice.formattedCurrency)
+          }
 
-        HStack {
-          Text("Current price")
-          Spacer()
-          Text(comparedToCurrentPriceRate)
-            .foregroundColor(comparedToCurrentPriceRateColor)
+          HStack(spacing: 12.0) {
+            StockStatsView(title: "Current", value: comparedToCurrentPriceRate)
+            StockStatsView(title: "Expected", value: stock.expectedPrice.formattedCurrency)
+          }
         }
         .padding()
 
