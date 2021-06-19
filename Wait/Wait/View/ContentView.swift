@@ -4,6 +4,7 @@ import Alamofire
 import Money
 import PartialSheet
 import SwiftUI
+import Model
 import SwiftyJSON
 
 extension Binding {

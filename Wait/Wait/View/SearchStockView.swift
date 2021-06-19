@@ -3,6 +3,7 @@
 import Alamofire
 import SwiftUI
 import SwiftyJSON
+import Model
 
 // MARK: - SearchStockView
 

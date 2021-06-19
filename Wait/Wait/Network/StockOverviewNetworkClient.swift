@@ -5,6 +5,7 @@
 
 import Alamofire
 import Foundation
+import Model
 
 final class StockOverviewNetworkClient {
   // MARK: Internal

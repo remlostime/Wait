@@ -2,6 +2,7 @@
 
 import Cache
 import Foundation
+import Model
 
 class StockCache {
   // MARK: Lifecycle
