@@ -137,7 +137,7 @@
         }
       },
       {
-        "package": "shake-ios",
+        "package": "Shake",
         "repositoryURL": "https://github.com/shakebugs/shake-ios",
         "state": {
           "branch": null,
@@ -173,7 +173,7 @@
         }
       },
       {
-        "package": "SwiftUI-Introspect",
+        "package": "Introspect",
         "repositoryURL": "https://github.com/siteline/SwiftUI-Introspect",
         "state": {
           "branch": null,
@@ -200,7 +200,7 @@
         }
       },
       {
-        "package": "trace-cocoa-sdk",
+        "package": "BitriseTrace",
         "repositoryURL": "https://github.com/bitrise-io/trace-cocoa-sdk.git",
         "state": {
           "branch": null,

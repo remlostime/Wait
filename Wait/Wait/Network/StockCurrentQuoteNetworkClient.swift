@@ -35,7 +35,8 @@ final class StockCurrentQuoteNetworkClient {
             name: stock.name,
             currentPrice: stockQuote.close,
             expectedPrice: stock.expectedPrice,
-            changePercent: ""
+            changePercent: "",
+            priceChartImage: nil
           )
 
           completion(newStock)

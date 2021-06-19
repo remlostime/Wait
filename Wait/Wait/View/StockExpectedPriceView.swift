@@ -30,7 +30,8 @@ struct StockExpectedPriceView: View {
               name: searchStock.name,
               currentPrice: 1.0,
               expectedPrice: Money<USD>(floatLiteral: Double(expectedPrice) ?? 0.0),
-              changePercent: "1.8%"
+              changePercent: "1.8%",
+              priceChartImage: nil
             )
 
             isPresented.toggle()
@@ -56,7 +57,7 @@ struct WaitStockView_Previews: PreviewProvider {
   static var previews: some View {
     StockExpectedPriceView(
       searchStock: SearchStockResult(symbol: "FB", name: "Facebook", exchange: "NYSE", country: "US", currency: "USD"),
-      stock: .constant(Stock(symbol: "fb", name: "Facebook", currentPrice: 1.0, expectedPrice: 1.0, changePercent: "1.8%")),
+      stock: .constant(Stock(symbol: "fb", name: "Facebook", currentPrice: 1.0, expectedPrice: 1.0, changePercent: "1.8%", priceChartImage: nil)),
       isPresented: .constant(true)
     )
   }

@@ -103,7 +103,8 @@ struct StockDetailsView_Previews: PreviewProvider {
       name: "Facebook",
       currentPrice: 1.0,
       expectedPrice: 2.0,
-      changePercent: "1.8%"
+      changePercent: "1.8%",
+      priceChartImage: nil
     )
 
     StockDetailsView(stock: stock)
