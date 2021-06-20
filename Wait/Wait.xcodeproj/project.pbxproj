@@ -110,13 +110,6 @@
 			remoteGlobalIDString = E2FC102C267E9EB300CD98AF;
 			remoteInfo = Model;
 		};
-		E2FC1043267EA35200CD98AF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E2E637A12641A5FB00F872A4 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = E276556C267E9104002D13CC;
-			remoteInfo = Color;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -450,7 +443,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				E2FC1042267EA31F00CD98AF /* PBXTargetDependency */,
 			);
 			name = Color;
 			packageProductDependencies = (
@@ -472,10 +464,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				E2FC104A267EA36B00CD98AF /* PBXTargetDependency */,
-				E2FC1048267EA36500CD98AF /* PBXTargetDependency */,
-				E2FC1046267EA35F00CD98AF /* PBXTargetDependency */,
-				E2FC1044267EA35200CD98AF /* PBXTargetDependency */,
 			);
 			name = UI;
 			packageProductDependencies = (
@@ -545,7 +533,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				E2FC104C267EA37200CD98AF /* PBXTargetDependency */,
 			);
 			name = Model;
 			packageProductDependencies = (
@@ -742,32 +729,6 @@
 			target = E2FC102C267E9EB300CD98AF /* Model */;
 			targetProxy = E2FC1032267E9EB300CD98AF /* PBXContainerItemProxy */;
 		};
-		E2FC1042267EA31F00CD98AF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			platformFilter = ios;
-			productRef = E2FC1041267EA31F00CD98AF /* Hue */;
-		};
-		E2FC1044267EA35200CD98AF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = E276556C267E9104002D13CC /* Color */;
-			targetProxy = E2FC1043267EA35200CD98AF /* PBXContainerItemProxy */;
-		};
-		E2FC1046267EA35F00CD98AF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			productRef = E2FC1045267EA35F00CD98AF /* NVActivityIndicatorView */;
-		};
-		E2FC1048267EA36500CD98AF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			productRef = E2FC1047267EA36500CD98AF /* Hue */;
-		};
-		E2FC104A267EA36B00CD98AF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			productRef = E2FC1049267EA36B00CD98AF /* SnapKit */;
-		};
-		E2FC104C267EA37200CD98AF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			productRef = E2FC104B267EA37200CD98AF /* Money */;
-		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -918,6 +879,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DISABLE_DIAMOND_PROBLEM_DIAGNOSTIC = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -979,6 +941,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DISABLE_DIAMOND_PROBLEM_DIAGNOSTIC = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1483,31 +1446,6 @@
 			productName = Cache;
 		};
 		E2FC103F267E9EE400CD98AF /* Money */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2BDFCA526518CB90075E619 /* XCRemoteSwiftPackageReference "Money" */;
-			productName = Money;
-		};
-		E2FC1041267EA31F00CD98AF /* Hue */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */;
-			productName = Hue;
-		};
-		E2FC1045267EA35F00CD98AF /* NVActivityIndicatorView */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E267B86D2667FEBC009979C8 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */;
-			productName = NVActivityIndicatorView;
-		};
-		E2FC1047267EA36500CD98AF /* Hue */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */;
-			productName = Hue;
-		};
-		E2FC1049267EA36B00CD98AF /* SnapKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2ABEDF3265322FA0001F0F9 /* XCRemoteSwiftPackageReference "SnapKit" */;
-			productName = SnapKit;
-		};
-		E2FC104B267EA37200CD98AF /* Money */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E2BDFCA526518CB90075E619 /* XCRemoteSwiftPackageReference "Money" */;
 			productName = Money;
