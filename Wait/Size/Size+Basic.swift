@@ -7,6 +7,7 @@ import UIKit
 
 public extension Size {
   // MARK: - Base
+
   static let baseLayoutUnit8: CGFloat = 8
   static let baseLayoutUnit16: CGFloat = baseLayoutUnit8 * 2
   static let baseLayoutUnit24: CGFloat = baseLayoutUnit8 * 3
@@ -19,6 +20,7 @@ public extension Size {
   static let baseLayoutUnit80: CGFloat = baseLayoutUnit8 * 10
 
   // MARK: - Horizontal
+
   static let horizontalPadding8 = baseLayoutUnit8
   static let horizontalPadding16 = baseLayoutUnit16
   static let horizontalPadding24 = baseLayoutUnit24
@@ -31,6 +33,7 @@ public extension Size {
   static let horizontalPadding80 = baseLayoutUnit80
 
   // MARK: - Vertical
+
   static let verticalPadding8 = baseLayoutUnit8
   static let verticalPadding16 = baseLayoutUnit16
   static let verticalPadding24 = baseLayoutUnit24

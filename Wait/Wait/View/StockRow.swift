@@ -4,8 +4,8 @@ import Charts
 import Combine
 import Model
 import PartialSheet
-import SwiftUI
 import Size
+import SwiftUI
 
 // MARK: - StockRow
 
