@@ -38,8 +38,17 @@ struct ContentView: View {
   var body: some View {
     NavigationView {
       List(stocks, id: \.symbol) { stock in
-        NavigationLink(destination: StockDetailsView(stock: stock)) {
+        HStack {
           StockRow(stockRowDetailType: $stockRowDetailType, stock: stock)
+
+          // This is used to remove '>' in the cell
+          // https://stackoverflow.com/questions/58333499/swiftui-navigationlink-hide-arrow
+          // https://stackoverflow.com/questions/56516333/swiftui-navigationbutton-without-the-disclosure-indicator
+          NavigationLink(destination: StockDetailsView(stock: stock)) {
+            EmptyView()
+          }
+          .frame(width: 0)
+          .opacity(0)
         }
       }
       .navigationTitle("Waitlist")
