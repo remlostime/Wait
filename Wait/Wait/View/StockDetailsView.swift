@@ -71,10 +71,6 @@ struct StockDetailsView: View {
     stock.currentPrice > stock.expectedPrice ? "Wait" : "Buy"
   }
 
-  var actionColor: Color {
-    stock.currentPrice > stock.expectedPrice ? .stockRed : .stockGreen
-  }
-
   var comparedToCurrentPriceRate: String {
     let currentPrice = stock.currentPrice.amountDoubleValue ?? 0.0
     let expectedPrice = stock.expectedPrice.amountDoubleValue ?? 0.0
@@ -88,10 +84,6 @@ struct StockDetailsView: View {
       let percentage = String(format: "%.2f", rate * 100.0)
       return "Below \(percentage)%"
     }
-  }
-
-  var comparedToCurrentPriceRateColor: Color {
-    stock.currentPrice > stock.expectedPrice ? .stockRed : .stockGreen
   }
 }
 
