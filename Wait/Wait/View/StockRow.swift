@@ -5,6 +5,7 @@ import Combine
 import Model
 import PartialSheet
 import SwiftUI
+import Size
 
 // MARK: - StockRow
 
@@ -29,8 +30,9 @@ struct StockRow: View {
           .lineLimit(1)
           .foregroundColor(.secondary)
       }
+      .frame(width: 120, alignment: .leading)
 
-      Spacer()
+      Spacer(minLength: Size.horizontalPadding24)
 
 //      if let priceChartImage = stock.priceChartImage {
 //        if let image = priceChartImage.image {
@@ -69,7 +71,7 @@ struct StockRow: View {
       .foregroundColor(isNegativeNumber(stock.changePercent) ? .stockRed : .stockGreen)
       .buttonStyle(PlainButtonStyle())
     }
-    .padding()
+    .padding(.vertical, Size.baseLayoutUnit8)
     .onAppear {
       priceHistoryDataSource.symbol = stock.symbol
       priceHistoryDataSource.fetchData(for: [.day])
