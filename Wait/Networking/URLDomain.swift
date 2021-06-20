@@ -5,12 +5,12 @@ import Foundation
 
 // MARK: - URLDomain
 
-enum URLDomain: String {
+public enum URLDomain: String {
   case alphaVantage = "https://www.alphavantage.co"
   case twelveData = "https://api.twelvedata.com"
 }
 
-extension URLDomain {
+public extension URLDomain {
   var queryItems: [URLQueryItem] {
     switch self {
       case .alphaVantage:

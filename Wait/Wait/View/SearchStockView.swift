@@ -4,6 +4,7 @@ import Alamofire
 import Model
 import SwiftUI
 import SwiftyJSON
+import Networking
 
 // MARK: - SearchStockView
 

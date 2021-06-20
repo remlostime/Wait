@@ -2,8 +2,8 @@
 
 import Foundation
 
-enum NetworkingURLBuilder {
-  static func buildURL(
+public enum NetworkingURLBuilder {
+  public static func buildURL(
     domain: URLDomain = .twelveData,
     api: String,
     params: [String: String?]? = nil

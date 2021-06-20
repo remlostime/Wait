@@ -68,7 +68,7 @@ public class NumberScrollCounter: UIView {
 
     setValue(value, animated: animateInitialValue)
 
-    frame.size.height = digitScrollers.first?.height ?? .zero
+    frame.size.height = digitScrollers.first?.frame.height ?? .zero
 
     sizeToFit()
   }
@@ -458,7 +458,7 @@ public class NumberScrollCounter: UIView {
         scroller.alpha = 0
       }
 
-      var x = startingX + CGFloat(index) * scroller.width
+      var x = startingX + CGFloat(index) * scroller.frame.width
       if index >= seperatorLocation, let seperatorView = seperatorView {
         x += seperatorView.frame.width
       }
