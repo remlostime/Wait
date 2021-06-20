@@ -36,9 +36,9 @@ struct StockRow: View {
 
 //      if let priceChartImage = stock.priceChartImage {
 //        if let image = priceChartImage.image {
-//          Image(uiImage: image)
-//        }
-//      }
+      //          Image(uiImage: image)
+      //        }
+      //      }
 
       if let chartData = priceHistoryDataSource.chartData[.day] {
         if let image = buildPriceChartImage(chartData: chartData) {
@@ -49,23 +49,31 @@ struct StockRow: View {
       Spacer()
 
       Button(buttonText) {
-        self.sheetManager.showPartialSheet {} content: {
-          List {
-            Button("Price") {
-              stockRowDetailType = .price
-              self.sheetManager.closePartialSheet()
-            }
+        self.sheetManager.showPartialSheet {
+          VStack(alignment: .leading, spacing: Size.verticalPadding16) {
+            Text("Holdings Display Data")
 
-            Button("Price Change") {
-              stockRowDetailType = .priceChange
-              self.sheetManager.closePartialSheet()
-            }
+            Divider()
 
-            Button("Action Status") {
-              stockRowDetailType = .actionStatus
-              self.sheetManager.closePartialSheet()
-            }
+            Text("Price")
+              .onTapGesture {
+                stockRowDetailType = .price
+                self.sheetManager.closePartialSheet()
+              }
+
+            Text("Price Change")
+              .onTapGesture {
+                stockRowDetailType = .priceChange
+                self.sheetManager.closePartialSheet()
+              }
+
+            Text("Action Status")
+              .onTapGesture {
+                stockRowDetailType = .actionStatus
+                self.sheetManager.closePartialSheet()
+              }
           }
+          .padding()
         }
       }
       .foregroundColor(isNegativeNumber(stock.changePercent) ? .stockRed : .stockGreen)
