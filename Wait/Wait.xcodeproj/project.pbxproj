@@ -6,6 +6,20 @@
 	objectVersion = 52;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		E2BC41AA267FFCBB00A853D2 /* Unused Code */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = E2BC41AB267FFCBB00A853D2 /* Build configuration list for PBXAggregateTarget "Unused Code" */;
+			buildPhases = (
+				E2BC41AE267FFCFE00A853D2 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = "Unused Code";
+			productName = "Unused Code";
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		E2039B4B265750B3004B3BEF /* Charts in Frameworks */ = {isa = PBXBuildFile; productRef = E2039B4A265750B3004B3BEF /* Charts */; };
 		E20A8115267EE3C5001F31A6 /* URLDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A07D972651C0A20075E271 /* URLDomain.swift */; };
@@ -703,6 +717,9 @@
 						CreatedOnToolsVersion = 12.5;
 						LastSwiftMigration = 1250;
 					};
+					E2BC41AA267FFCBB00A853D2 = {
+						CreatedOnToolsVersion = 12.5;
+					};
 					E2E637A82641A5FB00F872A4 = {
 						CreatedOnToolsVersion = 12.5;
 					};
@@ -746,6 +763,7 @@
 				E22428A42675168700F399B2 /* XCRemoteSwiftPackageReference "PopupView" */,
 				E22428A72675170100F399B2 /* XCRemoteSwiftPackageReference "ConcentricOnboarding" */,
 				E22428AA2675170E00F399B2 /* XCRemoteSwiftPackageReference "ActivityIndicatorView" */,
+				E2BC41A9267FFC7400A853D2 /* XCRemoteSwiftPackageReference "periphery" */,
 			);
 			productRefGroup = E2E637AA2641A5FB00F872A4 /* Products */;
 			projectDirPath = "";
@@ -757,6 +775,7 @@
 				E2FC102C267E9EB300CD98AF /* Model */,
 				E2FC1079267EE38D00CD98AF /* Networking */,
 				E2BC418D267F9C4600A853D2 /* Size */,
+				E2BC41AA267FFCBB00A853D2 /* Unused Code */,
 			);
 		};
 /* End PBXProject section */
@@ -809,6 +828,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		E2BC41AE267FFCFE00A853D2 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "periphery scan --project Wait.xcodeproj --schemes Wait --targets Wait --format xcode\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		E2765569267E9104002D13CC /* Sources */ = {
@@ -1091,6 +1130,22 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		E2BC41AC267FFCBB00A853D2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		E2BC41AD267FFCBB00A853D2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};
@@ -1416,6 +1471,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		E2BC41AB267FFCBB00A853D2 /* Build configuration list for PBXAggregateTarget "Unused Code" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E2BC41AC267FFCBB00A853D2 /* Debug */,
+				E2BC41AD267FFCBB00A853D2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		E2E637A42641A5FB00F872A4 /* Build configuration list for PBXProject "Wait" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1613,6 +1677,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 5.0.1;
+			};
+		};
+		E2BC41A9267FFC7400A853D2 /* XCRemoteSwiftPackageReference "periphery" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/peripheryapp/periphery";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.6.0;
 			};
 		};
 		E2BDFCA526518CB90075E619 /* XCRemoteSwiftPackageReference "Money" */ = {
