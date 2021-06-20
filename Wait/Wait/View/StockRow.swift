@@ -18,7 +18,13 @@ struct StockRow: View {
   @State var stock: Stock
 
   // TODO(kai) - fix this init symbol issue
-  @ObservedObject var priceHistoryDataSource = PriceHistoryDataSource(symbol: "")
+  @ObservedObject var priceHistoryDataSource: PriceHistoryDataSource = PriceHistoryDataSource(symbol: "")
+
+//  init(stockRowDetailType: Binding<StockRowDetailType>, stock: Stock) {
+//    self.stock = stock
+//    self._stockRowDetailType = stockRowDetailType
+//    self.priceHistoryDataSource = PriceHistoryDataSource(symbol: stock.symbol)
+//  }
 
   var body: some View {
     HStack {
@@ -96,8 +102,7 @@ struct StockRow: View {
       case .priceChange:
         buttonText = stock.changePercent
       case .actionStatus:
-        // todo(kai) - update the right action
-        buttonText = "Wait"
+        buttonText = stock.tradeAction.rawValue
     }
 
     return buttonText
