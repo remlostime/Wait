@@ -210,12 +210,6 @@ public class ChartViewController: UIViewController {
     dataSource.currentPrice
   }
 
-  private var changedPrice: Double {
-    let price: Double = currentPrice.amountDoubleValue ?? .zero
-    let priceChangePercent = 0.0
-    return price * priceChangePercent
-  }
-
   private var timeSection: TimeSection? {
     TimeSection(rawValue: Int(timeRangeSegmentedControl.selectedSegmentIndex))
   }

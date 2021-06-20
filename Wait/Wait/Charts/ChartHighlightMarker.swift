@@ -127,7 +127,6 @@ class ChartHighlightMarker: MarkerImage {
 
   private let insets: UIEdgeInsets
   private var label: String?
-  private var paragraphStyle: NSMutableParagraphStyle?
   private var drawAttributes: [NSAttributedString.Key: Any]
   private let circleRadius: CGFloat
 
