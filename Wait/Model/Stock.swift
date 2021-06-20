@@ -46,14 +46,16 @@ public struct Stock: Codable, Equatable {
   }
 }
 
+// MARK: - TradeAction
+
 public enum TradeAction: String, CaseIterable {
   case buy = "Buy"
   case wait = "Wait"
   case almost = "Almost"
 }
 
-extension Stock {
-  public var tradeAction: TradeAction {
+public extension Stock {
+  var tradeAction: TradeAction {
     let diffPercent = 0.05
 
     if currentPrice <= expectedPrice {

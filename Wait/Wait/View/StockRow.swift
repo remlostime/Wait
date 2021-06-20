@@ -18,7 +18,7 @@ struct StockRow: View {
   @State var stock: Stock
 
   // TODO(kai) - fix this init symbol issue
-  @ObservedObject var priceHistoryDataSource: PriceHistoryDataSource = PriceHistoryDataSource(symbol: "")
+  @ObservedObject var priceHistoryDataSource = PriceHistoryDataSource(symbol: "")
 
 //  init(stockRowDetailType: Binding<StockRowDetailType>, stock: Stock) {
 //    self.stock = stock
