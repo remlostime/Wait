@@ -2,6 +2,7 @@
 
 import Charts
 import Foundation
+import Model
 import UIKit
 
 class ChartHighlightMarker: MarkerImage {

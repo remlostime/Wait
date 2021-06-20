@@ -2,6 +2,7 @@
 
 import Charts
 import Combine
+import Model
 import PartialSheet
 import SwiftUI
 

@@ -1,5 +1,6 @@
 // Created by kai_chen on 5/16/21.
 
+import Model
 import SwiftUI
 
 // MARK: - StockDetailsView

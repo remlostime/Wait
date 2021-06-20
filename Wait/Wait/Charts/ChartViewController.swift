@@ -5,6 +5,7 @@ import Foundation
 import HMSegmentedControl
 import Money
 import SnapKit
+import UI
 import UIKit
 
 // MARK: - ChartViewController

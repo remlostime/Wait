@@ -4,7 +4,7 @@ import Foundation
 import Hue
 import UIKit
 
-extension UIColor {
+public extension UIColor {
   // App Theme
   static let blackberry = UIColor(hex: "#11222C")
   static let kiwi = UIColor(hex: "#1C5858")

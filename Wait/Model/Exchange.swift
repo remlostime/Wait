@@ -5,7 +5,7 @@
 
 import Foundation
 
-enum Exchange: String, CaseIterable {
+public enum Exchange: String, CaseIterable {
   case NYSE
   case NASDAQ
 }

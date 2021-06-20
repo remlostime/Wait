@@ -2,6 +2,7 @@
 
 import Alamofire
 import Foundation
+import Model
 import SwiftyJSON
 
 class PriceHistoryNetworkClient {

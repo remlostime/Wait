@@ -5,16 +5,20 @@
 
 import Foundation
 
-struct StockOverview: Decodable {
+public struct StockOverview: Decodable {
+  // MARK: Public
+
+  public let PERatio: String
+  public let PBRatio: String
+  public let marketCap: String
+  public let dividendPerShare: String
+
+  // MARK: Internal
+
   enum CodingKeys: String, CodingKey {
     case PERatio
     case PBRatio = "PriceToBookRatio"
     case marketCap = "MarketCapitalization"
     case dividendPerShare = "DividendPerShare"
   }
-
-  let PERatio: String
-  let PBRatio: String
-  let marketCap: String
-  let dividendPerShare: String
 }
