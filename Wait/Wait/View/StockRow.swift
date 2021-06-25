@@ -36,7 +36,7 @@ struct StockRow: View {
           .lineLimit(1)
           .foregroundColor(.secondary)
       }
-      .frame(width: 120, alignment: .leading)
+      .frame(alignment: .leading)
 
       Spacer(minLength: Size.horizontalPadding24)
 
@@ -52,7 +52,7 @@ struct StockRow: View {
         }
       }
 
-      Spacer()
+      Spacer(minLength: Size.horizontalPadding24)
 
       Button(buttonText) {
         self.sheetManager.showPartialSheet {

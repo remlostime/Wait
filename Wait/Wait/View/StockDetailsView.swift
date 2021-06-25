@@ -11,14 +11,6 @@ struct StockDetailsView: View {
   var body: some View {
     ScrollView {
       VStack(alignment: .leading) {
-        VStack(alignment: .leading) {
-          Text(stock.symbol)
-            .font(.subheadline)
-          Text(stock.name)
-            .font(.title)
-        }
-        .padding()
-
         SwiftUIChartViewController()
           .frame(minHeight: 320.0)
 
@@ -64,6 +56,7 @@ struct StockDetailsView: View {
         Spacer()
       }
       .multilineTextAlignment(.leading)
+      .navigationTitle(stock.name)
     }
   }
 
