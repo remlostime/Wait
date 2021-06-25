@@ -163,7 +163,8 @@ public class ChartViewController: UIViewController {
       scrollDuration: 0.1,
       decimalPlaces: 2,
       prefix: "$",
-      font: .systemFont(ofSize: 32.0)
+      font: .systemFont(ofSize: 32.0),
+      textColor: isLightMode ? .black : .white
     )
 
     let height = priceLabel.bounds.height

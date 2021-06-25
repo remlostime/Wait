@@ -131,7 +131,9 @@ final class PriceHistoryDataSource: ObservableObject, ChartViewDataSource {
       priceHistories[timeSection] = buildChartData(quotes: quotes)
     }
 
-    chartData = priceHistories
-    delegate?.dataDidUpdate(priceHistories)
+    DispatchQueue.main.async {
+      self.chartData = self.priceHistories
+      self.delegate?.dataDidUpdate(self.priceHistories)
+    }
   }
 }
