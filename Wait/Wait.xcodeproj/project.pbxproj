@@ -81,6 +81,7 @@
 		E2BC419D267F9CB900A853D2 /* Size+Basic.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BC419C267F9CB900A853D2 /* Size+Basic.swift */; };
 		E2BDFCA726518CB90075E619 /* Money in Frameworks */ = {isa = PBXBuildFile; productRef = E2BDFCA626518CB90075E619 /* Money */; };
 		E2BE76582641FC3300645629 /* StockExpectedPriceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BE76572641FC3300645629 /* StockExpectedPriceView.swift */; };
+		E2BEC7342686A2210001E426 /* Binding+Change.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BEC7332686A2210001E426 /* Binding+Change.swift */; };
 		E2C859B426438EE500F93321 /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = E2C859B326438EE500F93321 /* Cache */; };
 		E2D2B5D026518A9B001B5E32 /* StockDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D2B5CF26518A9B001B5E32 /* StockDetailsView.swift */; };
 		E2E637AD2641A5FB00F872A4 /* WaitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E637AC2641A5FB00F872A4 /* WaitApp.swift */; };
@@ -210,6 +211,7 @@
 		E2BC419A267F9C8B00A853D2 /* Size.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Size.swift; sourceTree = "<group>"; };
 		E2BC419C267F9CB900A853D2 /* Size+Basic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Size+Basic.swift"; sourceTree = "<group>"; };
 		E2BE76572641FC3300645629 /* StockExpectedPriceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockExpectedPriceView.swift; sourceTree = "<group>"; };
+		E2BEC7332686A2210001E426 /* Binding+Change.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Binding+Change.swift"; sourceTree = "<group>"; };
 		E2D2B5CF26518A9B001B5E32 /* StockDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailsView.swift; sourceTree = "<group>"; };
 		E2E2459426572D7300460D4A /* UIColor+CodeName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+CodeName.swift"; sourceTree = "<group>"; };
 		E2E2459626572DBE00460D4A /* UIColor+Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Theme.swift"; sourceTree = "<group>"; };
@@ -380,6 +382,14 @@
 			path = Size;
 			sourceTree = "<group>";
 		};
+		E2BEC7322686A1EF0001E426 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				E2BEC7332686A2210001E426 /* Binding+Change.swift */,
+			);
+			path = Extension;
+			sourceTree = "<group>";
+		};
 		E2E637A02641A5FB00F872A4 = {
 			isa = PBXGroup;
 			children = (
@@ -413,6 +423,7 @@
 			isa = PBXGroup;
 			children = (
 				E2E637AC2641A5FB00F872A4 /* WaitApp.swift */,
+				E2BEC7322686A1EF0001E426 /* Extension */,
 				E2FC1069267EDF0400CD98AF /* Network */,
 				E2ABEDEB26531EF40001F0F9 /* Charts */,
 				E23B93DF2652D37600E039D9 /* Money */,
@@ -894,6 +905,7 @@
 				E27C62E42653612000DD063C /* ChartHighlightMarker.swift in Sources */,
 				E2FC106C267EDF9700CD98AF /* PriceHistoryNetworkClient.swift in Sources */,
 				E2FC106A267EDF8E00CD98AF /* StockCurrentQuoteNetworkClient.swift in Sources */,
+				E2BEC7342686A2210001E426 /* Binding+Change.swift in Sources */,
 				E2E637AD2641A5FB00F872A4 /* WaitApp.swift in Sources */,
 				E275EDFD264835F000752D8A /* SearchBar.swift in Sources */,
 				E2ABEDED26531F0A0001F0F9 /* SwiftUIChartViewController.swift in Sources */,

@@ -11,7 +11,11 @@ class ChartCache<ChartData: Codable> {
     let memoryConfig = MemoryConfig()
 
     self.symbol = symbol
-    storage = try? Storage(diskConfig: diskConfig, memoryConfig: memoryConfig, transformer: TransformerFactory.forCodable(ofType: ChartData.self))
+    storage = try? Storage(
+      diskConfig: diskConfig,
+      memoryConfig: memoryConfig,
+      transformer: TransformerFactory.forCodable(ofType: ChartData.self)
+    )
   }
 
   // MARK: Internal

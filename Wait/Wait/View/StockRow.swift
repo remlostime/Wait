@@ -7,9 +7,25 @@ import PartialSheet
 import Size
 import SwiftUI
 
+// MARK: - StockRowDetailType
+
+enum StockRowDetailType {
+  case price
+  case priceChange
+  case actionStatus
+}
+
 // MARK: - StockRow
 
 struct StockRow: View {
+  // MARK: Lifecycle
+
+  init(stockRowDetailType: Binding<StockRowDetailType>, stock: Stock) {
+    _stock = State<Stock>(initialValue: stock)
+    _stockRowDetailType = stockRowDetailType
+    priceHistoryDataSource = PriceHistoryDataSource(symbol: stock.symbol)
+  }
+
   // MARK: Internal
 
   @EnvironmentObject var sheetManager: PartialSheetManager
@@ -17,14 +33,7 @@ struct StockRow: View {
 
   @State var stock: Stock
 
-  // TODO(kai) - fix this init symbol issue
-  @ObservedObject var priceHistoryDataSource = PriceHistoryDataSource(symbol: "")
-
-//  init(stockRowDetailType: Binding<StockRowDetailType>, stock: Stock) {
-//    self.stock = stock
-//    self._stockRowDetailType = stockRowDetailType
-//    self.priceHistoryDataSource = PriceHistoryDataSource(symbol: stock.symbol)
-//  }
+  @ObservedObject var priceHistoryDataSource: PriceHistoryDataSource
 
   var body: some View {
     HStack {
@@ -87,7 +96,6 @@ struct StockRow: View {
     }
     .padding(.vertical, Size.baseLayoutUnit8)
     .onAppear {
-      priceHistoryDataSource.symbol = stock.symbol
       priceHistoryDataSource.fetchData(for: [.day])
     }
   }
