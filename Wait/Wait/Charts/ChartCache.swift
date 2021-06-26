@@ -14,7 +14,8 @@ class ChartCache<ChartData: Codable> {
     storage = try? Storage(
       diskConfig: diskConfig,
       memoryConfig: memoryConfig,
-      transformer: TransformerFactory.forCodable(ofType: ChartData.self))
+      transformer: TransformerFactory.forCodable(ofType: ChartData.self)
+    )
   }
 
   // MARK: Internal

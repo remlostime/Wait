@@ -18,6 +18,14 @@ enum StockRowDetailType {
 // MARK: - StockRow
 
 struct StockRow: View {
+  // MARK: Lifecycle
+
+  init(stockRowDetailType: Binding<StockRowDetailType>, stock: Stock) {
+    self.stock = stock
+    _stockRowDetailType = stockRowDetailType
+    priceHistoryDataSource = PriceHistoryDataSource(symbol: stock.symbol)
+  }
+
   // MARK: Internal
 
   @EnvironmentObject var sheetManager: PartialSheetManager
@@ -26,12 +34,6 @@ struct StockRow: View {
   @State var stock: Stock
 
   @ObservedObject var priceHistoryDataSource: PriceHistoryDataSource
-
-  init(stockRowDetailType: Binding<StockRowDetailType>, stock: Stock) {
-    self.stock = stock
-    self._stockRowDetailType = stockRowDetailType
-    self.priceHistoryDataSource = PriceHistoryDataSource(symbol: stock.symbol)
-  }
 
   var body: some View {
     HStack {
