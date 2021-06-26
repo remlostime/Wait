@@ -9,6 +9,25 @@ import SwiftUI
 struct StockExpectedPriceInputView: View {
   // MARK: Internal
 
+  class ExpectedPriceModel: ObservableObject {
+    @Published var formattedPrice = "" {
+      didSet {
+        if let prefix = formattedPrice.first, prefix != "$" {
+          formattedPrice = "$" + formattedPrice
+        }
+      }
+    }
+
+    var price: String {
+      var _price = formattedPrice
+      while let prefix = _price.first, prefix == "$" {
+        _price = String(_price.dropFirst())
+      }
+
+      return _price
+    }
+  }
+
   var searchStock: SearchStockResult
   @Binding var stock: Stock
   @Binding var isPresented: Bool
@@ -41,25 +60,6 @@ struct StockExpectedPriceInputView: View {
   }
 
   // MARK: Private
-
-  class ExpectedPriceModel: ObservableObject {
-    @Published var formattedPrice = "" {
-      didSet {
-        if let prefix = formattedPrice.first, prefix != "$" {
-          formattedPrice = "$" + formattedPrice
-        }
-      }
-    }
-
-    var price: String {
-      var _price = formattedPrice
-      while let prefix = _price.first, prefix == "$" {
-        _price = String(_price.dropFirst())
-      }
-
-      return _price
-    }
-  }
 
   @ObservedObject private var expectedPriceModel = ExpectedPriceModel()
 }
