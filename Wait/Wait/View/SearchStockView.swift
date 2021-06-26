@@ -20,12 +20,13 @@ struct SearchStockView: View {
 
       List {
         ForEach(searchStocks, id: \.symbol) { searchStock in
-          NavigationLink(destination: StockExpectedPriceView(searchStock: searchStock, stock: $stock, isPresented: $isPresented)) {
+          NavigationLink(destination: StockExpectedPriceInputView(searchStock: searchStock, stock: $stock, isPresented: $isPresented)) {
             SearchStockRow(stock: searchStock)
           }
         }
       }
     }
+    .navigationTitle("Companies")
   }
 
   private func buildStockSearchURL(keyword: String) -> URL? {
