@@ -7,6 +7,14 @@ import PartialSheet
 import Size
 import SwiftUI
 
+// MARK: - StockRowDetailType
+
+enum StockRowDetailType {
+  case price
+  case priceChange
+  case actionStatus
+}
+
 // MARK: - StockRow
 
 struct StockRow: View {
@@ -17,14 +25,13 @@ struct StockRow: View {
 
   @State var stock: Stock
 
-  // TODO(kai) - fix this init symbol issue
-  @ObservedObject var priceHistoryDataSource = PriceHistoryDataSource(symbol: "")
+  @ObservedObject var priceHistoryDataSource: PriceHistoryDataSource
 
-//  init(stockRowDetailType: Binding<StockRowDetailType>, stock: Stock) {
-//    self.stock = stock
-//    self._stockRowDetailType = stockRowDetailType
-//    self.priceHistoryDataSource = PriceHistoryDataSource(symbol: stock.symbol)
-//  }
+  init(stockRowDetailType: Binding<StockRowDetailType>, stock: Stock) {
+    self.stock = stock
+    self._stockRowDetailType = stockRowDetailType
+    self.priceHistoryDataSource = PriceHistoryDataSource(symbol: stock.symbol)
+  }
 
   var body: some View {
     HStack {
@@ -87,7 +94,6 @@ struct StockRow: View {
     }
     .padding(.vertical, Size.baseLayoutUnit8)
     .onAppear {
-      priceHistoryDataSource.symbol = stock.symbol
       priceHistoryDataSource.fetchData(for: [.day])
     }
   }

@@ -7,26 +7,6 @@ import PartialSheet
 import SwiftUI
 import SwiftyJSON
 
-extension Binding {
-  func onChange(_ handler: @escaping (Value) -> Void) -> Binding<Value> {
-    Binding(
-      get: { self.wrappedValue },
-      set: { newValue in
-        self.wrappedValue = newValue
-        handler(newValue)
-      }
-    )
-  }
-}
-
-// MARK: - StockRowDetailType
-
-enum StockRowDetailType {
-  case price
-  case priceChange
-  case actionStatus
-}
-
 // MARK: - ContentView
 
 struct ContentView: View {
