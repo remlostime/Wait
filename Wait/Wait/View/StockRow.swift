@@ -21,7 +21,7 @@ struct StockRow: View {
   // MARK: Lifecycle
 
   init(stockRowDetailType: Binding<StockRowDetailType>, stock: Stock) {
-    self.stock = stock
+    _stock = State<Stock>(initialValue: stock)
     _stockRowDetailType = stockRowDetailType
     priceHistoryDataSource = PriceHistoryDataSource(symbol: stock.symbol)
   }
