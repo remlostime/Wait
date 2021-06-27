@@ -12,6 +12,15 @@ import SwiftUI
 final class StockOverviewNetworkClient: ObservableObject {
   // MARK: Internal
 
+  @Published var stockOverview = StockOverview(
+    name: "",
+    description: "",
+    PERatio: "",
+    PBRatio: "",
+    marketCap: "",
+    dividendPerShare: ""
+  )
+
   func fetchStockOverview(stock: Stock) {
     guard let url = buildURL(stock: stock) else {
       return
@@ -37,15 +46,6 @@ final class StockOverviewNetworkClient: ObservableObject {
   }
 
   // MARK: Private
-
-  @Published var stockOverview: StockOverview = StockOverview(
-    name: "",
-    description: "",
-    PERatio: "",
-    PBRatio: "",
-    marketCap: "",
-    dividendPerShare: ""
-  )
 
   private func buildURL(stock: Stock) -> URL? {
     let params = [

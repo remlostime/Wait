@@ -70,8 +70,6 @@ struct StockDetailsView: View {
   var action: String {
     stock.currentPrice > stock.expectedPrice ? "Wait" : "Buy"
   }
-
-
 }
 
 // MARK: - StockDetailsView_Previews

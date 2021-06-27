@@ -6,14 +6,7 @@
 import Foundation
 
 public struct StockOverview: Decodable {
-  // MARK: Public
-
-  public var name: String
-  public var description: String
-  public var PERatio: String
-  public var PBRatio: String
-  public var marketCap: String
-  public var dividendPerShare: String
+  // MARK: Lifecycle
 
   public init(
     name: String,
@@ -31,12 +24,21 @@ public struct StockOverview: Decodable {
     self.dividendPerShare = dividendPerShare
   }
 
+  // MARK: Public
+
+  public var name: String
+  public var description: String
+  public var PERatio: String
+  public var PBRatio: String
+  public var marketCap: String
+  public var dividendPerShare: String
+
   // MARK: Internal
 
   enum CodingKeys: String, CodingKey {
     case name = "Name"
     case description = "Description"
-    case PERatio = "PERatio"
+    case PERatio
     case PBRatio = "PriceToBookRatio"
     case marketCap = "MarketCapitalization"
     case dividendPerShare = "DividendPerShare"
