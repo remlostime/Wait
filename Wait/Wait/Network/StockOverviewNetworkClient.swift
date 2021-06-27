@@ -17,7 +17,7 @@ final class StockOverviewNetworkClient: ObservableObject {
     description: "",
     PERatio: "",
     PBRatio: "",
-    marketCap: "",
+    marketCap: 0,
     dividendPerShare: ""
   )
 

@@ -25,7 +25,7 @@ struct StockDetailsView: View {
             .font(.title)
 
           HStack(spacing: 12.0) {
-            StockStatsView(title: "Market Cap", value: stockOverviewNetworkClient.stockOverview.marketCap)
+            StockStatsView(title: "Market Cap", value: stockOverviewNetworkClient.stockOverview.marketCap.formattedCurrency(format: .short))
             StockStatsView(title: "Avg Div", value: stockOverviewNetworkClient.stockOverview.dividendPerShare)
           }
           .font(.subheadline)

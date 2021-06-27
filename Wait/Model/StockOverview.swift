@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import Money
 
 public struct StockOverview: Decodable {
   // MARK: Lifecycle
@@ -13,7 +14,7 @@ public struct StockOverview: Decodable {
     description: String,
     PERatio: String,
     PBRatio: String,
-    marketCap: String,
+    marketCap: Money<USD>,
     dividendPerShare: String
   ) {
     self.name = name
@@ -30,7 +31,7 @@ public struct StockOverview: Decodable {
   public var description: String
   public var PERatio: String
   public var PBRatio: String
-  public var marketCap: String
+  public var marketCap: Money<USD>
   public var dividendPerShare: String
 
   // MARK: Internal
