@@ -5,7 +5,7 @@ import Foundation
 import Money
 import SwifterSwift
 
-extension Money {
+public extension Money {
   var amountDoubleValue: Double? {
     amount.string.double()
   }

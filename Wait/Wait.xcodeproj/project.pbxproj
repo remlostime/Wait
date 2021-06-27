@@ -33,7 +33,6 @@
 		E22428A92675170100F399B2 /* ConcentricOnboarding in Frameworks */ = {isa = PBXBuildFile; productRef = E22428A82675170100F399B2 /* ConcentricOnboarding */; };
 		E22428AC2675170E00F399B2 /* ActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = E22428AB2675170E00F399B2 /* ActivityIndicatorView */; };
 		E22A84222669C8B60099F107 /* PartialSheet in Frameworks */ = {isa = PBXBuildFile; productRef = E22A84212669C8B60099F107 /* PartialSheet */; };
-		E23B93E12652D38D00E039D9 /* Money+Format.swift in Sources */ = {isa = PBXBuildFile; fileRef = E23B93E02652D38D00E039D9 /* Money+Format.swift */; };
 		E23B93E42652D52800E039D9 /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E23B93E32652D52800E039D9 /* SwifterSwift */; };
 		E23EFB282662A82D0038022B /* MBProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = E23EFB272662A82D0038022B /* MBProgressHUD */; };
 		E25A1E9C266D7CAC004D2B24 /* StockStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A1E9B266D7CAC004D2B24 /* StockStatsView.swift */; };
@@ -74,6 +73,8 @@
 		E2ABEDF9265324690001F0F9 /* ChartViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEDF8265324690001F0F9 /* ChartViewDataSource.swift */; };
 		E2ABEDFB265324D00001F0F9 /* PriceHistoryDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEDFA265324D00001F0F9 /* PriceHistoryDataSource.swift */; };
 		E2ABEE082653376D0001F0F9 /* ChartCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEE072653376D0001F0F9 /* ChartCache.swift */; };
+		E2B5EAA32688105D0092663F /* Money+Format.swift in Sources */ = {isa = PBXBuildFile; fileRef = E23B93E02652D38D00E039D9 /* Money+Format.swift */; };
+		E2B5EAA5268810F00092663F /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E2B5EAA4268810F00092663F /* SwifterSwift */; };
 		E2BC4192267F9C4600A853D2 /* Size.h in Headers */ = {isa = PBXBuildFile; fileRef = E2BC4190267F9C4600A853D2 /* Size.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E2BC4195267F9C4600A853D2 /* Size.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2BC418E267F9C4600A853D2 /* Size.framework */; };
 		E2BC4196267F9C4600A853D2 /* Size.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E2BC418E267F9C4600A853D2 /* Size.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -298,6 +299,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E2FC1040267E9EE400CD98AF /* Money in Frameworks */,
+				E2B5EAA5268810F00092663F /* SwifterSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -317,14 +319,6 @@
 				E2123A6A26472F9400A29222 /* StockCache.swift */,
 			);
 			path = Cache;
-			sourceTree = "<group>";
-		};
-		E23B93DF2652D37600E039D9 /* Money */ = {
-			isa = PBXGroup;
-			children = (
-				E23B93E02652D38D00E039D9 /* Money+Format.swift */,
-			);
-			path = Money;
 			sourceTree = "<group>";
 		};
 		E276556E267E9104002D13CC /* Color */ = {
@@ -426,7 +420,6 @@
 				E2BEC7322686A1EF0001E426 /* Extension */,
 				E2FC1069267EDF0400CD98AF /* Network */,
 				E2ABEDEB26531EF40001F0F9 /* Charts */,
-				E23B93DF2652D37600E039D9 /* Money */,
 				E2123A6926472F7F00A29222 /* Cache */,
 				E2E637BE2641A90E00F872A4 /* View */,
 				E2E637B02641A5FD00F872A4 /* Assets.xcassets */,
@@ -462,6 +455,7 @@
 		E2FC102E267E9EB300CD98AF /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				E23B93E02652D38D00E039D9 /* Money+Format.swift */,
 				E2E637BC2641A7F400F872A4 /* Stock.swift */,
 				E2123A61264713CC00A29222 /* StockCurrentQuote.swift */,
 				E275EE0026483EBF00752D8A /* SearchStock.swift */,
@@ -686,6 +680,7 @@
 			name = Model;
 			packageProductDependencies = (
 				E2FC103F267E9EE400CD98AF /* Money */,
+				E2B5EAA4268810F00092663F /* SwifterSwift */,
 			);
 			productName = Model;
 			productReference = E2FC102D267E9EB300CD98AF /* Model.framework */;
@@ -911,7 +906,6 @@
 				E2ABEDED26531F0A0001F0F9 /* SwiftUIChartViewController.swift in Sources */,
 				E2ABEDF72653235A0001F0F9 /* TimeSection.swift in Sources */,
 				E2ABEDF9265324690001F0F9 /* ChartViewDataSource.swift in Sources */,
-				E23B93E12652D38D00E039D9 /* Money+Format.swift in Sources */,
 				E275EE0326483FE300752D8A /* SearchStockRow.swift in Sources */,
 				E25A1E9C266D7CAC004D2B24 /* StockStatsView.swift in Sources */,
 				E2123A6B26472F9400A29222 /* StockCache.swift in Sources */,
@@ -925,6 +919,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E2B5EAA32688105D0092663F /* Money+Format.swift in Sources */,
 				E2FC1039267E9EBF00CD98AF /* Exchange.swift in Sources */,
 				E2FC103A267E9EBF00CD98AF /* StockOverview.swift in Sources */,
 				E2FC103B267E9EBF00CD98AF /* StockQuote.swift in Sources */,
@@ -1842,6 +1837,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2ABEDF3265322FA0001F0F9 /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
+		};
+		E2B5EAA4268810F00092663F /* SwifterSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E23B93E22652D52800E039D9 /* XCRemoteSwiftPackageReference "SwifterSwift" */;
+			productName = SwifterSwift;
 		};
 		E2BDFCA626518CB90075E619 /* Money */ = {
 			isa = XCSwiftPackageProductDependency;
