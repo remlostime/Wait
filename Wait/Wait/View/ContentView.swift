@@ -31,6 +31,9 @@ struct ContentView: View {
           .opacity(0)
         }
       }
+      .onAppear {
+        stocks = StockCache.shared.getStocks()
+      }
       .navigationTitle("Waitlist")
       .listStyle(InsetListStyle())
       .toolbar(content: {

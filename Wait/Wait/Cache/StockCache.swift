@@ -32,6 +32,22 @@ class StockCache {
     }
   }
 
+  func saveStock(_ stock: Stock) {
+    var stocks = getStocks()
+    stocks.removeAll(stock)
+    stocks.append(stock)
+
+    saveStocks(stocks)
+  }
+
+  func removeStock(_ stock: Stock) {
+    var stocks = getStocks()
+
+    stocks.removeAll(stock)
+    
+    saveStocks(stocks)
+  }
+
   // MARK: Private
 
   private let key = "stocks"
