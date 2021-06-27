@@ -70,8 +70,8 @@ public extension Stock {
   }
 
   var comparedToCurrentPriceRate: String {
-    let currentPrice = currentPrice.amountDoubleValue ?? 0.0
-    let expectedPrice = expectedPrice.amountDoubleValue ?? 0.0
+    let currentPrice = currentPrice.amountDoubleValue
+    let expectedPrice = expectedPrice.amountDoubleValue
 
     if currentPrice > expectedPrice {
       let rate = (currentPrice - expectedPrice) / expectedPrice
