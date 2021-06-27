@@ -6,7 +6,7 @@ import UIKit
 
 // MARK: - Stock
 
-public struct Stock: Codable, Equatable {
+public struct Stock: Codable {
   // MARK: Lifecycle
 
   public init(
@@ -43,6 +43,14 @@ public struct Stock: Codable, Equatable {
       changePercent: changePercent,
       priceChartImage: priceChartImage
     )
+  }
+}
+
+// MARK: Equatable
+
+extension Stock: Equatable {
+  public static func == (lhs: Self, rhs: Self) -> Bool {
+    lhs.symbol == rhs.symbol
   }
 }
 

@@ -6,9 +6,13 @@ import SwiftUI
 // MARK: - StockDetailsView
 
 struct StockDetailsView: View {
+  // MARK: Internal
+
   var stock: Stock
 
   @ObservedObject var stockOverviewNetworkClient = StockOverviewNetworkClient()
+
+  @State var stockIsFavorited: Bool = true
 
   var body: some View {
     ScrollView {
@@ -61,14 +65,37 @@ struct StockDetailsView: View {
       }
       .multilineTextAlignment(.leading)
       .navigationTitle(stock.name)
+      .navigationBarItems(trailing:
+        Button(action: { stockIsFavorited.toggle() }, label: {
+          if stockIsFavorited {
+            Image(systemName: "star.fill")
+              .foregroundColor(.banana)
+          } else {
+            Image(systemName: "star")
+          }
+        })
+      )
     }
     .onAppear {
       stockOverviewNetworkClient.fetchStockOverview(stock: stock)
     }
+    .onChange(of: stockIsFavorited, perform: { value in
+      stockFavoriteAction(value)
+    })
   }
 
   var action: String {
     stock.currentPrice > stock.expectedPrice ? "Wait" : "Buy"
+  }
+
+  // MARK: Private
+
+  private func stockFavoriteAction(_ isFavorited: Bool) {
+    if isFavorited {
+      StockCache.shared.saveStock(stock)
+    } else {
+      StockCache.shared.removeStock(stock)
+    }
   }
 }
 
