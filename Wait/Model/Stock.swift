@@ -46,6 +46,8 @@ public struct Stock: Codable {
   }
 }
 
+// MARK: Equatable
+
 extension Stock: Equatable {
   public static func == (lhs: Self, rhs: Self) -> Bool {
     lhs.symbol == rhs.symbol

@@ -44,7 +44,7 @@ class StockCache {
     var stocks = getStocks()
 
     stocks.removeAll(stock)
-    
+
     saveStocks(stocks)
   }
 

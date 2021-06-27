@@ -6,9 +6,13 @@ import SwiftUI
 // MARK: - StockDetailsView
 
 struct StockDetailsView: View {
+  // MARK: Internal
+
   var stock: Stock
 
   @ObservedObject var stockOverviewNetworkClient = StockOverviewNetworkClient()
+
+  @State var stockIsFavorited: Bool = true
 
   var body: some View {
     ScrollView {
@@ -80,18 +84,18 @@ struct StockDetailsView: View {
     })
   }
 
+  var action: String {
+    stock.currentPrice > stock.expectedPrice ? "Wait" : "Buy"
+  }
+
+  // MARK: Private
+
   private func stockFavoriteAction(_ isFavorited: Bool) {
     if isFavorited {
       StockCache.shared.saveStock(stock)
     } else {
       StockCache.shared.removeStock(stock)
     }
-  }
-
-  @State var stockIsFavorited: Bool = true
-
-  var action: String {
-    stock.currentPrice > stock.expectedPrice ? "Wait" : "Buy"
   }
 }
 
