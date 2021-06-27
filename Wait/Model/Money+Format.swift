@@ -6,17 +6,17 @@ import Money
 import SwifterSwift
 
 public extension Money {
+  enum CurrencyFormat {
+    case short
+    case full
+  }
+
   var amountDoubleValue: Double {
     amount.string.double()!
   }
 
   var formattedCurrency: String {
     formattedCurrency(format: .full)
-  }
-
-  enum CurrencyFormat {
-    case short
-    case full
   }
 
   func formattedCurrency(format: CurrencyFormat = .short) -> String {
@@ -40,8 +40,8 @@ public extension Money {
           case 1_000_000...:
             value = amountDoubleValue / 1_000_000
             suffixSign = "M"
-          case 1_000...:
-            value = amountDoubleValue / 1_000
+          case 1000...:
+            value = amountDoubleValue / 1000
             suffixSign = "K"
           default:
             value = amountDoubleValue
