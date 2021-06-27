@@ -4,9 +4,9 @@ import Charts
 import Combine
 import Model
 import PartialSheet
+import SDWebImageSwiftUI
 import Size
 import SwiftUI
-import SDWebImageSwiftUI
 
 // MARK: - StockRowDetailType
 
