@@ -6,6 +6,7 @@ import Model
 import PartialSheet
 import Size
 import SwiftUI
+import SDWebImageSwiftUI
 
 // MARK: - StockRowDetailType
 
@@ -37,6 +38,11 @@ struct StockRow: View {
 
   var body: some View {
     HStack {
+      WebImage(url: URL(string: "https://assets.brandfetch.io/297077ad416c47d.png"))
+        .resizable()
+        .aspectRatio(contentMode: .fit)
+        .frame(width: 24, height: 24)
+
       VStack(alignment: .leading) {
         Text(stock.symbol)
           .font(.title3)
