@@ -68,6 +68,18 @@ public extension Stock {
       }
     }
   }
+
+  var comparedToCurrentPriceRate: String {
+    if currentPrice > expectedPrice {
+      let rate = (currentPrice.amountDoubleValue - expectedPrice.amountDoubleValue) / expectedPrice.amountDoubleValue
+      let percentage = String(format: "%.2f", rate * 100.0)
+      return "+ \(percentage)%"
+    } else {
+      let rate = (expectedPrice.amountDoubleValue - currentPrice.amountDoubleValue) / expectedPrice.amountDoubleValue
+      let percentage = String(format: "%.2f", rate * 100.0)
+      return "- \(percentage)%"
+    }
+  }
 }
 
 // MARK: - PriceChartImage

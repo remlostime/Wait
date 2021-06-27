@@ -7,11 +7,21 @@ import Alamofire
 import Foundation
 import Model
 import Networking
+import SwiftUI
 
-final class StockOverviewNetworkClient {
+final class StockOverviewNetworkClient: ObservableObject {
   // MARK: Internal
 
-  func fetchStockDetails(stock: Stock, completion: @escaping ((StockOverview) -> Void)) {
+  @Published var stockOverview = StockOverview(
+    name: "",
+    description: "",
+    PERatio: "",
+    PBRatio: "",
+    marketCap: 0,
+    dividendPerShare: ""
+  )
+
+  func fetchStockOverview(stock: Stock) {
     guard let url = buildURL(stock: stock) else {
       return
     }
@@ -28,7 +38,7 @@ final class StockOverviewNetworkClient {
             return
           }
 
-          completion(stockOverview)
+          self.stockOverview = stockOverview
         case let .failure(error):
           logger.error("Failed to fetch stock quote: \(error.localizedDescription)")
       }

@@ -8,13 +8,16 @@ import SwiftUI
 struct StockDetailsView: View {
   var stock: Stock
 
+  @ObservedObject var stockOverviewNetworkClient = StockOverviewNetworkClient()
+
   var body: some View {
     ScrollView {
       VStack(alignment: .leading) {
         SwiftUIChartViewController()
           .frame(minHeight: 320.0)
 
-        Spacer()
+        Divider()
+          .padding()
 
         // TODO(kai) - fill the real data
         VStack(alignment: .leading, spacing: 12.0) {
@@ -22,20 +25,21 @@ struct StockDetailsView: View {
             .font(.title)
 
           HStack(spacing: 12.0) {
-            StockStatsView(title: "Market Cap", value: "174.1B")
-            StockStatsView(title: "Avg Div", value: "9.0")
+            StockStatsView(title: "Market Cap", value: stockOverviewNetworkClient.stockOverview.marketCap.formattedCurrency(format: .short))
+            StockStatsView(title: "Avg Div", value: stockOverviewNetworkClient.stockOverview.dividendPerShare)
           }
           .font(.subheadline)
 
           HStack(spacing: 12.0) {
-            StockStatsView(title: "PE", value: "184.1")
-            StockStatsView(title: "PB", value: "8.0")
+            StockStatsView(title: "PE", value: stockOverviewNetworkClient.stockOverview.PERatio)
+            StockStatsView(title: "PB", value: stockOverviewNetworkClient.stockOverview.PBRatio)
           }
           .font(.subheadline)
         }
         .padding()
 
-        Spacer()
+        Divider()
+          .padding()
 
         VStack(alignment: .leading, spacing: 12.0) {
           Text("Analysis")
@@ -47,7 +51,7 @@ struct StockDetailsView: View {
           }
 
           HStack(spacing: 12.0) {
-            StockStatsView(title: "Current", value: comparedToCurrentPriceRate)
+            StockStatsView(title: "Current", value: stock.comparedToCurrentPriceRate)
             StockStatsView(title: "Expected", value: stock.expectedPrice.formattedCurrency)
           }
         }
@@ -58,25 +62,13 @@ struct StockDetailsView: View {
       .multilineTextAlignment(.leading)
       .navigationTitle(stock.name)
     }
+    .onAppear {
+      stockOverviewNetworkClient.fetchStockOverview(stock: stock)
+    }
   }
 
   var action: String {
     stock.currentPrice > stock.expectedPrice ? "Wait" : "Buy"
-  }
-
-  var comparedToCurrentPriceRate: String {
-    let currentPrice = stock.currentPrice.amountDoubleValue ?? 0.0
-    let expectedPrice = stock.expectedPrice.amountDoubleValue ?? 0.0
-
-    if stock.currentPrice > stock.expectedPrice {
-      let rate = (currentPrice - expectedPrice) / expectedPrice
-      let percentage = String(format: "%.2f", rate * 100.0)
-      return "Above \(percentage)%"
-    } else {
-      let rate = (expectedPrice - currentPrice) / expectedPrice
-      let percentage = String(format: "%.2f", rate * 100.0)
-      return "Below \(percentage)%"
-    }
   }
 }
 

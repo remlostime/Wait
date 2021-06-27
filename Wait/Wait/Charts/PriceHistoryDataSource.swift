@@ -86,9 +86,7 @@ final class PriceHistoryDataSource: ObservableObject, ChartViewDataSource {
     var entries: [ChartDataEntry] = []
     var index = 0
     for quote in quotes {
-      guard let y = quote.close.amountDoubleValue else {
-        continue
-      }
+      let y = quote.close.amountDoubleValue
 
       let data = ChartDataEntry(x: Double(index), y: y, data: quote)
 

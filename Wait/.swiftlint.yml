@@ -4,7 +4,6 @@ only_rules:
   - implicitly_unwrapped_optional
   - generic_type_name
   - force_try
-  - force_unwrapping
   - force_cast
   - discouraged_object_literal
   - discouraged_assert
