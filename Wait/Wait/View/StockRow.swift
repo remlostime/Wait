@@ -2,9 +2,9 @@
 
 import Charts
 import Combine
+import Kingfisher
 import Model
 import PartialSheet
-import SDWebImageSwiftUI
 import Size
 import SwiftUI
 
@@ -38,7 +38,7 @@ struct StockRow: View {
 
   var body: some View {
     HStack {
-      WebImage(url: URL(string: "https://assets.brandfetch.io/297077ad416c47d.png"))
+      KFImage(URL(string: "https://assets.brandfetch.io/297077ad416c47d.png"))
         .resizable()
         .aspectRatio(contentMode: .fit)
         .frame(width: 24, height: 24)
