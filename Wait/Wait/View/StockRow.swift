@@ -2,9 +2,9 @@
 
 import Charts
 import Combine
+import Kingfisher
 import Model
 import PartialSheet
-import Kingfisher
 import Size
 import SwiftUI
 
