@@ -2,15 +2,6 @@
   "object": {
     "pins": [
       {
-        "package": "ActivityIndicatorView",
-        "repositoryURL": "https://github.com/exyte/ActivityIndicatorView",
-        "state": {
-          "branch": null,
-          "revision": "04be6321d482f6bce9e3c9412e419831d88a5327",
-          "version": "0.0.7"
-        }
-      },
-      {
         "package": "AEXML",
         "repositoryURL": "https://github.com/tadija/AEXML",
         "state": {
@@ -44,24 +35,6 @@
           "branch": null,
           "revision": "dbf7fa2891270f88aeafc872ea0beddb344af94b",
           "version": "3.4.0"
-        }
-      },
-      {
-        "package": "ConcentricOnboarding",
-        "repositoryURL": "https://github.com/exyte/ConcentricOnboarding",
-        "state": {
-          "branch": null,
-          "revision": "8ec6051f638f7de72c629368014777ad1346d653",
-          "version": "0.0.6"
-        }
-      },
-      {
-        "package": "FloatingPanel",
-        "repositoryURL": "https://github.com/scenee/FloatingPanel",
-        "state": {
-          "branch": null,
-          "revision": "da4668aa2b8277dd8ce2741ac5c39394431400fc",
-          "version": "2.3.1"
         }
       },
       {
@@ -146,30 +119,12 @@
         }
       },
       {
-        "package": "PopupView",
-        "repositoryURL": "https://github.com/exyte/PopupView",
-        "state": {
-          "branch": null,
-          "revision": "400826155e93d56cd623ef14df23d7aaa59a3659",
-          "version": "1.0.0"
-        }
-      },
-      {
         "package": "Shake",
         "repositoryURL": "https://github.com/shakebugs/shake-ios",
         "state": {
           "branch": null,
           "revision": "bece3fa332e5ff51c5bfd0795629475dcf8af164",
           "version": "14.2.1"
-        }
-      },
-      {
-        "package": "SkeletonView",
-        "repositoryURL": "https://github.com/Juanpe/SkeletonView",
-        "state": {
-          "branch": null,
-          "revision": "74b5172ea5ff0e66e4377d42d7967e1d239c4aba",
-          "version": "1.16.0"
         }
       },
       {
@@ -224,15 +179,6 @@
           "branch": null,
           "revision": "dc813f3aa92f904a009fe543b99d5649dce7c134",
           "version": "5.2.0"
-        }
-      },
-      {
-        "package": "Introspect",
-        "repositoryURL": "https://github.com/siteline/SwiftUI-Introspect",
-        "state": {
-          "branch": null,
-          "revision": "2e09be8af614401bc9f87d40093ec19ce56ccaf2",
-          "version": "0.1.3"
         }
       },
       {

@@ -25,7 +25,6 @@ struct StockDetailsView: View {
         Divider()
           .padding()
 
-        // TODO(kai) - fill the real data
         VStack(alignment: .leading, spacing: 12.0) {
           Text("Stats")
             .font(.title)
@@ -57,8 +56,7 @@ struct StockDetailsView: View {
           }
 
           HStack(spacing: 12.0) {
-            StockStatsView(title: "Current", value: stock.comparedToCurrentPriceRate)
-            StockStatsView(title: "Expected", value: stock.expectedPrice.formattedCurrency)
+            StockStatsView(title: "Current/Expected", value: stock.comparedToCurrentPriceRate)
           }
         }
         .padding()
