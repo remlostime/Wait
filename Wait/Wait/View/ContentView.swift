@@ -32,7 +32,9 @@ struct ContentView: View {
         }
       }
       .onAppear {
-        stocks = StockCache.shared.getStocks()
+        StockCache.shared.getStocks { stocks in
+          self.stocks = stocks
+        }
       }
       .navigationTitle("Waitlist")
       .listStyle(InsetListStyle())

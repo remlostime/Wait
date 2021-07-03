@@ -3,6 +3,7 @@
 import Model
 import Money
 import SwiftUI
+import Size
 
 // MARK: - StockExpectedPriceInputView
 
@@ -38,7 +39,7 @@ struct StockExpectedPriceInputView: View {
 
       TextField("$0", text: $expectedPriceModel.formattedPrice)
         .multilineTextAlignment(.center)
-        .font(Font.system(size: 72))
+        .font(Font.system(size: Size.size72))
 
       Spacer()
 

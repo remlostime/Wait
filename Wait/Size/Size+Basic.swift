@@ -50,4 +50,7 @@ public extension Size {
   static let width48 = baseLayoutUnit48
   static let width64 = baseLayoutUnit64
   static let width72 = baseLayoutUnit72
+
+  // MARK: - Size
+  static let size72 = baseLayoutUnit72
 }
