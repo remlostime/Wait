@@ -24,9 +24,9 @@ class StockCache {
   func getStocks(completion: @escaping (([Stock]) -> Void)) {
     storage?.async.object(forKey: key) { result in
       switch result {
-        case .value(let stocks):
+        case let .value(stocks):
           completion(stocks)
-        case .error(let error):
+        case let .error(error):
           logger.error("Failed to fetch stocks: \(error.localizedDescription)")
       }
     }

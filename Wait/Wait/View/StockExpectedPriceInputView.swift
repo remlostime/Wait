@@ -2,8 +2,8 @@
 
 import Model
 import Money
-import SwiftUI
 import Size
+import SwiftUI
 
 // MARK: - StockExpectedPriceInputView
 
