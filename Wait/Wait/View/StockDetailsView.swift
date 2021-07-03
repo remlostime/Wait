@@ -2,6 +2,8 @@
 
 import Model
 import SwiftUI
+import Kingfisher
+import Size
 
 // MARK: - StockDetailsView
 
@@ -62,6 +64,18 @@ struct StockDetailsView: View {
         .padding()
 
         Spacer()
+
+        VStack(alignment: .leading) {
+          // TODO(kai) - use autocomplet api to search company domain - https://clearbit.com/docs#autocomplete-api
+          KFImage(URL(string: "https://logo.clearbit.com/\(companyDomain)"))
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(maxWidth: Size.width64)
+
+          Text(stockOverviewNetworkClient.stockOverview.description)
+        }
+        .padding()
+
       }
       .multilineTextAlignment(.leading)
       .navigationTitle(stock.name)
@@ -82,6 +96,14 @@ struct StockDetailsView: View {
     .onChange(of: stockIsFavorited, perform: { value in
       stockFavoriteAction(value)
     })
+  }
+
+  private var companyDomain: String {
+    let names = stock.name.split(separator: " ")
+    guard let firstName = names.first else {
+      return ""
+    }
+    return String(firstName) + ".com"
   }
 
   var action: String {
