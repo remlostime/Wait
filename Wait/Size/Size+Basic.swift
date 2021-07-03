@@ -46,6 +46,7 @@ public extension Size {
   static let verticalPadding80 = baseLayoutUnit80
 
   // MARK: - Length
+
   static let width48 = baseLayoutUnit48
   static let width64 = baseLayoutUnit64
   static let width72 = baseLayoutUnit72

@@ -1,9 +1,9 @@
 // Created by kai_chen on 5/16/21.
 
-import Model
-import SwiftUI
 import Kingfisher
+import Model
 import Size
+import SwiftUI
 
 // MARK: - StockDetailsView
 
@@ -75,7 +75,6 @@ struct StockDetailsView: View {
           Text(stockOverviewNetworkClient.stockOverview.description)
         }
         .padding()
-
       }
       .multilineTextAlignment(.leading)
       .navigationTitle(stock.name)
@@ -98,6 +97,12 @@ struct StockDetailsView: View {
     })
   }
 
+  var action: String {
+    stock.currentPrice > stock.expectedPrice ? "Wait" : "Buy"
+  }
+
+  // MARK: Private
+
   private var companyDomain: String {
     let names = stock.name.split(separator: " ")
     guard let firstName = names.first else {
@@ -105,12 +110,6 @@ struct StockDetailsView: View {
     }
     return String(firstName) + ".com"
   }
-
-  var action: String {
-    stock.currentPrice > stock.expectedPrice ? "Wait" : "Buy"
-  }
-
-  // MARK: Private
 
   private func stockFavoriteAction(_ isFavorited: Bool) {
     if isFavorited {
