@@ -64,7 +64,14 @@ class StockCache {
   private let key = "stocks"
 
   private lazy var storage: Storage<String, [Stock]>? = {
-    let diskConfig = DiskConfig(name: "stocks")
+    let diskUrl = try? FileManager.default.url(
+      for: .documentDirectory,
+      in: .userDomainMask,
+      appropriateFor: nil,
+      create: true
+    )
+    let diskConfig = DiskConfig(name: "stocks", directory: diskUrl)
+
     let memoryConfig = MemoryConfig()
 
     let storage = try? Storage<String, [Stock]>(
