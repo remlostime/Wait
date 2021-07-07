@@ -54,7 +54,9 @@ struct WaitApp: App {
   private func setupLogger() {
     let console = ConsoleDestination()
     let file = FileDestination()
-    SwiftyBeaver.addDestination(console)
-    SwiftyBeaver.addDestination(file)
+    let cloud = SBPlatformDestination(appID: "o8QNxr", appSecret: "vrhdvzltfSrrHDfjjzwdjkuboghtghnr", encryptionKey: "Y3ac3wvyk2piCsldmnzowqkxet26kPpJ")
+    logger.addDestination(console)
+    logger.addDestination(file)
+    logger.addDestination(cloud)
   }
 }

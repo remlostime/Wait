@@ -72,7 +72,7 @@ struct ContentView: View {
 
   @State private var showingWaitStockView = false
   @State private var newStock = Stock(
-    symbol: "FB",
+    symbol: "",
     name: "Facebook",
     currentPrice: 1.0,
     expectedPrice: 1.0,
