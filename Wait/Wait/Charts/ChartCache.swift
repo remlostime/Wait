@@ -7,7 +7,15 @@ class ChartCache<ChartData: Codable> {
   // MARK: Lifecycle
 
   init(cacheName: String, symbol: String) {
-    let diskConfig = DiskConfig(name: cacheName)
+    let diskUrl = try? FileManager.default.url(
+      for: .documentDirectory,
+      in: .userDomainMask,
+      appropriateFor: nil,
+      create: true
+    )
+
+    let diskConfig = DiskConfig(name: cacheName, directory: diskUrl)
+
     let memoryConfig = MemoryConfig()
 
     self.symbol = symbol
