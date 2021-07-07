@@ -8,4 +8,6 @@ import Foundation
 public enum Exchange: String, CaseIterable {
   case NYSE
   case NASDAQ
+  case OTC
+  case HKEX
 }
