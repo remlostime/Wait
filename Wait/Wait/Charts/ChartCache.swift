@@ -5,7 +5,7 @@ import Foundation
 
 class ChartCache<ChartData: Codable> {
   // MARK: Lifecycle
-  
+
   init(cacheName: String, symbol: String) {
     let diskUrl = try? FileManager.default.url(
       for: .documentDirectory,
@@ -13,7 +13,7 @@ class ChartCache<ChartData: Codable> {
       appropriateFor: nil,
       create: true
     )
-    
+
     let diskConfig = DiskConfig(name: cacheName, directory: diskUrl)
 
     let memoryConfig = MemoryConfig()
