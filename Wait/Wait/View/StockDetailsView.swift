@@ -1,6 +1,5 @@
 // Created by kai_chen on 5/16/21.
 
-import Kingfisher
 import Model
 import Size
 import SwiftUI
@@ -19,8 +18,8 @@ struct StockDetailsView: View {
   var body: some View {
     ScrollView {
       VStack(alignment: .leading) {
-        SwiftUIChartViewController()
-          .frame(minHeight: 320.0)
+        SwiftUIChartViewController(symbol: stock.symbol)
+          .frame(minHeight: 256.0)
 
         Divider()
           .padding()
@@ -50,27 +49,9 @@ struct StockDetailsView: View {
           Text("Analysis")
             .font(.title)
 
-          HStack(spacing: 12.0) {
-            StockStatsView(title: "Action", value: action)
-            StockStatsView(title: "Expected", value: stock.expectedPrice.formattedCurrency)
-          }
-
-          HStack(spacing: 12.0) {
-            StockStatsView(title: "Current/Expected", value: stock.comparedToCurrentPriceRate)
-          }
-        }
-        .padding()
-
-        Spacer()
-
-        VStack(alignment: .leading) {
-          // TODO(kai) - use autocomplet api to search company domain - https://clearbit.com/docs#autocomplete-api
-          KFImage(URL(string: "https://logo.clearbit.com/\(companyDomain)"))
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .frame(maxWidth: Size.width64)
-
-          Text(stockOverviewNetworkClient.stockOverview.description)
+          StockStatsView(title: "Action", value: stock.tradeAction.rawValue)
+          StockStatsView(title: "Expected", value: stock.expectedPrice.formattedCurrency)
+          StockStatsView(title: "Current/Expected", value: stock.comparedToCurrentPriceRate)
         }
         .padding()
       }
@@ -93,10 +74,6 @@ struct StockDetailsView: View {
     .onChange(of: stockIsFavorited, perform: { value in
       stockFavoriteAction(value)
     })
-  }
-
-  var action: String {
-    stock.currentPrice > stock.expectedPrice ? "Wait" : "Buy"
   }
 
   // MARK: Private

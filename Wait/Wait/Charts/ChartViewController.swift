@@ -45,11 +45,6 @@ public class ChartViewController: UIViewController {
     }
 
     showActivityIndicator()
-    pricePercentageStackView.isHidden = true
-  }
-
-  public override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
 
     fetchData()
   }
@@ -159,7 +154,7 @@ public class ChartViewController: UIViewController {
 
   private lazy var priceLabel: NumberScrollCounter = {
     let priceLabel = NumberScrollCounter(
-      value: currentPrice.amountDoubleValue ?? 0.0,
+      value: currentPrice.amountDoubleValue,
       scrollDuration: 0.1,
       decimalPlaces: 2,
       prefix: "$",
@@ -237,12 +232,13 @@ public class ChartViewController: UIViewController {
 
     guard
       let dataSet = newChartData.dataSets.first,
-      let openPrice = dataSet.entryForIndex(0)?.y,
-      let lastPrice = currentPrice.amountDoubleValue ?? dataSet.entryForIndex(dataSet.entryCount - 1)?.y
+      // TODO(kai) - double check open price is first one or last one
+      let openPrice = dataSet.entryForIndex(0)?.y
     else {
       return
     }
 
+    let lastPrice = currentPrice.amountDoubleValue
     updateDisplayPriceInfo(currentPrice: lastPrice, comparedPrice: openPrice)
 
     if lastPrice >= openPrice {
@@ -256,14 +252,16 @@ public class ChartViewController: UIViewController {
     guard comparedPrice > 0 else {
       return
     }
-    let now = Date().timeIntervalSinceReferenceDate
+//    let now = Date().timeIntervalSinceReferenceDate
+//
+//    // this stops the animation to cut the numbers out
+//    let diff = now - lastNow
+//    if diff > 1 || isMovingTheChart {
+//      lastNow = now
+//      priceLabel.setValue(currentPrice, animated: true)
+//    }
 
-    // this stops the animation to cut the numbers out
-    let diff = now - lastNow
-    if diff > 1 || isMovingTheChart {
-      lastNow = now
-      priceLabel.setValue(currentPrice, animated: true)
-    }
+    priceLabel.setValue(currentPrice, animated: true)
 
     let priceDifference = currentPrice - comparedPrice
     let isPositive = priceDifference >= 0
@@ -305,7 +303,7 @@ extension ChartViewController: ChartViewDelegate {
     dateLabel.isHidden = false
 
     let (beginPrice, _) = getBeginAndEndPrice(chartView: chartView)
-    let currentPrice = self.currentPrice.amountDoubleValue ?? .zero
+    let currentPrice = self.currentPrice.amountDoubleValue
 
     isMovingTheChart = false
     updateDisplayPriceInfo(currentPrice: currentPrice, comparedPrice: beginPrice)
@@ -333,7 +331,7 @@ extension ChartViewController: ChartViewDelegate {
 extension ChartViewController: ChartViewDataSourceDelegate {
   public func currentPriceDidUpdate(_ currentPrice: Money<USD>) {
     let (beginPrice, _) = getBeginAndEndPrice(chartView: chart)
-    let currentPriceDouble = currentPrice.amountDoubleValue ?? .zero
+    let currentPriceDouble = currentPrice.amountDoubleValue
 
     updateDisplayPriceInfo(currentPrice: currentPriceDouble, comparedPrice: beginPrice)
   }
@@ -341,7 +339,6 @@ extension ChartViewController: ChartViewDataSourceDelegate {
   public func dataDidUpdate(_ data: [TimeSection: ChartData]) {
     DispatchQueue.main.async {
       self.hideActivityIndicator()
-      self.pricePercentageStackView.isHidden = false
       self.updateChart(data: data)
     }
   }

@@ -29,7 +29,7 @@ final class PriceHistoryDataSource: ObservableObject, ChartViewDataSource {
   var symbol: String
 
   var currentPrice: Money<USD> {
-    guard let quote = models[.day]?.first else {
+    guard let quote = models[.day]?.last else {
       return 0.0
     }
 
