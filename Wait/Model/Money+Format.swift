@@ -12,7 +12,7 @@ public extension Money {
   }
 
   var amountDoubleValue: Double {
-    amount.string.double()!
+    amount.string.double() ?? 0.0
   }
 
   var formattedCurrency: String {

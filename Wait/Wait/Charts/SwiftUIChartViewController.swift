@@ -7,15 +7,17 @@ import UIKit
 // MARK: - SwiftUIChartViewController
 
 struct SwiftUIChartViewController: UIViewControllerRepresentable {
+  let symbol: String
+
   func makeCoordinator() -> ChartCoordinator {
     ChartCoordinator(self)
   }
 
   func makeUIViewController(context: Context) -> ChartViewController {
-    let dataSource = PriceHistoryDataSource(symbol: "FB")
+    let dataSource = PriceHistoryDataSource(symbol: symbol)
 
     let chartViewController = ChartViewController(
-      symbol: "FB",
+      symbol: symbol,
       dataSource: dataSource,
       showPercent: true,
       selectedTimeSection: .day
