@@ -28,6 +28,8 @@
 		E2123A652647158800A29222 /* SwiftyBeaver in Frameworks */ = {isa = PBXBuildFile; productRef = E2123A642647158800A29222 /* SwiftyBeaver */; };
 		E2123A682647198000A29222 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E2123A672647198000A29222 /* SwiftyJSON */; };
 		E2123A6B26472F9400A29222 /* StockCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2123A6A26472F9400A29222 /* StockCache.swift */; };
+		E2136DD3269A13F90033AEB1 /* ValuationChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2136DD2269A13F90033AEB1 /* ValuationChartViewController.swift */; };
+		E2136DD5269A16530033AEB1 /* SwiftUIValuationChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2136DD4269A16530033AEB1 /* SwiftUIValuationChartViewController.swift */; };
 		E22A84222669C8B60099F107 /* PartialSheet in Frameworks */ = {isa = PBXBuildFile; productRef = E22A84212669C8B60099F107 /* PartialSheet */; };
 		E23B93E42652D52800E039D9 /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E23B93E32652D52800E039D9 /* SwifterSwift */; };
 		E25A1E9C266D7CAC004D2B24 /* StockStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A1E9B266D7CAC004D2B24 /* StockStatsView.swift */; };
@@ -163,6 +165,8 @@
 /* Begin PBXFileReference section */
 		E2123A61264713CC00A29222 /* StockCurrentQuote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCurrentQuote.swift; sourceTree = "<group>"; };
 		E2123A6A26472F9400A29222 /* StockCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCache.swift; sourceTree = "<group>"; };
+		E2136DD2269A13F90033AEB1 /* ValuationChartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValuationChartViewController.swift; sourceTree = "<group>"; };
+		E2136DD4269A16530033AEB1 /* SwiftUIValuationChartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIValuationChartViewController.swift; sourceTree = "<group>"; };
 		E23B93E02652D38D00E039D9 /* Money+Format.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Money+Format.swift"; sourceTree = "<group>"; };
 		E25A1E81266BB862004D2B24 /* Exchange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exchange.swift; sourceTree = "<group>"; };
 		E25A1E92266D633C004D2B24 /* ScrollableCounter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollableCounter.swift; sourceTree = "<group>"; };
@@ -305,6 +309,15 @@
 			path = Cache;
 			sourceTree = "<group>";
 		};
+		E2136DCF269A134D0033AEB1 /* Valuation */ = {
+			isa = PBXGroup;
+			children = (
+				E2136DD2269A13F90033AEB1 /* ValuationChartViewController.swift */,
+				E2136DD4269A16530033AEB1 /* SwiftUIValuationChartViewController.swift */,
+			);
+			path = Valuation;
+			sourceTree = "<group>";
+		};
 		E276556E267E9104002D13CC /* Color */ = {
 			isa = PBXGroup;
 			children = (
@@ -401,6 +414,7 @@
 			isa = PBXGroup;
 			children = (
 				E2E637AC2641A5FB00F872A4 /* WaitApp.swift */,
+				E2136DCF269A134D0033AEB1 /* Valuation */,
 				E2BEC7322686A1EF0001E426 /* Extension */,
 				E2FC1069267EDF0400CD98AF /* Network */,
 				E2ABEDEB26531EF40001F0F9 /* Charts */,
@@ -861,6 +875,7 @@
 				E2E637AF2641A5FB00F872A4 /* ContentView.swift in Sources */,
 				E2FC106B267EDF9300CD98AF /* StockQuoteNetworkClient.swift in Sources */,
 				E2FC106D267EDFA300CD98AF /* StockOverviewNetworkClient.swift in Sources */,
+				E2136DD5269A16530033AEB1 /* SwiftUIValuationChartViewController.swift in Sources */,
 				E2BE76582641FC3300645629 /* StockExpectedPriceInputView.swift in Sources */,
 				E2D2B5D026518A9B001B5E32 /* StockDetailsView.swift in Sources */,
 				E2E637C02641A92A00F872A4 /* StockRow.swift in Sources */,
@@ -876,6 +891,7 @@
 				E2ABEDF9265324690001F0F9 /* ChartViewDataSource.swift in Sources */,
 				E275EE0326483FE300752D8A /* SearchStockRow.swift in Sources */,
 				E25A1E9C266D7CAC004D2B24 /* StockStatsView.swift in Sources */,
+				E2136DD3269A13F90033AEB1 /* ValuationChartViewController.swift in Sources */,
 				E2123A6B26472F9400A29222 /* StockCache.swift in Sources */,
 				E2ABEE082653376D0001F0F9 /* ChartCache.swift in Sources */,
 				E275EDFF26483D6600752D8A /* SearchStockView.swift in Sources */,
