@@ -4,28 +4,15 @@
 //
 
 import Charts
-import UIKit
-import SnapKit
-import Model
 import Color
+import Model
+import SnapKit
+import UIKit
+
+// MARK: - ValuationChartViewController
 
 class ValuationChartViewController: UIViewController {
-
-  private lazy var chartView: HorizontalBarChartView = {
-    let chartView = HorizontalBarChartView()
-    chartView.delegate = self
-    chartView.drawValueAboveBarEnabled = true
-    chartView.xAxis.enabled = false
-    chartView.rightAxis.enabled = false
-
-    let leftAxis = chartView.leftAxis
-    leftAxis.labelFont = .systemFont(ofSize: 14.0)
-    leftAxis.drawGridLinesEnabled = false
-
-    return chartView
-  }()
-
-  private let stock: Stock
+  // MARK: Lifecycle
 
   init(stock: Stock) {
     self.stock = stock
@@ -33,9 +20,12 @@ class ValuationChartViewController: UIViewController {
     super.init(nibName: nil, bundle: nil)
   }
 
+  @available(*, unavailable)
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
+
+  // MARK: Internal
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -46,18 +36,6 @@ class ValuationChartViewController: UIViewController {
     }
 
     setupData()
-  }
-
-  private var currentPirceColor: UIColor {
-    let action = stock.tradeAction
-    switch action {
-      case .buy:
-        return .stockGreen
-      case .wait:
-        return .stockRed
-      case .almost:
-        return .banana
-    }
   }
 
   func setupData() {
@@ -77,10 +55,38 @@ class ValuationChartViewController: UIViewController {
 
     chartView.data = data
   }
+
+  // MARK: Private
+
+  private lazy var chartView: HorizontalBarChartView = {
+    let chartView = HorizontalBarChartView()
+    chartView.delegate = self
+    chartView.drawValueAboveBarEnabled = true
+    chartView.xAxis.enabled = false
+    chartView.rightAxis.enabled = false
+
+    let leftAxis = chartView.leftAxis
+    leftAxis.labelFont = .systemFont(ofSize: 14.0)
+    leftAxis.drawGridLinesEnabled = false
+
+    return chartView
+  }()
+
+  private let stock: Stock
+
+  private var currentPirceColor: UIColor {
+    let action = stock.tradeAction
+    switch action {
+      case .buy:
+        return .stockGreen
+      case .wait:
+        return .stockRed
+      case .almost:
+        return .banana
+    }
+  }
 }
 
 // MARK: ChartViewDelegate
 
-extension ValuationChartViewController: ChartViewDelegate {
-
-}
+extension ValuationChartViewController: ChartViewDelegate {}

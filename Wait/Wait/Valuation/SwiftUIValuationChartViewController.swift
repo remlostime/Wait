@@ -4,12 +4,13 @@
 //
 
 import Foundation
+import Model
 import SwiftUI
 import UIKit
-import Model
+
+// MARK: - SwiftUIValuationChartViewController
 
 struct SwiftUIValuationChartViewController: UIViewControllerRepresentable {
-
   let stock: Stock
 
   func makeCoordinator() -> ValuationChartCoordinator {
