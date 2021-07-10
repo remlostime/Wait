@@ -46,12 +46,11 @@ struct StockDetailsView: View {
           .padding()
 
         VStack(alignment: .leading, spacing: 12.0) {
-          Text("Analysis")
+          Text("Valuation")
             .font(.title)
 
-          StockStatsView(title: "Action", value: stock.tradeAction.rawValue)
-          StockStatsView(title: "Expected", value: stock.expectedPrice.formattedCurrency)
-          StockStatsView(title: "Current/Expected", value: stock.comparedToCurrentPriceRate)
+          SwiftUIValuationChartViewController(stock: stock)
+            .frame(height: 120)
         }
         .padding()
       }
