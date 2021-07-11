@@ -79,14 +79,7 @@ struct ContentView: View {
   private let stockCurrentQuoteNetworkClient = StockCurrentQuoteNetworkClient()
 
   @State private var showingWaitStockView = false
-  @State private var newStock = Stock(
-    symbol: "",
-    name: "Facebook",
-    currentPrice: 1.0,
-    expectedPrice: 1.0,
-    changePercent: "1.8%",
-    priceChartImage: nil
-  )
+  @State private var newStock: Stock = Stock.empty
 
   private func saveStocks() {
     StockCache.shared.saveStocks(stocks)

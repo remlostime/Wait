@@ -71,6 +71,16 @@ public enum TradeAction: String, CaseIterable {
 }
 
 public extension Stock {
+  static var empty: Self {
+    Stock(
+      symbol: "",
+      name: "",
+      currentPrice: 0.0,
+      expectedPrice: 0.0,
+      changePercent: "",
+      priceChartImage: nil)
+  }
+
   var tradeAction: TradeAction {
     let diffPercent = 0.05
 

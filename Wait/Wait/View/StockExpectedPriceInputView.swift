@@ -40,6 +40,7 @@ struct StockExpectedPriceInputView: View {
       TextField("$0", text: $expectedPriceModel.formattedPrice)
         .multilineTextAlignment(.center)
         .font(Font.system(size: Size.size72))
+        .keyboardType(.numberPad)
 
       Spacer()
 

@@ -49,6 +49,7 @@ struct StockRow: View {
 
       Spacer(minLength: Size.horizontalPadding24)
 
+      // TODO(kai) - Fix the image cache issue, since onAppear only run once
       if let chartData = priceHistoryDataSource.chartData[.day],
          let image = buildPriceChartImage(chartData: chartData)
       {
