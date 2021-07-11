@@ -75,7 +75,7 @@ struct ContentView: View {
         guard let stock = stock else {
           return
         }
-        
+
         stocks.append(stock)
         saveStocks()
       }

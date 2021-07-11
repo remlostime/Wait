@@ -49,4 +49,3 @@ class StockChartImageCache {
     return storage
   }()
 }
-

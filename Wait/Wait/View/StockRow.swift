@@ -55,7 +55,7 @@ struct StockRow: View {
           .frame(width: 80.0, height: 32.0)
           .scaledToFit()
       } else if let chartData = priceHistoryDataSource.chartData[.day],
-         let image = buildPriceChartImage(chartData: chartData)
+                let image = buildPriceChartImage(chartData: chartData)
       {
         Image(uiImage: image)
           .resizable()
