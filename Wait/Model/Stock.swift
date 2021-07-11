@@ -3,6 +3,8 @@
 import Foundation
 import Money
 import UIKit
+import Color
+import SwiftUI
 
 // MARK: - Stock
 
@@ -85,6 +87,37 @@ public extension Stock {
 
   var comparedToCurrentPriceRate: String {
     String(format: "%.2f", currentPrice.amountDoubleValue / expectedPrice.amountDoubleValue)
+  }
+
+  var isChangePercentNegative: Bool {
+    guard let first = self.changePercent.first else {
+      return false
+    }
+
+    return first == "-"
+  }
+
+  var priceUIColor: UIColor {
+    isChangePercentNegative ? .stockRed : .stockGreen
+  }
+
+  var priceColor: Color {
+    Color(priceUIColor)
+  }
+
+  var actionUIColor: UIColor {
+    switch tradeAction {
+      case .buy:
+        return .stockGreen
+      case .wait:
+        return .stockRed
+      case .almost:
+        return .banana
+    }
+  }
+
+  var actionColor: Color {
+    Color(actionUIColor)
   }
 }
 
