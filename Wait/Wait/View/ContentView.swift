@@ -17,7 +17,7 @@ struct ContentView: View {
 
   var body: some View {
     NavigationView {
-      List(stocks, id: \.id) { stock in
+      List(stocks, id: \.symbol) { stock in
         HStack {
           StockRow(stockRowDetailType: $stockRowDetailType, stock: stock)
 
@@ -33,8 +33,6 @@ struct ContentView: View {
       }
       .onAppear {
         StockCache.shared.getStocks { stocks in
-          self.stocks = stocks
-
           let group = DispatchGroup()
           var updatedStocks = stocks
           for (index, stock) in stocks.enumerated() {
@@ -45,7 +43,6 @@ struct ContentView: View {
             }
           }
 
-          // TODO(kai) - Somehow, `stocks` is not updated
           group.notify(queue: DispatchQueue.main) {
             self.stocks = updatedStocks
           }
