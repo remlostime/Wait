@@ -11,7 +11,7 @@ import Networking
 final class StockCurrentQuoteNetworkClient {
   // MARK: Internal
 
-  func fetchStockDetails(stock: Stock, completion: @escaping ((Stock) -> Void)) {
+  func fetchStockDetails(stock: Stock, completion: @escaping ((Stock?) -> Void)) {
     guard let url = buildStockQuoteURL(stock: stock) else {
       return
     }
@@ -29,6 +29,7 @@ final class StockCurrentQuoteNetworkClient {
             let stockQuote = try? decoder.decode(StockCurrentQuote.self, from: data)
           else {
             logger.error("Failed to decode stock quote")
+            completion(nil)
             return
           }
 
@@ -44,6 +45,7 @@ final class StockCurrentQuoteNetworkClient {
           completion(newStock)
         case let .failure(error):
           logger.error("Failed to fetch stock quote: \(error.localizedDescription)")
+          completion(nil)
       }
     }
   }

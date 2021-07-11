@@ -137,7 +137,7 @@ public extension Stock {
 public struct PriceChartImage: Codable, Equatable {
   // MARK: Lifecycle
 
-  init(image: UIImage) {
+  public init(image: UIImage) {
     data = image.pngData()
   }
 

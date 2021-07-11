@@ -49,11 +49,18 @@ struct StockRow: View {
 
       Spacer(minLength: Size.horizontalPadding24)
 
-      // TODO(kai) - Fix the image cache issue, since onAppear only run once
-      if let chartData = priceHistoryDataSource.chartData[.day],
+      if let image = StockChartImageCache.shared.getImage(symbol: stock.symbol)?.image {
+        Image(uiImage: image)
+          .resizable()
+          .frame(width: 80.0, height: 32.0)
+          .scaledToFit()
+      } else if let chartData = priceHistoryDataSource.chartData[.day],
          let image = buildPriceChartImage(chartData: chartData)
       {
         Image(uiImage: image)
+          .resizable()
+          .frame(width: 80.0, height: 32.0)
+          .scaledToFit()
       }
 
       Spacer(minLength: Size.horizontalPadding24)
@@ -92,6 +99,14 @@ struct StockRow: View {
     .padding(.vertical, Size.baseLayoutUnit8)
     .onAppear {
       priceHistoryDataSource.fetchData(for: [.day])
+    }
+    .onDisappear {
+      if let chartData = priceHistoryDataSource.chartData[.day],
+         let image = buildPriceChartImage(chartData: chartData)
+      {
+        let stockImage = PriceChartImage(image: image)
+        StockChartImageCache.shared.saveImage(symbol: stock.symbol, image: stockImage)
+      }
     }
     .onLongPressGesture {
       self.sheetManager.showPartialSheet {
