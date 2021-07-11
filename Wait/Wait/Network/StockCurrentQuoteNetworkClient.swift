@@ -23,6 +23,7 @@ final class StockCurrentQuoteNetworkClient {
           let dateFormatter = DateFormatter()
           dateFormatter.dateFormat = "yyyy-mm-dd"
           decoder.dateDecodingStrategy = .formatted(dateFormatter)
+          decoder.keyDecodingStrategy = .convertFromSnakeCase
 
           guard
             let stockQuote = try? decoder.decode(StockCurrentQuote.self, from: data)
@@ -31,13 +32,12 @@ final class StockCurrentQuoteNetworkClient {
             return
           }
 
-          // TODO(kai) - fix change percent
           let newStock = Stock(
             symbol: stockQuote.symbol,
             name: stock.name,
             currentPrice: stockQuote.close,
             expectedPrice: stock.expectedPrice,
-            changePercent: "",
+            changePercent: stockQuote.percentChange,
             priceChartImage: nil
           )
 

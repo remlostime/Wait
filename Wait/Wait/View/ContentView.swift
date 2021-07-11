@@ -13,11 +13,11 @@ struct ContentView: View {
   // MARK: Internal
 
   @State var stocks: [Stock]
-  @State var stockRowDetailType: StockRowDetailType = .price
+  @State var stockRowDetailType: StockRowDetailType = .actionStatus
 
   var body: some View {
     NavigationView {
-      List(stocks, id: \.symbol) { stock in
+      List(stocks, id: \.id) { stock in
         HStack {
           StockRow(stockRowDetailType: $stockRowDetailType, stock: stock)
 
@@ -34,7 +34,25 @@ struct ContentView: View {
       .onAppear {
         StockCache.shared.getStocks { stocks in
           self.stocks = stocks
+
+          let group = DispatchGroup()
+          var updatedStocks = stocks
+          for (index, stock) in stocks.enumerated() {
+            group.enter()
+            stockCurrentQuoteNetworkClient.fetchStockDetails(stock: stock) { stock in
+              updatedStocks[index] = stock
+              group.leave()
+            }
+          }
+
+          // TODO(kai) - Somehow, `stocks` is not updated
+          group.notify(queue: DispatchQueue.main) {
+            self.stocks = updatedStocks
+          }
         }
+      }
+      .onDisappear {
+        saveStocks()
       }
       .navigationTitle("Waitlist")
       .listStyle(InsetListStyle())
@@ -57,13 +75,6 @@ struct ContentView: View {
         saveStocks()
       }
     })
-  }
-
-  func stockChanged(to value: Stock) {
-    stockCurrentQuoteNetworkClient.fetchStockDetails(stock: value) { stock in
-      stocks.append(stock)
-      saveStocks()
-    }
   }
 
   // MARK: Private

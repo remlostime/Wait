@@ -108,7 +108,7 @@ struct StockRow: View {
       case .price:
         buttonText = stock.currentPrice.formattedCurrency
       case .priceChange:
-        buttonText = stock.changePercent
+        buttonText = stock.formattedChangePercent
       case .actionStatus:
         buttonText = stock.tradeAction.rawValue
     }
