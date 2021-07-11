@@ -12,4 +12,5 @@ public struct StockCurrentQuote: Codable {
   public let close: Money<USD>
   public let volume: String
   public let datetime: Date
+  public let percentChange: String
 }

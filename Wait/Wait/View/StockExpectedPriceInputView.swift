@@ -44,6 +44,7 @@ struct StockExpectedPriceInputView: View {
       Spacer()
 
       Button("Add") {
+        // TODO(kai) - fix chnage Percent
         stock = Stock(
           symbol: searchStock.symbol,
           name: searchStock.name,

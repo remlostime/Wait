@@ -232,7 +232,6 @@ public class ChartViewController: UIViewController {
 
     guard
       let dataSet = newChartData.dataSets.first,
-      // TODO(kai) - double check open price is first one or last one
       let openPrice = dataSet.entryForIndex(0)?.y
     else {
       return
