@@ -40,10 +40,6 @@ public struct Stock: Codable {
     return formattedChangePercent
   }
 
-  public var id: String {
-    symbol + "_" + changePercent
-  }
-
   public func with(priceChartImage: PriceChartImage) -> Self {
     Self(
       symbol: symbol,
