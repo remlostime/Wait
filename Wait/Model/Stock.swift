@@ -78,7 +78,8 @@ public extension Stock {
       currentPrice: 0.0,
       expectedPrice: 0.0,
       changePercent: "",
-      priceChartImage: nil)
+      priceChartImage: nil
+    )
   }
 
   var tradeAction: TradeAction {

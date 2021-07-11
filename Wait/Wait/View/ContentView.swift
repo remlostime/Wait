@@ -79,7 +79,7 @@ struct ContentView: View {
   private let stockCurrentQuoteNetworkClient = StockCurrentQuoteNetworkClient()
 
   @State private var showingWaitStockView = false
-  @State private var newStock: Stock = Stock.empty
+  @State private var newStock = Stock.empty
 
   private func saveStocks() {
     StockCache.shared.saveStocks(stocks)
