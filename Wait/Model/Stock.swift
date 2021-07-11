@@ -33,6 +33,7 @@ public struct Stock: Codable {
   public let expectedPrice: Money<USD>
   public let changePercent: String
   public let priceChartImage: PriceChartImage?
+
   public var formattedChangePercent: String {
     let changePercentDouble = Double(changePercent) ?? 0.0
     let formattedChangePercent = String(format: "%.2f", changePercentDouble) + "%"
