@@ -30,6 +30,7 @@
 		E2123A6B26472F9400A29222 /* StockCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2123A6A26472F9400A29222 /* StockCache.swift */; };
 		E2136DD3269A13F90033AEB1 /* ValuationChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2136DD2269A13F90033AEB1 /* ValuationChartViewController.swift */; };
 		E2136DD5269A16530033AEB1 /* SwiftUIValuationChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2136DD4269A16530033AEB1 /* SwiftUIValuationChartViewController.swift */; };
+		E21D2E7A269B6DF80063C7ED /* Color.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E276556D267E9104002D13CC /* Color.framework */; };
 		E22A84222669C8B60099F107 /* PartialSheet in Frameworks */ = {isa = PBXBuildFile; productRef = E22A84212669C8B60099F107 /* PartialSheet */; };
 		E23B93E42652D52800E039D9 /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E23B93E32652D52800E039D9 /* SwifterSwift */; };
 		E25A1E9C266D7CAC004D2B24 /* StockStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A1E9B266D7CAC004D2B24 /* StockStatsView.swift */; };
@@ -286,6 +287,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E21D2E7A269B6DF80063C7ED /* Color.framework in Frameworks */,
 				E2FC1040267E9EE400CD98AF /* Money in Frameworks */,
 				E2B5EAA5268810F00092663F /* SwifterSwift in Frameworks */,
 			);

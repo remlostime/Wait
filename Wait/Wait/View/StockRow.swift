@@ -49,16 +49,10 @@ struct StockRow: View {
 
       Spacer(minLength: Size.horizontalPadding24)
 
-//      if let priceChartImage = stock.priceChartImage {
-//        if let image = priceChartImage.image {
-      //          Image(uiImage: image)
-      //        }
-      //      }
-
-      if let chartData = priceHistoryDataSource.chartData[.day] {
-        if let image = buildPriceChartImage(chartData: chartData) {
-          Image(uiImage: image)
-        }
+      if let chartData = priceHistoryDataSource.chartData[.day],
+         let image = buildPriceChartImage(chartData: chartData)
+      {
+        Image(uiImage: image)
       }
 
       Spacer(minLength: Size.horizontalPadding24)
@@ -91,7 +85,7 @@ struct StockRow: View {
           .padding()
         }
       }
-      .foregroundColor(isNegativeNumber(stock.changePercent) ? .stockRed : .stockGreen)
+      .foregroundColor(stockRowDetailType == .actionStatus ? stock.actionColor : stock.priceColor)
       .buttonStyle(PlainButtonStyle())
     }
     .padding(.vertical, Size.baseLayoutUnit8)
@@ -165,14 +159,6 @@ struct StockRow: View {
     let image = chart.getChartImage(transparent: true)
 
     return image
-  }
-
-  private func isNegativeNumber(_ number: String) -> Bool {
-    guard !number.isEmpty else {
-      return false
-    }
-
-    return number.first == "-"
   }
 }
 
