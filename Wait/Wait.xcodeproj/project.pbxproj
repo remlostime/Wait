@@ -78,6 +78,7 @@
 		E2BDFCA726518CB90075E619 /* Money in Frameworks */ = {isa = PBXBuildFile; productRef = E2BDFCA626518CB90075E619 /* Money */; };
 		E2BE76582641FC3300645629 /* StockExpectedPriceInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BE76572641FC3300645629 /* StockExpectedPriceInputView.swift */; };
 		E2BEC7342686A2210001E426 /* Binding+Change.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BEC7332686A2210001E426 /* Binding+Change.swift */; };
+		E2C3D363269B889000466CC3 /* StockChartImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C3D362269B889000466CC3 /* StockChartImageCache.swift */; };
 		E2C859B426438EE500F93321 /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = E2C859B326438EE500F93321 /* Cache */; };
 		E2D2B5D026518A9B001B5E32 /* StockDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D2B5CF26518A9B001B5E32 /* StockDetailsView.swift */; };
 		E2E637AD2641A5FB00F872A4 /* WaitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E637AC2641A5FB00F872A4 /* WaitApp.swift */; };
@@ -210,6 +211,7 @@
 		E2BC419C267F9CB900A853D2 /* Size+Basic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Size+Basic.swift"; sourceTree = "<group>"; };
 		E2BE76572641FC3300645629 /* StockExpectedPriceInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockExpectedPriceInputView.swift; sourceTree = "<group>"; };
 		E2BEC7332686A2210001E426 /* Binding+Change.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Binding+Change.swift"; sourceTree = "<group>"; };
+		E2C3D362269B889000466CC3 /* StockChartImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockChartImageCache.swift; sourceTree = "<group>"; };
 		E2D2B5CF26518A9B001B5E32 /* StockDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailsView.swift; sourceTree = "<group>"; };
 		E2E2459426572D7300460D4A /* UIColor+CodeName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+CodeName.swift"; sourceTree = "<group>"; };
 		E2E2459626572DBE00460D4A /* UIColor+Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Theme.swift"; sourceTree = "<group>"; };
@@ -307,6 +309,7 @@
 			isa = PBXGroup;
 			children = (
 				E2123A6A26472F9400A29222 /* StockCache.swift */,
+				E2C3D362269B889000466CC3 /* StockChartImageCache.swift */,
 			);
 			path = Cache;
 			sourceTree = "<group>";
@@ -891,6 +894,7 @@
 				E2ABEDED26531F0A0001F0F9 /* SwiftUIChartViewController.swift in Sources */,
 				E2ABEDF72653235A0001F0F9 /* TimeSection.swift in Sources */,
 				E2ABEDF9265324690001F0F9 /* ChartViewDataSource.swift in Sources */,
+				E2C3D363269B889000466CC3 /* StockChartImageCache.swift in Sources */,
 				E275EE0326483FE300752D8A /* SearchStockRow.swift in Sources */,
 				E25A1E9C266D7CAC004D2B24 /* StockStatsView.swift in Sources */,
 				E2136DD3269A13F90033AEB1 /* ValuationChartViewController.swift in Sources */,

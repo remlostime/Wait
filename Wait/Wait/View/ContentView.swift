@@ -35,10 +35,14 @@ struct ContentView: View {
         StockCache.shared.getStocks { stocks in
           let group = DispatchGroup()
           var updatedStocks = stocks
+
           for (index, stock) in stocks.enumerated() {
             group.enter()
             stockCurrentQuoteNetworkClient.fetchStockDetails(stock: stock) { stock in
-              updatedStocks[index] = stock
+              if let stock = stock {
+                updatedStocks[index] = stock
+              }
+
               group.leave()
             }
           }
@@ -68,6 +72,10 @@ struct ContentView: View {
     .addPartialSheet(style: .defaultStyle())
     .onChange(of: newStock, perform: { value in
       stockCurrentQuoteNetworkClient.fetchStockDetails(stock: value) { stock in
+        guard let stock = stock else {
+          return
+        }
+
         stocks.append(stock)
         saveStocks()
       }
