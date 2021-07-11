@@ -1,10 +1,10 @@
 // Created by kai_chen on 5/4/21.
 
+import Color
 import Foundation
 import Money
-import UIKit
-import Color
 import SwiftUI
+import UIKit
 
 // MARK: - Stock
 
@@ -90,7 +90,7 @@ public extension Stock {
   }
 
   var isChangePercentNegative: Bool {
-    guard let first = self.changePercent.first else {
+    guard let first = changePercent.first else {
       return false
     }
 

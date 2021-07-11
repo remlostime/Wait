@@ -81,7 +81,6 @@ struct StockRow: View {
                 stockRowDetailType = .actionStatus
                 self.sheetManager.closePartialSheet()
               }
-
           }
           .padding()
         }
