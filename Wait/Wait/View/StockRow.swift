@@ -108,34 +108,6 @@ struct StockRow: View {
         StockChartImageCache.shared.saveImage(symbol: stock.symbol, image: stockImage)
       }
     }
-    .onLongPressGesture {
-      self.sheetManager.showPartialSheet {
-        VStack(alignment: .leading, spacing: Size.verticalPadding16) {
-          Text("Holdings Display Data")
-
-          Divider()
-
-          Text("Price")
-            .onTapGesture {
-              stockRowDetailType = .price
-              self.sheetManager.closePartialSheet()
-            }
-
-          Text("Price Change")
-            .onTapGesture {
-              stockRowDetailType = .priceChange
-              self.sheetManager.closePartialSheet()
-            }
-
-          Text("Action Status")
-            .onTapGesture {
-              stockRowDetailType = .actionStatus
-              self.sheetManager.closePartialSheet()
-            }
-        }
-        .padding()
-      }
-    }
   }
 
   // MARK: Private

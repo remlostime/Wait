@@ -196,8 +196,6 @@ public class ChartViewController: UIViewController {
     return pricePercentageStackView
   }()
 
-  private var lastNow: TimeInterval = Date().timeIntervalSinceReferenceDate
-
   private var isLightMode: Bool {
     traitCollection.userInterfaceStyle == .light
   }
@@ -248,18 +246,6 @@ public class ChartViewController: UIViewController {
   }
 
   private func updateDisplayPriceInfo(currentPrice: Double, comparedPrice: Double) {
-    guard comparedPrice > 0 else {
-      return
-    }
-//    let now = Date().timeIntervalSinceReferenceDate
-//
-//    // this stops the animation to cut the numbers out
-//    let diff = now - lastNow
-//    if diff > 1 || isMovingTheChart {
-//      lastNow = now
-//      priceLabel.setValue(currentPrice, animated: true)
-//    }
-
     priceLabel.setValue(currentPrice, animated: true)
 
     let priceDifference = currentPrice - comparedPrice
