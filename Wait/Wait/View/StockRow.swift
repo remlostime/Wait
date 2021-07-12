@@ -93,7 +93,9 @@ struct StockRow: View {
           .padding()
         }
       }
-      .foregroundColor(stockRowDetailType == .actionStatus ? stock.actionColor : stock.priceColor)
+      .padding(EdgeInsets(top: Size.verticalPadding8, leading: Size.horizontalPadding16, bottom: Size.verticalPadding8, trailing: Size.horizontalPadding16))
+      .background(stockRowDetailType == .actionStatus ? stock.actionColor : stock.priceColor)
+      .cornerRadius(5.0)
       .buttonStyle(PlainButtonStyle())
     }
     .padding(.vertical, Size.baseLayoutUnit8)
