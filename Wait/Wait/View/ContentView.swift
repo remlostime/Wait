@@ -6,6 +6,7 @@ import Money
 import PartialSheet
 import SwiftUI
 import SwiftyJSON
+import Size
 
 // MARK: - ContentView
 
