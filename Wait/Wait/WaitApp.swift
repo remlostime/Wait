@@ -1,12 +1,12 @@
 // Created by kai_chen on 5/4/21.
 
 import Color
+import Firebase
 import PartialSheet
 import Shake
 import SwiftUI
 import SwiftyBeaver
 import Trace
-import Firebase
 
 let logger = SwiftyBeaver.self
 
