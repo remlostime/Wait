@@ -9,10 +9,18 @@ import SwiftUI
 
 // MARK: - StockRowDetailType
 
-enum StockRowDetailType {
-  case price
-  case priceChange
-  case actionStatus
+enum StockRowDetailType: String, CaseIterable {
+  case price = "Price"
+  case priceChange = "Price Change"
+  case actionStatus = "Action Status"
+}
+
+// MARK: Identifiable
+
+extension StockRowDetailType: Identifiable {
+  var id: Self {
+    self
+  }
 }
 
 // MARK: - StockRow
@@ -67,30 +75,7 @@ struct StockRow: View {
 
       Button(buttonText) {
         self.sheetManager.showPartialSheet {
-          VStack(alignment: .leading, spacing: Size.verticalPadding16) {
-            Text("Holdings Display Data")
-
-            Divider()
-
-            Text("Price")
-              .onTapGesture {
-                stockRowDetailType = .price
-                self.sheetManager.closePartialSheet()
-              }
-
-            Text("Price Change")
-              .onTapGesture {
-                stockRowDetailType = .priceChange
-                self.sheetManager.closePartialSheet()
-              }
-
-            Text("Action Status")
-              .onTapGesture {
-                stockRowDetailType = .actionStatus
-                self.sheetManager.closePartialSheet()
-              }
-          }
-          .padding()
+          StockRowTypeDisplaySheet(stockRowDetailType: $stockRowDetailType)
         }
       }
       .padding(EdgeInsets(top: Size.verticalPadding8, leading: Size.horizontalPadding16, bottom: Size.verticalPadding8, trailing: Size.horizontalPadding16))
