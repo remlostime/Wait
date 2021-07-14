@@ -58,17 +58,6 @@ class ValuationChartViewController: UIViewController {
 
   // MARK: Private
 
-  private var isLightMode: Bool {
-    traitCollection.userInterfaceStyle == .light
-  }
-
-  private var leftAxisMinimum: Double {
-    let diff = abs(stock.expectedPrice.amountDoubleValue - stock.currentPrice.amountDoubleValue)
-    let minimum = Double(Int(stock.expectedPrice.amountDoubleValue / diff))
-
-    return minimum
-  }
-
   private lazy var chartView: HorizontalBarChartView = {
     let chartView = HorizontalBarChartView()
     chartView.delegate = self
@@ -87,6 +76,17 @@ class ValuationChartViewController: UIViewController {
   }()
 
   private let stock: Stock
+
+  private var isLightMode: Bool {
+    traitCollection.userInterfaceStyle == .light
+  }
+
+  private var leftAxisMinimum: Double {
+    let diff = abs(stock.expectedPrice.amountDoubleValue - stock.currentPrice.amountDoubleValue)
+    let minimum = Double(Int(stock.expectedPrice.amountDoubleValue / diff))
+
+    return minimum
+  }
 
   private var currentPirceColor: UIColor {
     let action = stock.tradeAction
