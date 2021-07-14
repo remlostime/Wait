@@ -17,7 +17,7 @@ struct StockRowTypeDisplaySheet: View {
   var body: some View {
     VStack(alignment: .leading, spacing: Size.verticalPadding16) {
       Text("Holdings Display Data")
-        .foregroundColor(.primary)
+        .font(.headline)
 
       Divider()
 
@@ -28,11 +28,12 @@ struct StockRowTypeDisplaySheet: View {
         }, label: {
           HStack {
             Text(type.rawValue)
+              .foregroundColor(.primary)
             if stockRowDetailType == type {
+              Spacer()
               Image(systemName: "checkmark")
             }
           }
-          .foregroundColor(stockRowDetailType == type ? .primary : .black)
         })
       }
     }
