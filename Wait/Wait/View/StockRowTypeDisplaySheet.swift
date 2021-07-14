@@ -4,9 +4,11 @@
 //
 
 import Foundation
-import SwiftUI
-import Size
 import PartialSheet
+import Size
+import SwiftUI
+
+// MARK: - StockRowTypeDisplaySheet
 
 struct StockRowTypeDisplaySheet: View {
   @EnvironmentObject var sheetManager: PartialSheetManager
@@ -38,7 +40,7 @@ struct StockRowTypeDisplaySheet: View {
   }
 }
 
-// MARK: Preview
+// MARK: - StockRowTypeDisplaySheet_Previews
 
 struct StockRowTypeDisplaySheet_Previews: PreviewProvider {
   static var previews: some View {

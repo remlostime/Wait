@@ -15,6 +15,8 @@ enum StockRowDetailType: String, CaseIterable {
   case actionStatus = "Action Status"
 }
 
+// MARK: Identifiable
+
 extension StockRowDetailType: Identifiable {
   var id: Self {
     self
