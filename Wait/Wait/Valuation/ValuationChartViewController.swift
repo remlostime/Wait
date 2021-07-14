@@ -64,15 +64,29 @@ class ValuationChartViewController: UIViewController {
     chartView.drawValueAboveBarEnabled = true
     chartView.xAxis.enabled = false
     chartView.rightAxis.enabled = false
+    chartView.legend.textColor = isLightMode ? .black : .white
 
     let leftAxis = chartView.leftAxis
     leftAxis.labelFont = .systemFont(ofSize: 14.0)
+    leftAxis.labelTextColor = isLightMode ? .black : .white
     leftAxis.drawGridLinesEnabled = false
+    leftAxis.axisMinimum = leftAxisMinimum
 
     return chartView
   }()
 
   private let stock: Stock
+
+  private var isLightMode: Bool {
+    traitCollection.userInterfaceStyle == .light
+  }
+
+  private var leftAxisMinimum: Double {
+    let diff = abs(stock.expectedPrice.amountDoubleValue - stock.currentPrice.amountDoubleValue)
+    let minimum = Double(Int(stock.expectedPrice.amountDoubleValue / diff))
+
+    return minimum
+  }
 
   private var currentPirceColor: UIColor {
     let action = stock.tradeAction
