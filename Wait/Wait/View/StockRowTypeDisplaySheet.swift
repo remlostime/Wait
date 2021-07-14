@@ -17,7 +17,8 @@ struct StockRowTypeDisplaySheet: View {
   var body: some View {
     VStack(alignment: .leading, spacing: Size.verticalPadding16) {
       Text("Holdings Display Data")
-        .font(.headline)
+        .font(.title)
+        .frame(maxWidth: .infinity, alignment: .center)
 
       Divider()
 
@@ -29,8 +30,8 @@ struct StockRowTypeDisplaySheet: View {
           HStack {
             Text(type.rawValue)
               .foregroundColor(.primary)
+            Spacer()
             if stockRowDetailType == type {
-              Spacer()
               Image(systemName: "checkmark")
             }
           }

@@ -17,7 +17,8 @@ public struct Stock: Codable {
     currentPrice: Money<USD>,
     expectedPrice: Money<USD>,
     changePercent: String,
-    priceChartImage: PriceChartImage?
+    priceChartImage: PriceChartImage?,
+    memo: String = ""
   ) {
     self.symbol = symbol
     self.name = name
@@ -25,6 +26,7 @@ public struct Stock: Codable {
     self.expectedPrice = expectedPrice
     self.changePercent = changePercent
     self.priceChartImage = priceChartImage
+    self.memo = memo
   }
 
   // MARK: Public
@@ -35,6 +37,7 @@ public struct Stock: Codable {
   public let expectedPrice: Money<USD>
   public let changePercent: String
   public let priceChartImage: PriceChartImage?
+  public let memo: String
 
   public var formattedChangePercent: String {
     let changePercentDouble = Double(changePercent) ?? 0.0
@@ -49,7 +52,20 @@ public struct Stock: Codable {
       currentPrice: currentPrice,
       expectedPrice: expectedPrice,
       changePercent: changePercent,
-      priceChartImage: priceChartImage
+      priceChartImage: priceChartImage,
+      memo: memo
+    )
+  }
+
+  public func with(memo: String) -> Self {
+    Self(
+      symbol: symbol,
+      name: name,
+      currentPrice: currentPrice,
+      expectedPrice: expectedPrice,
+      changePercent: changePercent,
+      priceChartImage: priceChartImage,
+      memo: memo
     )
   }
 }
@@ -78,7 +94,8 @@ public extension Stock {
       currentPrice: 0.0,
       expectedPrice: 0.0,
       changePercent: "",
-      priceChartImage: nil
+      priceChartImage: nil,
+      memo: ""
     )
   }
 
