@@ -17,7 +17,7 @@ struct StockRowTypeDisplaySheet: View {
   var body: some View {
     VStack(alignment: .leading, spacing: Size.verticalPadding16) {
       Text("Holdings Display Data")
-        .font(.title)
+        .font(.title2)
         .frame(maxWidth: .infinity, alignment: .center)
 
       Divider()
