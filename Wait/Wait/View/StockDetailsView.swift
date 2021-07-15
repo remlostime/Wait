@@ -14,6 +14,7 @@ struct StockDetailsView: View {
   @ObservedObject var stockOverviewNetworkClient = StockOverviewNetworkClient()
 
   @State var stockIsFavorited: Bool = true
+  @State var memo: String = ""
 
   var body: some View {
     ScrollView {
@@ -53,6 +54,18 @@ struct StockDetailsView: View {
             .frame(height: 120)
         }
         .padding()
+
+        VStack(alignment: .leading, spacing: 12.0) {
+          Text("Memo")
+            .font(.title)
+
+          TextField("Write some notes...", text: $memo, onCommit: {
+            StockCache.shared.removeStock(stock)
+            let newStock = stock.with(memo: memo)
+            StockCache.shared.saveStock(newStock)
+          })
+        }
+        .padding()
       }
       .multilineTextAlignment(.leading)
       .navigationTitle(stock.name)
@@ -69,6 +82,7 @@ struct StockDetailsView: View {
     }
     .onAppear {
       stockOverviewNetworkClient.fetchStockOverview(stock: stock)
+      memo = stock.memo
     }
     .onChange(of: stockIsFavorited, perform: { value in
       stockFavoriteAction(value)
