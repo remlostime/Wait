@@ -69,6 +69,11 @@ struct StockRow: View {
           .resizable()
           .frame(width: 80.0, height: 32.0)
           .scaledToFit()
+      } else if let image = stock.priceChartImage?.image {
+        Image(uiImage: image)
+          .resizable()
+          .frame(width: 80.0, height: 32.0)
+          .scaledToFit()
       }
 
       Spacer(minLength: Size.horizontalPadding24)
@@ -93,6 +98,9 @@ struct StockRow: View {
       {
         let stockImage = PriceChartImage(image: image)
         StockChartImageCache.shared.saveImage(symbol: stock.symbol, image: stockImage)
+        StockCache.shared.removeStock(stock)
+        let newStock = stock.with(priceChartImage: stockImage)
+        StockCache.shared.saveStock(newStock)
       }
     }
   }
