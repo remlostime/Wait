@@ -34,6 +34,7 @@
 		E22A84222669C8B60099F107 /* PartialSheet in Frameworks */ = {isa = PBXBuildFile; productRef = E22A84212669C8B60099F107 /* PartialSheet */; };
 		E23B93E42652D52800E039D9 /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E23B93E32652D52800E039D9 /* SwifterSwift */; };
 		E25A1E9C266D7CAC004D2B24 /* StockStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A1E9B266D7CAC004D2B24 /* StockStatsView.swift */; };
+		E25B746D26A33B7600BE0A9C /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E25B746C26A33B7600BE0A9C /* Launch Screen.storyboard */; };
 		E262496C269F7E2E001E7F31 /* StockRowTypeDisplaySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E262496B269F7E2E001E7F31 /* StockRowTypeDisplaySheet.swift */; };
 		E267B86F2667FEBC009979C8 /* NVActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = E267B86E2667FEBC009979C8 /* NVActivityIndicatorView */; };
 		E267B8712667FEBC009979C8 /* NVActivityIndicatorViewExtended in Frameworks */ = {isa = PBXBuildFile; productRef = E267B8702667FEBC009979C8 /* NVActivityIndicatorViewExtended */; };
@@ -181,6 +182,7 @@
 		E25A1E9D266DA3EA004D2B24 /* StockCurrentQuoteNetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCurrentQuoteNetworkClient.swift; sourceTree = "<group>"; };
 		E25A1E9F266DA6F6004D2B24 /* StockOverview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOverview.swift; sourceTree = "<group>"; };
 		E25A1EA1266DA808004D2B24 /* StockOverviewNetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOverviewNetworkClient.swift; sourceTree = "<group>"; };
+		E25B746C26A33B7600BE0A9C /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		E262496B269F7E2E001E7F31 /* StockRowTypeDisplaySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockRowTypeDisplaySheet.swift; sourceTree = "<group>"; };
 		E275EDFC264835F000752D8A /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 		E275EDFE26483D6600752D8A /* SearchStockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchStockView.swift; sourceTree = "<group>"; };
@@ -425,6 +427,7 @@
 		E2E637AB2641A5FB00F872A4 /* Wait */ = {
 			isa = PBXGroup;
 			children = (
+				E25B746C26A33B7600BE0A9C /* Launch Screen.storyboard */,
 				E2F8D19826A2531600020A97 /* Wait.entitlements */,
 				E2E637AC2641A5FB00F872A4 /* WaitApp.swift */,
 				E2136DCF269A134D0033AEB1 /* Valuation */,
@@ -811,6 +814,7 @@
 				E2E637B42641A5FD00F872A4 /* Preview Assets.xcassets in Resources */,
 				E27C72C626603A8100AB008A /* GoogleService-Info.plist in Resources */,
 				E2E637B12641A5FD00F872A4 /* Assets.xcassets in Resources */,
+				E25B746D26A33B7600BE0A9C /* Launch Screen.storyboard in Resources */,
 				E2901FA7264CD22E003A2C01 /* bitrise_configuration.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
