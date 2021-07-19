@@ -110,6 +110,15 @@
         }
       },
       {
+        "package": "SkeletonUI",
+        "repositoryURL": "https://github.com/CSolanaM/SkeletonUI",
+        "state": {
+          "branch": null,
+          "revision": "af57c38985cc3db4c446b8ae412d628e7025d8b1",
+          "version": "1.0.5"
+        }
+      },
+      {
         "package": "SnapKit",
         "repositoryURL": "https://github.com/SnapKit/SnapKit",
         "state": {
@@ -143,6 +152,15 @@
           "branch": null,
           "revision": "5ab719380249264ed96c9b6d49d5b6a96aa4e7b1",
           "version": "0.1.4"
+        }
+      },
+      {
+        "package": "SnapshotTesting",
+        "repositoryURL": "https://github.com/pointfreeco/swift-snapshot-testing",
+        "state": {
+          "branch": null,
+          "revision": "f8a9c997c3c1dab4e216a8ec9014e23144cbab37",
+          "version": "1.9.0"
         }
       },
       {

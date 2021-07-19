@@ -61,6 +61,7 @@
 		E2901FA5264CAC8B003A2C01 /* Shake in Frameworks */ = {isa = PBXBuildFile; productRef = E2901FA4264CAC8B003A2C01 /* Shake */; };
 		E2901FA7264CD22E003A2C01 /* bitrise_configuration.plist in Resources */ = {isa = PBXBuildFile; fileRef = E2901FA6264CD22E003A2C01 /* bitrise_configuration.plist */; };
 		E2901FAA264D77EF003A2C01 /* Trace in Frameworks */ = {isa = PBXBuildFile; productRef = E2901FA9264D77EF003A2C01 /* Trace */; };
+		E294F05D26A5F44400B76893 /* SkeletonUI in Frameworks */ = {isa = PBXBuildFile; productRef = E294F05C26A5F44400B76893 /* SkeletonUI */; };
 		E2A07D9B26520BDD0075E271 /* Hue in Frameworks */ = {isa = PBXBuildFile; productRef = E2A07D9A26520BDD0075E271 /* Hue */; };
 		E2ABEDED26531F0A0001F0F9 /* SwiftUIChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEDEC26531F0A0001F0F9 /* SwiftUIChartViewController.swift */; };
 		E2ABEDF0265322670001F0F9 /* HMSegmentedControl in Frameworks */ = {isa = PBXBuildFile; productRef = E2ABEDEF265322670001F0F9 /* HMSegmentedControl */; };
@@ -276,6 +277,7 @@
 				E2FC1034267E9EB300CD98AF /* Model.framework in Frameworks */,
 				E2C859B426438EE500F93321 /* Cache in Frameworks */,
 				E2BC4195267F9C4600A853D2 /* Size.framework in Frameworks */,
+				E294F05D26A5F44400B76893 /* SkeletonUI in Frameworks */,
 				E2123A602647115400A29222 /* Alamofire in Frameworks */,
 				E23B93E42652D52800E039D9 /* SwifterSwift in Frameworks */,
 				E2BDFCA726518CB90075E619 /* Money in Frameworks */,
@@ -666,6 +668,7 @@
 				E267B86E2667FEBC009979C8 /* NVActivityIndicatorView */,
 				E267B8702667FEBC009979C8 /* NVActivityIndicatorViewExtended */,
 				E22A84212669C8B60099F107 /* PartialSheet */,
+				E294F05C26A5F44400B76893 /* SkeletonUI */,
 			);
 			productName = Wait;
 			productReference = E2E637A92641A5FB00F872A4 /* Wait.app */;
@@ -769,6 +772,7 @@
 				E267B86D2667FEBC009979C8 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */,
 				E22A84202669C8B60099F107 /* XCRemoteSwiftPackageReference "PartialSheet" */,
 				E2BC41A9267FFC7400A853D2 /* XCRemoteSwiftPackageReference "periphery" */,
+				E294F05B26A5F44400B76893 /* XCRemoteSwiftPackageReference "SkeletonUI" */,
 			);
 			productRefGroup = E2E637AA2641A5FB00F872A4 /* Products */;
 			projectDirPath = "";
@@ -1604,6 +1608,14 @@
 				minimumVersion = 1.7.33;
 			};
 		};
+		E294F05B26A5F44400B76893 /* XCRemoteSwiftPackageReference "SkeletonUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/CSolanaM/SkeletonUI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.5;
+			};
+		};
 		E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/zenangst/Hue";
@@ -1724,6 +1736,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2901FA8264D77EE003A2C01 /* XCRemoteSwiftPackageReference "trace-cocoa-sdk" */;
 			productName = Trace;
+		};
+		E294F05C26A5F44400B76893 /* SkeletonUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E294F05B26A5F44400B76893 /* XCRemoteSwiftPackageReference "SkeletonUI" */;
+			productName = SkeletonUI;
 		};
 		E2A07D9A26520BDD0075E271 /* Hue */ = {
 			isa = XCSwiftPackageProductDependency;
