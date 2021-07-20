@@ -60,6 +60,7 @@ class ValuationChartViewController: UIViewController {
 
   private lazy var chartView: HorizontalBarChartView = {
     let chartView = HorizontalBarChartView()
+    chartView.isUserInteractionEnabled = false
     chartView.delegate = self
     chartView.drawValueAboveBarEnabled = true
     chartView.xAxis.enabled = false

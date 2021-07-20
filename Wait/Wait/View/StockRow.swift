@@ -5,6 +5,7 @@ import Combine
 import Model
 import PartialSheet
 import Size
+import SkeletonUI
 import SwiftUI
 
 // MARK: - StockRowDetailType
@@ -69,11 +70,10 @@ struct StockRow: View {
           .resizable()
           .frame(width: 80.0, height: 32.0)
           .scaledToFit()
-      } else if let image = stock.priceChartImage?.image {
-        Image(uiImage: image)
-          .resizable()
+      } else {
+        Image(uiImage: nil)
           .frame(width: 80.0, height: 32.0)
-          .scaledToFit()
+          .skeleton(with: true)
       }
 
       Spacer(minLength: Size.horizontalPadding24)
