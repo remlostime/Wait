@@ -16,8 +16,6 @@ struct ContentView: View {
   @State var stocks: [Stock]
   @State var stockRowDetailType: StockRowDetailType = .actionStatus
 
-  private let networkClient = CloudNetworkClient()
-
   var body: some View {
     NavigationView {
       List(stocks, id: \.symbol) { stock in
@@ -57,9 +55,9 @@ struct ContentView: View {
 
         networkClient.fetchStocks { result in
           switch result {
-            case .success(let stocks):
+            case let .success(stocks):
               logger.verbose(stocks)
-            case .failure(let error):
+            case let .failure(error):
               logger.error("Failed to fetch stocks from server: \(error.localizedDescription)")
           }
         }
@@ -89,7 +87,7 @@ struct ContentView: View {
         }
 
         networkClient.saveStock(stock)
-        
+
         stocks.append(stock)
         saveStocks()
       }
@@ -97,6 +95,8 @@ struct ContentView: View {
   }
 
   // MARK: Private
+
+  private let networkClient = CloudNetworkClient()
 
   private let stockCurrentQuoteNetworkClient = StockCurrentQuoteNetworkClient()
 

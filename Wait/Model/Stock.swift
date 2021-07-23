@@ -1,11 +1,11 @@
 // Created by kai_chen on 5/4/21.
 
+import CloudKit
 import Color
 import Foundation
 import Money
 import SwiftUI
 import UIKit
-import CloudKit
 
 // MARK: - Stock
 

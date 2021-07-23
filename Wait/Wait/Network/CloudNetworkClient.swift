@@ -3,23 +3,20 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
+import CloudKit
 import Foundation
 import Model
-import CloudKit
 
 final class CloudNetworkClient {
-
-  private let container: CKContainer
-  private let publicDB: CKDatabase
-  private let privateDB: CKDatabase
-
-  private let StockRecordType = "Stock"
+  // MARK: Lifecycle
 
   init() {
     container = CKContainer.default()
     publicDB = container.publicCloudDatabase
     privateDB = container.privateCloudDatabase
   }
+
+  // MARK: Internal
 
   func fetchStocks(completion: @escaping ((Result<[Stock], Error>) -> Void)) {
     let predicate = NSPredicate(value: true)
@@ -59,4 +56,12 @@ final class CloudNetworkClient {
       logger.verbose("Stock: \(stock.symbol) is saved successfully")
     }
   }
+
+  // MARK: Private
+
+  private let container: CKContainer
+  private let publicDB: CKDatabase
+  private let privateDB: CKDatabase
+
+  private let StockRecordType = "Stock"
 }
