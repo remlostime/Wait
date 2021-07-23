@@ -52,6 +52,15 @@ struct ContentView: View {
             self.stocks = updatedStocks
           }
         }
+
+        networkClient.fetchStocks { result in
+          switch result {
+            case let .success(stocks):
+              logger.verbose(stocks)
+            case let .failure(error):
+              logger.error("Failed to fetch stocks from server: \(error.localizedDescription)")
+          }
+        }
       }
       .onDisappear {
         saveStocks()
@@ -77,6 +86,8 @@ struct ContentView: View {
           return
         }
 
+        networkClient.saveStock(stock)
+
         stocks.append(stock)
         saveStocks()
       }
@@ -84,6 +95,8 @@ struct ContentView: View {
   }
 
   // MARK: Private
+
+  private let networkClient = CloudNetworkClient()
 
   private let stockCurrentQuoteNetworkClient = StockCurrentQuoteNetworkClient()
 
@@ -104,8 +117,7 @@ struct ContentView_Previews: PreviewProvider {
       name: "Facebook",
       currentPrice: 1.0,
       expectedPrice: 2.0,
-      changePercent: "1.8%",
-      priceChartImage: nil
+      changePercent: "1.8%"
     )
 
     ContentView(stocks: [stock])

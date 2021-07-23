@@ -1,5 +1,6 @@
 // Created by kai_chen on 5/4/21.
 
+import CloudKit
 import Color
 import Foundation
 import Money
@@ -17,7 +18,6 @@ public struct Stock: Codable {
     currentPrice: Money<USD>,
     expectedPrice: Money<USD>,
     changePercent: String,
-    priceChartImage: PriceChartImage?,
     memo: String = ""
   ) {
     self.symbol = symbol
@@ -25,8 +25,18 @@ public struct Stock: Codable {
     self.currentPrice = currentPrice
     self.expectedPrice = expectedPrice
     self.changePercent = changePercent
-    self.priceChartImage = priceChartImage
     self.memo = memo
+  }
+
+  public init(from record: CKRecord) {
+    symbol = (record["symbol"] as? String) ?? ""
+    name = (record["name"] as? String) ?? ""
+    let currentPriceString = (record["currentPrice"] as? String) ?? "0"
+    currentPrice = Money<USD>(stringLiteral: currentPriceString)
+    let expectedPriceString = (record["expectedPrice"] as? String) ?? "0"
+    expectedPrice = Money<USD>(stringLiteral: expectedPriceString)
+    changePercent = ""
+    memo = (record["memo"] as? String) ?? ""
   }
 
   // MARK: Public
@@ -36,25 +46,12 @@ public struct Stock: Codable {
   public let currentPrice: Money<USD>
   public let expectedPrice: Money<USD>
   public let changePercent: String
-  public let priceChartImage: PriceChartImage?
   public let memo: String
 
   public var formattedChangePercent: String {
     let changePercentDouble = Double(changePercent) ?? 0.0
     let formattedChangePercent = String(format: "%.2f", changePercentDouble) + "%"
     return formattedChangePercent
-  }
-
-  public func with(priceChartImage: PriceChartImage) -> Self {
-    Self(
-      symbol: symbol,
-      name: name,
-      currentPrice: currentPrice,
-      expectedPrice: expectedPrice,
-      changePercent: changePercent,
-      priceChartImage: priceChartImage,
-      memo: memo
-    )
   }
 
   public func with(memo: String) -> Self {
@@ -64,7 +61,6 @@ public struct Stock: Codable {
       currentPrice: currentPrice,
       expectedPrice: expectedPrice,
       changePercent: changePercent,
-      priceChartImage: priceChartImage,
       memo: memo
     )
   }
@@ -94,7 +90,6 @@ public extension Stock {
       currentPrice: 0.0,
       expectedPrice: 0.0,
       changePercent: "",
-      priceChartImage: nil,
       memo: ""
     )
   }

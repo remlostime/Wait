@@ -39,7 +39,6 @@ final class StockCurrentQuoteNetworkClient {
             currentPrice: stockQuote.close,
             expectedPrice: stock.expectedPrice,
             changePercent: stockQuote.percentChange,
-            priceChartImage: stock.priceChartImage,
             memo: stock.memo
           )
 

@@ -93,15 +93,15 @@ struct StockRow: View {
       priceHistoryDataSource.fetchData(for: [.day])
     }
     .onDisappear {
-      if let chartData = priceHistoryDataSource.chartData[.day],
-         let image = buildPriceChartImage(chartData: chartData)
-      {
-        let stockImage = PriceChartImage(image: image)
-        StockChartImageCache.shared.saveImage(symbol: stock.symbol, image: stockImage)
-        StockCache.shared.removeStock(stock)
-        let newStock = stock.with(priceChartImage: stockImage)
-        StockCache.shared.saveStock(newStock)
-      }
+//      if let chartData = priceHistoryDataSource.chartData[.day],
+//         let image = buildPriceChartImage(chartData: chartData)
+//      {
+//        let stockImage = PriceChartImage(image: image)
+//        StockChartImageCache.shared.saveImage(symbol: stock.symbol, image: stockImage)
+//        StockCache.shared.removeStock(stock)
+//        let newStock = stock.with(priceChartImage: stockImage)
+//        StockCache.shared.saveStock(newStock)
+//      }
     }
   }
 
@@ -154,8 +154,7 @@ struct StockRow_Previews: PreviewProvider {
       name: "Facebook Inc - Class A Share",
       currentPrice: 100.0,
       expectedPrice: 200.0,
-      changePercent: "1.8%",
-      priceChartImage: nil
+      changePercent: "1.8%"
     )
 
     StockRow(stockRowDetailType: .constant(.price), stock: stock)
