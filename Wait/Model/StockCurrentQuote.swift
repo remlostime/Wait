@@ -1,19 +1,13 @@
 // Created by kai_chen on 5/8/21.
 
+import CloudKit
 import Foundation
 import Money
-import CloudKit
+
+// MARK: - StockCurrentQuote
 
 public struct StockCurrentQuote: Codable {
-  public let symbol: String
-  public let name: String
-  public let open: Money<USD>
-  public let high: Money<USD>
-  public let low: Money<USD>
-  public let close: Money<USD>
-  public let volume: String
-  public let datetime: Date
-  public let percentChange: String
+  // MARK: Lifecycle
 
   public init(from record: CKRecord) {
     symbol = (record["symbol"] as? String) ?? ""
@@ -40,8 +34,8 @@ public struct StockCurrentQuote: Codable {
     close: Money<USD>,
     volume: String,
     datetime: Date,
-    percentChange: String)
-  {
+    percentChange: String
+  ) {
     self.symbol = symbol
     self.name = name
     self.open = open
@@ -52,10 +46,22 @@ public struct StockCurrentQuote: Codable {
     self.datetime = datetime
     self.percentChange = percentChange
   }
+
+  // MARK: Public
+
+  public let symbol: String
+  public let name: String
+  public let open: Money<USD>
+  public let high: Money<USD>
+  public let low: Money<USD>
+  public let close: Money<USD>
+  public let volume: String
+  public let datetime: Date
+  public let percentChange: String
 }
 
-extension StockCurrentQuote {
-  public static var empty: Self {
+public extension StockCurrentQuote {
+  static var empty: Self {
     StockCurrentQuote(
       symbol: "empty",
       name: "Empty",
@@ -65,22 +71,23 @@ extension StockCurrentQuote {
       close: 0,
       volume: "0",
       datetime: Date(),
-      percentChange: "0")
+      percentChange: "0"
+    )
   }
 
-  public static var container: CKContainer {
+  static var container: CKContainer {
     CKContainer.default()
   }
 
-  public static var publicDB: CKDatabase {
+  static var publicDB: CKDatabase {
     container.publicCloudDatabase
   }
 
-  public static var privateDB: CKDatabase {
+  static var privateDB: CKDatabase {
     container.privateCloudDatabase
   }
 
-  public static func fetch(recordID: CKRecord.ID, completion: @escaping ((Result<StockCurrentQuote, Error>) -> Void)) {
+  static func fetch(recordID: CKRecord.ID, completion: @escaping ((Result<StockCurrentQuote, Error>) -> Void)) {
     let _privateDB = privateDB
 
     _privateDB.fetch(withRecordID: recordID) { record, error in

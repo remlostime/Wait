@@ -38,9 +38,9 @@ public class Stock: Codable {
 
       StockCurrentQuote.fetch(recordID: id) { [weak self] result in
         switch result {
-          case .success(let stockCurrentQuote):
+          case let .success(stockCurrentQuote):
             self?.currentQuote = stockCurrentQuote
-          case .failure(let error):
+          case let .failure(error):
             print("error to fetch stock current quote: \(error.localizedDescription)")
         }
       }
