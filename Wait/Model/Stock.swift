@@ -9,44 +9,61 @@ import UIKit
 
 // MARK: - Stock
 
-public struct Stock: Codable {
+public class Stock: Codable {
   // MARK: Lifecycle
 
   public init(
     symbol: String,
     name: String,
-    currentPrice: Money<USD>,
     expectedPrice: Money<USD>,
-    changePercent: String,
-    memo: String = ""
+    memo: String = "",
+    currentQuote: StockCurrentQuote
   ) {
     self.symbol = symbol
     self.name = name
-    self.currentPrice = currentPrice
     self.expectedPrice = expectedPrice
-    self.changePercent = changePercent
     self.memo = memo
+    self.currentQuote = currentQuote
   }
 
   public init(from record: CKRecord) {
     symbol = (record["symbol"] as? String) ?? ""
     name = (record["name"] as? String) ?? ""
-    let currentPriceString = (record["currentPrice"] as? String) ?? "0"
-    currentPrice = Money<USD>(stringLiteral: currentPriceString)
     let expectedPriceString = (record["expectedPrice"] as? String) ?? "0"
     expectedPrice = Money<USD>(stringLiteral: expectedPriceString)
-    changePercent = ""
     memo = (record["memo"] as? String) ?? ""
+    if let currentQuoteRecord = record["currentQuote"] as? CKRecord.Reference {
+      currentQuote = .empty
+      let id = currentQuoteRecord.recordID
+
+      StockCurrentQuote.fetch(recordID: id) { [weak self] result in
+        switch result {
+          case let .success(stockCurrentQuote):
+            self?.currentQuote = stockCurrentQuote
+          case let .failure(error):
+            print("error to fetch stock current quote: \(error.localizedDescription)")
+        }
+      }
+    } else {
+      currentQuote = .empty
+    }
   }
 
   // MARK: Public
 
   public let symbol: String
   public let name: String
-  public let currentPrice: Money<USD>
   public let expectedPrice: Money<USD>
-  public let changePercent: String
   public let memo: String
+  public var currentQuote: StockCurrentQuote
+
+  public var currentPrice: Money<USD> {
+    currentQuote.close
+  }
+
+  public var changePercent: String {
+    currentQuote.percentChange
+  }
 
   public var formattedChangePercent: String {
     let changePercentDouble = Double(changePercent) ?? 0.0
@@ -54,14 +71,13 @@ public struct Stock: Codable {
     return formattedChangePercent
   }
 
-  public func with(memo: String) -> Self {
-    Self(
+  public func with(memo: String) -> Stock {
+    Stock(
       symbol: symbol,
       name: name,
-      currentPrice: currentPrice,
       expectedPrice: expectedPrice,
-      changePercent: changePercent,
-      memo: memo
+      memo: memo,
+      currentQuote: currentQuote
     )
   }
 }
@@ -69,7 +85,7 @@ public struct Stock: Codable {
 // MARK: Equatable
 
 extension Stock: Equatable {
-  public static func == (lhs: Self, rhs: Self) -> Bool {
+  public static func == (lhs: Stock, rhs: Stock) -> Bool {
     lhs.symbol == rhs.symbol
   }
 }
@@ -83,14 +99,13 @@ public enum TradeAction: String, CaseIterable {
 }
 
 public extension Stock {
-  static var empty: Self {
+  static var empty: Stock {
     Stock(
-      symbol: "",
-      name: "",
-      currentPrice: 0.0,
+      symbol: "empty",
+      name: "Empty",
       expectedPrice: 0.0,
-      changePercent: "",
-      memo: ""
+      memo: "Empty",
+      currentQuote: .empty
     )
   }
 

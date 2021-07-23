@@ -112,14 +112,7 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
   static var previews: some View {
-    let stock = Stock(
-      symbol: "fb",
-      name: "Facebook",
-      currentPrice: 1.0,
-      expectedPrice: 2.0,
-      changePercent: "1.8%"
-    )
-
+    let stock = Stock.empty
     ContentView(stocks: [stock])
   }
 }
