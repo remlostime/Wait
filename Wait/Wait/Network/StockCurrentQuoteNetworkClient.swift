@@ -36,10 +36,9 @@ final class StockCurrentQuoteNetworkClient {
           let newStock = Stock(
             symbol: stockQuote.symbol,
             name: stock.name,
-            currentPrice: stockQuote.close,
             expectedPrice: stock.expectedPrice,
-            changePercent: stockQuote.percentChange,
-            memo: stock.memo
+            memo: stock.memo,
+            currentQuote: stock.currentQuote
           )
 
           completion(newStock)

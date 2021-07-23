@@ -89,12 +89,7 @@ struct SearchStockView_Previews: PreviewProvider {
   static var previews: some View {
     SearchStockView(
       isPresented: .constant(true),
-      stock: .constant(
-        Stock(symbol: "FB",
-              name: "Facebook",
-              currentPrice: 1.0,
-              expectedPrice: 1.0,
-              changePercent: "1.8%"))
+      stock: .constant(.empty)
     )
   }
 }

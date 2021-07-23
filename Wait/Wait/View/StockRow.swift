@@ -149,14 +149,7 @@ struct StockRow: View {
 
 struct StockRow_Previews: PreviewProvider {
   static var previews: some View {
-    let stock = Stock(
-      symbol: "fb",
-      name: "Facebook Inc - Class A Share",
-      currentPrice: 100.0,
-      expectedPrice: 200.0,
-      changePercent: "1.8%"
-    )
-
+    let stock = Stock.empty
     StockRow(stockRowDetailType: .constant(.price), stock: stock)
   }
 }
