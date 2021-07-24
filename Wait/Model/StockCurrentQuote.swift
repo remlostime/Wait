@@ -74,35 +74,4 @@ public extension StockCurrentQuote {
       percentChange: "0"
     )
   }
-
-  static var container: CKContainer {
-    CKContainer.default()
-  }
-
-  static var publicDB: CKDatabase {
-    container.publicCloudDatabase
-  }
-
-  static var privateDB: CKDatabase {
-    container.privateCloudDatabase
-  }
-
-  static func fetch(recordID: CKRecord.ID, completion: @escaping ((Result<StockCurrentQuote, Error>) -> Void)) {
-    let _privateDB = privateDB
-
-    _privateDB.fetch(withRecordID: recordID) { record, error in
-      if let error = error {
-        completion(.failure(error))
-        return
-      }
-
-      guard let record = record else {
-        completion(.failure(NSError(domain: "stockCurrentQuote", code: 0, userInfo: nil)))
-        return
-      }
-
-      let stockCurrentQuote = StockCurrentQuote(from: record)
-      completion(.success(stockCurrentQuote))
-    }
-  }
 }

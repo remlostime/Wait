@@ -38,6 +38,7 @@
 		E262496C269F7E2E001E7F31 /* StockRowTypeDisplaySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E262496B269F7E2E001E7F31 /* StockRowTypeDisplaySheet.swift */; };
 		E267B86F2667FEBC009979C8 /* NVActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = E267B86E2667FEBC009979C8 /* NVActivityIndicatorView */; };
 		E267B8712667FEBC009979C8 /* NVActivityIndicatorViewExtended in Frameworks */ = {isa = PBXBuildFile; productRef = E267B8702667FEBC009979C8 /* NVActivityIndicatorViewExtended */; };
+		E270B6BB26ABADAF00A56A69 /* CloudNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C8951626A792620052B217 /* CloudNetworkClient.swift */; };
 		E275EDFD264835F000752D8A /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EDFC264835F000752D8A /* SearchBar.swift */; };
 		E275EDFF26483D6600752D8A /* SearchStockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EDFE26483D6600752D8A /* SearchStockView.swift */; };
 		E275EE0326483FE300752D8A /* SearchStockRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EE0226483FE300752D8A /* SearchStockRow.swift */; };
@@ -83,7 +84,6 @@
 		E2BEC7342686A2210001E426 /* Binding+Change.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BEC7332686A2210001E426 /* Binding+Change.swift */; };
 		E2C3D363269B889000466CC3 /* StockChartImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C3D362269B889000466CC3 /* StockChartImageCache.swift */; };
 		E2C859B426438EE500F93321 /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = E2C859B326438EE500F93321 /* Cache */; };
-		E2C8951726A792620052B217 /* CloudNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C8951626A792620052B217 /* CloudNetworkClient.swift */; };
 		E2D2B5D026518A9B001B5E32 /* StockDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D2B5CF26518A9B001B5E32 /* StockDetailsView.swift */; };
 		E2E637AD2641A5FB00F872A4 /* WaitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E637AC2641A5FB00F872A4 /* WaitApp.swift */; };
 		E2E637AF2641A5FB00F872A4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E637AE2641A5FB00F872A4 /* ContentView.swift */; };
@@ -474,6 +474,7 @@
 		E2FC102E267E9EB300CD98AF /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				E2C8951626A792620052B217 /* CloudNetworkClient.swift */,
 				E23B93E02652D38D00E039D9 /* Money+Format.swift */,
 				E2E637BC2641A7F400F872A4 /* Stock.swift */,
 				E2123A61264713CC00A29222 /* StockCurrentQuote.swift */,
@@ -494,7 +495,6 @@
 				E25A1EA1266DA808004D2B24 /* StockOverviewNetworkClient.swift */,
 				E25A1E9D266DA3EA004D2B24 /* StockCurrentQuoteNetworkClient.swift */,
 				E2ABEE0926533DF70001F0F9 /* StockQuoteNetworkClient.swift */,
-				E2C8951626A792620052B217 /* CloudNetworkClient.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -900,7 +900,6 @@
 				E2E637AF2641A5FB00F872A4 /* ContentView.swift in Sources */,
 				E2FC106B267EDF9300CD98AF /* StockQuoteNetworkClient.swift in Sources */,
 				E2FC106D267EDFA300CD98AF /* StockOverviewNetworkClient.swift in Sources */,
-				E2C8951726A792620052B217 /* CloudNetworkClient.swift in Sources */,
 				E2136DD5269A16530033AEB1 /* SwiftUIValuationChartViewController.swift in Sources */,
 				E2BE76582641FC3300645629 /* StockExpectedPriceInputView.swift in Sources */,
 				E2D2B5D026518A9B001B5E32 /* StockDetailsView.swift in Sources */,
@@ -934,6 +933,7 @@
 				E2B5EAA32688105D0092663F /* Money+Format.swift in Sources */,
 				E2FC1039267E9EBF00CD98AF /* Exchange.swift in Sources */,
 				E2FC103A267E9EBF00CD98AF /* StockOverview.swift in Sources */,
+				E270B6BB26ABADAF00A56A69 /* CloudNetworkClient.swift in Sources */,
 				E2FC103B267E9EBF00CD98AF /* StockQuote.swift in Sources */,
 				E2FC103D267E9EBF00CD98AF /* Stock.swift in Sources */,
 				E2FC103E267E9EBF00CD98AF /* SearchStock.swift in Sources */,

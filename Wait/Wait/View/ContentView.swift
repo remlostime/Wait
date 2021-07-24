@@ -96,7 +96,7 @@ struct ContentView: View {
 
   // MARK: Private
 
-  private let networkClient = CloudNetworkClient()
+  private let networkClient = CloudNetworkClient.shared
 
   private let stockCurrentQuoteNetworkClient = StockCurrentQuoteNetworkClient()
 
