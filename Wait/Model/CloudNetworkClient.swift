@@ -6,9 +6,7 @@
 import CloudKit
 import Foundation
 
-final public class CloudNetworkClient {
-  public static let shared = CloudNetworkClient()
-
+public final class CloudNetworkClient {
   // MARK: Lifecycle
 
   private init() {
@@ -17,7 +15,9 @@ final public class CloudNetworkClient {
     privateDB = container.privateCloudDatabase
   }
 
-  // MARK: Internal
+  // MARK: Public
+
+  public static let shared = CloudNetworkClient()
 
   public func fetchStocks(completion: @escaping ((Result<[Stock], Error>) -> Void)) {
     let predicate = NSPredicate(value: true)
