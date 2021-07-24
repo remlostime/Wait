@@ -5,20 +5,21 @@
 
 import CloudKit
 import Foundation
-import Model
 
-final class CloudNetworkClient {
+public final class CloudNetworkClient {
   // MARK: Lifecycle
 
-  init() {
+  private init() {
     container = CKContainer.default()
     publicDB = container.publicCloudDatabase
     privateDB = container.privateCloudDatabase
   }
 
-  // MARK: Internal
+  // MARK: Public
 
-  func fetchStocks(completion: @escaping ((Result<[Stock], Error>) -> Void)) {
+  public static let shared = CloudNetworkClient()
+
+  public func fetchStocks(completion: @escaping ((Result<[Stock], Error>) -> Void)) {
     let predicate = NSPredicate(value: true)
     let query = CKQuery(recordType: StockRecordType, predicate: predicate)
 
@@ -45,7 +46,7 @@ final class CloudNetworkClient {
     }
   }
 
-  func saveStock(_ stock: Stock) {
+  public func saveStock(_ stock: Stock) {
     let record = CKRecord(recordType: StockRecordType)
     record["symbol"] = stock.symbol
     record["name"] = stock.name
@@ -53,7 +54,24 @@ final class CloudNetworkClient {
     record["memo"] = stock.memo
 
     privateDB.save(record) { _, _ in
-      logger.verbose("Stock: \(stock.symbol) is saved successfully")
+      print("Stock: \(stock.symbol) is saved successfully")
+    }
+  }
+
+  public func fetch(recordID: CKRecord.ID, completion: @escaping ((Result<StockCurrentQuote, Error>) -> Void)) {
+    privateDB.fetch(withRecordID: recordID) { record, error in
+      if let error = error {
+        completion(.failure(error))
+        return
+      }
+
+      guard let record = record else {
+        completion(.failure(NSError(domain: "stockCurrentQuote", code: 0, userInfo: nil)))
+        return
+      }
+
+      let stockCurrentQuote = StockCurrentQuote(from: record)
+      completion(.success(stockCurrentQuote))
     }
   }
 

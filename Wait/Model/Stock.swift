@@ -36,7 +36,7 @@ public class Stock: Codable {
       currentQuote = .empty
       let id = currentQuoteRecord.recordID
 
-      StockCurrentQuote.fetch(recordID: id) { [weak self] result in
+      CloudNetworkClient.shared.fetch(recordID: id) { [weak self] result in
         switch result {
           case let .success(stockCurrentQuote):
             self?.currentQuote = stockCurrentQuote
@@ -55,7 +55,7 @@ public class Stock: Codable {
   public let name: String
   public let expectedPrice: Money<USD>
   public let memo: String
-  public var currentQuote: StockCurrentQuote
+  public private(set) var currentQuote: StockCurrentQuote
 
   public var currentPrice: Money<USD> {
     currentQuote.close
