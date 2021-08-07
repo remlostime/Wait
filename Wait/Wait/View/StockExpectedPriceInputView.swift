@@ -10,6 +10,8 @@ import SwiftUI
 struct StockExpectedPriceInputView: View {
   // MARK: Internal
 
+  @State var category = StockCategory.waitlist
+
   class ExpectedPriceModel: ObservableObject {
     @Published var formattedPrice = "" {
       didSet {
@@ -35,6 +37,14 @@ struct StockExpectedPriceInputView: View {
 
   var body: some View {
     VStack(alignment: .center) {
+      Picker("Picker", selection: $category, content: {
+        ForEach(StockCategory.allCases) { category in
+          Text(category.description).tag(category)
+        }
+      })
+      .pickerStyle(SegmentedPickerStyle())
+      .padding(.all, 10)
+
       Spacer()
 
       TextField("$0", text: $expectedPriceModel.formattedPrice)
@@ -49,7 +59,8 @@ struct StockExpectedPriceInputView: View {
           symbol: searchStock.symbol,
           name: searchStock.name,
           expectedPrice: Money<USD>(floatLiteral: Double(expectedPriceModel.price) ?? 0.0),
-          currentQuote: .empty
+          currentQuote: .empty,
+          category: category
         )
 
         isPresented.toggle()

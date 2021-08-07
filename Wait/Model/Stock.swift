@@ -17,13 +17,15 @@ public class Stock: Codable {
     name: String,
     expectedPrice: Money<USD>,
     memo: String = "",
-    currentQuote: StockCurrentQuote
+    currentQuote: StockCurrentQuote,
+    category: StockCategory
   ) {
     self.symbol = symbol
     self.name = name
     self.expectedPrice = expectedPrice
     self.memo = memo
     self.currentQuote = currentQuote
+    self.category = category
   }
 
   public init(from record: CKRecord) {
@@ -32,6 +34,15 @@ public class Stock: Codable {
     let expectedPriceString = (record["expectedPrice"] as? String) ?? "0"
     expectedPrice = Money<USD>(stringLiteral: expectedPriceString)
     memo = (record["memo"] as? String) ?? ""
+
+    if let categoryInt = record["category"] as? Int,
+       let _category = StockCategory(rawValue: categoryInt)
+    {
+      category = _category
+    } else {
+      category = .research
+    }
+
     if let currentQuoteRecord = record["currentQuote"] as? CKRecord.Reference {
       currentQuote = .empty
       let id = currentQuoteRecord.recordID
@@ -55,6 +66,7 @@ public class Stock: Codable {
   public let name: String
   public let expectedPrice: Money<USD>
   public let memo: String
+  public let category: StockCategory
   public private(set) var currentQuote: StockCurrentQuote
 
   public var currentPrice: Money<USD> {
@@ -77,7 +89,19 @@ public class Stock: Codable {
       name: name,
       expectedPrice: expectedPrice,
       memo: memo,
-      currentQuote: currentQuote
+      currentQuote: currentQuote,
+      category: category
+    )
+  }
+
+  public func with(category: StockCategory) -> Stock {
+    Stock(
+      symbol: symbol,
+      name: name,
+      expectedPrice: expectedPrice,
+      memo: memo,
+      currentQuote: currentQuote,
+      category: category
     )
   }
 }
@@ -105,7 +129,8 @@ public extension Stock {
       name: "Empty",
       expectedPrice: 0.0,
       memo: "Empty",
-      currentQuote: .empty
+      currentQuote: .empty,
+      category: .waitlist
     )
   }
 
