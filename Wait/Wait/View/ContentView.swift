@@ -15,24 +15,44 @@ struct ContentView: View {
 
   @State var stocks: [Stock]
   @State var stockRowDetailType: StockRowDetailType = .actionStatus
+  @State var category: StockCategory = .waitlist
+
+  var stocksInCategory: [Stock] {
+    stocks.filter { stock in
+      stock.category == category
+    }
+  }
 
   var body: some View {
     NavigationView {
-      List(stocks, id: \.symbol) { stock in
-        HStack {
-          StockRow(stockRowDetailType: $stockRowDetailType, stock: stock)
-
-          // This is used to remove '>' in the cell
-          // https://stackoverflow.com/questions/58333499/swiftui-navigationlink-hide-arrow
-          // https://stackoverflow.com/questions/56516333/swiftui-navigationbutton-without-the-disclosure-indicator
-          NavigationLink(destination: StockDetailsView(stock: stock)) {
-            EmptyView()
+      VStack {
+        Picker("Picker", selection: $category, content: {
+          ForEach(StockCategory.allCases) { category in
+            Text(category.description).tag(category)
           }
-          .frame(width: 0)
-          .opacity(0)
+        })
+          .pickerStyle(SegmentedPickerStyle())
+          .padding(.all, 10)
+
+        List(stocksInCategory, id: \.symbol) { stock in
+          HStack {
+            StockRow(stockRowDetailType: $stockRowDetailType, stock: stock)
+
+            // This is used to remove '>' in the cell
+            // https://stackoverflow.com/questions/58333499/swiftui-navigationlink-hide-arrow
+            // https://stackoverflow.com/questions/56516333/swiftui-navigationbutton-without-the-disclosure-indicator
+            NavigationLink(destination: StockDetailsView(stock: stock)) {
+              EmptyView()
+            }
+            .frame(width: 0)
+            .opacity(0)
+          }
         }
       }
       .onAppear {
+        print("hahaha")
+        print(StockCategory.allCases)
+
         StockCache.shared.getStocks { stocks in
           let group = DispatchGroup()
           var updatedStocks = stocks
@@ -92,6 +112,7 @@ struct ContentView: View {
         saveStocks()
       }
     })
+    .navigationViewStyle(StackNavigationViewStyle())
   }
 
   // MARK: Private

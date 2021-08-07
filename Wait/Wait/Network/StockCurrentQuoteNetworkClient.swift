@@ -38,7 +38,8 @@ final class StockCurrentQuoteNetworkClient {
             name: stock.name,
             expectedPrice: stock.expectedPrice,
             memo: stock.memo,
-            currentQuote: stock.currentQuote
+            currentQuote: stock.currentQuote,
+            category: stock.category
           )
 
           completion(newStock)

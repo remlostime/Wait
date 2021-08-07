@@ -29,12 +29,22 @@ struct StockExpectedPriceInputView: View {
     }
   }
 
+  @State var category = StockCategory.waitlist
+
   var searchStock: SearchStockResult
   @Binding var stock: Stock
   @Binding var isPresented: Bool
 
   var body: some View {
     VStack(alignment: .center) {
+      Picker("Picker", selection: $category, content: {
+        ForEach(StockCategory.allCases) { category in
+          Text(category.description).tag(category)
+        }
+      })
+        .pickerStyle(SegmentedPickerStyle())
+        .padding(.all, 10)
+
       Spacer()
 
       TextField("$0", text: $expectedPriceModel.formattedPrice)
@@ -49,7 +59,8 @@ struct StockExpectedPriceInputView: View {
           symbol: searchStock.symbol,
           name: searchStock.name,
           expectedPrice: Money<USD>(floatLiteral: Double(expectedPriceModel.price) ?? 0.0),
-          currentQuote: .empty
+          currentQuote: .empty,
+          category: category
         )
 
         isPresented.toggle()
