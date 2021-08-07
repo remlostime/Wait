@@ -5,6 +5,8 @@
 
 import Foundation
 
+// MARK: - StockCategory
+
 public enum StockCategory: Int, CaseIterable {
   case waitlist
   case research
@@ -23,7 +25,7 @@ extension StockCategory: CustomStringConvertible {
   }
 }
 
-// MARK: Identifiable + Hashable
+// MARK: Identifiable, Hashable
 
 extension StockCategory: Identifiable, Hashable {
   public var id: Int {
@@ -33,6 +35,4 @@ extension StockCategory: Identifiable, Hashable {
 
 // MARK: Codable
 
-extension StockCategory: Codable {
-  
-}
+extension StockCategory: Codable {}

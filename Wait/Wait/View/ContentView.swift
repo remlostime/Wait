@@ -31,8 +31,8 @@ struct ContentView: View {
             Text(category.description).tag(category)
           }
         })
-        .pickerStyle(SegmentedPickerStyle())
-        .padding(.all, 10)
+          .pickerStyle(SegmentedPickerStyle())
+          .padding(.all, 10)
 
         List(stocksInCategory, id: \.symbol) { stock in
           HStack {
