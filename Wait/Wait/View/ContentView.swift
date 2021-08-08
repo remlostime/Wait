@@ -16,6 +16,7 @@ struct ContentView: View {
   @State var stocks: [Stock]
   @State var stockRowDetailType: StockRowDetailType = .actionStatus
   @State var category: StockCategory = .waitlist
+  @State var selection: String? = nil
 
   var stocksInCategory: [Stock] {
     stocks.filter { stock in
@@ -34,23 +35,34 @@ struct ContentView: View {
           .pickerStyle(SegmentedPickerStyle())
           .padding(.all, 10)
 
-        List(stocksInCategory, id: \.symbol) { stock in
-          HStack {
-            StockRow(stockRowDetailType: $stockRowDetailType, stock: stock)
+        List {
+          ForEach(stocksInCategory, id: \.symbol) { stock in
+            HStack {
+              StockRow(stockRowDetailType: $stockRowDetailType, stock: stock)
 
-            // This is used to remove '>' in the cell
-            // https://stackoverflow.com/questions/58333499/swiftui-navigationlink-hide-arrow
-            // https://stackoverflow.com/questions/56516333/swiftui-navigationbutton-without-the-disclosure-indicator
-            NavigationLink(destination: StockDetailsView(stock: stock)) {
-              EmptyView()
+              // This is used to remove '>' in the cell
+              // https://stackoverflow.com/questions/58333499/swiftui-navigationlink-hide-arrow
+              // https://stackoverflow.com/questions/56516333/swiftui-navigationbutton-without-the-disclosure-indicator
+              NavigationLink(destination: StockDetailsView(stock: stock), tag: stock.symbol, selection: $selection) {
+                EmptyView()
+              }
+              .frame(width: 0)
+              .opacity(0)
             }
-            .frame(width: 0)
-            .opacity(0)
           }
+          .onDelete(perform: { indexSet in
+            for index in indexSet {
+              let stock = stocksInCategory[index]
+              StockCache.shared.removeStock(stock)
+              stocks.removeAll(where: {
+                $0 == stock
+              })
+            }
+          })
         }
+        .id(UUID())
       }
       .onAppear {
-        print("hahaha")
         print(StockCategory.allCases)
 
         StockCache.shared.getStocks { stocks in
