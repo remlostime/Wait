@@ -38,3 +38,7 @@ public struct SearchStockResult: Decodable {
     case currency
   }
 }
+
+public struct SearchStockResults: Decodable {
+  public let data: [SearchStockResult]
+}
