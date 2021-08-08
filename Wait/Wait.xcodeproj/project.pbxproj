@@ -35,6 +35,8 @@
 		E22A84222669C8B60099F107 /* PartialSheet in Frameworks */ = {isa = PBXBuildFile; productRef = E22A84212669C8B60099F107 /* PartialSheet */; };
 		E23B93E42652D52800E039D9 /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E23B93E32652D52800E039D9 /* SwifterSwift */; };
 		E25A1E9C266D7CAC004D2B24 /* StockStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A1E9B266D7CAC004D2B24 /* StockStatsView.swift */; };
+		E25A927826C08D81004A4EBB /* SearchStockDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A927726C08D81004A4EBB /* SearchStockDataSource.swift */; };
+		E25A927A26C08E32004A4EBB /* SearchStockNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A927926C08E32004A4EBB /* SearchStockNetworkClient.swift */; };
 		E25B746D26A33B7600BE0A9C /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E25B746C26A33B7600BE0A9C /* Launch Screen.storyboard */; };
 		E262496C269F7E2E001E7F31 /* StockRowTypeDisplaySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E262496B269F7E2E001E7F31 /* StockRowTypeDisplaySheet.swift */; };
 		E267B86F2667FEBC009979C8 /* NVActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = E267B86E2667FEBC009979C8 /* NVActivityIndicatorView */; };
@@ -186,6 +188,8 @@
 		E25A1E9D266DA3EA004D2B24 /* StockCurrentQuoteNetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCurrentQuoteNetworkClient.swift; sourceTree = "<group>"; };
 		E25A1E9F266DA6F6004D2B24 /* StockOverview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOverview.swift; sourceTree = "<group>"; };
 		E25A1EA1266DA808004D2B24 /* StockOverviewNetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOverviewNetworkClient.swift; sourceTree = "<group>"; };
+		E25A927726C08D81004A4EBB /* SearchStockDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchStockDataSource.swift; sourceTree = "<group>"; };
+		E25A927926C08E32004A4EBB /* SearchStockNetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchStockNetworkClient.swift; sourceTree = "<group>"; };
 		E25B746C26A33B7600BE0A9C /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		E262496B269F7E2E001E7F31 /* StockRowTypeDisplaySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockRowTypeDisplaySheet.swift; sourceTree = "<group>"; };
 		E275EDFC264835F000752D8A /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
@@ -337,6 +341,14 @@
 			path = Valuation;
 			sourceTree = "<group>";
 		};
+		E25A927626C08D69004A4EBB /* DataSource */ = {
+			isa = PBXGroup;
+			children = (
+				E25A927726C08D81004A4EBB /* SearchStockDataSource.swift */,
+			);
+			path = DataSource;
+			sourceTree = "<group>";
+		};
 		E276556E267E9104002D13CC /* Color */ = {
 			isa = PBXGroup;
 			children = (
@@ -436,6 +448,7 @@
 				E25B746C26A33B7600BE0A9C /* Launch Screen.storyboard */,
 				E2F8D19826A2531600020A97 /* Wait.entitlements */,
 				E2E637AC2641A5FB00F872A4 /* WaitApp.swift */,
+				E25A927626C08D69004A4EBB /* DataSource */,
 				E2136DCF269A134D0033AEB1 /* Valuation */,
 				E2BEC7322686A1EF0001E426 /* Extension */,
 				E2FC1069267EDF0400CD98AF /* Network */,
@@ -498,6 +511,7 @@
 				E25A1EA1266DA808004D2B24 /* StockOverviewNetworkClient.swift */,
 				E25A1E9D266DA3EA004D2B24 /* StockCurrentQuoteNetworkClient.swift */,
 				E2ABEE0926533DF70001F0F9 /* StockQuoteNetworkClient.swift */,
+				E25A927926C08E32004A4EBB /* SearchStockNetworkClient.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -900,12 +914,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E25A927A26C08E32004A4EBB /* SearchStockNetworkClient.swift in Sources */,
 				E2E637AF2641A5FB00F872A4 /* ContentView.swift in Sources */,
 				E2FC106B267EDF9300CD98AF /* StockQuoteNetworkClient.swift in Sources */,
 				E2FC106D267EDFA300CD98AF /* StockOverviewNetworkClient.swift in Sources */,
 				E2136DD5269A16530033AEB1 /* SwiftUIValuationChartViewController.swift in Sources */,
 				E2BE76582641FC3300645629 /* StockExpectedPriceInputView.swift in Sources */,
 				E2D2B5D026518A9B001B5E32 /* StockDetailsView.swift in Sources */,
+				E25A927826C08D81004A4EBB /* SearchStockDataSource.swift in Sources */,
 				E2E637C02641A92A00F872A4 /* StockRow.swift in Sources */,
 				E2ABEDF2265322AE0001F0F9 /* ChartViewController.swift in Sources */,
 				E27C62E42653612000DD063C /* ChartHighlightMarker.swift in Sources */,
