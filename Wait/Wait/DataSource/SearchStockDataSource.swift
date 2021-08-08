@@ -3,15 +3,14 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import Foundation
 import Combine
+import Foundation
 import Model
 
 class SearchStockDataSource: ObservableObject {
-  @Published var searchStocks: [SearchStockResult] = []
+  // MARK: Internal
 
-  private let searchStockNetworkClient = SearchStockNetworkClient()
-  private var subscriptions = [AnyCancellable]()
+  @Published var searchStocks: [SearchStockResult] = []
 
   func searchStocks(for keyword: String) {
     searchStockNetworkClient.searchStocks(for: keyword)
@@ -30,4 +29,9 @@ class SearchStockDataSource: ObservableObject {
       }
       .store(in: &subscriptions)
   }
+
+  // MARK: Private
+
+  private let searchStockNetworkClient = SearchStockNetworkClient()
+  private var subscriptions = [AnyCancellable]()
 }

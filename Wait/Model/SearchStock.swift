@@ -3,6 +3,8 @@
 
 import Foundation
 
+// MARK: - SearchStockResult
+
 public struct SearchStockResult: Decodable {
   // MARK: Lifecycle
 
@@ -38,6 +40,8 @@ public struct SearchStockResult: Decodable {
     case currency
   }
 }
+
+// MARK: - SearchStockResults
 
 public struct SearchStockResults: Decodable {
   public let data: [SearchStockResult]

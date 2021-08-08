@@ -3,21 +3,13 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import Foundation
 import Combine
-import Networking
+import Foundation
 import Model
+import Networking
 
 struct SearchStockNetworkClient {
-  private func buildStockSearchURL(keyword: String) -> URL? {
-    let params = [
-      "symbol": keyword,
-    ]
-
-    let url = NetworkingURLBuilder.buildURL(api: "symbol_search", params: params)
-
-    return url
-  }
+  // MARK: Internal
 
   func searchStocks(for keyword: String) -> AnyPublisher<SearchStockResults, Error> {
     let url = buildStockSearchURL(keyword: keyword)!
@@ -27,5 +19,17 @@ struct SearchStockNetworkClient {
       .map(\.data)
       .decode(type: SearchStockResults.self, decoder: JSONDecoder())
       .eraseToAnyPublisher()
+  }
+
+  // MARK: Private
+
+  private func buildStockSearchURL(keyword: String) -> URL? {
+    let params = [
+      "symbol": keyword,
+    ]
+
+    let url = NetworkingURLBuilder.buildURL(api: "symbol_search", params: params)
+
+    return url
   }
 }
