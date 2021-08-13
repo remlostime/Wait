@@ -13,6 +13,11 @@ class SearchStockDataSource: ObservableObject {
   @Published var searchStocks: [SearchStockResult] = []
 
   func searchStocks(for keyword: String) {
+    guard !keyword.isEmpty else {
+      searchStocks = []
+      return
+    }
+
     searchStockNetworkClient.searchStocks(for: keyword)
       .sink { _ in
         logger.verbose("Successfully get recommend stocks for :\(keyword)")
