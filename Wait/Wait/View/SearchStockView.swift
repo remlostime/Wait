@@ -4,10 +4,10 @@ import Alamofire
 import Combine
 import Model
 import Networking
-import SwiftUI
-import SwiftyJSON
-import SwiftUIX
 import Size
+import SwiftUI
+import SwiftUIX
+import SwiftyJSON
 
 // MARK: - SearchStockView
 
