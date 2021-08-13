@@ -4,7 +4,9 @@ import Alamofire
 import Combine
 import Model
 import Networking
+import Size
 import SwiftUI
+import SwiftUIX
 import SwiftyJSON
 
 // MARK: - SearchStockView
@@ -18,7 +20,13 @@ struct SearchStockView: View {
 
   var body: some View {
     VStack {
-      SearchBar(keyword: $keyword.onChange(keywordDidChange))
+      SearchBar("Search Stock", text: $keyword) { _ in
+        if keyword.isEmpty {
+          dataSource.searchStocks(for: keyword)
+        }
+      } onCommit: {
+        dataSource.searchStocks(for: keyword)
+      }
 
       List {
         ForEach(dataSource.searchStocks, id: \.symbol) { searchStock in
@@ -29,16 +37,6 @@ struct SearchStockView: View {
       }
     }
     .navigationTitle("Companies")
-  }
-
-  func keywordDidChange(to newKeyword: String) {
-    DispatchQueue.global().asyncAfter(deadline: .now() + 1.0) {
-      guard newKeyword == keyword else {
-        return
-      }
-
-      dataSource.searchStocks(for: keyword)
-    }
   }
 }
 
