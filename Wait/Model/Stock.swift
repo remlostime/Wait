@@ -18,7 +18,8 @@ public class Stock: Codable {
     expectedPrice: Money<USD>,
     memo: String = "",
     currentQuote: StockCurrentQuote,
-    category: StockCategory
+    category: StockCategory,
+    lastUpdatedTime: Date
   ) {
     self.symbol = symbol
     self.name = name
@@ -26,6 +27,7 @@ public class Stock: Codable {
     self.memo = memo
     self.currentQuote = currentQuote
     self.category = category
+    self.lastUpdatedTime = lastUpdatedTime
   }
 
   public init(from record: CKRecord) {
@@ -42,6 +44,8 @@ public class Stock: Codable {
     } else {
       category = .research
     }
+
+    lastUpdatedTime = (record["lastUpdatedTime"] as? Date) ?? Date()
 
     if let currentQuoteRecord = record["currentQuote"] as? CKRecord.Reference {
       currentQuote = .empty
@@ -68,6 +72,7 @@ public class Stock: Codable {
   public let memo: String
   public let category: StockCategory
   public private(set) var currentQuote: StockCurrentQuote
+  public let lastUpdatedTime: Date
 
   public var currentPrice: Money<USD> {
     currentQuote.close
@@ -90,7 +95,8 @@ public class Stock: Codable {
       expectedPrice: expectedPrice,
       memo: memo,
       currentQuote: currentQuote,
-      category: category
+      category: category,
+      lastUpdatedTime: lastUpdatedTime
     )
   }
 
@@ -101,7 +107,8 @@ public class Stock: Codable {
       expectedPrice: expectedPrice,
       memo: memo,
       currentQuote: currentQuote,
-      category: category
+      category: category,
+      lastUpdatedTime: lastUpdatedTime
     )
   }
 }
@@ -130,7 +137,8 @@ public extension Stock {
       expectedPrice: 0.0,
       memo: "Empty",
       currentQuote: .empty,
-      category: .waitlist
+      category: .waitlist,
+      lastUpdatedTime: Date()
     )
   }
 

@@ -3,6 +3,7 @@
 import Model
 import Size
 import SwiftUI
+import SwiftDate
 
 // MARK: - StockDetailsView
 
@@ -74,6 +75,14 @@ struct StockDetailsView: View {
             let newStock = stock.with(memo: memo)
             StockCache.shared.saveStock(newStock)
           })
+        }
+        .padding()
+
+        VStack(alignment: .leading, spacing: 12.0) {
+          Text("Version")
+            .font(.title)
+
+          Text("Last edited: " + stock.lastUpdatedTime.toFormat("MMM dd, yyyy"))
         }
         .padding()
       }
