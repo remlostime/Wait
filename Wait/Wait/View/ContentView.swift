@@ -63,8 +63,6 @@ struct ContentView: View {
         .id(UUID())
       }
       .onAppear {
-        print(StockCategory.allCases)
-
         StockCache.shared.getStocks { stocks in
           let group = DispatchGroup()
           var updatedStocks = stocks

@@ -4,6 +4,7 @@ import Model
 import Size
 import SwiftDate
 import SwiftUI
+import SwiftDate
 
 // MARK: - StockDetailsView
 
