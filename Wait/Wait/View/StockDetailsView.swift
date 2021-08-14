@@ -56,6 +56,16 @@ struct StockDetailsView: View {
         .padding()
 
         VStack(alignment: .leading, spacing: 12.0) {
+          Text("Checklist")
+            .font(.title)
+
+          ForEach(ChecklistItem.allItems) { item in
+            Checklist(item: item)
+          }
+        }
+        .padding()
+
+        VStack(alignment: .leading, spacing: 12.0) {
           Text("Memo")
             .font(.title)
 
