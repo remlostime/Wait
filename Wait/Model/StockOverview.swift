@@ -6,6 +6,8 @@
 import Foundation
 import Money
 
+// MARK: - StockOverview
+
 public struct StockOverview: Decodable {
   // MARK: Lifecycle
 
@@ -46,8 +48,8 @@ public struct StockOverview: Decodable {
   }
 }
 
-extension StockOverview {
-  public static let empty = StockOverview(
+public extension StockOverview {
+  static let empty = StockOverview(
     name: "",
     description: "",
     PERatio: "",

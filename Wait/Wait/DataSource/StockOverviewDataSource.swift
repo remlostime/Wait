@@ -3,11 +3,13 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import Foundation
 import Combine
+import Foundation
 import Model
 
 class StockOverviewDataSource: ObservableObject {
+  // MARK: Internal
+
   @Published var stockOverview = StockOverview.empty
 
   func fetchStockOverview(stock: Stock) {
@@ -19,6 +21,8 @@ class StockOverviewDataSource: ObservableObject {
       }
       .store(in: &subscriptions)
   }
+
+  // MARK: Private
 
   private let networkClient = StockOverviewNetworkClient()
   private var subscriptions = [AnyCancellable]()

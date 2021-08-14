@@ -4,11 +4,11 @@
 //
 
 import Alamofire
+import Combine
 import Foundation
 import Model
 import Networking
 import SwiftUI
-import Combine
 
 final class StockOverviewNetworkClient {
   // MARK: Internal
