@@ -32,6 +32,8 @@
 		E2136DD5269A16530033AEB1 /* SwiftUIValuationChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2136DD4269A16530033AEB1 /* SwiftUIValuationChartViewController.swift */; };
 		E21D2E7A269B6DF80063C7ED /* Color.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E276556D267E9104002D13CC /* Color.framework */; };
 		E2211E2526C81C5E00041F5F /* StockOverviewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2211E2426C81C5E00041F5F /* StockOverviewDataSource.swift */; };
+		E2211E2726C8280100041F5F /* Checklist.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2211E2626C8280100041F5F /* Checklist.swift */; };
+		E2211E2926C82A3300041F5F /* ChecklistItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2211E2826C82A3300041F5F /* ChecklistItem.swift */; };
 		E227D3A426BEE2930094A872 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = E227D3A326BEE2930094A872 /* Category.swift */; };
 		E22A84222669C8B60099F107 /* PartialSheet in Frameworks */ = {isa = PBXBuildFile; productRef = E22A84212669C8B60099F107 /* PartialSheet */; };
 		E238917B26C5E35E00C920B3 /* SwiftUIX in Frameworks */ = {isa = PBXBuildFile; productRef = E238917A26C5E35E00C920B3 /* SwiftUIX */; };
@@ -179,6 +181,8 @@
 		E2136DD2269A13F90033AEB1 /* ValuationChartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValuationChartViewController.swift; sourceTree = "<group>"; };
 		E2136DD4269A16530033AEB1 /* SwiftUIValuationChartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIValuationChartViewController.swift; sourceTree = "<group>"; };
 		E2211E2426C81C5E00041F5F /* StockOverviewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOverviewDataSource.swift; sourceTree = "<group>"; };
+		E2211E2626C8280100041F5F /* Checklist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Checklist.swift; sourceTree = "<group>"; };
+		E2211E2826C82A3300041F5F /* ChecklistItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistItem.swift; sourceTree = "<group>"; };
 		E227D3A326BEE2930094A872 /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		E23B93E02652D38D00E039D9 /* Money+Format.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Money+Format.swift"; sourceTree = "<group>"; };
 		E25A1E81266BB862004D2B24 /* Exchange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exchange.swift; sourceTree = "<group>"; };
@@ -484,6 +488,7 @@
 				E2D2B5CF26518A9B001B5E32 /* StockDetailsView.swift */,
 				E25A1E9B266D7CAC004D2B24 /* StockStatsView.swift */,
 				E262496B269F7E2E001E7F31 /* StockRowTypeDisplaySheet.swift */,
+				E2211E2626C8280100041F5F /* Checklist.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -502,6 +507,7 @@
 				E2FC102F267E9EB300CD98AF /* Model.h */,
 				E2FC1030267E9EB300CD98AF /* Info.plist */,
 				E227D3A326BEE2930094A872 /* Category.swift */,
+				E2211E2826C82A3300041F5F /* ChecklistItem.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -945,6 +951,7 @@
 				E2123A6B26472F9400A29222 /* StockCache.swift in Sources */,
 				E2ABEE082653376D0001F0F9 /* ChartCache.swift in Sources */,
 				E275EDFF26483D6600752D8A /* SearchStockView.swift in Sources */,
+				E2211E2726C8280100041F5F /* Checklist.swift in Sources */,
 				E2ABEDFB265324D00001F0F9 /* PriceHistoryDataSource.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -954,6 +961,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E2B5EAA32688105D0092663F /* Money+Format.swift in Sources */,
+				E2211E2926C82A3300041F5F /* ChecklistItem.swift in Sources */,
 				E2FC1039267E9EBF00CD98AF /* Exchange.swift in Sources */,
 				E2FC103A267E9EBF00CD98AF /* StockOverview.swift in Sources */,
 				E270B6BB26ABADAF00A56A69 /* CloudNetworkClient.swift in Sources */,
