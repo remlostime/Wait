@@ -45,3 +45,14 @@ public struct StockOverview: Decodable {
     case dividendPerShare = "DividendPerShare"
   }
 }
+
+extension StockOverview {
+  public static let empty = StockOverview(
+    name: "",
+    description: "",
+    PERatio: "",
+    PBRatio: "",
+    marketCap: 0,
+    dividendPerShare: ""
+  )
+}

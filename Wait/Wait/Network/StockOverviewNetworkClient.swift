@@ -8,44 +8,24 @@ import Foundation
 import Model
 import Networking
 import SwiftUI
+import Combine
 
-final class StockOverviewNetworkClient: ObservableObject {
+final class StockOverviewNetworkClient {
   // MARK: Internal
 
-  @Published var stockOverview = StockOverview(
-    name: "",
-    description: "",
-    PERatio: "",
-    PBRatio: "",
-    marketCap: 0,
-    dividendPerShare: ""
-  )
+  func fetchStockOverview(stock: Stock) -> AnyPublisher<StockOverview, Error> {
+    let url = buildURL(stock: stock)!
 
-  func fetchStockOverview(stock: Stock) {
-    guard let url = buildURL(stock: stock) else {
-      return
-    }
-
-    AF.request(url).validate().responseData { response in
-      switch response.result {
-        case let .success(data):
-          let decoder = JSONDecoder()
-
-          guard
-            let stockOverview = try? decoder.decode(StockOverview.self, from: data)
-          else {
-            logger.error("Failed to decode stock quote")
-            return
-          }
-
-          self.stockOverview = stockOverview
-        case let .failure(error):
-          logger.error("Failed to fetch stock quote: \(error.localizedDescription)")
-      }
-    }
+    return URLSession.shared
+      .dataTaskPublisher(for: url)
+      .map(\.data)
+      .decode(type: StockOverview.self, decoder: Self.decoder)
+      .eraseToAnyPublisher()
   }
 
   // MARK: Private
+
+  private static let decoder = JSONDecoder()
 
   private func buildURL(stock: Stock) -> URL? {
     let params = [
