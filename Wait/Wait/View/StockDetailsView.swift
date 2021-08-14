@@ -11,7 +11,7 @@ struct StockDetailsView: View {
 
   var stock: Stock
 
-  @ObservedObject var stockOverviewNetworkClient = StockOverviewNetworkClient()
+  @ObservedObject var stockOverviewDatSource = StockOverviewDataSource()
 
   @State var stockIsFavorited: Bool = true
   @State var memo: String = ""
@@ -30,14 +30,14 @@ struct StockDetailsView: View {
             .font(.title)
 
           HStack(spacing: 12.0) {
-            StockStatsView(title: "Market Cap", value: stockOverviewNetworkClient.stockOverview.marketCap.formattedCurrency(format: .short))
-            StockStatsView(title: "Avg Div", value: stockOverviewNetworkClient.stockOverview.dividendPerShare)
+            StockStatsView(title: "Market Cap", value: stockOverviewDatSource.stockOverview.marketCap.formattedCurrency(format: .short))
+            StockStatsView(title: "Avg Div", value: stockOverviewDatSource.stockOverview.dividendPerShare)
           }
           .font(.subheadline)
 
           HStack(spacing: 12.0) {
-            StockStatsView(title: "PE", value: stockOverviewNetworkClient.stockOverview.PERatio)
-            StockStatsView(title: "PB", value: stockOverviewNetworkClient.stockOverview.PBRatio)
+            StockStatsView(title: "PE", value: stockOverviewDatSource.stockOverview.PERatio)
+            StockStatsView(title: "PB", value: stockOverviewDatSource.stockOverview.PBRatio)
           }
           .font(.subheadline)
         }
@@ -81,7 +81,7 @@ struct StockDetailsView: View {
       )
     }
     .onAppear {
-      stockOverviewNetworkClient.fetchStockOverview(stock: stock)
+      stockOverviewDatSource.fetchStockOverview(stock: stock)
       memo = stock.memo
     }
     .onChange(of: stockIsFavorited, perform: { value in

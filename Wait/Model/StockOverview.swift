@@ -6,6 +6,8 @@
 import Foundation
 import Money
 
+// MARK: - StockOverview
+
 public struct StockOverview: Decodable {
   // MARK: Lifecycle
 
@@ -44,4 +46,15 @@ public struct StockOverview: Decodable {
     case marketCap = "MarketCapitalization"
     case dividendPerShare = "DividendPerShare"
   }
+}
+
+public extension StockOverview {
+  static let empty = StockOverview(
+    name: "",
+    description: "",
+    PERatio: "",
+    PBRatio: "",
+    marketCap: 0,
+    dividendPerShare: ""
+  )
 }
