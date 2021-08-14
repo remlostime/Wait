@@ -3,8 +3,10 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import SwiftUI
 import Model
+import SwiftUI
+
+// MARK: - Checklist
 
 struct Checklist: View {
   @State var isChecked: Bool = false
@@ -29,6 +31,8 @@ struct Checklist: View {
     }
   }
 }
+
+// MARK: - Checklist_Previews
 
 struct Checklist_Previews: PreviewProvider {
   static var previews: some View {

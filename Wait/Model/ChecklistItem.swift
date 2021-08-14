@@ -5,9 +5,13 @@
 
 import Foundation
 
+// MARK: - ChecklistItem
+
 public struct ChecklistItem {
   public let name: String
 }
+
+// MARK: Identifiable, Hashable
 
 extension ChecklistItem: Identifiable, Hashable {
   public var id: String {
@@ -15,8 +19,8 @@ extension ChecklistItem: Identifiable, Hashable {
   }
 }
 
-extension ChecklistItem {
-  public static let allItems: [ChecklistItem] = [
+public extension ChecklistItem {
+  static let allItems: [ChecklistItem] = [
     ChecklistItem(name: "等30分钟再决定"),
     ChecklistItem(name: "愿意持有10年吗"),
     ChecklistItem(name: "wash sale - vested date, 30 days rule etc"),
@@ -36,5 +40,5 @@ extension ChecklistItem {
     ChecklistItem(name: "去雪球和seeking alpha看看反对的观点。你能反驳吗"),
   ]
 
-  public static let example = ChecklistItem(name: "This is a check item")
+  static let example = ChecklistItem(name: "This is a check item")
 }
