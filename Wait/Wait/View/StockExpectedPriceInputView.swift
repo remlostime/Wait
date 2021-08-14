@@ -60,7 +60,8 @@ struct StockExpectedPriceInputView: View {
           name: searchStock.name,
           expectedPrice: Money<USD>(floatLiteral: Double(expectedPriceModel.price) ?? 0.0),
           currentQuote: .empty,
-          category: category
+          category: category,
+          lastUpdatedTime: Date()
         )
 
         isPresented.toggle()

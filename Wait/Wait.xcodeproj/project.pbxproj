@@ -34,6 +34,7 @@
 		E2211E2526C81C5E00041F5F /* StockOverviewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2211E2426C81C5E00041F5F /* StockOverviewDataSource.swift */; };
 		E2211E2726C8280100041F5F /* Checklist.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2211E2626C8280100041F5F /* Checklist.swift */; };
 		E2211E2926C82A3300041F5F /* ChecklistItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2211E2826C82A3300041F5F /* ChecklistItem.swift */; };
+		E2211E2C26C8444700041F5F /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = E2211E2B26C8444700041F5F /* SwiftDate */; };
 		E227D3A426BEE2930094A872 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = E227D3A326BEE2930094A872 /* Category.swift */; };
 		E22A84222669C8B60099F107 /* PartialSheet in Frameworks */ = {isa = PBXBuildFile; productRef = E22A84212669C8B60099F107 /* PartialSheet */; };
 		E238917B26C5E35E00C920B3 /* SwiftUIX in Frameworks */ = {isa = PBXBuildFile; productRef = E238917A26C5E35E00C920B3 /* SwiftUIX */; };
@@ -303,6 +304,7 @@
 				E2ABEDF0265322670001F0F9 /* HMSegmentedControl in Frameworks */,
 				E276558D267E9470002D13CC /* UI.framework in Frameworks */,
 				E267B86F2667FEBC009979C8 /* NVActivityIndicatorView in Frameworks */,
+				E2211E2C26C8444700041F5F /* SwiftDate in Frameworks */,
 				E2A07D9B26520BDD0075E271 /* Hue in Frameworks */,
 				E2123A652647158800A29222 /* SwiftyBeaver in Frameworks */,
 				E2901FA5264CAC8B003A2C01 /* Shake in Frameworks */,
@@ -698,6 +700,7 @@
 				E22A84212669C8B60099F107 /* PartialSheet */,
 				E294F05C26A5F44400B76893 /* SkeletonUI */,
 				E238917A26C5E35E00C920B3 /* SwiftUIX */,
+				E2211E2B26C8444700041F5F /* SwiftDate */,
 			);
 			productName = Wait;
 			productReference = E2E637A92641A5FB00F872A4 /* Wait.app */;
@@ -803,6 +806,7 @@
 				E2BC41A9267FFC7400A853D2 /* XCRemoteSwiftPackageReference "periphery" */,
 				E294F05B26A5F44400B76893 /* XCRemoteSwiftPackageReference "SkeletonUI" */,
 				E238917926C5E35E00C920B3 /* XCRemoteSwiftPackageReference "SwiftUIX" */,
+				E2211E2A26C8444700041F5F /* XCRemoteSwiftPackageReference "SwiftDate" */,
 			);
 			productRefGroup = E2E637AA2641A5FB00F872A4 /* Products */;
 			projectDirPath = "";
@@ -1604,6 +1608,14 @@
 				minimumVersion = 5.0.1;
 			};
 		};
+		E2211E2A26C8444700041F5F /* XCRemoteSwiftPackageReference "SwiftDate" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/malcommac/SwiftDate";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.3.1;
+			};
+		};
 		E22A84202669C8B60099F107 /* XCRemoteSwiftPackageReference "PartialSheet" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/AndreaMiotto/PartialSheet";
@@ -1730,6 +1742,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2123A662647198000A29222 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
 			productName = SwiftyJSON;
+		};
+		E2211E2B26C8444700041F5F /* SwiftDate */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E2211E2A26C8444700041F5F /* XCRemoteSwiftPackageReference "SwiftDate" */;
+			productName = SwiftDate;
 		};
 		E22A84212669C8B60099F107 /* PartialSheet */ = {
 			isa = XCSwiftPackageProductDependency;
