@@ -74,20 +74,6 @@ public class Stock: Codable {
   public private(set) var currentQuote: StockCurrentQuote
   public let lastUpdatedTime: Date
 
-  public var currentPrice: Money<USD> {
-    currentQuote.close
-  }
-
-  public var changePercent: String {
-    currentQuote.percentChange
-  }
-
-  public var formattedChangePercent: String {
-    let changePercentDouble = Double(changePercent) ?? 0.0
-    let formattedChangePercent = String(format: "%.2f", changePercentDouble) + "%"
-    return formattedChangePercent
-  }
-
   public func with(memo: String) -> Stock {
     Stock(
       symbol: symbol,
@@ -129,7 +115,23 @@ public enum TradeAction: String, CaseIterable {
   case almost = "Almost"
 }
 
+// MARK: Extension
+
 public extension Stock {
+  var currentPrice: Money<USD> {
+    currentQuote.close
+  }
+
+  var changePercent: String {
+    currentQuote.percentChange
+  }
+
+  var formattedChangePercent: String {
+    let changePercentDouble = Double(changePercent) ?? 0.0
+    let formattedChangePercent = String(format: "%.2f", changePercentDouble) + "%"
+    return formattedChangePercent
+  }
+
   static var empty: Stock {
     Stock(
       symbol: "empty",
