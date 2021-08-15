@@ -59,7 +59,7 @@ struct StockExpectedPriceInputView: View {
           symbol: searchStock.symbol,
           name: searchStock.name,
           expectedPrice: Money<USD>(floatLiteral: Double(expectedPriceModel.price) ?? 0.0),
-          currentQuote: .empty,
+          currentQuote: stock.currentQuote,
           category: category,
           lastUpdatedTime: Date()
         )

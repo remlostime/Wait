@@ -35,10 +35,10 @@ class ValuationChartViewController: UIViewController {
       make.edges.equalToSuperview()
     }
 
-    setupData()
+    updateData()
   }
 
-  func setupData() {
+  func updateData() {
     let expectedPriceData = BarChartDataEntry(x: 0, y: stock.expectedPrice.amountDoubleValue)
     let currentPriceData = BarChartDataEntry(x: 1, y: stock.currentPrice.amountDoubleValue)
 
@@ -76,7 +76,11 @@ class ValuationChartViewController: UIViewController {
     return chartView
   }()
 
-  private let stock: Stock
+  var stock: Stock {
+    didSet {
+      updateData()
+    }
+  }
 
   private var isLightMode: Bool {
     traitCollection.userInterfaceStyle == .light
