@@ -118,6 +118,18 @@ public enum TradeAction: String, CaseIterable {
 // MARK: Extension
 
 public extension Stock {
+  static var empty: Stock {
+    Stock(
+      symbol: "empty",
+      name: "Empty",
+      expectedPrice: 0.0,
+      memo: "Empty",
+      currentQuote: .empty,
+      category: .waitlist,
+      lastUpdatedTime: Date()
+    )
+  }
+
   var currentPrice: Money<USD> {
     currentQuote.close
   }
@@ -130,18 +142,6 @@ public extension Stock {
     let changePercentDouble = Double(changePercent) ?? 0.0
     let formattedChangePercent = String(format: "%.2f", changePercentDouble) + "%"
     return formattedChangePercent
-  }
-
-  static var empty: Stock {
-    Stock(
-      symbol: "empty",
-      name: "Empty",
-      expectedPrice: 0.0,
-      memo: "Empty",
-      currentQuote: .empty,
-      category: .waitlist,
-      lastUpdatedTime: Date()
-    )
   }
 
   var tradeAction: TradeAction {
