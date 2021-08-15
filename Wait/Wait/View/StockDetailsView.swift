@@ -17,6 +17,7 @@ struct StockDetailsView: View {
   @State var stockIsFavorited: Bool = true
   @State var memo: String = ""
   @State var isEditingPrice = false
+  @State var checkedItemCounts = 0
 
   var searchStock: SearchStockResult {
     SearchStockResult(
@@ -83,8 +84,16 @@ struct StockDetailsView: View {
           Text("Checklist")
             .font(.title)
 
+          if checkedItemCounts < ChecklistItem.allItems.count {
+            Text("\(checkedItemCounts) / \(ChecklistItem.allItems.count) Done")
+              .font(.subheadline)
+          } else {
+            Text("All Done")
+              .foregroundColor(.accentColor)
+          }
+
           ForEach(ChecklistItem.allItems) { item in
-            Checklist(item: item)
+            Checklist(item: item, checkedItemCounts: $checkedItemCounts)
           }
         }
         .padding()
