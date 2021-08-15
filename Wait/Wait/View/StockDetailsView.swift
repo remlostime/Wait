@@ -10,12 +10,23 @@ import SwiftUI
 struct StockDetailsView: View {
   // MARK: Internal
 
-  var stock: Stock
+  @State var stock: Stock
 
   @ObservedObject var stockOverviewDatSource = StockOverviewDataSource()
 
   @State var stockIsFavorited: Bool = true
   @State var memo: String = ""
+  @State var isEditingPrice = false
+
+  var searchStock: SearchStockResult {
+    SearchStockResult(
+      symbol: stock.symbol,
+      name: stock.name,
+      exchange: "",
+      country: "",
+      currency: "US"
+    )
+  }
 
   var body: some View {
     ScrollView {
@@ -44,12 +55,24 @@ struct StockDetailsView: View {
         }
         .padding()
 
-        Divider()
-          .padding()
-
         VStack(alignment: .leading, spacing: 12.0) {
-          Text("Valuation")
-            .font(.title)
+          HStack {
+            Text("Valuation")
+              .font(.title)
+
+            Spacer()
+
+            Button("edit") {
+              isEditingPrice.toggle()
+            }
+            .sheet(isPresented: $isEditingPrice, content: {
+              StockExpectedPriceInputView(
+                searchStock: searchStock,
+                stock: $stock,
+                isPresented: $isEditingPrice
+              )
+            })
+          }
 
           SwiftUIValuationChartViewController(stock: stock)
             .frame(height: 120)

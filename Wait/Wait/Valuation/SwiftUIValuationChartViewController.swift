@@ -23,7 +23,9 @@ struct SwiftUIValuationChartViewController: UIViewControllerRepresentable {
     return viewController
   }
 
-  func updateUIViewController(_ viewController: ValuationChartViewController, context: Context) {}
+  func updateUIViewController(_ viewController: ValuationChartViewController, context: Context) {
+    viewController.stock = stock
+  }
 }
 
 // MARK: - ValuationChartCoordinator
