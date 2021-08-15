@@ -24,7 +24,8 @@ struct StockDetailsView: View {
       name: stock.name,
       exchange: "",
       country: "",
-      currency: "US")
+      currency: "US"
+    )
   }
 
   var body: some View {
@@ -68,7 +69,8 @@ struct StockDetailsView: View {
               StockExpectedPriceInputView(
                 searchStock: searchStock,
                 stock: $stock,
-                isPresented: $isEditingPrice)
+                isPresented: $isEditingPrice
+              )
             })
           }
 

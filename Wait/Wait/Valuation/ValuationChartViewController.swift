@@ -27,6 +27,12 @@ class ValuationChartViewController: UIViewController {
 
   // MARK: Internal
 
+  var stock: Stock {
+    didSet {
+      updateData()
+    }
+  }
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
@@ -75,12 +81,6 @@ class ValuationChartViewController: UIViewController {
 
     return chartView
   }()
-
-  var stock: Stock {
-    didSet {
-      updateData()
-    }
-  }
 
   private var isLightMode: Bool {
     traitCollection.userInterfaceStyle == .light
