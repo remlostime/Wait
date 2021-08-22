@@ -58,6 +58,7 @@
 		E24BDF0D26D2EFA100595E4A /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E24BDF0C26D2EFA100595E4A /* SwiftyJSON */; };
 		E24BDF1326D3051100595E4A /* WidgetStockRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24BDF1226D3051100595E4A /* WidgetStockRow.swift */; };
 		E24BDF1426D3066800595E4A /* Size.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2BC418E267F9C4600A853D2 /* Size.framework */; };
+		E24BDF1526D3149E00595E4A /* StockCurrentQuoteNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A1E9D266DA3EA004D2B24 /* StockCurrentQuoteNetworkClient.swift */; };
 		E25A1E9C266D7CAC004D2B24 /* StockStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A1E9B266D7CAC004D2B24 /* StockStatsView.swift */; };
 		E25A927826C08D81004A4EBB /* SearchStockDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A927726C08D81004A4EBB /* SearchStockDataSource.swift */; };
 		E25A927A26C08E32004A4EBB /* SearchStockNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A927926C08E32004A4EBB /* SearchStockNetworkClient.swift */; };
@@ -1109,6 +1110,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E210DEFF26D2B50D0044DA4E /* WaitWidget.swift in Sources */,
+				E24BDF1526D3149E00595E4A /* StockCurrentQuoteNetworkClient.swift in Sources */,
 				E24BDF1326D3051100595E4A /* WidgetStockRow.swift in Sources */,
 				E205D3DF26D2C352004EE31D /* StockCache.swift in Sources */,
 			);

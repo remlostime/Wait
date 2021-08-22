@@ -6,10 +6,13 @@
 import Model
 import SwiftUI
 import WidgetKit
+import Size
 
 // MARK: - Provider
 
 struct Provider: TimelineProvider {
+  private let stockCurrentQuoteNetworkClient = StockCurrentQuoteNetworkClient()
+
   func placeholder(in context: Context) -> WaitEntry {
     WaitEntry.snapshot
   }
@@ -20,12 +23,27 @@ struct Provider: TimelineProvider {
   }
 
   func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
-    let stocks = StockCache.shared.getStocks()
-    let currentDate = Date()
-    let entry = WaitEntry(date: currentDate, stocks: stocks)
+    var stocks = StockCache.shared.getStocks()
+    let maxCount = 3
+    stocks = Array(stocks[..<min(maxCount, stocks.count)])
+    let group = DispatchGroup()
+    for (index, stock) in stocks.enumerated() {
+      group.enter()
+      stockCurrentQuoteNetworkClient.fetchStockDetails(stock: stock) { stock in
+        if let stock = stock {
+          stocks[index] = stock
+        }
 
-    let timeline = Timeline(entries: [entry], policy: .atEnd)
-    completion(timeline)
+        group.leave()
+      }
+    }
+
+    group.notify(queue: DispatchQueue.main) {
+      let currentDate = Date()
+      let entry = WaitEntry(date: currentDate, stocks: stocks)
+      let timeline = Timeline(entries: [entry], policy: .atEnd)
+      completion(timeline)
+    }
   }
 }
 
@@ -45,17 +63,12 @@ extension WaitEntry {
 struct WaitWidgetEntryView: View {
   var entry: Provider.Entry
 
-  var stocks: [Stock] {
-    let maxCount = 3
-    return Array(entry.stocks[..<min(maxCount, entry.stocks.count)])
-  }
-
   var body: some View {
     VStack {
-      ForEach(stocks, id: \.symbol) { stock in
+      ForEach(entry.stocks, id: \.symbol) { stock in
         WidgetStockRow(stock: stock)
       }
-      .padding()
+      .padding(.all, Size.horizontalPadding8)
     }
   }
 }
