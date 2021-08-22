@@ -120,7 +120,7 @@ public enum TradeAction: String, CaseIterable {
 public extension Stock {
   static var empty: Stock {
     Stock(
-      symbol: "empty",
+      symbol: "Empty",
       name: "Empty",
       expectedPrice: 0.0,
       memo: "Empty",

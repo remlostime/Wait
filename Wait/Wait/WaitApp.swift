@@ -1,14 +1,15 @@
 // Created by kai_chen on 5/4/21.
 
 import Color
+import Logging
 // import Firebase
 import PartialSheet
 import Shake
 import SwiftUI
 import SwiftyBeaver
-import Trace
+// import Trace
 
-let logger = SwiftyBeaver.self
+// let logger = SwiftyBeaver.self
 
 // MARK: - WaitApp
 
@@ -35,7 +36,7 @@ struct WaitApp: App {
 
   // MARK: Private
 
-  private let trace = Trace.shared
+//  private let trace = Trace.shared
 
 //  private func setupFirebase() {
 //    FirebaseApp.configure()

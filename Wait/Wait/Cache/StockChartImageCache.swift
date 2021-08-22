@@ -5,6 +5,7 @@
 
 import Cache
 import Foundation
+import Logging
 import Model
 
 class StockChartImageCache {

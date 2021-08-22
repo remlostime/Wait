@@ -2,6 +2,7 @@
 
 import Alamofire
 import Foundation
+import Logging
 import Model
 import Networking
 import SwiftyJSON

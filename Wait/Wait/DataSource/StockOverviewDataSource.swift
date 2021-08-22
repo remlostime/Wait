@@ -5,6 +5,7 @@
 
 import Combine
 import Foundation
+import Logging
 import Model
 
 class StockOverviewDataSource: ObservableObject {

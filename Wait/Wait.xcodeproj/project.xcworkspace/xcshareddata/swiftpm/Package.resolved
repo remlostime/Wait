@@ -218,15 +218,6 @@
         }
       },
       {
-        "package": "BitriseTrace",
-        "repositoryURL": "https://github.com/bitrise-io/trace-cocoa-sdk.git",
-        "state": {
-          "branch": null,
-          "revision": "7f23379cce92e10bf8da102c41c7affb909c1cb6",
-          "version": "1.7.33"
-        }
-      },
-      {
         "package": "XcodeProj",
         "repositoryURL": "https://github.com/tuist/xcodeproj",
         "state": {

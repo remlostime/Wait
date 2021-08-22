@@ -2,6 +2,7 @@
 
 import Cache
 import Foundation
+import Logging
 import Model
 
 class StockCache {
@@ -64,12 +65,14 @@ class StockCache {
   private let key = "stocks"
 
   private lazy var storage: Storage<String, [Stock]>? = {
-    let diskUrl = try? FileManager.default.url(
-      for: .documentDirectory,
-      in: .userDomainMask,
-      appropriateFor: nil,
-      create: true
-    )
+//    let diskUrl = try? FileManager.default.url(
+//      for: .documentDirectory,
+//      in: .userDomainMask,
+//      appropriateFor: nil,
+//      create: true
+//    )
+    let diskUrl = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.chenkai.wait.contents")
+
     let diskConfig = DiskConfig(name: "stocks", directory: diskUrl)
 
     let memoryConfig = MemoryConfig()
