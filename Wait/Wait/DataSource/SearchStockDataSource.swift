@@ -6,6 +6,7 @@
 import Combine
 import Foundation
 import Model
+import Logging
 
 class SearchStockDataSource: ObservableObject {
   // MARK: Internal

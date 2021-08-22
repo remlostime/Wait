@@ -2,6 +2,7 @@
 
 import Cache
 import Foundation
+import Logging
 
 class ChartCache<ChartData: Codable> {
   // MARK: Lifecycle

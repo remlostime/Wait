@@ -6,9 +6,10 @@ import PartialSheet
 import Shake
 import SwiftUI
 import SwiftyBeaver
-import Trace
+import Logging
+//import Trace
 
-let logger = SwiftyBeaver.self
+//let logger = SwiftyBeaver.self
 
 // MARK: - WaitApp
 
@@ -35,7 +36,7 @@ struct WaitApp: App {
 
   // MARK: Private
 
-  private let trace = Trace.shared
+//  private let trace = Trace.shared
 
 //  private func setupFirebase() {
 //    FirebaseApp.configure()

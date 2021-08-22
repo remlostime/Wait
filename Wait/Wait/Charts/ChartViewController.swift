@@ -7,6 +7,7 @@ import Money
 import SnapKit
 import UI
 import UIKit
+import Logging
 
 // MARK: - ChartViewController
 
