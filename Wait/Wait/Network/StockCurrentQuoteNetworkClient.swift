@@ -5,9 +5,9 @@
 
 import Alamofire
 import Foundation
+import Logging
 import Model
 import Networking
-import Logging
 
 final class StockCurrentQuoteNetworkClient {
   // MARK: Internal

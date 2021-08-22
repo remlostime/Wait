@@ -5,8 +5,8 @@
 
 import Combine
 import Foundation
-import Model
 import Logging
+import Model
 
 class StockOverviewDataSource: ObservableObject {
   // MARK: Internal

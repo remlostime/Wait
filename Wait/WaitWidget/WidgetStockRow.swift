@@ -3,11 +3,14 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import SwiftUI
 import Model
 import Size
+import SwiftUI
+
+// MARK: - WidgetStockRow
 
 struct WidgetStockRow: View {
+  // MARK: Internal
 
   var stock: Stock
 
@@ -30,6 +33,8 @@ struct WidgetStockRow: View {
     stock.tradeAction.rawValue
   }
 }
+
+// MARK: - WidgetStockRow_Previews
 
 struct WidgetStockRow_Previews: PreviewProvider {
   static var previews: some View {

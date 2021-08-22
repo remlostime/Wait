@@ -3,21 +3,23 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import WidgetKit
-import SwiftUI
 import Model
+import SwiftUI
+import WidgetKit
+
+// MARK: - Provider
 
 struct Provider: TimelineProvider {
   func placeholder(in context: Context) -> WaitEntry {
-    return WaitEntry.snapshot
+    WaitEntry.snapshot
   }
 
-  func getSnapshot(in context: Context, completion: @escaping (WaitEntry) -> ()) {
+  func getSnapshot(in context: Context, completion: @escaping (WaitEntry) -> Void) {
     let entry = WaitEntry.snapshot
     completion(entry)
   }
 
-  func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
+  func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
     let stocks = StockCache.shared.getStocks()
     let currentDate = Date()
     let entry = WaitEntry(date: currentDate, stocks: stocks)
@@ -26,6 +28,8 @@ struct Provider: TimelineProvider {
     completion(timeline)
   }
 }
+
+// MARK: - WaitEntry
 
 struct WaitEntry: TimelineEntry {
   let date: Date
@@ -36,8 +40,11 @@ extension WaitEntry {
   static let snapshot = WaitEntry(date: Date(), stocks: [Stock.empty])
 }
 
-struct WaitWidgetEntryView : View {
+// MARK: - WaitWidgetEntryView
+
+struct WaitWidgetEntryView: View {
   var entry: Provider.Entry
+
   var stocks: [Stock] {
     let maxCount = 3
     return Array(entry.stocks[..<min(maxCount, entry.stocks.count)])
@@ -53,6 +60,8 @@ struct WaitWidgetEntryView : View {
   }
 }
 
+// MARK: - WaitWidget
+
 @main
 struct WaitWidget: Widget {
   let kind: String = "WaitWidget"
@@ -65,6 +74,8 @@ struct WaitWidget: Widget {
     .description("This is an example widget.")
   }
 }
+
+// MARK: - WaitWidget_Previews
 
 struct WaitWidget_Previews: PreviewProvider {
   static var previews: some View {

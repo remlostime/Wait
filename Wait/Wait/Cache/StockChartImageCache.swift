@@ -5,8 +5,8 @@
 
 import Cache
 import Foundation
-import Model
 import Logging
+import Model
 
 class StockChartImageCache {
   // MARK: Lifecycle

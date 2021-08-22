@@ -2,8 +2,8 @@
 
 import Cache
 import Foundation
-import Model
 import Logging
+import Model
 
 class StockCache {
   // MARK: Lifecycle
@@ -71,7 +71,7 @@ class StockCache {
 //      appropriateFor: nil,
 //      create: true
 //    )
-    let diskUrl =  FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.chenkai.wait.contents")
+    let diskUrl = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.chenkai.wait.contents")
 
     let diskConfig = DiskConfig(name: "stocks", directory: diskUrl)
 
