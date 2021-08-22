@@ -4,14 +4,14 @@
 //
 
 import Model
+import Size
 import SwiftUI
 import WidgetKit
-import Size
 
 // MARK: - Provider
 
 struct Provider: TimelineProvider {
-  private let stockCurrentQuoteNetworkClient = StockCurrentQuoteNetworkClient()
+  // MARK: Internal
 
   func placeholder(in context: Context) -> WaitEntry {
     WaitEntry.snapshot
@@ -45,6 +45,10 @@ struct Provider: TimelineProvider {
       completion(timeline)
     }
   }
+
+  // MARK: Private
+
+  private let stockCurrentQuoteNetworkClient = StockCurrentQuoteNetworkClient()
 }
 
 // MARK: - WaitEntry
