@@ -63,7 +63,7 @@ public struct StockOverview: Decodable {
     case PBRatio = "PriceToBookRatio"
     case marketCap = "MarketCapitalization"
     case dividendPerShare = "DividendPerShare"
-    case PEGRatio = "PEGRatio"
+    case PEGRatio
     case profitMargin = "ProfitMargin"
     case returnOnEquity = "ReturnOnEquityTTM"
     case returnOnAssets = "ReturnOnAssetsTTM"
