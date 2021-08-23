@@ -23,6 +23,7 @@ struct Provider: TimelineProvider {
   }
 
   func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
+    context.displaySize
     var stocks = StockCache.shared.getStocks()
     let maxCount = 3
     stocks = Array(stocks[..<min(maxCount, stocks.count)])

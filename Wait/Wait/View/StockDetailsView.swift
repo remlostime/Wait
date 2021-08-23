@@ -43,14 +43,67 @@ struct StockDetailsView: View {
             .font(.title)
 
           HStack(spacing: 12.0) {
-            StockStatsView(title: "Market Cap", value: stockOverviewDatSource.stockOverview.marketCap.formattedCurrency(format: .short))
-            StockStatsView(title: "Avg Div", value: stockOverviewDatSource.stockOverview.dividendPerShare)
+            VStack {
+              StockStatsView(title: "Mkt Cap", value: stockOverviewDatSource.stockOverview.marketCap.formattedCurrency(format: .short))
+              Divider()
+            }
+
+            VStack {
+              StockStatsView(title: "Avg Div", value: stockOverviewDatSource.stockOverview.dividendPerShare)
+              Divider()
+            }
           }
           .font(.subheadline)
 
           HStack(spacing: 12.0) {
-            StockStatsView(title: "PE", value: stockOverviewDatSource.stockOverview.PERatio)
-            StockStatsView(title: "PB", value: stockOverviewDatSource.stockOverview.PBRatio)
+            VStack {
+              StockStatsView(title: "PE", value: stockOverviewDatSource.stockOverview.PERatio)
+              Divider()
+            }
+
+            VStack {
+              StockStatsView(title: "PB", value: stockOverviewDatSource.stockOverview.PBRatio)
+              Divider()
+            }
+          }
+          .font(.subheadline)
+
+          HStack(spacing: 12.0) {
+            VStack {
+              StockStatsView(title: "PEG", value: stockOverviewDatSource.stockOverview.PEGRatio)
+              Divider()
+            }
+
+            VStack {
+              StockStatsView(title: "Profit Margin", value: stockOverviewDatSource.stockOverview.profitMargin)
+              Divider()
+            }
+          }
+          .font(.subheadline)
+
+          HStack(spacing: 12.0) {
+            VStack {
+              StockStatsView(title: "52 Wk High", value: stockOverviewDatSource.stockOverview.weekHigh52)
+              Divider()
+            }
+
+            VStack {
+              StockStatsView(title: "52 Wk Low", value: stockOverviewDatSource.stockOverview.weekLow52)
+              Divider()
+            }
+          }
+          .font(.subheadline)
+
+          HStack(spacing: 12.0) {
+            VStack {
+              StockStatsView(title: "ROE", value: stockOverviewDatSource.stockOverview.returnOnEquity)
+              Divider()
+            }
+
+            VStack {
+              StockStatsView(title: "ROA", value: stockOverviewDatSource.stockOverview.returnOnAssets)
+              Divider()
+            }
           }
           .font(.subheadline)
         }
