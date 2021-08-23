@@ -51,6 +51,10 @@ struct ContentView: View {
               .opacity(0)
             }
           }
+          .onMove { source, destination in
+            stocks.move(fromOffsets: source, toOffset: destination)
+            saveStocks()
+          }
           .onDelete(perform: { indexSet in
             for index in indexSet {
               let stock = stocksInCategory[index]
@@ -99,9 +103,15 @@ struct ContentView: View {
       .navigationTitle("Waitlist")
       .listStyle(InsetListStyle())
       .toolbar(content: {
-        Button(action: { showingWaitStockView.toggle() }, label: {
-          Image(systemName: "plus")
-        })
+        HStack {
+          EditButton()
+
+          Spacer(minLength: Size.horizontalPadding16)
+
+          Button(action: { showingWaitStockView.toggle() }, label: {
+            Image(systemName: "plus")
+          })
+        }
       })
       .sheet(isPresented: $showingWaitStockView, content: {
         NavigationView {
