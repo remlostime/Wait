@@ -126,6 +126,10 @@ struct StockDetailsView: View {
                 isPresented: $isEditingPrice
               )
             })
+            .onChange(of: stock) { value in
+              StockCache.shared.removeStock(stock)
+              StockCache.shared.saveStock(value)
+            }
           }
 
           SwiftUIValuationChartViewController(stock: stock)
@@ -167,7 +171,9 @@ struct StockDetailsView: View {
           Text("Version")
             .font(.title)
 
-          Text("Last edited: " + stock.lastUpdatedTime.toFormat("MMM dd, yyyy"))
+          ForEach(stock.updatedHistory) { history in
+            Text(history.formattedHistory)
+          }
         }
         .padding()
       }
