@@ -27,6 +27,13 @@ struct SearchStockView: View {
       } onCommit: {
         dataSource.searchStocks(for: keyword)
       }
+      .onChange(of: keyword) { value in
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+          if keyword == value {
+            dataSource.searchStocks(for: value)
+          }
+        }
+      }
 
       List {
         ForEach(dataSource.searchStocks, id: \.symbol) { searchStock in

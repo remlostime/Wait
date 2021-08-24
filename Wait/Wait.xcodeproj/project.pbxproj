@@ -116,6 +116,8 @@
 		E2E637B42641A5FD00F872A4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E2E637B32641A5FD00F872A4 /* Preview Assets.xcassets */; };
 		E2E637C02641A92A00F872A4 /* StockRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E637BF2641A92A00F872A4 /* StockRow.swift */; };
 		E2F8D19A26A2531900020A97 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2F8D19926A2531900020A97 /* CloudKit.framework */; };
+		E2F9CDD826D554870076F109 /* UpdatedHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F9CDD726D554870076F109 /* UpdatedHistory.swift */; };
+		E2F9CDDA26D5559B0076F109 /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = E2F9CDD926D5559B0076F109 /* SwiftDate */; };
 		E2FC1031267E9EB300CD98AF /* Model.h in Headers */ = {isa = PBXBuildFile; fileRef = E2FC102F267E9EB300CD98AF /* Model.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E2FC1034267E9EB300CD98AF /* Model.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC102D267E9EB300CD98AF /* Model.framework */; };
 		E2FC1035267E9EB300CD98AF /* Model.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC102D267E9EB300CD98AF /* Model.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -315,6 +317,7 @@
 		E2E637BF2641A92A00F872A4 /* StockRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockRow.swift; sourceTree = "<group>"; };
 		E2F8D19826A2531600020A97 /* Wait.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Wait.entitlements; sourceTree = "<group>"; };
 		E2F8D19926A2531900020A97 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		E2F9CDD726D554870076F109 /* UpdatedHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatedHistory.swift; sourceTree = "<group>"; };
 		E2FC102D267E9EB300CD98AF /* Model.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Model.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2FC102F267E9EB300CD98AF /* Model.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Model.h; sourceTree = "<group>"; };
 		E2FC1030267E9EB300CD98AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -408,6 +411,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E2F9CDDA26D5559B0076F109 /* SwiftDate in Frameworks */,
 				E21D2E7A269B6DF80063C7ED /* Color.framework in Frameworks */,
 				E2FC1040267E9EE400CD98AF /* Money in Frameworks */,
 				E2B5EAA5268810F00092663F /* SwifterSwift in Frameworks */,
@@ -624,6 +628,7 @@
 				E2FC1030267E9EB300CD98AF /* Info.plist */,
 				E227D3A326BEE2930094A872 /* Category.swift */,
 				E2211E2826C82A3300041F5F /* ChecklistItem.swift */,
+				E2F9CDD726D554870076F109 /* UpdatedHistory.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -891,6 +896,7 @@
 			packageProductDependencies = (
 				E2FC103F267E9EE400CD98AF /* Money */,
 				E2B5EAA4268810F00092663F /* SwifterSwift */,
+				E2F9CDD926D5559B0076F109 /* SwiftDate */,
 			);
 			productName = Model;
 			productReference = E2FC102D267E9EB300CD98AF /* Model.framework */;
@@ -1177,6 +1183,7 @@
 				E2B5EAA32688105D0092663F /* Money+Format.swift in Sources */,
 				E2211E2926C82A3300041F5F /* ChecklistItem.swift in Sources */,
 				E2FC1039267E9EBF00CD98AF /* Exchange.swift in Sources */,
+				E2F9CDD826D554870076F109 /* UpdatedHistory.swift in Sources */,
 				E2FC103A267E9EBF00CD98AF /* StockOverview.swift in Sources */,
 				E270B6BB26ABADAF00A56A69 /* CloudNetworkClient.swift in Sources */,
 				E2FC103B267E9EBF00CD98AF /* StockQuote.swift in Sources */,
@@ -2208,6 +2215,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2C859B226438EE500F93321 /* XCRemoteSwiftPackageReference "Cache" */;
 			productName = Cache;
+		};
+		E2F9CDD926D5559B0076F109 /* SwiftDate */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E2211E2A26C8444700041F5F /* XCRemoteSwiftPackageReference "SwiftDate" */;
+			productName = SwiftDate;
 		};
 		E2FC103F267E9EE400CD98AF /* Money */ = {
 			isa = XCSwiftPackageProductDependency;

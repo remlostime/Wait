@@ -41,7 +41,7 @@ final class StockCurrentQuoteNetworkClient {
             memo: stock.memo,
             currentQuote: stockQuote,
             category: stock.category,
-            lastUpdatedTime: stock.lastUpdatedTime
+            updatedHistory: stock.updatedHistory
           )
 
           completion(newStock)

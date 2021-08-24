@@ -19,7 +19,7 @@ public class Stock: Codable {
     memo: String = "",
     currentQuote: StockCurrentQuote,
     category: StockCategory,
-    lastUpdatedTime: Date
+    updatedHistory: [UpdatedHistory]
   ) {
     self.symbol = symbol
     self.name = name
@@ -27,7 +27,7 @@ public class Stock: Codable {
     self.memo = memo
     self.currentQuote = currentQuote
     self.category = category
-    self.lastUpdatedTime = lastUpdatedTime
+    self.updatedHistory = updatedHistory
   }
 
   public init(from record: CKRecord) {
@@ -45,7 +45,8 @@ public class Stock: Codable {
       category = .research
     }
 
-    lastUpdatedTime = (record["lastUpdatedTime"] as? Date) ?? Date()
+    // TODO(kai) - Fix this for iCloud
+    updatedHistory = []
 
     if let currentQuoteRecord = record["currentQuote"] as? CKRecord.Reference {
       currentQuote = .empty
@@ -72,7 +73,7 @@ public class Stock: Codable {
   public let memo: String
   public let category: StockCategory
   public private(set) var currentQuote: StockCurrentQuote
-  public let lastUpdatedTime: Date
+  public let updatedHistory: [UpdatedHistory]
 
   public func with(memo: String) -> Stock {
     Stock(
@@ -82,7 +83,7 @@ public class Stock: Codable {
       memo: memo,
       currentQuote: currentQuote,
       category: category,
-      lastUpdatedTime: lastUpdatedTime
+      updatedHistory: updatedHistory
     )
   }
 
@@ -94,7 +95,7 @@ public class Stock: Codable {
       memo: memo,
       currentQuote: currentQuote,
       category: category,
-      lastUpdatedTime: lastUpdatedTime
+      updatedHistory: updatedHistory
     )
   }
 }
@@ -126,7 +127,7 @@ public extension Stock {
       memo: "Empty",
       currentQuote: .empty,
       category: .waitlist,
-      lastUpdatedTime: Date()
+      updatedHistory: []
     )
   }
 
