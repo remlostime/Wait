@@ -6,20 +6,26 @@
 import Foundation
 import SwiftDate
 
+// MARK: - UpdatedHistory
+
 public struct UpdatedHistory: Codable, Identifiable {
-  public let updatedTime: Date
-  public let notes: [String]
-  public var id = UUID()
+  // MARK: Lifecycle
 
   public init(updatedTime: Date = Date(), notes: [String]) {
     self.updatedTime = updatedTime
     self.notes = notes
   }
+
+  // MARK: Public
+
+  public let updatedTime: Date
+  public let notes: [String]
+  public var id = UUID()
 }
 
 public extension UpdatedHistory {
   var formattedHistory: String {
-    var history = self.updatedTime.toFormat("MMM dd, yyyy: ")
+    var history = updatedTime.toFormat("MMM dd, yyyy: ")
     if notes.isEmpty || notes.count == 1 {
       history += notes.first ?? ""
     } else {
