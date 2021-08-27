@@ -32,17 +32,17 @@ public final class CloudNetworkClient {
         return
       }
 
-      guard let records = records else {
-        return
-      }
-
-      let stocks = records.compactMap { record in
-        Stock(from: record)
-      }
-
-      DispatchQueue.main.async {
-        completion(.success(stocks))
-      }
+//      guard let records = records else {
+//        return
+//      }
+//
+//      let stocks = records.compactMap { record in
+//        Stock(from: record)
+//      }
+//
+//      DispatchQueue.main.async {
+//        completion(.success(stocks))
+//      }
     }
   }
 
