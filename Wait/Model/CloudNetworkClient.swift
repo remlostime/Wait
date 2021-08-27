@@ -23,7 +23,7 @@ public final class CloudNetworkClient {
     let predicate = NSPredicate(value: true)
     let query = CKQuery(recordType: StockRecordType, predicate: predicate)
 
-    privateDB.perform(query, inZoneWith: CKRecordZone.default().zoneID) { records, error in
+    privateDB.perform(query, inZoneWith: CKRecordZone.default().zoneID) { _, error in
       if let error = error {
         DispatchQueue.main.async {
           completion(.failure(error))
