@@ -15,6 +15,7 @@ class StockOverviewDataSource: ObservableObject {
 
   func fetchStockOverview(stock: Stock) {
     networkClient.fetchStockOverview(stock: stock)
+      .receive(on: DispatchQueue.main)
       .sink { _ in
         logger.verbose("Successfully fetch stock overview: \(stock.symbol)")
       } receiveValue: { [weak self] stockOverview in

@@ -20,6 +20,7 @@ class SearchStockDataSource: ObservableObject {
     }
 
     searchStockNetworkClient.searchStocks(for: keyword)
+      .receive(on: DispatchQueue.main)
       .sink { _ in
         logger.verbose("Successfully get recommend stocks for :\(keyword)")
       } receiveValue: { [weak self] in

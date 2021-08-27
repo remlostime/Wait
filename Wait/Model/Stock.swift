@@ -9,7 +9,7 @@ import UIKit
 
 // MARK: - Stock
 
-public class Stock: Codable {
+public struct Stock: Codable {
   // MARK: Lifecycle
 
   public init(
@@ -30,40 +30,40 @@ public class Stock: Codable {
     self.updatedHistory = updatedHistory
   }
 
-  public init(from record: CKRecord) {
-    symbol = (record["symbol"] as? String) ?? ""
-    name = (record["name"] as? String) ?? ""
-    let expectedPriceString = (record["expectedPrice"] as? String) ?? "0"
-    expectedPrice = Money<USD>(stringLiteral: expectedPriceString)
-    memo = (record["memo"] as? String) ?? ""
-
-    if let categoryInt = record["category"] as? Int,
-       let _category = StockCategory(rawValue: categoryInt)
-    {
-      category = _category
-    } else {
-      category = .research
-    }
-
-    // TODO(kai) - Fix this for iCloud
-    updatedHistory = []
-
-    if let currentQuoteRecord = record["currentQuote"] as? CKRecord.Reference {
-      currentQuote = .empty
-      let id = currentQuoteRecord.recordID
-
-      CloudNetworkClient.shared.fetch(recordID: id) { [weak self] result in
-        switch result {
-          case let .success(stockCurrentQuote):
-            self?.currentQuote = stockCurrentQuote
-          case let .failure(error):
-            print("error to fetch stock current quote: \(error.localizedDescription)")
-        }
-      }
-    } else {
-      currentQuote = .empty
-    }
-  }
+//  public init(from record: CKRecord) {
+//    symbol = (record["symbol"] as? String) ?? ""
+//    name = (record["name"] as? String) ?? ""
+//    let expectedPriceString = (record["expectedPrice"] as? String) ?? "0"
+//    expectedPrice = Money<USD>(stringLiteral: expectedPriceString)
+//    memo = (record["memo"] as? String) ?? ""
+//
+//    if let categoryInt = record["category"] as? Int,
+//       let _category = StockCategory(rawValue: categoryInt)
+//    {
+//      category = _category
+//    } else {
+//      category = .research
+//    }
+//
+//    // TODO(kai) - Fix this for iCloud
+//    updatedHistory = []
+//
+//    if let currentQuoteRecord = record["currentQuote"] as? CKRecord.Reference {
+//      currentQuote = .empty
+//      let id = currentQuoteRecord.recordID
+//
+//      CloudNetworkClient.shared.fetch(recordID: id) { [weak self] result in
+//        switch result {
+//          case let .success(stockCurrentQuote):
+//            self?.currentQuote = stockCurrentQuote
+//          case let .failure(error):
+//            print("error to fetch stock current quote: \(error.localizedDescription)")
+//        }
+//      }
+//    } else {
+//      currentQuote = .empty
+//    }
+//  }
 
   // MARK: Public
 
