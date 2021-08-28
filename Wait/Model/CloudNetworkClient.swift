@@ -23,7 +23,7 @@ public final class CloudNetworkClient {
     let predicate = NSPredicate(value: true)
     let query = CKQuery(recordType: StockRecordType, predicate: predicate)
 
-    privateDB.perform(query, inZoneWith: CKRecordZone.default().zoneID) { _, error in
+    privateDB.perform(query, inZoneWith: CKRecordZone.default().zoneID) { records, error in
       if let error = error {
         DispatchQueue.main.async {
           completion(.failure(error))
@@ -32,17 +32,17 @@ public final class CloudNetworkClient {
         return
       }
 
-//      guard let records = records else {
-//        return
-//      }
-//
-//      let stocks = records.compactMap { record in
-//        Stock(from: record)
-//      }
-//
-//      DispatchQueue.main.async {
-//        completion(.success(stocks))
-//      }
+      guard let records = records else {
+        return
+      }
+
+      let stocks = records.compactMap { record in
+        Stock(from: record)
+      }
+
+      DispatchQueue.main.async {
+        completion(.success(stocks))
+      }
     }
   }
 

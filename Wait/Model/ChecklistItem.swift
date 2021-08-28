@@ -9,6 +9,7 @@ import Foundation
 
 public struct ChecklistItem {
   public let name: String
+  public var isChecked: Bool = false
 }
 
 // MARK: Identifiable, Hashable
