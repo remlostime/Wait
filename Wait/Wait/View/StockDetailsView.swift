@@ -18,6 +18,7 @@ struct StockDetailsView: View {
   @State var memo: String = ""
   @State var isEditingPrice = false
   @State var checkedItemCounts = 0
+  @State var checklistItems = ChecklistItem.allItems
 
   var searchStock: SearchStockResult {
     SearchStockResult(
@@ -120,21 +121,15 @@ struct StockDetailsView: View {
               isEditingPrice.toggle()
             }
             .sheet(isPresented: $isEditingPrice, content: {
-              // TODO(kai) - Bug: When first time we pass stock, it will work well when stock is updated.
-              // But after that, even we updated the stock in InputView, stock won't be updated. No matter stock is class or struct.
-              // I used some other simple data struct like Int, it will work. Not sure if this is related to data struct
               StockExpectedPriceInputView(
                 searchStock: searchStock,
                 stock: $stock,
                 isPresented: $isEditingPrice
               )
             })
-            .onChange(of: isEditingPrice) { _ in
-              // TODO(kai) - This is not the best way. We should observe `stock` change. But somehow, even we change stock, this modifier is still not called. This bug needs more investigation.
-              if !isEditingPrice {
-                StockCache.shared.saveStock(stock)
-              }
-            }
+            .onChange(of: stock, perform: { _ in
+              StockCache.shared.saveStock(stock)
+            })
           }
 
           SwiftUIValuationChartViewController(stock: stock)
@@ -154,8 +149,11 @@ struct StockDetailsView: View {
               .foregroundColor(.accentColor)
           }
 
-          ForEach(ChecklistItem.allItems) { item in
-            Checklist(item: item, checkedItemCounts: $checkedItemCounts)
+          ForEach(checklistItems.indices) { index in
+            Checklist(item: $checklistItems[index])
+              .onChange(of: checklistItems[index], perform: { item in
+                checkedItemCounts += item.isChecked ? 1 : -1
+              })
           }
         }
         .padding()

@@ -46,7 +46,9 @@ class StockCache {
 
   func saveStock(_ stock: Stock) {
     var stocks = getStocks()
-    stocks.removeAll(stock)
+    stocks.removeAll {
+      stock.symbol == $0.symbol
+    }
     stocks.append(stock)
 
     saveStocks(stocks)
@@ -55,7 +57,9 @@ class StockCache {
   func removeStock(_ stock: Stock) {
     var stocks = getStocks()
 
-    stocks.removeAll(stock)
+    stocks.removeAll {
+      stock.symbol == $0.symbol
+    }
 
     saveStocks(stocks)
   }

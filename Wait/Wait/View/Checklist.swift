@@ -9,28 +9,18 @@ import SwiftUI
 // MARK: - Checklist
 
 struct Checklist: View {
-  @State var isChecked: Bool = false
-
-  var item: ChecklistItem
+  @Binding var item: ChecklistItem
   @State var showFullText: Bool = false
-
-  // TODO(kai) - It should have a better way to update this var from its parent
-  @Binding var checkedItemCounts: Int
 
   var body: some View {
     HStack {
       Button {
-        isChecked.toggle()
-        if isChecked {
-          checkedItemCounts += 1
-        } else {
-          checkedItemCounts -= 1
-        }
+        item.isChecked.toggle()
       } label: {
-        Image(systemName: isChecked ? "checkmark.square" : "square")
+        Image(systemName: item.isChecked ? "checkmark.square" : "square")
       }
 
-      if isChecked {
+      if item.isChecked {
         Text(item.name)
           .strikethrough()
           .onTapGesture {
@@ -54,6 +44,6 @@ struct Checklist: View {
 
 struct Checklist_Previews: PreviewProvider {
   static var previews: some View {
-    Checklist(item: ChecklistItem.example, checkedItemCounts: .constant(1))
+    Checklist(item: .constant(ChecklistItem.example))
   }
 }
