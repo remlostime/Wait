@@ -40,8 +40,6 @@ final class PriceHistoryDataSource: ObservableObject, ChartViewDataSource {
     self.delegate = delegate
   }
 
-  func fetchCurrentQuotes() {}
-
   func fetchData(for timeSections: [TimeSection]) {
     models = [:]
 
@@ -76,7 +74,6 @@ final class PriceHistoryDataSource: ObservableObject, ChartViewDataSource {
 
   // MARK: Private
 
-  private let currentQuoteNetworkClient = StockQuoteNetworkClient()
   private let priceNetworkClient = PriceHistoryNetworkClient()
   private var models: ChartModelType = [:]
   private var priceHistories: [TimeSection: ChartData] = [:]

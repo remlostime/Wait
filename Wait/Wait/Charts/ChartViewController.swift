@@ -54,7 +54,6 @@ public class ChartViewController: UIViewController {
 
   private let showPercent: Bool
   private let selectedTimeSection: TimeSection
-  private var isMovingTheChart: Bool = false
   private let refreshPriceInterval: TimeInterval = 3.0
 
   private let symbol: String
@@ -281,7 +280,6 @@ extension ChartViewController: ChartViewDelegate {
     let currentPrice = entry.y
     let (beginPrice, _) = getBeginAndEndPrice(chartView: chartView)
 
-    isMovingTheChart = true
     updateDisplayPriceInfo(currentPrice: currentPrice, comparedPrice: beginPrice)
   }
 
@@ -291,7 +289,6 @@ extension ChartViewController: ChartViewDelegate {
     let (beginPrice, _) = getBeginAndEndPrice(chartView: chartView)
     let currentPrice = self.currentPrice.amountDoubleValue
 
-    isMovingTheChart = false
     updateDisplayPriceInfo(currentPrice: currentPrice, comparedPrice: beginPrice)
 
     chartView.highlightValue(nil)

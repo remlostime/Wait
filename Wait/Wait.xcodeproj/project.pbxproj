@@ -129,7 +129,6 @@
 		E2FC103E267E9EBF00CD98AF /* SearchStock.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EE0026483EBF00752D8A /* SearchStock.swift */; };
 		E2FC1040267E9EE400CD98AF /* Money in Frameworks */ = {isa = PBXBuildFile; productRef = E2FC103F267E9EE400CD98AF /* Money */; };
 		E2FC106A267EDF8E00CD98AF /* StockCurrentQuoteNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A1E9D266DA3EA004D2B24 /* StockCurrentQuoteNetworkClient.swift */; };
-		E2FC106B267EDF9300CD98AF /* StockQuoteNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEE0926533DF70001F0F9 /* StockQuoteNetworkClient.swift */; };
 		E2FC106C267EDF9700CD98AF /* PriceHistoryNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEE0B26533E1D0001F0F9 /* PriceHistoryNetworkClient.swift */; };
 		E2FC106D267EDFA300CD98AF /* StockOverviewNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A1EA1266DA808004D2B24 /* StockOverviewNetworkClient.swift */; };
 		E2FC106E267EE01100CD98AF /* DigitScrollCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A1E93266D633C004D2B24 /* DigitScrollCounter.swift */; };
@@ -294,7 +293,6 @@
 		E2ABEDF8265324690001F0F9 /* ChartViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartViewDataSource.swift; sourceTree = "<group>"; };
 		E2ABEDFA265324D00001F0F9 /* PriceHistoryDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceHistoryDataSource.swift; sourceTree = "<group>"; };
 		E2ABEE072653376D0001F0F9 /* ChartCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartCache.swift; sourceTree = "<group>"; };
-		E2ABEE0926533DF70001F0F9 /* StockQuoteNetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockQuoteNetworkClient.swift; sourceTree = "<group>"; };
 		E2ABEE0B26533E1D0001F0F9 /* PriceHistoryNetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceHistoryNetworkClient.swift; sourceTree = "<group>"; };
 		E2BC418E267F9C4600A853D2 /* Size.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Size.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2BC4190267F9C4600A853D2 /* Size.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Size.h; sourceTree = "<group>"; };
@@ -639,7 +637,6 @@
 				E2ABEE0B26533E1D0001F0F9 /* PriceHistoryNetworkClient.swift */,
 				E25A1EA1266DA808004D2B24 /* StockOverviewNetworkClient.swift */,
 				E25A1E9D266DA3EA004D2B24 /* StockCurrentQuoteNetworkClient.swift */,
-				E2ABEE0926533DF70001F0F9 /* StockQuoteNetworkClient.swift */,
 				E25A927926C08E32004A4EBB /* SearchStockNetworkClient.swift */,
 			);
 			path = Network;
@@ -1147,7 +1144,6 @@
 			files = (
 				E25A927A26C08E32004A4EBB /* SearchStockNetworkClient.swift in Sources */,
 				E2E637AF2641A5FB00F872A4 /* ContentView.swift in Sources */,
-				E2FC106B267EDF9300CD98AF /* StockQuoteNetworkClient.swift in Sources */,
 				E2FC106D267EDFA300CD98AF /* StockOverviewNetworkClient.swift in Sources */,
 				E2136DD5269A16530033AEB1 /* SwiftUIValuationChartViewController.swift in Sources */,
 				E2BE76582641FC3300645629 /* StockExpectedPriceInputView.swift in Sources */,

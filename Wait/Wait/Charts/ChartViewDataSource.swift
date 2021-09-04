@@ -16,10 +16,6 @@ public protocol ChartViewDataSource {
 
   /// Fetch chart data for `timeSections`
   func fetchData(for timeSections: [TimeSection])
-
-  /// By default, we show the last data point in the chart for price label.
-  /// If we need other data source to provide that data. We need to implement this func.
-  func fetchCurrentQuotes()
 }
 
 // MARK: - ChartViewDataSourceDelegate
