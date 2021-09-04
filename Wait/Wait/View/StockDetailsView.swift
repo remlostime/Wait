@@ -203,14 +203,6 @@ struct StockDetailsView: View {
 
   // MARK: Private
 
-  private var companyDomain: String {
-    let names = stock.name.split(separator: " ")
-    guard let firstName = names.first else {
-      return ""
-    }
-    return String(firstName) + ".com"
-  }
-
   private func stockFavoriteAction(_ isFavorited: Bool) {
     if isFavorited {
       StockCache.shared.saveStock(stock)
