@@ -76,6 +76,18 @@ public class Stock: Codable {
   public let updatedHistory: [UpdatedHistory]
   public var uuid = UUID()
 
+  public func with(currentQuote: StockCurrentQuote) -> Stock {
+    Stock(
+      symbol: symbol,
+      name: name,
+      expectedPrice: expectedPrice,
+      memo: memo,
+      currentQuote: currentQuote,
+      category: category,
+      updatedHistory: updatedHistory
+    )
+  }
+
   public func with(memo: String) -> Stock {
     Stock(
       symbol: symbol,
