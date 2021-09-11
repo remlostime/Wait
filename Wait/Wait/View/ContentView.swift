@@ -14,21 +14,19 @@ import SwiftyJSON
 struct ContentView: View {
   // MARK: Internal
 
-  var stocks: [Stock] {
-    dataSource.stocks
-  }
-
   @State var stockRowDetailType: StockRowDetailType = .actionStatus
   @State var category: StockCategory = .waitlist
   @State var selection: String? = nil
+
+  var stocks: [Stock] {
+    dataSource.stocks
+  }
 
   var stocksInCategory: [Stock] {
     stocks.filter { stock in
       stock.category == category
     }
   }
-
-  @ObservedObject private var dataSource = StockCurrentQuoteDataSource()
 
   var body: some View {
     NavigationView {
@@ -56,11 +54,11 @@ struct ContentView: View {
               .opacity(0)
             }
           }
-          .onMove { source, destination in
+          .onMove { _, _ in
 //            stocks.move(fromOffsets: source, toOffset: destination)
 //            saveStocks()
           }
-          .onDelete(perform: { indexSet in
+          .onDelete(perform: { _ in
 //            for index in indexSet {
 //              let stock = stocksInCategory[index]
 //              StockCache.shared.removeStock(stock)
@@ -77,15 +75,15 @@ struct ContentView: View {
 
         // iCloud fetch
         /*
-        networkClient.fetchStocks { result in
-          switch result {
-            case let .success(stocks):
-              logger.verbose(stocks)
-            case let .failure(error):
-              logger.error("Failed to fetch stocks from server: \(error.localizedDescription)")
-          }
-        }
-        */
+         networkClient.fetchStocks { result in
+           switch result {
+             case let .success(stocks):
+               logger.verbose(stocks)
+             case let .failure(error):
+               logger.error("Failed to fetch stocks from server: \(error.localizedDescription)")
+           }
+         }
+         */
       }
       .navigationTitle("Wait")
       .listStyle(InsetListStyle())
@@ -115,6 +113,8 @@ struct ContentView: View {
   }
 
   // MARK: Private
+
+  @ObservedObject private var dataSource = StockCurrentQuoteDataSource()
 
   private let networkClient = CloudNetworkClient.shared
 

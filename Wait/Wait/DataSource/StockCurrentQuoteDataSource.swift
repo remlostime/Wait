@@ -3,17 +3,15 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import Foundation
 import Combine
-import Model
+import Foundation
 import Logging
+import Model
 
 final class StockCurrentQuoteDataSource: ObservableObject {
+  // MARK: Internal
+
   @Published var stocks: [Stock] = []
-
-  private let networkClient = StockCurrentQuoteNetworkClient()
-
-  private var subscriptions: Set<AnyCancellable> = []
 
   func fetchStock(_ stock: Stock) {
     networkClient.fetchDetails(stock: stock)
@@ -21,7 +19,7 @@ final class StockCurrentQuoteDataSource: ObservableObject {
         switch result {
           case .finished:
             logger.verbose("Successfully fetch stock: \(stock.symbol)")
-          case .failure(let error):
+          case let .failure(error):
             logger.error("Failed to fetch stock: \(stock.symbol). Error: \(error.localizedDescription)")
         }
       } receiveValue: { stockQuote in
@@ -44,7 +42,7 @@ final class StockCurrentQuoteDataSource: ObservableObject {
           switch result {
             case .finished:
               logger.verbose("Successfully fetch stocks: \(symbols)")
-            case .failure(let error):
+            case let .failure(error):
               logger.error("Failed to fetch stock: \(symbols). Error: \(error.localizedDescription)")
           }
         } receiveValue: { stockQuoteBatch in
@@ -65,6 +63,12 @@ final class StockCurrentQuoteDataSource: ObservableObject {
         .store(in: &self.subscriptions)
     }
   }
+
+  // MARK: Private
+
+  private let networkClient = StockCurrentQuoteNetworkClient()
+
+  private var subscriptions: Set<AnyCancellable> = []
 
   private func saveStocks() {
     StockCache.shared.saveStocks(stocks)

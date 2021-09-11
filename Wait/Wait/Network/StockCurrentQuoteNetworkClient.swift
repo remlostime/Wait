@@ -4,24 +4,14 @@
 //
 
 import Alamofire
+import Combine
 import Foundation
 import Logging
 import Model
 import Networking
-import Combine
 
 final class StockCurrentQuoteNetworkClient {
   // MARK: Internal
-
-  private lazy var decoder: JSONDecoder = {
-    let decoder = JSONDecoder()
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "yyyy-mm-dd"
-    decoder.dateDecodingStrategy = .formatted(dateFormatter)
-    decoder.keyDecodingStrategy = .convertFromSnakeCase
-
-    return decoder
-  }()
 
   func fetchDetails(stock: Stock) -> AnyPublisher<StockCurrentQuote, Error> {
     guard let url = buildStockQuoteURL(stock: stock) else {
@@ -51,10 +41,20 @@ final class StockCurrentQuoteNetworkClient {
 
   // MARK: Private
 
+  private lazy var decoder: JSONDecoder = {
+    let decoder = JSONDecoder()
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-mm-dd"
+    decoder.dateDecodingStrategy = .formatted(dateFormatter)
+    decoder.keyDecodingStrategy = .convertFromSnakeCase
+
+    return decoder
+  }()
+
   private func buildStockQuoteURL(stocks: [Stock]) -> URL? {
     let symbols = stocks.map { $0.symbol }
     let params = [
-      "symbol": symbols.joined(separator: ",")
+      "symbol": symbols.joined(separator: ","),
     ]
 
     let url = NetworkingURLBuilder.buildURL(api: "quote", params: params)
