@@ -14,7 +14,10 @@ import SwiftyJSON
 struct ContentView: View {
   // MARK: Internal
 
-  @State var stocks: [Stock]
+  var stocks: [Stock] {
+    dataSource.stocks
+  }
+
   @State var stockRowDetailType: StockRowDetailType = .actionStatus
   @State var category: StockCategory = .waitlist
   @State var selection: String? = nil
@@ -24,6 +27,8 @@ struct ContentView: View {
       stock.category == category
     }
   }
+
+  @ObservedObject private var dataSource = StockCurrentQuoteDataSource()
 
   var body: some View {
     NavigationView {
@@ -52,42 +57,26 @@ struct ContentView: View {
             }
           }
           .onMove { source, destination in
-            stocks.move(fromOffsets: source, toOffset: destination)
-            saveStocks()
+//            stocks.move(fromOffsets: source, toOffset: destination)
+//            saveStocks()
           }
           .onDelete(perform: { indexSet in
-            for index in indexSet {
-              let stock = stocksInCategory[index]
-              StockCache.shared.removeStock(stock)
-              stocks.removeAll(where: {
-                $0 == stock
-              })
-            }
+//            for index in indexSet {
+//              let stock = stocksInCategory[index]
+//              StockCache.shared.removeStock(stock)
+//              stocks.removeAll(where: {
+//                $0 == stock
+//              })
+//            }
           })
         }
         .id(UUID())
       }
       .onAppear {
-        StockCache.shared.getStocks { stocks in
-          let group = DispatchGroup()
-          var updatedStocks = stocks
+        dataSource.fetchStocks()
 
-          for (index, stock) in stocks.enumerated() {
-            group.enter()
-            stockCurrentQuoteNetworkClient.fetchStockDetails(stock: stock) { stock in
-              if let stock = stock {
-                updatedStocks[index] = stock
-              }
-
-              group.leave()
-            }
-          }
-
-          group.notify(queue: DispatchQueue.main) {
-            self.stocks = updatedStocks
-          }
-        }
-
+        // iCloud fetch
+        /*
         networkClient.fetchStocks { result in
           switch result {
             case let .success(stocks):
@@ -96,11 +85,9 @@ struct ContentView: View {
               logger.error("Failed to fetch stocks from server: \(error.localizedDescription)")
           }
         }
+        */
       }
-      .onDisappear {
-        saveStocks()
-      }
-      .navigationTitle("Waitlist")
+      .navigationTitle("Wait")
       .listStyle(InsetListStyle())
       .toolbar(content: {
         HStack {
@@ -122,16 +109,7 @@ struct ContentView: View {
     }
     .addPartialSheet(style: .defaultStyle())
     .onChange(of: newStock, perform: { value in
-      stockCurrentQuoteNetworkClient.fetchStockDetails(stock: value) { stock in
-        guard let stock = stock else {
-          return
-        }
-
-        networkClient.saveStock(stock)
-
-        stocks.append(stock)
-        saveStocks()
-      }
+      dataSource.fetchStock(value)
     })
     .navigationViewStyle(StackNavigationViewStyle())
   }
@@ -154,7 +132,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
   static var previews: some View {
-    let stock = Stock.empty
-    ContentView(stocks: [stock])
+    ContentView()
   }
 }

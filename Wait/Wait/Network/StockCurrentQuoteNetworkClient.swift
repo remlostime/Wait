@@ -8,51 +8,59 @@ import Foundation
 import Logging
 import Model
 import Networking
+import Combine
 
 final class StockCurrentQuoteNetworkClient {
   // MARK: Internal
 
-  func fetchStockDetails(stock: Stock, completion: @escaping ((Stock?) -> Void)) {
+  private lazy var decoder: JSONDecoder = {
+    let decoder = JSONDecoder()
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-mm-dd"
+    decoder.dateDecodingStrategy = .formatted(dateFormatter)
+    decoder.keyDecodingStrategy = .convertFromSnakeCase
+
+    return decoder
+  }()
+
+  func fetchDetails(stock: Stock) -> AnyPublisher<StockCurrentQuote, Error> {
     guard let url = buildStockQuoteURL(stock: stock) else {
-      return
+      return Fail(error: URLError(.badURL))
+        .eraseToAnyPublisher()
     }
 
-    AF.request(url).validate().responseData { response in
-      switch response.result {
-        case let .success(data):
-          let decoder = JSONDecoder()
-          let dateFormatter = DateFormatter()
-          dateFormatter.dateFormat = "yyyy-mm-dd"
-          decoder.dateDecodingStrategy = .formatted(dateFormatter)
-          decoder.keyDecodingStrategy = .convertFromSnakeCase
+    return URLSession.shared
+      .dataTaskPublisher(for: url)
+      .map(\.data)
+      .decode(type: StockCurrentQuote.self, decoder: decoder)
+      .eraseToAnyPublisher()
+  }
 
-          guard
-            let stockQuote = try? decoder.decode(StockCurrentQuote.self, from: data)
-          else {
-            logger.error("Failed to decode stock quote")
-            completion(nil)
-            return
-          }
-
-          let newStock = Stock(
-            symbol: stockQuote.symbol,
-            name: stock.name,
-            expectedPrice: stock.expectedPrice,
-            memo: stock.memo,
-            currentQuote: stockQuote,
-            category: stock.category,
-            updatedHistory: stock.updatedHistory
-          )
-
-          completion(newStock)
-        case let .failure(error):
-          logger.error("Failed to fetch stock quote: \(error.localizedDescription)")
-          completion(nil)
-      }
+  func fetchDetails(stocks: [Stock]) -> AnyPublisher<StockCurrentQuoteBatch, Error> {
+    guard let url = buildStockQuoteURL(stocks: stocks) else {
+      return Fail(error: URLError(.badURL))
+        .eraseToAnyPublisher()
     }
+
+    return URLSession.shared
+      .dataTaskPublisher(for: url)
+      .map(\.data)
+      .decode(type: StockCurrentQuoteBatch.self, decoder: decoder)
+      .eraseToAnyPublisher()
   }
 
   // MARK: Private
+
+  private func buildStockQuoteURL(stocks: [Stock]) -> URL? {
+    let symbols = stocks.map { $0.symbol }
+    let params = [
+      "symbol": symbols.joined(separator: ",")
+    ]
+
+    let url = NetworkingURLBuilder.buildURL(api: "quote", params: params)
+
+    return url
+  }
 
   private func buildStockQuoteURL(stock: Stock) -> URL? {
     let params = [

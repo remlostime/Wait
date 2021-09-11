@@ -28,7 +28,7 @@ struct WaitApp: App {
   var body: some Scene {
     WindowGroup {
       let sheetManager = PartialSheetManager()
-      ContentView(stocks: [])
+      ContentView()
         .accentColor(.mint)
         .environmentObject(sheetManager)
     }

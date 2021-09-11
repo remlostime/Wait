@@ -67,6 +67,7 @@
 		E267B86F2667FEBC009979C8 /* NVActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = E267B86E2667FEBC009979C8 /* NVActivityIndicatorView */; };
 		E267B8712667FEBC009979C8 /* NVActivityIndicatorViewExtended in Frameworks */ = {isa = PBXBuildFile; productRef = E267B8702667FEBC009979C8 /* NVActivityIndicatorViewExtended */; };
 		E270B6BB26ABADAF00A56A69 /* CloudNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C8951626A792620052B217 /* CloudNetworkClient.swift */; };
+		E272A6F326ED115400163FF3 /* StockCurrentQuoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E272A6F226ED115400163FF3 /* StockCurrentQuoteDataSource.swift */; };
 		E275EDFF26483D6600752D8A /* SearchStockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EDFE26483D6600752D8A /* SearchStockView.swift */; };
 		E275EE0326483FE300752D8A /* SearchStockRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EE0226483FE300752D8A /* SearchStockRow.swift */; };
 		E2765571267E9104002D13CC /* Color.h in Headers */ = {isa = PBXBuildFile; fileRef = E276556F267E9104002D13CC /* Color.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -271,6 +272,7 @@
 		E25A927926C08E32004A4EBB /* SearchStockNetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchStockNetworkClient.swift; sourceTree = "<group>"; };
 		E25B746C26A33B7600BE0A9C /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		E262496B269F7E2E001E7F31 /* StockRowTypeDisplaySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockRowTypeDisplaySheet.swift; sourceTree = "<group>"; };
+		E272A6F226ED115400163FF3 /* StockCurrentQuoteDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCurrentQuoteDataSource.swift; sourceTree = "<group>"; };
 		E275EDFE26483D6600752D8A /* SearchStockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchStockView.swift; sourceTree = "<group>"; };
 		E275EE0026483EBF00752D8A /* SearchStock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchStock.swift; sourceTree = "<group>"; };
 		E275EE0226483FE300752D8A /* SearchStockRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchStockRow.swift; sourceTree = "<group>"; };
@@ -471,6 +473,7 @@
 			children = (
 				E25A927726C08D81004A4EBB /* SearchStockDataSource.swift */,
 				E2211E2426C81C5E00041F5F /* StockOverviewDataSource.swift */,
+				E272A6F226ED115400163FF3 /* StockCurrentQuoteDataSource.swift */,
 			);
 			path = DataSource;
 			sourceTree = "<group>";
@@ -1150,6 +1153,7 @@
 				E2211E2526C81C5E00041F5F /* StockOverviewDataSource.swift in Sources */,
 				E2D2B5D026518A9B001B5E32 /* StockDetailsView.swift in Sources */,
 				E25A927826C08D81004A4EBB /* SearchStockDataSource.swift in Sources */,
+				E272A6F326ED115400163FF3 /* StockCurrentQuoteDataSource.swift in Sources */,
 				E2E637C02641A92A00F872A4 /* StockRow.swift in Sources */,
 				E2ABEDF2265322AE0001F0F9 /* ChartViewController.swift in Sources */,
 				E27C62E42653612000DD063C /* ChartHighlightMarker.swift in Sources */,

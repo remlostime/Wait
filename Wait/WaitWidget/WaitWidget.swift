@@ -23,20 +23,19 @@ struct Provider: TimelineProvider {
   }
 
   func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
-    context.displaySize
     var stocks = StockCache.shared.getStocks()
     let maxCount = 3
     stocks = Array(stocks[..<min(maxCount, stocks.count)])
     let group = DispatchGroup()
     for (index, stock) in stocks.enumerated() {
       group.enter()
-      stockCurrentQuoteNetworkClient.fetchStockDetails(stock: stock) { stock in
-        if let stock = stock {
-          stocks[index] = stock
-        }
-
-        group.leave()
-      }
+//      stockCurrentQuoteNetworkClient.fetchStockDetails(stock: stock) { stock in
+//        if let stock = stock {
+//          stocks[index] = stock
+//        }
+//
+//        group.leave()
+//      }
     }
 
     group.notify(queue: DispatchQueue.main) {
