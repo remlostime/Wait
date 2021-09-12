@@ -7,11 +7,24 @@ import Combine
 import Foundation
 import Logging
 import Model
+import SwiftUI
 
 final class StockCurrentQuoteDataSource: ObservableObject {
   // MARK: Internal
 
   @Published var stocks: [Stock] = []
+
+  func moveStock(fromOffset source: IndexSet, toOffset destination: Int) {
+    stocks.move(fromOffsets: source, toOffset: destination)
+    saveStocks()
+  }
+
+  func removeStock(_ stock: Stock) {
+    StockCache.shared.removeStock(stock)
+    stocks.removeAll(where: {
+      $0 == stock
+    })
+  }
 
   func fetchStock(_ stock: Stock) {
     networkClient.fetchDetails(stock: stock)
