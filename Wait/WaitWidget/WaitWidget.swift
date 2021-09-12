@@ -7,6 +7,8 @@ import Model
 import Size
 import SwiftUI
 import WidgetKit
+import Combine
+import Logging
 
 // MARK: - Provider
 
@@ -26,28 +28,40 @@ struct Provider: TimelineProvider {
     var stocks = StockCache.shared.getStocks()
     let maxCount = 3
     stocks = Array(stocks[..<min(maxCount, stocks.count)])
-    let group = DispatchGroup()
-    for (index, stock) in stocks.enumerated() {
-      group.enter()
-//      stockCurrentQuoteNetworkClient.fetchStockDetails(stock: stock) { stock in
-//        if let stock = stock {
-//          stocks[index] = stock
-//        }
-//
-//        group.leave()
-//      }
-    }
 
-    group.notify(queue: DispatchQueue.main) {
-      let currentDate = Date()
-      let entry = WaitEntry(date: currentDate, stocks: stocks)
-      let timeline = Timeline(entries: [entry], policy: .atEnd)
-      completion(timeline)
-    }
+    logger.verbose("I am here")
+    stockCurrentQuoteNetworkClient.fetchDetails(stocks: stocks)
+      .sink { result in
+        let symbols = stocks.map { $0.symbol }
+        switch result {
+          case .finished:
+            logger.verbose("Successfully fetch stocks: \(symbols)")
+          case let .failure(error):
+            logger.error("Failed to fetch stock: \(symbols). Error: \(error.localizedDescription)")
+        }
+      } receiveValue: { stockQuoteBatch in
+        logger.verbose("I am here ahahah")
+        let newStocks: [Stock] = stocks.map {
+          if let quote = stockQuoteBatch.quotes[$0.symbol] {
+            return $0.with(currentQuote: quote)
+          } else {
+            return $0
+          }
+        }
+
+        DispatchQueue.main.async {
+          let currentDate = Date()
+          let entry = WaitEntry(date: currentDate, stocks: newStocks)
+          let timeline = Timeline(entries: [entry], policy: .atEnd)
+          completion(timeline)
+        }
+      }
+      .store(in: &subscriptions)
   }
 
   // MARK: Private
 
+  @State private var subscriptions: Set<AnyCancellable> = []
   private let stockCurrentQuoteNetworkClient = StockCurrentQuoteNetworkClient()
 }
 

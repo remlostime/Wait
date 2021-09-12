@@ -68,6 +68,7 @@
 		E267B8712667FEBC009979C8 /* NVActivityIndicatorViewExtended in Frameworks */ = {isa = PBXBuildFile; productRef = E267B8702667FEBC009979C8 /* NVActivityIndicatorViewExtended */; };
 		E270B6BB26ABADAF00A56A69 /* CloudNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C8951626A792620052B217 /* CloudNetworkClient.swift */; };
 		E272A6F326ED115400163FF3 /* StockCurrentQuoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E272A6F226ED115400163FF3 /* StockCurrentQuoteDataSource.swift */; };
+		E272A6F426EE674600163FF3 /* Logging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E205D3EA26D2C567004EE31D /* Logging.framework */; };
 		E275EDFF26483D6600752D8A /* SearchStockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EDFE26483D6600752D8A /* SearchStockView.swift */; };
 		E275EE0326483FE300752D8A /* SearchStockRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EE0226483FE300752D8A /* SearchStockRow.swift */; };
 		E2765571267E9104002D13CC /* Color.h in Headers */ = {isa = PBXBuildFile; fileRef = E276556F267E9104002D13CC /* Color.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -339,6 +340,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E272A6F426EE674600163FF3 /* Logging.framework in Frameworks */,
 				E24BDF1426D3066800595E4A /* Size.framework in Frameworks */,
 				E24BDF0926D2EF5B00595E4A /* Networking.framework in Frameworks */,
 				E24BDF0826D2EF5600595E4A /* Alamofire in Frameworks */,

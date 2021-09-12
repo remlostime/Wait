@@ -54,18 +54,14 @@ struct ContentView: View {
               .opacity(0)
             }
           }
-          .onMove { _, _ in
-//            stocks.move(fromOffsets: source, toOffset: destination)
-//            saveStocks()
+          .onMove { source, dst in
+            dataSource.moveStock(fromOffset: source, toOffset: dst)
           }
-          .onDelete(perform: { _ in
-//            for index in indexSet {
-//              let stock = stocksInCategory[index]
-//              StockCache.shared.removeStock(stock)
-//              stocks.removeAll(where: {
-//                $0 == stock
-//              })
-//            }
+          .onDelete(perform: { indexSet in
+            for index in indexSet {
+              let stock = stocksInCategory[index]
+              dataSource.removeStock(stock)
+            }
           })
         }
         .id(UUID())
@@ -122,10 +118,6 @@ struct ContentView: View {
 
   @State private var showingWaitStockView = false
   @State private var newStock = Stock.empty
-
-  private func saveStocks() {
-    StockCache.shared.saveStocks(stocks)
-  }
 }
 
 // MARK: - ContentView_Previews
