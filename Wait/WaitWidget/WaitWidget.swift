@@ -3,12 +3,12 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
+import Combine
+import Logging
 import Model
 import Size
 import SwiftUI
 import WidgetKit
-import Combine
-import Logging
 
 // MARK: - Provider
 
