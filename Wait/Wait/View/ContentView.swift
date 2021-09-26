@@ -1,6 +1,7 @@
 // Created by kai_chen on 5/4/21.
 
 import Alamofire
+import Color
 import Logging
 import Model
 import Money
@@ -8,7 +9,6 @@ import PartialSheet
 import Size
 import SwiftUI
 import SwiftyJSON
-import Color
 
 // MARK: - ContentView
 
