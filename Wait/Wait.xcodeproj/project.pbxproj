@@ -77,12 +77,10 @@
 		E2765579267E91C5002D13CC /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A07D9D26520BF20075E271 /* Colors.swift */; };
 		E276557A267E91C5002D13CC /* UIColor+Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E2459626572DBE00460D4A /* UIColor+Theme.swift */; };
 		E276557B267E91C5002D13CC /* UIColor+CodeName.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E2459426572D7300460D4A /* UIColor+CodeName.swift */; };
-		E2765580267E93FB002D13CC /* Hue in Frameworks */ = {isa = PBXBuildFile; platformFilter = ios; productRef = E276557F267E93FB002D13CC /* Hue */; };
 		E276558A267E9470002D13CC /* UI.h in Headers */ = {isa = PBXBuildFile; fileRef = E2765588267E9470002D13CC /* UI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E276558D267E9470002D13CC /* UI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2765586267E9470002D13CC /* UI.framework */; };
 		E276558E267E9470002D13CC /* UI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E2765586267E9470002D13CC /* UI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E2765592267E9486002D13CC /* UIViewController+ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A1E99266D64F6004D2B24 /* UIViewController+ActivityIndicator.swift */; };
-		E2765594267E94B0002D13CC /* Hue in Frameworks */ = {isa = PBXBuildFile; productRef = E2765593267E94B0002D13CC /* Hue */; };
 		E2765595267E94B9002D13CC /* Color.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E276556D267E9104002D13CC /* Color.framework */; };
 		E2765597267E94C3002D13CC /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = E2765596267E94C3002D13CC /* SnapKit */; };
 		E276559B267E9505002D13CC /* NVActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = E276559A267E9505002D13CC /* NVActivityIndicatorView */; };
@@ -112,6 +110,8 @@
 		E2C3D363269B889000466CC3 /* StockChartImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C3D362269B889000466CC3 /* StockChartImageCache.swift */; };
 		E2C859B426438EE500F93321 /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = E2C859B326438EE500F93321 /* Cache */; };
 		E2D2B5D026518A9B001B5E32 /* StockDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D2B5CF26518A9B001B5E32 /* StockDetailsView.swift */; };
+		E2D7BD312700F81300470AFD /* Hue in Frameworks */ = {isa = PBXBuildFile; productRef = E2D7BD302700F81300470AFD /* Hue */; };
+		E2D7BD332700F85B00470AFD /* Hue in Frameworks */ = {isa = PBXBuildFile; productRef = E2D7BD322700F85B00470AFD /* Hue */; };
 		E2E637AD2641A5FB00F872A4 /* WaitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E637AC2641A5FB00F872A4 /* WaitApp.swift */; };
 		E2E637AF2641A5FB00F872A4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E637AE2641A5FB00F872A4 /* ContentView.swift */; };
 		E2E637B12641A5FD00F872A4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E2E637B02641A5FD00F872A4 /* Assets.xcassets */; };
@@ -356,7 +356,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E2765580267E93FB002D13CC /* Hue in Frameworks */,
+				E2D7BD312700F81300470AFD /* Hue in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -365,9 +365,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				E2765597267E94C3002D13CC /* SnapKit in Frameworks */,
+				E2D7BD332700F85B00470AFD /* Hue in Frameworks */,
 				E276559B267E9505002D13CC /* NVActivityIndicatorView in Frameworks */,
 				E2765595267E94B9002D13CC /* Color.framework in Frameworks */,
-				E2765594267E94B0002D13CC /* Hue in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -789,7 +789,7 @@
 			);
 			name = Color;
 			packageProductDependencies = (
-				E276557F267E93FB002D13CC /* Hue */,
+				E2D7BD302700F81300470AFD /* Hue */,
 			);
 			productName = Color;
 			productReference = E276556D267E9104002D13CC /* Color.framework */;
@@ -810,9 +810,9 @@
 			);
 			name = UI;
 			packageProductDependencies = (
-				E2765593267E94B0002D13CC /* Hue */,
 				E2765596267E94C3002D13CC /* SnapKit */,
 				E276559A267E9505002D13CC /* NVActivityIndicatorView */,
+				E2D7BD322700F85B00470AFD /* Hue */,
 			);
 			productName = UI;
 			productReference = E2765586267E9470002D13CC /* UI.framework */;
@@ -986,7 +986,6 @@
 				E2039B49265750B3004B3BEF /* XCRemoteSwiftPackageReference "Charts" */,
 				E267B86D2667FEBC009979C8 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */,
 				E22A84202669C8B60099F107 /* XCRemoteSwiftPackageReference "PartialSheet" */,
-				E2BC41A9267FFC7400A853D2 /* XCRemoteSwiftPackageReference "periphery" */,
 				E294F05B26A5F44400B76893 /* XCRemoteSwiftPackageReference "SkeletonUI" */,
 				E238917926C5E35E00C920B3 /* XCRemoteSwiftPackageReference "SwiftUIX" */,
 				E2211E2A26C8444700041F5F /* XCRemoteSwiftPackageReference "SwiftDate" */,
@@ -1607,7 +1606,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1663,7 +1662,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -2061,14 +2060,6 @@
 				minimumVersion = 5.0.1;
 			};
 		};
-		E2BC41A9267FFC7400A853D2 /* XCRemoteSwiftPackageReference "periphery" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/peripheryapp/periphery";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.6.0;
-			};
-		};
 		E2BDFCA526518CB90075E619 /* XCRemoteSwiftPackageReference "Money" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Flight-School/Money";
@@ -2158,16 +2149,6 @@
 			package = E267B86D2667FEBC009979C8 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */;
 			productName = NVActivityIndicatorViewExtended;
 		};
-		E276557F267E93FB002D13CC /* Hue */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */;
-			productName = Hue;
-		};
-		E2765593267E94B0002D13CC /* Hue */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */;
-			productName = Hue;
-		};
 		E2765596267E94C3002D13CC /* SnapKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E2ABEDF3265322FA0001F0F9 /* XCRemoteSwiftPackageReference "SnapKit" */;
@@ -2217,6 +2198,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2C859B226438EE500F93321 /* XCRemoteSwiftPackageReference "Cache" */;
 			productName = Cache;
+		};
+		E2D7BD302700F81300470AFD /* Hue */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */;
+			productName = Hue;
+		};
+		E2D7BD322700F85B00470AFD /* Hue */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */;
+			productName = Hue;
 		};
 		E2F9CDD926D5559B0076F109 /* SwiftDate */ = {
 			isa = XCSwiftPackageProductDependency;
