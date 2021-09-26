@@ -30,9 +30,9 @@ struct WaitApp: App {
       TabView {
         let sheetManager = PartialSheetManager()
         ContentView()
-          .tabItem({
+          .tabItem {
             Image(systemName: "house")
-          })
+          }
           .environmentObject(sheetManager)
 
         SettingsView()

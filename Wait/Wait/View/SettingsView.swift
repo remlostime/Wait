@@ -5,6 +5,8 @@
 
 import SwiftUI
 
+// MARK: - SettingsView
+
 struct SettingsView: View {
   var body: some View {
     NavigationView {
@@ -17,6 +19,8 @@ struct SettingsView: View {
     }
   }
 }
+
+// MARK: - SettingsView_Previews
 
 struct SettingsView_Previews: PreviewProvider {
   static var previews: some View {
