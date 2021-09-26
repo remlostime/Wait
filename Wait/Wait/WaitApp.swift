@@ -27,10 +27,20 @@ struct WaitApp: App {
 
   var body: some Scene {
     WindowGroup {
-      let sheetManager = PartialSheetManager()
-      ContentView()
-        .accentColor(.mint)
-        .environmentObject(sheetManager)
+      TabView {
+        let sheetManager = PartialSheetManager()
+        ContentView()
+          .tabItem({
+            Image(systemName: "house")
+          })
+          .environmentObject(sheetManager)
+
+        SettingsView()
+          .tabItem {
+            Image(systemName: "gearshape")
+          }
+      }
+      .accentColor(Color.mint)
     }
   }
 

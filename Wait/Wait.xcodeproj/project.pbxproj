@@ -109,6 +109,7 @@
 		E2BE76582641FC3300645629 /* StockExpectedPriceInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BE76572641FC3300645629 /* StockExpectedPriceInputView.swift */; };
 		E2C3D363269B889000466CC3 /* StockChartImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C3D362269B889000466CC3 /* StockChartImageCache.swift */; };
 		E2C859B426438EE500F93321 /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = E2C859B326438EE500F93321 /* Cache */; };
+		E2D0796827010EBF00E8E469 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D0796727010EBF00E8E469 /* SettingsView.swift */; };
 		E2D2B5D026518A9B001B5E32 /* StockDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D2B5CF26518A9B001B5E32 /* StockDetailsView.swift */; };
 		E2D7BD312700F81300470AFD /* Hue in Frameworks */ = {isa = PBXBuildFile; productRef = E2D7BD302700F81300470AFD /* Hue */; };
 		E2D7BD332700F85B00470AFD /* Hue in Frameworks */ = {isa = PBXBuildFile; productRef = E2D7BD322700F85B00470AFD /* Hue */; };
@@ -305,6 +306,7 @@
 		E2BE76572641FC3300645629 /* StockExpectedPriceInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockExpectedPriceInputView.swift; sourceTree = "<group>"; };
 		E2C3D362269B889000466CC3 /* StockChartImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockChartImageCache.swift; sourceTree = "<group>"; };
 		E2C8951626A792620052B217 /* CloudNetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudNetworkClient.swift; sourceTree = "<group>"; };
+		E2D0796727010EBF00E8E469 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		E2D2B5CF26518A9B001B5E32 /* StockDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailsView.swift; sourceTree = "<group>"; };
 		E2E2459426572D7300460D4A /* UIColor+CodeName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+CodeName.swift"; sourceTree = "<group>"; };
 		E2E2459626572DBE00460D4A /* UIColor+Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Theme.swift"; sourceTree = "<group>"; };
@@ -612,6 +614,7 @@
 				E25A1E9B266D7CAC004D2B24 /* StockStatsView.swift */,
 				E262496B269F7E2E001E7F31 /* StockRowTypeDisplaySheet.swift */,
 				E2211E2626C8280100041F5F /* Checklist.swift */,
+				E2D0796727010EBF00E8E469 /* SettingsView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1164,6 +1167,7 @@
 				E2ABEDED26531F0A0001F0F9 /* SwiftUIChartViewController.swift in Sources */,
 				E2ABEDF72653235A0001F0F9 /* TimeSection.swift in Sources */,
 				E262496C269F7E2E001E7F31 /* StockRowTypeDisplaySheet.swift in Sources */,
+				E2D0796827010EBF00E8E469 /* SettingsView.swift in Sources */,
 				E2ABEDF9265324690001F0F9 /* ChartViewDataSource.swift in Sources */,
 				E2C3D363269B889000466CC3 /* StockChartImageCache.swift in Sources */,
 				E275EE0326483FE300752D8A /* SearchStockRow.swift in Sources */,
