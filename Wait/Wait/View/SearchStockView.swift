@@ -6,7 +6,7 @@ import Model
 import Networking
 import Size
 import SwiftUI
-import SwiftUIX
+//import SwiftUIX
 import SwiftyJSON
 
 // MARK: - SearchStockView
@@ -20,20 +20,20 @@ struct SearchStockView: View {
 
   var body: some View {
     VStack {
-      SearchBar("Search Stock", text: $keyword) { _ in
-        if keyword.isEmpty {
-          dataSource.searchStocks(for: keyword)
-        }
-      } onCommit: {
-        dataSource.searchStocks(for: keyword)
-      }
-      .onChange(of: keyword) { value in
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-          if keyword == value {
-            dataSource.searchStocks(for: value)
-          }
-        }
-      }
+//      SearchBar("Search Stock", text: $keyword) { _ in
+//        if keyword.isEmpty {
+//          dataSource.searchStocks(for: keyword)
+//        }
+//      } onCommit: {
+//        dataSource.searchStocks(for: keyword)
+//      }
+//      .onChange(of: keyword) { value in
+//        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+//          if keyword == value {
+//            dataSource.searchStocks(for: value)
+//          }
+//        }
+//      }
 
       List {
         ForEach(dataSource.searchStocks, id: \.symbol) { searchStock in

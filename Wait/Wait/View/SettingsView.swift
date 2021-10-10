@@ -4,15 +4,19 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
 
 // MARK: - SettingsView
 
 struct SettingsView: View {
   var body: some View {
     NavigationView {
-      VStack {
+      List {
         NavigationLink("Checklist") {
-          Text("Hello world")
+          ChecklistEditView(store: Store(
+            initialState: ChecklistEditState(),
+            reducer: settingsReducer,
+            environment: ChecklistEditEnvironment()))
         }
       }
       .navigationTitle("Settings")
