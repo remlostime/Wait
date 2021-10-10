@@ -5,7 +5,7 @@ import Combine
 import Model
 import PartialSheet
 import Size
-//import SkeletonUI
+// import SkeletonUI
 import SwiftUI
 
 // MARK: - StockRowDetailType

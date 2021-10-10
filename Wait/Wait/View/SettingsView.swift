@@ -3,8 +3,8 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
 // MARK: - SettingsView
 
@@ -16,7 +16,8 @@ struct SettingsView: View {
           ChecklistEditView(store: Store(
             initialState: ChecklistEditState(),
             reducer: settingsReducer,
-            environment: ChecklistEditEnvironment()))
+            environment: ChecklistEditEnvironment()
+          ))
         }
       }
       .navigationTitle("Settings")

@@ -3,13 +3,17 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import Foundation
-import Model
 import Cache
+import Foundation
 import Logging
+import Model
 
 class ChecklistCache {
+  // MARK: Lifecycle
+
   private init() {}
+
+  // MARK: Internal
 
   static let shared = ChecklistCache()
 
@@ -31,6 +35,8 @@ class ChecklistCache {
       }
     }
   }
+
+  // MARK: Private
 
   private let key = "checklist"
 

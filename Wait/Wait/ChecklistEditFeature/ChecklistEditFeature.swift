@@ -3,9 +3,11 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import Foundation
 import ComposableArchitecture
+import Foundation
 import Model
+
+// MARK: - ChecklistEditAction
 
 enum ChecklistEditAction {
   case addItem
@@ -13,15 +15,17 @@ enum ChecklistEditAction {
   case itemDidChange(index: Int, text: String)
 }
 
+// MARK: - ChecklistEditState
+
 struct ChecklistEditState: Equatable {
   var items: [ChecklistItem] = ChecklistCache.shared.getItems()
 }
 
-struct ChecklistEditEnvironment {
+// MARK: - ChecklistEditEnvironment
 
-}
+struct ChecklistEditEnvironment {}
 
-let settingsReducer = Reducer<ChecklistEditState, ChecklistEditAction, ChecklistEditEnvironment> { state, action, environment in
+let settingsReducer = Reducer<ChecklistEditState, ChecklistEditAction, ChecklistEditEnvironment> { state, action, _ in
   switch action {
     case .addItem:
       state.items.insert(ChecklistItem(name: ""), at: 0)
@@ -29,7 +33,7 @@ let settingsReducer = Reducer<ChecklistEditState, ChecklistEditAction, Checklist
     case .save:
       ChecklistCache.shared.saveItems(state.items)
       return .none
-    case .itemDidChange(let index, let text):
+    case let .itemDidChange(index, text):
       state.items[index].name = text
       return .none
   }
