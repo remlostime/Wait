@@ -5,7 +5,7 @@ import Combine
 import Model
 import PartialSheet
 import Size
-import SkeletonUI
+// import SkeletonUI
 import SwiftUI
 
 // MARK: - StockRowDetailType
@@ -70,11 +70,12 @@ struct StockRow: View {
           .resizable()
           .frame(width: 80.0, height: 32.0)
           .scaledToFit()
-      } else {
-        Image(uiImage: nil)
-          .frame(width: 80.0, height: 32.0)
-          .skeleton(with: true)
       }
+//      } else {
+//        Image(uiImage: nil)
+//          .frame(width: 80.0, height: 32.0)
+//          .skeleton(with: true)
+//      }
 
       Spacer(minLength: Size.horizontalPadding24)
 

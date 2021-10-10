@@ -3,6 +3,7 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
+import ComposableArchitecture
 import SwiftUI
 
 // MARK: - SettingsView
@@ -10,9 +11,13 @@ import SwiftUI
 struct SettingsView: View {
   var body: some View {
     NavigationView {
-      VStack {
+      List {
         NavigationLink("Checklist") {
-          Text("Hello world")
+          ChecklistEditView(store: Store(
+            initialState: ChecklistEditState(),
+            reducer: settingsReducer,
+            environment: ChecklistEditEnvironment()
+          ))
         }
       }
       .navigationTitle("Settings")

@@ -7,17 +7,18 @@ import Foundation
 
 // MARK: - ChecklistItem
 
-public struct ChecklistItem {
-  public let name: String
-  public var isChecked: Bool = false
-}
+public struct ChecklistItem: Codable, Identifiable, Hashable {
+  // MARK: Lifecycle
 
-// MARK: Identifiable, Hashable
-
-extension ChecklistItem: Identifiable, Hashable {
-  public var id: String {
-    name
+  public init(name: String) {
+    self.name = name
   }
+
+  // MARK: Public
+
+  public var name: String
+  public var isChecked: Bool = false
+  public var id = UUID()
 }
 
 public extension ChecklistItem {

@@ -59,6 +59,11 @@
 		E24BDF1326D3051100595E4A /* WidgetStockRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24BDF1226D3051100595E4A /* WidgetStockRow.swift */; };
 		E24BDF1426D3066800595E4A /* Size.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2BC418E267F9C4600A853D2 /* Size.framework */; };
 		E24BDF1526D3149E00595E4A /* StockCurrentQuoteNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A1E9D266DA3EA004D2B24 /* StockCurrentQuoteNetworkClient.swift */; };
+		E24D90AC27128095009EDE57 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = E24D90AB27128095009EDE57 /* ComposableArchitecture */; };
+		E24D90B42712810E009EDE57 /* WaitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24D90B32712810E009EDE57 /* WaitTests.swift */; };
+		E24D90BC271289C9009EDE57 /* ChecklistEditFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24D90BB271289C9009EDE57 /* ChecklistEditFeature.swift */; };
+		E24D90BE27128A47009EDE57 /* ChecklistEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24D90BD27128A47009EDE57 /* ChecklistEditView.swift */; };
+		E24D90C02713487A009EDE57 /* ChecklistCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24D90BF2713487A009EDE57 /* ChecklistCache.swift */; };
 		E25A1E9C266D7CAC004D2B24 /* StockStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A1E9B266D7CAC004D2B24 /* StockStatsView.swift */; };
 		E25A927826C08D81004A4EBB /* SearchStockDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A927726C08D81004A4EBB /* SearchStockDataSource.swift */; };
 		E25A927A26C08E32004A4EBB /* SearchStockNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A927926C08E32004A4EBB /* SearchStockNetworkClient.swift */; };
@@ -171,6 +176,13 @@
 			remoteGlobalIDString = E210DEF726D2B50D0044DA4E;
 			remoteInfo = WaitWidgetExtension;
 		};
+		E24D90B52712810E009EDE57 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E2E637A12641A5FB00F872A4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E2E637A82641A5FB00F872A4;
+			remoteInfo = Wait;
+		};
 		E2765572267E9104002D13CC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E2E637A12641A5FB00F872A4 /* Project object */;
@@ -261,6 +273,11 @@
 		E24BDEFC26D2CFCC00595E4A /* WaitRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WaitRelease.entitlements; sourceTree = "<group>"; };
 		E24BDEFD26D2D61700595E4A /* WaitWidgetExtensionRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WaitWidgetExtensionRelease.entitlements; sourceTree = "<group>"; };
 		E24BDF1226D3051100595E4A /* WidgetStockRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetStockRow.swift; sourceTree = "<group>"; };
+		E24D90B12712810E009EDE57 /* WaitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WaitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E24D90B32712810E009EDE57 /* WaitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitTests.swift; sourceTree = "<group>"; };
+		E24D90BB271289C9009EDE57 /* ChecklistEditFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistEditFeature.swift; sourceTree = "<group>"; };
+		E24D90BD27128A47009EDE57 /* ChecklistEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistEditView.swift; sourceTree = "<group>"; };
+		E24D90BF2713487A009EDE57 /* ChecklistCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistCache.swift; sourceTree = "<group>"; };
 		E25A1E81266BB862004D2B24 /* Exchange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exchange.swift; sourceTree = "<group>"; };
 		E25A1E92266D633C004D2B24 /* ScrollableCounter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollableCounter.swift; sourceTree = "<group>"; };
 		E25A1E93266D633C004D2B24 /* DigitScrollCounter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DigitScrollCounter.swift; sourceTree = "<group>"; };
@@ -354,6 +371,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E24D90AE2712810E009EDE57 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E276556A267E9104002D13CC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -389,6 +413,7 @@
 				E2ABEDF5265322FA0001F0F9 /* SnapKit in Frameworks */,
 				E2FC1034267E9EB300CD98AF /* Model.framework in Frameworks */,
 				E2C859B426438EE500F93321 /* Cache in Frameworks */,
+				E24D90AC27128095009EDE57 /* ComposableArchitecture in Frameworks */,
 				E2BC4195267F9C4600A853D2 /* Size.framework in Frameworks */,
 				E294F05D26A5F44400B76893 /* SkeletonUI in Frameworks */,
 				E2123A602647115400A29222 /* Alamofire in Frameworks */,
@@ -470,6 +495,24 @@
 				E2136DD4269A16530033AEB1 /* SwiftUIValuationChartViewController.swift */,
 			);
 			path = Valuation;
+			sourceTree = "<group>";
+		};
+		E24D90B22712810E009EDE57 /* WaitTests */ = {
+			isa = PBXGroup;
+			children = (
+				E24D90B32712810E009EDE57 /* WaitTests.swift */,
+			);
+			path = WaitTests;
+			sourceTree = "<group>";
+		};
+		E24D90BA27128994009EDE57 /* ChecklistEditFeature */ = {
+			isa = PBXGroup;
+			children = (
+				E24D90BB271289C9009EDE57 /* ChecklistEditFeature.swift */,
+				E24D90BD27128A47009EDE57 /* ChecklistEditView.swift */,
+				E24D90BF2713487A009EDE57 /* ChecklistCache.swift */,
+			);
+			path = ChecklistEditFeature;
 			sourceTree = "<group>";
 		};
 		E25A927626C08D69004A4EBB /* DataSource */ = {
@@ -554,6 +597,7 @@
 				E2BC418F267F9C4600A853D2 /* Size */,
 				E210DEFD26D2B50D0044DA4E /* WaitWidget */,
 				E205D3EB26D2C567004EE31D /* Logging */,
+				E24D90B22712810E009EDE57 /* WaitTests */,
 				E2E637AA2641A5FB00F872A4 /* Products */,
 				E276557E267E93FB002D13CC /* Frameworks */,
 			);
@@ -570,6 +614,7 @@
 				E2BC418E267F9C4600A853D2 /* Size.framework */,
 				E210DEF826D2B50D0044DA4E /* WaitWidgetExtension.appex */,
 				E205D3EA26D2C567004EE31D /* Logging.framework */,
+				E24D90B12712810E009EDE57 /* WaitTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -581,6 +626,7 @@
 				E25B746C26A33B7600BE0A9C /* Launch Screen.storyboard */,
 				E2F8D19826A2531600020A97 /* Wait.entitlements */,
 				E2E637AC2641A5FB00F872A4 /* WaitApp.swift */,
+				E24D90BA27128994009EDE57 /* ChecklistEditFeature */,
 				E25A927626C08D69004A4EBB /* DataSource */,
 				E2136DCF269A134D0033AEB1 /* Valuation */,
 				E2FC1069267EDF0400CD98AF /* Network */,
@@ -777,6 +823,24 @@
 			productReference = E210DEF826D2B50D0044DA4E /* WaitWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		E24D90B02712810E009EDE57 /* WaitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E24D90B72712810E009EDE57 /* Build configuration list for PBXNativeTarget "WaitTests" */;
+			buildPhases = (
+				E24D90AD2712810E009EDE57 /* Sources */,
+				E24D90AE2712810E009EDE57 /* Frameworks */,
+				E24D90AF2712810E009EDE57 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E24D90B62712810E009EDE57 /* PBXTargetDependency */,
+			);
+			name = WaitTests;
+			productName = WaitTests;
+			productReference = E24D90B12712810E009EDE57 /* WaitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		E276556C267E9104002D13CC /* Color */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = E2765578267E9104002D13CC /* Build configuration list for PBXNativeTarget "Color" */;
@@ -879,6 +943,7 @@
 				E294F05C26A5F44400B76893 /* SkeletonUI */,
 				E238917A26C5E35E00C920B3 /* SwiftUIX */,
 				E2211E2B26C8444700041F5F /* SwiftDate */,
+				E24D90AB27128095009EDE57 /* ComposableArchitecture */,
 			);
 			productName = Wait;
 			productReference = E2E637A92641A5FB00F872A4 /* Wait.app */;
@@ -932,7 +997,7 @@
 		E2E637A12641A5FB00F872A4 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1250;
+				LastSwiftUpdateCheck = 1300;
 				LastUpgradeCheck = 1250;
 				TargetAttributes = {
 					E205D3E926D2C567004EE31D = {
@@ -941,6 +1006,10 @@
 					};
 					E210DEF726D2B50D0044DA4E = {
 						CreatedOnToolsVersion = 12.5.1;
+					};
+					E24D90B02712810E009EDE57 = {
+						CreatedOnToolsVersion = 13.0;
+						TestTargetID = E2E637A82641A5FB00F872A4;
 					};
 					E276556C267E9104002D13CC = {
 						CreatedOnToolsVersion = 12.5;
@@ -992,6 +1061,7 @@
 				E294F05B26A5F44400B76893 /* XCRemoteSwiftPackageReference "SkeletonUI" */,
 				E238917926C5E35E00C920B3 /* XCRemoteSwiftPackageReference "SwiftUIX" */,
 				E2211E2A26C8444700041F5F /* XCRemoteSwiftPackageReference "SwiftDate" */,
+				E24D90AA27128095009EDE57 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 			);
 			productRefGroup = E2E637AA2641A5FB00F872A4 /* Products */;
 			projectDirPath = "";
@@ -1006,6 +1076,7 @@
 				E205D3E926D2C567004EE31D /* Logging */,
 				E2BC41AA267FFCBB00A853D2 /* Unused Code */,
 				E210DEF726D2B50D0044DA4E /* WaitWidgetExtension */,
+				E24D90B02712810E009EDE57 /* WaitTests */,
 			);
 		};
 /* End PBXProject section */
@@ -1023,6 +1094,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				E210DF0126D2B50F0044DA4E /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E24D90AF2712810E009EDE57 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1115,6 +1193,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E24D90AD2712810E009EDE57 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E24D90B42712810E009EDE57 /* WaitTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E2765569267E9104002D13CC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1153,6 +1239,7 @@
 				E2E637AF2641A5FB00F872A4 /* ContentView.swift in Sources */,
 				E2FC106D267EDFA300CD98AF /* StockOverviewNetworkClient.swift in Sources */,
 				E2136DD5269A16530033AEB1 /* SwiftUIValuationChartViewController.swift in Sources */,
+				E24D90BC271289C9009EDE57 /* ChecklistEditFeature.swift in Sources */,
 				E2BE76582641FC3300645629 /* StockExpectedPriceInputView.swift in Sources */,
 				E2211E2526C81C5E00041F5F /* StockOverviewDataSource.swift in Sources */,
 				E2D2B5D026518A9B001B5E32 /* StockDetailsView.swift in Sources */,
@@ -1164,6 +1251,7 @@
 				E2FC106C267EDF9700CD98AF /* PriceHistoryNetworkClient.swift in Sources */,
 				E2FC106A267EDF8E00CD98AF /* StockCurrentQuoteNetworkClient.swift in Sources */,
 				E2E637AD2641A5FB00F872A4 /* WaitApp.swift in Sources */,
+				E24D90C02713487A009EDE57 /* ChecklistCache.swift in Sources */,
 				E2ABEDED26531F0A0001F0F9 /* SwiftUIChartViewController.swift in Sources */,
 				E2ABEDF72653235A0001F0F9 /* TimeSection.swift in Sources */,
 				E262496C269F7E2E001E7F31 /* StockRowTypeDisplaySheet.swift in Sources */,
@@ -1172,6 +1260,7 @@
 				E2C3D363269B889000466CC3 /* StockChartImageCache.swift in Sources */,
 				E275EE0326483FE300752D8A /* SearchStockRow.swift in Sources */,
 				E25A1E9C266D7CAC004D2B24 /* StockStatsView.swift in Sources */,
+				E24D90BE27128A47009EDE57 /* ChecklistEditView.swift in Sources */,
 				E2136DD3269A13F90033AEB1 /* ValuationChartViewController.swift in Sources */,
 				E2123A6B26472F9400A29222 /* StockCache.swift in Sources */,
 				E2ABEE082653376D0001F0F9 /* ChartCache.swift in Sources */,
@@ -1230,6 +1319,11 @@
 			isa = PBXTargetDependency;
 			target = E210DEF726D2B50D0044DA4E /* WaitWidgetExtension */;
 			targetProxy = E210DF0326D2B50F0044DA4E /* PBXContainerItemProxy */;
+		};
+		E24D90B62712810E009EDE57 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E2E637A82641A5FB00F872A4 /* Wait */;
+			targetProxy = E24D90B52712810E009EDE57 /* PBXContainerItemProxy */;
 		};
 		E2765573267E9104002D13CC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1362,6 +1456,52 @@
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		E24D90B82712810E009EDE57 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ck.WaitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wait.app/Wait";
+			};
+			name = Debug;
+		};
+		E24D90B92712810E009EDE57 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ck.WaitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wait.app/Wait";
 			};
 			name = Release;
 		};
@@ -1877,6 +2017,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		E24D90B72712810E009EDE57 /* Build configuration list for PBXNativeTarget "WaitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E24D90B82712810E009EDE57 /* Debug */,
+				E24D90B92712810E009EDE57 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		E2765578267E9104002D13CC /* Build configuration list for PBXNativeTarget "Color" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -2016,6 +2165,14 @@
 				minimumVersion = 5.2.0;
 			};
 		};
+		E24D90AA27128095009EDE57 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.0;
+			};
+		};
 		E267B86D2667FEBC009979C8 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ninjaprox/NVActivityIndicatorView";
@@ -2142,6 +2299,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2123A662647198000A29222 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
 			productName = SwiftyJSON;
+		};
+		E24D90AB27128095009EDE57 /* ComposableArchitecture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E24D90AA27128095009EDE57 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
 		};
 		E267B86E2667FEBC009979C8 /* NVActivityIndicatorView */ = {
 			isa = XCSwiftPackageProductDependency;
