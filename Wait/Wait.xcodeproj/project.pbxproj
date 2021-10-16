@@ -50,6 +50,8 @@
 		E2211E2C26C8444700041F5F /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = E2211E2B26C8444700041F5F /* SwiftDate */; };
 		E227D3A426BEE2930094A872 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = E227D3A326BEE2930094A872 /* Category.swift */; };
 		E22A84222669C8B60099F107 /* PartialSheet in Frameworks */ = {isa = PBXBuildFile; productRef = E22A84212669C8B60099F107 /* PartialSheet */; };
+		E2316FB7271B7D5300103050 /* StockCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2316FB6271B7D5300103050 /* StockCard.swift */; };
+		E2316FB9271B99C400103050 /* StockRowStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2316FB8271B99C400103050 /* StockRowStyle.swift */; };
 		E238917B26C5E35E00C920B3 /* SwiftUIX in Frameworks */ = {isa = PBXBuildFile; productRef = E238917A26C5E35E00C920B3 /* SwiftUIX */; };
 		E23B93E42652D52800E039D9 /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E23B93E32652D52800E039D9 /* SwifterSwift */; };
 		E24BDEFB26D2C8C400595E4A /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = E24BDEFA26D2C8C400595E4A /* Cache */; };
@@ -269,6 +271,8 @@
 		E2211E2626C8280100041F5F /* Checklist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Checklist.swift; sourceTree = "<group>"; };
 		E2211E2826C82A3300041F5F /* ChecklistItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistItem.swift; sourceTree = "<group>"; };
 		E227D3A326BEE2930094A872 /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
+		E2316FB6271B7D5300103050 /* StockCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCard.swift; sourceTree = "<group>"; };
+		E2316FB8271B99C400103050 /* StockRowStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockRowStyle.swift; sourceTree = "<group>"; };
 		E23B93E02652D38D00E039D9 /* Money+Format.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Money+Format.swift"; sourceTree = "<group>"; };
 		E24BDEFC26D2CFCC00595E4A /* WaitRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WaitRelease.entitlements; sourceTree = "<group>"; };
 		E24BDEFD26D2D61700595E4A /* WaitWidgetExtensionRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WaitWidgetExtensionRelease.entitlements; sourceTree = "<group>"; };
@@ -661,6 +665,7 @@
 				E262496B269F7E2E001E7F31 /* StockRowTypeDisplaySheet.swift */,
 				E2211E2626C8280100041F5F /* Checklist.swift */,
 				E2D0796727010EBF00E8E469 /* SettingsView.swift */,
+				E2316FB6271B7D5300103050 /* StockCard.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -681,6 +686,7 @@
 				E227D3A326BEE2930094A872 /* Category.swift */,
 				E2211E2826C82A3300041F5F /* ChecklistItem.swift */,
 				E2F9CDD726D554870076F109 /* UpdatedHistory.swift */,
+				E2316FB8271B99C400103050 /* StockRowStyle.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -1242,6 +1248,7 @@
 				E24D90BC271289C9009EDE57 /* ChecklistEditFeature.swift in Sources */,
 				E2BE76582641FC3300645629 /* StockExpectedPriceInputView.swift in Sources */,
 				E2211E2526C81C5E00041F5F /* StockOverviewDataSource.swift in Sources */,
+				E2316FB7271B7D5300103050 /* StockCard.swift in Sources */,
 				E2D2B5D026518A9B001B5E32 /* StockDetailsView.swift in Sources */,
 				E25A927826C08D81004A4EBB /* SearchStockDataSource.swift in Sources */,
 				E272A6F326ED115400163FF3 /* StockCurrentQuoteDataSource.swift in Sources */,
@@ -1277,6 +1284,7 @@
 				E2B5EAA32688105D0092663F /* Money+Format.swift in Sources */,
 				E2211E2926C82A3300041F5F /* ChecklistItem.swift in Sources */,
 				E2FC1039267E9EBF00CD98AF /* Exchange.swift in Sources */,
+				E2316FB9271B99C400103050 /* StockRowStyle.swift in Sources */,
 				E2F9CDD826D554870076F109 /* UpdatedHistory.swift in Sources */,
 				E2FC103A267E9EBF00CD98AF /* StockOverview.swift in Sources */,
 				E270B6BB26ABADAF00A56A69 /* CloudNetworkClient.swift in Sources */,

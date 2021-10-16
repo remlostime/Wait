@@ -19,6 +19,8 @@ struct ContentView: View {
   @State var category: StockCategory = .waitlist
   @State var selection: String? = nil
 
+  @AppStorage("stockRowStyle") var stockRowStyle: StockRowStyle = .card
+
   var stocks: [Stock] {
     dataSource.stocks
   }
@@ -40,32 +42,52 @@ struct ContentView: View {
           .pickerStyle(SegmentedPickerStyle())
           .padding(.all, 10)
 
-        List {
-          ForEach(stocksInCategory, id: \.symbol) { stock in
-            HStack {
-              StockRow(stockRowDetailType: $stockRowDetailType, stock: stock)
-
-              // This is used to remove '>' in the cell
-              // https://stackoverflow.com/questions/58333499/swiftui-navigationlink-hide-arrow
-              // https://stackoverflow.com/questions/56516333/swiftui-navigationbutton-without-the-disclosure-indicator
-              NavigationLink(destination: StockDetailsView(stock: stock), tag: stock.symbol, selection: $selection) {
-                EmptyView()
+        switch stockRowStyle {
+          case .card:
+            ScrollView {
+              LazyVGrid(
+                columns: [
+                  GridItem(.adaptive(minimum: 150, maximum: 170)),
+                  GridItem(.adaptive(minimum: 150, maximum: 170))],
+                spacing: 16
+              ) {
+                ForEach(stocksInCategory, id: \.symbol) { stock in
+                  NavigationLink {
+                    StockDetailsView(stock: stock)
+                  } label: {
+                    StockCard(stock: stock)
+                  }
+                }
               }
-              .frame(width: 0)
-              .opacity(0)
             }
-          }
-          .onMove { source, dst in
-            dataSource.moveStock(fromOffset: source, toOffset: dst)
-          }
-          .onDelete(perform: { indexSet in
-            for index in indexSet {
-              let stock = stocksInCategory[index]
-              dataSource.removeStock(stock)
-            }
-          })
+          case .row:
+            List {
+              ForEach(stocksInCategory, id: \.symbol) { stock in
+                HStack {
+                  StockRow(stockRowDetailType: $stockRowDetailType, stock: stock)
+
+                  // This is used to remove '>' in the cell
+                  // https://stackoverflow.com/questions/58333499/swiftui-navigationlink-hide-arrow
+                  // https://stackoverflow.com/questions/56516333/swiftui-navigationbutton-without-the-disclosure-indicator
+                  NavigationLink(destination: StockDetailsView(stock: stock), tag: stock.symbol, selection: $selection) {
+                    EmptyView()
+                  }
+                  .frame(width: 0)
+                  .opacity(0)
+                }
+              }
+              .onMove { source, dst in
+                dataSource.moveStock(fromOffset: source, toOffset: dst)
+              }
+              .onDelete(perform: { indexSet in
+                for index in indexSet {
+                  let stock = stocksInCategory[index]
+                  dataSource.removeStock(stock)
+                }
+              })
+             }
+             .id(UUID())
         }
-        .id(UUID())
       }
       .onAppear {
         dataSource.fetchStocks()

@@ -5,10 +5,13 @@
 
 import ComposableArchitecture
 import SwiftUI
+import Model
 
 // MARK: - SettingsView
 
 struct SettingsView: View {
+  @AppStorage("stockRowStyle") var stockRowStyle: StockRowStyle = .card
+
   var body: some View {
     NavigationView {
       List {
@@ -18,6 +21,12 @@ struct SettingsView: View {
             reducer: settingsReducer,
             environment: ChecklistEditEnvironment()
           ))
+        }
+
+        Picker("Stock Row Style", selection: $stockRowStyle) {
+          ForEach(StockRowStyle.allCases) { style in
+            Text(style.rawValue).tag(style)
+          }
         }
       }
       .navigationTitle("Settings")
