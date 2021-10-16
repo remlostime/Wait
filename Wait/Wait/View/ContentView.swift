@@ -48,7 +48,8 @@ struct ContentView: View {
               LazyVGrid(
                 columns: [
                   GridItem(.adaptive(minimum: 150, maximum: 170)),
-                  GridItem(.adaptive(minimum: 150, maximum: 170))],
+                  GridItem(.adaptive(minimum: 150, maximum: 170)),
+                ],
                 spacing: 16
               ) {
                 ForEach(stocksInCategory, id: \.symbol) { stock in
@@ -85,8 +86,8 @@ struct ContentView: View {
                   dataSource.removeStock(stock)
                 }
               })
-             }
-             .id(UUID())
+            }
+            .id(UUID())
         }
       }
       .onAppear {

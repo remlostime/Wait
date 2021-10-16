@@ -4,8 +4,8 @@
 //
 
 import ComposableArchitecture
-import SwiftUI
 import Model
+import SwiftUI
 
 // MARK: - SettingsView
 

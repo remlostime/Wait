@@ -6,10 +6,12 @@
 import Foundation
 
 public enum StockRowStyle: String, CaseIterable, Identifiable {
-  public var id: String {
-    self.rawValue
-  }
-
   case card
   case row
+
+  // MARK: Public
+
+  public var id: String {
+    rawValue
+  }
 }
