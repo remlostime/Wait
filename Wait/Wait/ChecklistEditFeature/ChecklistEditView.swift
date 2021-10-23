@@ -6,11 +6,14 @@
 import ComposableArchitecture
 import Model
 import SwiftUI
+import Firebase
 
 // MARK: - ChecklistEditView
 
 struct ChecklistEditView: View {
   let store: Store<ChecklistEditState, ChecklistEditAction>
+
+  let database = Database.database().reference(withPath: "checklist")
 
   var body: some View {
     WithViewStore(self.store) { viewStore in

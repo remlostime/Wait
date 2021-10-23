@@ -22,6 +22,13 @@
 
 /* Begin PBXBuildFile section */
 		E2039B4B265750B3004B3BEF /* Charts in Frameworks */ = {isa = PBXBuildFile; productRef = E2039B4A265750B3004B3BEF /* Charts */; };
+		E205877F272475DB00D0052D /* Charts+UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E205877E272475DB00D0052D /* Charts+UIImage.swift */; };
+		E205878227247E9B00D0052D /* FirebaseAnalyticsSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = E205878127247E9B00D0052D /* FirebaseAnalyticsSwift-Beta */; };
+		E205878427247E9B00D0052D /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = E205878327247E9B00D0052D /* FirebaseAuth */; };
+		E205878627247E9B00D0052D /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = E205878527247E9B00D0052D /* FirebaseCrashlytics */; };
+		E205878827247E9B00D0052D /* FirebaseDatabaseSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = E205878727247E9B00D0052D /* FirebaseDatabaseSwift-Beta */; };
+		E205878A27247E9B00D0052D /* FirebasePerformance in Frameworks */ = {isa = PBXBuildFile; productRef = E205878927247E9B00D0052D /* FirebasePerformance */; };
+		E205878C27247E9B00D0052D /* FirebaseStorageSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = E205878B27247E9B00D0052D /* FirebaseStorageSwift-Beta */; };
 		E205D3DF26D2C352004EE31D /* StockCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2123A6A26472F9400A29222 /* StockCache.swift */; };
 		E205D3E026D2C47D004EE31D /* Model.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC102D267E9EB300CD98AF /* Model.framework */; };
 		E205D3EE26D2C567004EE31D /* Logging.h in Headers */ = {isa = PBXBuildFile; fileRef = E205D3EC26D2C567004EE31D /* Logging.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -52,7 +59,6 @@
 		E22A84222669C8B60099F107 /* PartialSheet in Frameworks */ = {isa = PBXBuildFile; productRef = E22A84212669C8B60099F107 /* PartialSheet */; };
 		E2316FB7271B7D5300103050 /* StockCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2316FB6271B7D5300103050 /* StockCard.swift */; };
 		E2316FB9271B99C400103050 /* StockRowStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2316FB8271B99C400103050 /* StockRowStyle.swift */; };
-		E238917B26C5E35E00C920B3 /* SwiftUIX in Frameworks */ = {isa = PBXBuildFile; productRef = E238917A26C5E35E00C920B3 /* SwiftUIX */; };
 		E23B93E42652D52800E039D9 /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E23B93E32652D52800E039D9 /* SwifterSwift */; };
 		E24BDEFB26D2C8C400595E4A /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = E24BDEFA26D2C8C400595E4A /* Cache */; };
 		E24BDF0826D2EF5600595E4A /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E24BDF0726D2EF5600595E4A /* Alamofire */; };
@@ -253,6 +259,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E205877E272475DB00D0052D /* Charts+UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Charts+UIImage.swift"; sourceTree = "<group>"; };
 		E205D3EA26D2C567004EE31D /* Logging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Logging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E205D3EC26D2C567004EE31D /* Logging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Logging.h; sourceTree = "<group>"; };
 		E205D3ED26D2C567004EE31D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -414,25 +421,30 @@
 			files = (
 				E2F8D19A26A2531900020A97 /* CloudKit.framework in Frameworks */,
 				E2FC1081267EE38D00CD98AF /* Networking.framework in Frameworks */,
+				E205878A27247E9B00D0052D /* FirebasePerformance in Frameworks */,
 				E2ABEDF5265322FA0001F0F9 /* SnapKit in Frameworks */,
 				E2FC1034267E9EB300CD98AF /* Model.framework in Frameworks */,
 				E2C859B426438EE500F93321 /* Cache in Frameworks */,
 				E24D90AC27128095009EDE57 /* ComposableArchitecture in Frameworks */,
 				E2BC4195267F9C4600A853D2 /* Size.framework in Frameworks */,
+				E205878C27247E9B00D0052D /* FirebaseStorageSwift-Beta in Frameworks */,
 				E294F05D26A5F44400B76893 /* SkeletonUI in Frameworks */,
 				E2123A602647115400A29222 /* Alamofire in Frameworks */,
 				E23B93E42652D52800E039D9 /* SwifterSwift in Frameworks */,
+				E205878827247E9B00D0052D /* FirebaseDatabaseSwift-Beta in Frameworks */,
 				E2BDFCA726518CB90075E619 /* Money in Frameworks */,
 				E2765574267E9104002D13CC /* Color.framework in Frameworks */,
-				E238917B26C5E35E00C920B3 /* SwiftUIX in Frameworks */,
 				E22A84222669C8B60099F107 /* PartialSheet in Frameworks */,
 				E2123A682647198000A29222 /* SwiftyJSON in Frameworks */,
 				E2039B4B265750B3004B3BEF /* Charts in Frameworks */,
+				E205878227247E9B00D0052D /* FirebaseAnalyticsSwift-Beta in Frameworks */,
+				E205878627247E9B00D0052D /* FirebaseCrashlytics in Frameworks */,
 				E267B8712667FEBC009979C8 /* NVActivityIndicatorViewExtended in Frameworks */,
 				E2ABEDF0265322670001F0F9 /* HMSegmentedControl in Frameworks */,
 				E276558D267E9470002D13CC /* UI.framework in Frameworks */,
 				E267B86F2667FEBC009979C8 /* NVActivityIndicatorView in Frameworks */,
 				E2211E2C26C8444700041F5F /* SwiftDate in Frameworks */,
+				E205878427247E9B00D0052D /* FirebaseAuth in Frameworks */,
 				E205D3F126D2C567004EE31D /* Logging.framework in Frameworks */,
 				E2A07D9B26520BDD0075E271 /* Hue in Frameworks */,
 				E2123A652647158800A29222 /* SwiftyBeaver in Frameworks */,
@@ -565,6 +577,7 @@
 		E2ABEDEB26531EF40001F0F9 /* Charts */ = {
 			isa = PBXGroup;
 			children = (
+				E205877E272475DB00D0052D /* Charts+UIImage.swift */,
 				E2ABEDEC26531F0A0001F0F9 /* SwiftUIChartViewController.swift */,
 				E2ABEDF1265322AE0001F0F9 /* ChartViewController.swift */,
 				E2ABEDF62653235A0001F0F9 /* TimeSection.swift */,
@@ -947,9 +960,14 @@
 				E267B8702667FEBC009979C8 /* NVActivityIndicatorViewExtended */,
 				E22A84212669C8B60099F107 /* PartialSheet */,
 				E294F05C26A5F44400B76893 /* SkeletonUI */,
-				E238917A26C5E35E00C920B3 /* SwiftUIX */,
 				E2211E2B26C8444700041F5F /* SwiftDate */,
 				E24D90AB27128095009EDE57 /* ComposableArchitecture */,
+				E205878127247E9B00D0052D /* FirebaseAnalyticsSwift-Beta */,
+				E205878327247E9B00D0052D /* FirebaseAuth */,
+				E205878527247E9B00D0052D /* FirebaseCrashlytics */,
+				E205878727247E9B00D0052D /* FirebaseDatabaseSwift-Beta */,
+				E205878927247E9B00D0052D /* FirebasePerformance */,
+				E205878B27247E9B00D0052D /* FirebaseStorageSwift-Beta */,
 			);
 			productName = Wait;
 			productReference = E2E637A92641A5FB00F872A4 /* Wait.app */;
@@ -1065,9 +1083,9 @@
 				E267B86D2667FEBC009979C8 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */,
 				E22A84202669C8B60099F107 /* XCRemoteSwiftPackageReference "PartialSheet" */,
 				E294F05B26A5F44400B76893 /* XCRemoteSwiftPackageReference "SkeletonUI" */,
-				E238917926C5E35E00C920B3 /* XCRemoteSwiftPackageReference "SwiftUIX" */,
 				E2211E2A26C8444700041F5F /* XCRemoteSwiftPackageReference "SwiftDate" */,
 				E24D90AA27128095009EDE57 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+				E205878027247E9B00D0052D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = E2E637AA2641A5FB00F872A4 /* Products */;
 			projectDirPath = "";
@@ -1265,6 +1283,7 @@
 				E2D0796827010EBF00E8E469 /* SettingsView.swift in Sources */,
 				E2ABEDF9265324690001F0F9 /* ChartViewDataSource.swift in Sources */,
 				E2C3D363269B889000466CC3 /* StockChartImageCache.swift in Sources */,
+				E205877F272475DB00D0052D /* Charts+UIImage.swift in Sources */,
 				E275EE0326483FE300752D8A /* SearchStockRow.swift in Sources */,
 				E25A1E9C266D7CAC004D2B24 /* StockStatsView.swift in Sources */,
 				E24D90BE27128A47009EDE57 /* ChecklistEditView.swift in Sources */,
@@ -1836,7 +1855,7 @@
 				DEVELOPMENT_TEAM = 5WDN96EM72;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Wait/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1868,7 +1887,7 @@
 				DEVELOPMENT_TEAM = 5WDN96EM72;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Wait/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2117,6 +2136,14 @@
 				version = 3.4.0;
 			};
 		};
+		E205878027247E9B00D0052D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
 		E2123A5E2647115400A29222 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire";
@@ -2155,14 +2182,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 2.1.11;
-			};
-		};
-		E238917926C5E35E00C920B3 /* XCRemoteSwiftPackageReference "SwiftUIX" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SwiftUIX/SwiftUIX";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.0.8;
 			};
 		};
 		E23B93E22652D52800E039D9 /* XCRemoteSwiftPackageReference "SwifterSwift" */ = {
@@ -2253,6 +2272,36 @@
 			package = E2039B49265750B3004B3BEF /* XCRemoteSwiftPackageReference "Charts" */;
 			productName = Charts;
 		};
+		E205878127247E9B00D0052D /* FirebaseAnalyticsSwift-Beta */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E205878027247E9B00D0052D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseAnalyticsSwift-Beta";
+		};
+		E205878327247E9B00D0052D /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E205878027247E9B00D0052D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		E205878527247E9B00D0052D /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E205878027247E9B00D0052D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		E205878727247E9B00D0052D /* FirebaseDatabaseSwift-Beta */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E205878027247E9B00D0052D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseDatabaseSwift-Beta";
+		};
+		E205878927247E9B00D0052D /* FirebasePerformance */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E205878027247E9B00D0052D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebasePerformance;
+		};
+		E205878B27247E9B00D0052D /* FirebaseStorageSwift-Beta */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E205878027247E9B00D0052D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseStorageSwift-Beta";
+		};
 		E205D3F826D2C5DF004EE31D /* SwiftyBeaver */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E2123A632647158800A29222 /* XCRemoteSwiftPackageReference "SwiftyBeaver" */;
@@ -2282,11 +2331,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E22A84202669C8B60099F107 /* XCRemoteSwiftPackageReference "PartialSheet" */;
 			productName = PartialSheet;
-		};
-		E238917A26C5E35E00C920B3 /* SwiftUIX */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E238917926C5E35E00C920B3 /* XCRemoteSwiftPackageReference "SwiftUIX" */;
-			productName = SwiftUIX;
 		};
 		E23B93E32652D52800E039D9 /* SwifterSwift */ = {
 			isa = XCSwiftPackageProductDependency;
