@@ -4,9 +4,9 @@
 //
 
 import ComposableArchitecture
+import Firebase
 import Model
 import SwiftUI
-import Firebase
 
 // MARK: - ChecklistEditView
 

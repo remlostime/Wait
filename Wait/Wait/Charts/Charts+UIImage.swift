@@ -3,8 +3,8 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import Foundation
 import Charts
+import Foundation
 import UIKit
 
 extension ChartData {
