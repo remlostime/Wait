@@ -1,8 +1,8 @@
 // Created by kai_chen on 5/4/21.
 
 import Color
+import Firebase
 import Logging
-// import Firebase
 import PartialSheet
 import Shake
 import SwiftUI
@@ -20,7 +20,7 @@ struct WaitApp: App {
   init() {
     setupShake()
     setupLogger()
-//    setupFirebase()
+    setupFirebase()
   }
 
   // MARK: Internal
@@ -48,9 +48,10 @@ struct WaitApp: App {
 
 //  private let trace = Trace.shared
 
-//  private func setupFirebase() {
-//    FirebaseApp.configure()
-//  }
+  private func setupFirebase() {
+    FirebaseApp.configure()
+    Database.database().isPersistenceEnabled = true
+  }
 
   private func setupShake() {
     Shake.configuration.isInvokedByShakeDeviceEvent = true

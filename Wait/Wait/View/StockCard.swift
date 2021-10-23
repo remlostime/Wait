@@ -15,11 +15,11 @@ struct StockCard: View {
     VStack(alignment: .leading) {
       Text(stock.symbol)
         .font(.title3)
-        .foregroundColor(.black)
+        .foregroundColor(.label)
       Text(stock.name)
         .font(.subheadline)
         .foregroundColor(.secondary)
-        .alignmentGuide(.leading)
+        .multilineTextAlignment(.leading)
       Spacer()
       Text(stock.formattedChangePercent)
         .foregroundColor(stock.priceColor)
