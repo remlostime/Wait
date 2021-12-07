@@ -15,7 +15,7 @@ struct StockCard: View {
     VStack(alignment: .leading) {
       Text(stock.symbol)
         .font(.title3)
-        .foregroundColor(.label)
+        .foregroundColor(.primary)
       Text(stock.name)
         .font(.subheadline)
         .foregroundColor(.secondary)
@@ -31,7 +31,6 @@ struct StockCard: View {
         .stroke(Color(.sRGB, red: 150 / 255, green: 150 / 255, blue: 150 / 255, opacity: 0.1), lineWidth: 1)
     )
     .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.16), radius: 16, x: 0, y: 7)
-    .border(.gray, width: 1.0, cornerRadius: 10)
   }
 }
 
