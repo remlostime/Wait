@@ -17,7 +17,16 @@ struct StockDetailsView: View {
   @State var stockIsFavorited: Bool = true
   @State var memo: String = ""
   @State var isEditingPrice = false
-  @State var checkedItemCounts = 0
+
+  var checkedItemCounts: Int {
+    var counts = 0
+    for item in checklistItems {
+      counts += item.isChecked ? 1 : 0
+    }
+
+    return counts
+  }
+
   @State var checklistItems = ChecklistItem.allItems
 
   var searchStock: SearchStockResult {
@@ -141,19 +150,20 @@ struct StockDetailsView: View {
           Text("Checklist")
             .font(.title)
 
-          if checkedItemCounts < ChecklistItem.allItems.count {
-            Text("\(checkedItemCounts) / \(ChecklistItem.allItems.count) Done")
-              .font(.subheadline)
-          } else {
-            Text("All Done")
-              .foregroundColor(.accentColor)
-          }
+          HStack {
+            if checkedItemCounts < ChecklistItem.allItems.count {
+              Text("\(checkedItemCounts) / \(ChecklistItem.allItems.count) Done")
+                .font(.subheadline)
+            } else {
+              Text("All Done")
+                .foregroundColor(.accentColor)
+            }
 
-          ForEach(checklistItems.indices) { index in
-            Checklist(item: $checklistItems[index])
-              .onChange(of: checklistItems[index], perform: { item in
-                checkedItemCounts += item.isChecked ? 1 : -1
-              })
+            Spacer()
+
+            NavigationLink("Let's check") {
+              ChecklistContentView(checklistItems: $checklistItems)
+            }
           }
         }
         .padding()
