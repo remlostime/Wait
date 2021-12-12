@@ -3,14 +3,18 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import SwiftUI
 import Model
 import Size
+import SwiftUI
+
+// MARK: - ChecklistCardView
 
 struct ChecklistCardView: View {
+  // MARK: Internal
+
   @Binding var checklistItem: ChecklistItem
 
-  var didTap: ((Bool) -> Void)
+  var didTap: (Bool) -> Void
 
   var body: some View {
     ZStack {
@@ -37,8 +41,12 @@ struct ChecklistCardView: View {
     }
   }
 
+  // MARK: Private
+
   private var bounds: CGRect { UIScreen.main.bounds }
 }
+
+// MARK: - ChecklistCardView_Previews
 
 struct ChecklistCardView_Previews: PreviewProvider {
   static var previews: some View {

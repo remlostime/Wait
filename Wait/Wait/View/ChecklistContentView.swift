@@ -3,36 +3,36 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import SwiftUI
 import Model
 import Size
+import SwiftUI
+
+// MARK: - ChecklistContentView
 
 struct ChecklistContentView: View {
-  @Binding var checklistItems: [ChecklistItem]
-  @Environment(\.colorScheme) var colorScheme
-
-  @State private var currentChecklistItemIndex: Int = 0
-  private var translation: Double { Double(cardTranslation.width / bounds.width) }
-  private var bounds: CGRect { UIScreen.main.bounds }
+  // MARK: Lifecycle
 
   init(checklistItems: Binding<[ChecklistItem]>) {
-    self._checklistItems = checklistItems
+    _checklistItems = checklistItems
   }
 
-  @ObservedObject private var viewModel = ChecklistViewModel()
+  // MARK: Internal
 
   enum ChecklistStyle {
     case card
     case list
   }
 
-  @State var style: ChecklistStyle = .card
-
   enum ChecklistFilter {
     case all
     case checked
     case unchecked
   }
+
+  @Binding var checklistItems: [ChecklistItem]
+  @Environment(\.colorScheme) var colorScheme
+
+  @State var style: ChecklistStyle = .card
 
   @State var filter: ChecklistFilter = .unchecked
 
@@ -75,14 +75,46 @@ struct ChecklistContentView: View {
     .navigationTitle(progress)
   }
 
+  // MARK: Private
+
+  @State private var currentChecklistItemIndex: Int = 0
+  @ObservedObject private var viewModel = ChecklistViewModel()
+
   @State private var cardTranslation: CGSize = .zero
+
+  private var translation: Double { Double(cardTranslation.width / bounds.width) }
+  private var bounds: CGRect { UIScreen.main.bounds }
 
   private var progress: String {
     "\(currentChecklistItemIndex + 1) / \(checklistItems.count)"
   }
 
   private var rotationAngle: Angle {
-    return Angle(degrees: 75 * translation)
+    Angle(degrees: 75 * translation)
+  }
+
+  private var isLightMode: Bool {
+    colorScheme == .light
+  }
+
+  private var checklistCardView: some View {
+    ChecklistCardView(checklistItem: $checklistItems[currentChecklistItemIndex], didTap: didTap)
+      .background(isLightMode ? Color.white : Color.gray)
+      .cornerRadius(20)
+      .shadow(radius: 10)
+      .rotationEffect(rotationAngle)
+      .offset(x: cardTranslation.width, y: cardTranslation.height)
+      .animation(.spring(response: 0.5, dampingFraction: 0.4, blendDuration: 2))
+      .gesture(
+        DragGesture()
+          .onChanged { change in
+            self.cardTranslation = change.translation
+          }
+          .onEnded { change in
+            self.updateDecisionStateForChange(change)
+            self.handle(change)
+          }
+      )
   }
 
   private func updateDecisionStateForChange(_ change: DragGesture.Value) {
@@ -125,7 +157,7 @@ struct ChecklistContentView: View {
       reset()
     } else {
       cardTranslation = .zero
-      self.viewModel.reset()
+      viewModel.reset()
     }
   }
 
@@ -133,31 +165,9 @@ struct ChecklistContentView: View {
     checklistItems[currentChecklistItemIndex].isChecked = isChecked
     currentChecklistItemIndex = (currentChecklistItemIndex + 1) % checklistItems.count
   }
-
-  private var isLightMode: Bool {
-    colorScheme == .light
-  }
-
-  private var checklistCardView: some View {
-    return ChecklistCardView(checklistItem: $checklistItems[currentChecklistItemIndex], didTap: didTap)
-      .background(isLightMode ? Color.white : Color.gray)
-      .cornerRadius(20)
-      .shadow(radius: 10)
-      .rotationEffect(rotationAngle)
-      .offset(x: cardTranslation.width, y: cardTranslation.height)
-      .animation(.spring(response: 0.5, dampingFraction: 0.4, blendDuration: 2))
-      .gesture(
-        DragGesture()
-          .onChanged { change in
-            self.cardTranslation = change.translation
-        }
-        .onEnded { change in
-          self.updateDecisionStateForChange(change)
-          self.handle(change)
-        }
-    )
-  }
 }
+
+// MARK: - ChecklistContentView_Previews
 
 struct ChecklistContentView_Previews: PreviewProvider {
   static var previews: some View {

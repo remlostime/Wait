@@ -3,10 +3,10 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import Foundation
 import Combine
-import SwiftUI
+import Foundation
 import Model
+import SwiftUI
 
 class ChecklistViewModel: ObservableObject {
   @Published var backgroundColor = Color("Gray")
@@ -26,8 +26,8 @@ class ChecklistViewModel: ObservableObject {
   func updateDecisionStateForTranslation(
     _ translation: Double,
     andPredictedEndLocationX x: CGFloat,
-    inBounds bounds: CGRect)
-  {
+    inBounds bounds: CGRect
+  ) {
     switch (translation, x) {
       case (...(-0.6), ..<0):
         isChecked = false

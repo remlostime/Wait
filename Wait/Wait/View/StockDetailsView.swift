@@ -18,6 +18,8 @@ struct StockDetailsView: View {
   @State var memo: String = ""
   @State var isEditingPrice = false
 
+  @State var checklistItems = ChecklistItem.allItems
+
   var checkedItemCounts: Int {
     var counts = 0
     for item in checklistItems {
@@ -26,8 +28,6 @@ struct StockDetailsView: View {
 
     return counts
   }
-
-  @State var checklistItems = ChecklistItem.allItems
 
   var searchStock: SearchStockResult {
     SearchStockResult(
