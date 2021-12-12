@@ -60,6 +60,7 @@
 		E2316FB7271B7D5300103050 /* StockCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2316FB6271B7D5300103050 /* StockCard.swift */; };
 		E2316FB9271B99C400103050 /* StockRowStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2316FB8271B99C400103050 /* StockRowStyle.swift */; };
 		E23B93E42652D52800E039D9 /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E23B93E32652D52800E039D9 /* SwifterSwift */; };
+		E2429C48275EE3DB007E275B /* ChecklistCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2429C47275EE3DB007E275B /* ChecklistCardView.swift */; };
 		E24BDEFB26D2C8C400595E4A /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = E24BDEFA26D2C8C400595E4A /* Cache */; };
 		E24BDF0826D2EF5600595E4A /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E24BDF0726D2EF5600595E4A /* Alamofire */; };
 		E24BDF0926D2EF5B00595E4A /* Networking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC107A267EE38D00CD98AF /* Networking.framework */; };
@@ -111,6 +112,8 @@
 		E2ABEDF9265324690001F0F9 /* ChartViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEDF8265324690001F0F9 /* ChartViewDataSource.swift */; };
 		E2ABEDFB265324D00001F0F9 /* PriceHistoryDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEDFA265324D00001F0F9 /* PriceHistoryDataSource.swift */; };
 		E2ABEE082653376D0001F0F9 /* ChartCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEE072653376D0001F0F9 /* ChartCache.swift */; };
+		E2AD4E93276023E5002B86B1 /* ChecklistContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2AD4E92276023E5002B86B1 /* ChecklistContentView.swift */; };
+		E2AD4E9627602CF6002B86B1 /* ChecklistViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2AD4E9527602CF6002B86B1 /* ChecklistViewModel.swift */; };
 		E2B5EAA32688105D0092663F /* Money+Format.swift in Sources */ = {isa = PBXBuildFile; fileRef = E23B93E02652D38D00E039D9 /* Money+Format.swift */; };
 		E2B5EAA5268810F00092663F /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E2B5EAA4268810F00092663F /* SwifterSwift */; };
 		E2BC4192267F9C4600A853D2 /* Size.h in Headers */ = {isa = PBXBuildFile; fileRef = E2BC4190267F9C4600A853D2 /* Size.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -281,6 +284,7 @@
 		E2316FB6271B7D5300103050 /* StockCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCard.swift; sourceTree = "<group>"; };
 		E2316FB8271B99C400103050 /* StockRowStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockRowStyle.swift; sourceTree = "<group>"; };
 		E23B93E02652D38D00E039D9 /* Money+Format.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Money+Format.swift"; sourceTree = "<group>"; };
+		E2429C47275EE3DB007E275B /* ChecklistCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistCardView.swift; sourceTree = "<group>"; };
 		E24BDEFC26D2CFCC00595E4A /* WaitRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WaitRelease.entitlements; sourceTree = "<group>"; };
 		E24BDEFD26D2D61700595E4A /* WaitWidgetExtensionRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WaitWidgetExtensionRelease.entitlements; sourceTree = "<group>"; };
 		E24BDF1226D3051100595E4A /* WidgetStockRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetStockRow.swift; sourceTree = "<group>"; };
@@ -326,6 +330,8 @@
 		E2ABEDFA265324D00001F0F9 /* PriceHistoryDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceHistoryDataSource.swift; sourceTree = "<group>"; };
 		E2ABEE072653376D0001F0F9 /* ChartCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartCache.swift; sourceTree = "<group>"; };
 		E2ABEE0B26533E1D0001F0F9 /* PriceHistoryNetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceHistoryNetworkClient.swift; sourceTree = "<group>"; };
+		E2AD4E92276023E5002B86B1 /* ChecklistContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistContentView.swift; sourceTree = "<group>"; };
+		E2AD4E9527602CF6002B86B1 /* ChecklistViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistViewModel.swift; sourceTree = "<group>"; };
 		E2BC418E267F9C4600A853D2 /* Size.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Size.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2BC4190267F9C4600A853D2 /* Size.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Size.h; sourceTree = "<group>"; };
 		E2BC4191267F9C4600A853D2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -589,6 +595,14 @@
 			path = Charts;
 			sourceTree = "<group>";
 		};
+		E2AD4E9427602CDA002B86B1 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				E2AD4E9527602CF6002B86B1 /* ChecklistViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 		E2BC418F267F9C4600A853D2 /* Size */ = {
 			isa = PBXGroup;
 			children = (
@@ -639,6 +653,7 @@
 		E2E637AB2641A5FB00F872A4 /* Wait */ = {
 			isa = PBXGroup;
 			children = (
+				E2AD4E9427602CDA002B86B1 /* ViewModel */,
 				E24BDEFC26D2CFCC00595E4A /* WaitRelease.entitlements */,
 				E25B746C26A33B7600BE0A9C /* Launch Screen.storyboard */,
 				E2F8D19826A2531600020A97 /* Wait.entitlements */,
@@ -679,6 +694,8 @@
 				E2211E2626C8280100041F5F /* Checklist.swift */,
 				E2D0796727010EBF00E8E469 /* SettingsView.swift */,
 				E2316FB6271B7D5300103050 /* StockCard.swift */,
+				E2429C47275EE3DB007E275B /* ChecklistCardView.swift */,
+				E2AD4E92276023E5002B86B1 /* ChecklistContentView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1268,6 +1285,7 @@
 				E2211E2526C81C5E00041F5F /* StockOverviewDataSource.swift in Sources */,
 				E2316FB7271B7D5300103050 /* StockCard.swift in Sources */,
 				E2D2B5D026518A9B001B5E32 /* StockDetailsView.swift in Sources */,
+				E2AD4E93276023E5002B86B1 /* ChecklistContentView.swift in Sources */,
 				E25A927826C08D81004A4EBB /* SearchStockDataSource.swift in Sources */,
 				E272A6F326ED115400163FF3 /* StockCurrentQuoteDataSource.swift in Sources */,
 				E2E637C02641A92A00F872A4 /* StockRow.swift in Sources */,
@@ -1280,6 +1298,7 @@
 				E2ABEDED26531F0A0001F0F9 /* SwiftUIChartViewController.swift in Sources */,
 				E2ABEDF72653235A0001F0F9 /* TimeSection.swift in Sources */,
 				E262496C269F7E2E001E7F31 /* StockRowTypeDisplaySheet.swift in Sources */,
+				E2429C48275EE3DB007E275B /* ChecklistCardView.swift in Sources */,
 				E2D0796827010EBF00E8E469 /* SettingsView.swift in Sources */,
 				E2ABEDF9265324690001F0F9 /* ChartViewDataSource.swift in Sources */,
 				E2C3D363269B889000466CC3 /* StockChartImageCache.swift in Sources */,
@@ -1292,6 +1311,7 @@
 				E2ABEE082653376D0001F0F9 /* ChartCache.swift in Sources */,
 				E275EDFF26483D6600752D8A /* SearchStockView.swift in Sources */,
 				E2211E2726C8280100041F5F /* Checklist.swift in Sources */,
+				E2AD4E9627602CF6002B86B1 /* ChecklistViewModel.swift in Sources */,
 				E2ABEDFB265324D00001F0F9 /* PriceHistoryDataSource.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

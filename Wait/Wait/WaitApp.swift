@@ -41,6 +41,7 @@ struct WaitApp: App {
           }
       }
       .accentColor(.waitMint)
+//      .preferredColorScheme(.light	)
     }
   }
 
