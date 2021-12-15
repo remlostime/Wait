@@ -4,6 +4,8 @@ import Model
 import Size
 import SwiftDate
 import SwiftUI
+import Checklist
+import ComposableArchitecture
 
 // MARK: - StockDetailsView
 
@@ -162,7 +164,12 @@ struct StockDetailsView: View {
             Spacer()
 
             NavigationLink("Let's check") {
-              ChecklistContentView(checklistItems: $checklistItems)
+              ChecklistContentView(store: Store<ChecklistRootState, ChecklistRootAction>.init(
+                initialState: ChecklistRootState(
+                  rootState: ChecklistState(checklistItems: checklistItems)
+                ),
+                reducer: ChecklistRootReducerBuilder.build(),
+                environment: ChecklistRootEnvironment()))
             }
           }
         }

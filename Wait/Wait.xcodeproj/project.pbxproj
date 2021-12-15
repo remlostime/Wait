@@ -60,7 +60,6 @@
 		E2316FB7271B7D5300103050 /* StockCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2316FB6271B7D5300103050 /* StockCard.swift */; };
 		E2316FB9271B99C400103050 /* StockRowStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2316FB8271B99C400103050 /* StockRowStyle.swift */; };
 		E23B93E42652D52800E039D9 /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E23B93E32652D52800E039D9 /* SwifterSwift */; };
-		E2429C48275EE3DB007E275B /* ChecklistCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2429C47275EE3DB007E275B /* ChecklistCardView.swift */; };
 		E24BDEFB26D2C8C400595E4A /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = E24BDEFA26D2C8C400595E4A /* Cache */; };
 		E24BDF0826D2EF5600595E4A /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E24BDF0726D2EF5600595E4A /* Alamofire */; };
 		E24BDF0926D2EF5B00595E4A /* Networking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC107A267EE38D00CD98AF /* Networking.framework */; };
@@ -112,8 +111,6 @@
 		E2ABEDF9265324690001F0F9 /* ChartViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEDF8265324690001F0F9 /* ChartViewDataSource.swift */; };
 		E2ABEDFB265324D00001F0F9 /* PriceHistoryDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEDFA265324D00001F0F9 /* PriceHistoryDataSource.swift */; };
 		E2ABEE082653376D0001F0F9 /* ChartCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEE072653376D0001F0F9 /* ChartCache.swift */; };
-		E2AD4E93276023E5002B86B1 /* ChecklistContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2AD4E92276023E5002B86B1 /* ChecklistContentView.swift */; };
-		E2AD4E9627602CF6002B86B1 /* ChecklistViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2AD4E9527602CF6002B86B1 /* ChecklistViewModel.swift */; };
 		E2B5EAA32688105D0092663F /* Money+Format.swift in Sources */ = {isa = PBXBuildFile; fileRef = E23B93E02652D38D00E039D9 /* Money+Format.swift */; };
 		E2B5EAA5268810F00092663F /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E2B5EAA4268810F00092663F /* SwifterSwift */; };
 		E2BC4192267F9C4600A853D2 /* Size.h in Headers */ = {isa = PBXBuildFile; fileRef = E2BC4190267F9C4600A853D2 /* Size.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -125,6 +122,20 @@
 		E2BE76582641FC3300645629 /* StockExpectedPriceInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BE76572641FC3300645629 /* StockExpectedPriceInputView.swift */; };
 		E2C3D363269B889000466CC3 /* StockChartImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C3D362269B889000466CC3 /* StockChartImageCache.swift */; };
 		E2C859B426438EE500F93321 /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = E2C859B326438EE500F93321 /* Cache */; };
+		E2C9A1D92766AE47000C07F0 /* Checklist.docc in Sources */ = {isa = PBXBuildFile; fileRef = E2C9A1D82766AE47000C07F0 /* Checklist.docc */; };
+		E2C9A1DF2766AE47000C07F0 /* Checklist.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2C9A1D52766AE47000C07F0 /* Checklist.framework */; };
+		E2C9A1E62766AE47000C07F0 /* ChecklistTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C9A1E52766AE47000C07F0 /* ChecklistTests.swift */; };
+		E2C9A1EA2766AE47000C07F0 /* Checklist.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2C9A1D52766AE47000C07F0 /* Checklist.framework */; };
+		E2C9A1EB2766AE47000C07F0 /* Checklist.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E2C9A1D52766AE47000C07F0 /* Checklist.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E2C9A1F42766AE9A000C07F0 /* ChecklistCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2429C47275EE3DB007E275B /* ChecklistCardView.swift */; };
+		E2C9A1F52766AE9A000C07F0 /* ChecklistContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2AD4E92276023E5002B86B1 /* ChecklistContentView.swift */; };
+		E2C9A1F62766AEC7000C07F0 /* ChecklistViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2AD4E9527602CF6002B86B1 /* ChecklistViewModel.swift */; };
+		E2C9A21A2766BA4A000C07F0 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = E2C9A2192766BA4A000C07F0 /* ComposableArchitecture */; };
+		E2C9A21C2766BA73000C07F0 /* ChecklistTCA.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C9A21B2766BA73000C07F0 /* ChecklistTCA.swift */; };
+		E2C9A21E2766DE0C000C07F0 /* ChecklistCardTCA.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C9A21D2766DE0C000C07F0 /* ChecklistCardTCA.swift */; };
+		E2C9A21F2766E81C000C07F0 /* Model.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC102D267E9EB300CD98AF /* Model.framework */; };
+		E2C9A2202766E862000C07F0 /* Size.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2BC418E267F9C4600A853D2 /* Size.framework */; };
+		E2C9A2222766EA67000C07F0 /* ChecklistRootTCA.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C9A2212766EA67000C07F0 /* ChecklistRootTCA.swift */; };
 		E2D0796827010EBF00E8E469 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D0796727010EBF00E8E469 /* SettingsView.swift */; };
 		E2D2B5D026518A9B001B5E32 /* StockDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D2B5CF26518A9B001B5E32 /* StockDetailsView.swift */; };
 		E2D7BD312700F81300470AFD /* Hue in Frameworks */ = {isa = PBXBuildFile; productRef = E2D7BD302700F81300470AFD /* Hue */; };
@@ -215,6 +226,27 @@
 			remoteGlobalIDString = E2BC418D267F9C4600A853D2;
 			remoteInfo = Size;
 		};
+		E2C9A1E02766AE47000C07F0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E2E637A12641A5FB00F872A4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E2C9A1D42766AE47000C07F0;
+			remoteInfo = Checklist;
+		};
+		E2C9A1E22766AE47000C07F0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E2E637A12641A5FB00F872A4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E2E637A82641A5FB00F872A4;
+			remoteInfo = Wait;
+		};
+		E2C9A1E82766AE47000C07F0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E2E637A12641A5FB00F872A4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E2C9A1D42766AE47000C07F0;
+			remoteInfo = Checklist;
+		};
 		E2FC1032267E9EB300CD98AF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E2E637A12641A5FB00F872A4 /* Project object */;
@@ -254,6 +286,7 @@
 				E205D3F226D2C567004EE31D /* Logging.framework in Embed Frameworks */,
 				E2FC1035267E9EB300CD98AF /* Model.framework in Embed Frameworks */,
 				E2BC4196267F9C4600A853D2 /* Size.framework in Embed Frameworks */,
+				E2C9A1EB2766AE47000C07F0 /* Checklist.framework in Embed Frameworks */,
 				E2765575267E9104002D13CC /* Color.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -340,6 +373,13 @@
 		E2BE76572641FC3300645629 /* StockExpectedPriceInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockExpectedPriceInputView.swift; sourceTree = "<group>"; };
 		E2C3D362269B889000466CC3 /* StockChartImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockChartImageCache.swift; sourceTree = "<group>"; };
 		E2C8951626A792620052B217 /* CloudNetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudNetworkClient.swift; sourceTree = "<group>"; };
+		E2C9A1D52766AE47000C07F0 /* Checklist.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Checklist.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E2C9A1D82766AE47000C07F0 /* Checklist.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = Checklist.docc; sourceTree = "<group>"; };
+		E2C9A1DE2766AE47000C07F0 /* ChecklistTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ChecklistTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E2C9A1E52766AE47000C07F0 /* ChecklistTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistTests.swift; sourceTree = "<group>"; };
+		E2C9A21B2766BA73000C07F0 /* ChecklistTCA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistTCA.swift; sourceTree = "<group>"; };
+		E2C9A21D2766DE0C000C07F0 /* ChecklistCardTCA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistCardTCA.swift; sourceTree = "<group>"; };
+		E2C9A2212766EA67000C07F0 /* ChecklistRootTCA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistRootTCA.swift; sourceTree = "<group>"; };
 		E2D0796727010EBF00E8E469 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		E2D2B5CF26518A9B001B5E32 /* StockDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailsView.swift; sourceTree = "<group>"; };
 		E2E2459426572D7300460D4A /* UIColor+CodeName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+CodeName.swift"; sourceTree = "<group>"; };
@@ -421,10 +461,29 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E2C9A1D22766AE47000C07F0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E2C9A2202766E862000C07F0 /* Size.framework in Frameworks */,
+				E2C9A21F2766E81C000C07F0 /* Model.framework in Frameworks */,
+				E2C9A21A2766BA4A000C07F0 /* ComposableArchitecture in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2C9A1DB2766AE47000C07F0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E2C9A1DF2766AE47000C07F0 /* Checklist.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E2E637A62641A5FB00F872A4 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E2C9A1EA2766AE47000C07F0 /* Checklist.framework in Frameworks */,
 				E2F8D19A26A2531900020A97 /* CloudKit.framework in Frameworks */,
 				E2FC1081267EE38D00CD98AF /* Networking.framework in Frameworks */,
 				E205878A27247E9B00D0052D /* FirebasePerformance in Frameworks */,
@@ -595,14 +654,6 @@
 			path = Charts;
 			sourceTree = "<group>";
 		};
-		E2AD4E9427602CDA002B86B1 /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-				E2AD4E9527602CF6002B86B1 /* ChecklistViewModel.swift */,
-			);
-			path = ViewModel;
-			sourceTree = "<group>";
-		};
 		E2BC418F267F9C4600A853D2 /* Size */ = {
 			isa = PBXGroup;
 			children = (
@@ -612,6 +663,28 @@
 				E2BC419C267F9CB900A853D2 /* Size+Basic.swift */,
 			);
 			path = Size;
+			sourceTree = "<group>";
+		};
+		E2C9A1D62766AE47000C07F0 /* Checklist */ = {
+			isa = PBXGroup;
+			children = (
+				E2C9A2212766EA67000C07F0 /* ChecklistRootTCA.swift */,
+				E2C9A21D2766DE0C000C07F0 /* ChecklistCardTCA.swift */,
+				E2C9A21B2766BA73000C07F0 /* ChecklistTCA.swift */,
+				E2AD4E9527602CF6002B86B1 /* ChecklistViewModel.swift */,
+				E2429C47275EE3DB007E275B /* ChecklistCardView.swift */,
+				E2AD4E92276023E5002B86B1 /* ChecklistContentView.swift */,
+				E2C9A1D82766AE47000C07F0 /* Checklist.docc */,
+			);
+			path = Checklist;
+			sourceTree = "<group>";
+		};
+		E2C9A1E42766AE47000C07F0 /* ChecklistTests */ = {
+			isa = PBXGroup;
+			children = (
+				E2C9A1E52766AE47000C07F0 /* ChecklistTests.swift */,
+			);
+			path = ChecklistTests;
 			sourceTree = "<group>";
 		};
 		E2E637A02641A5FB00F872A4 = {
@@ -629,6 +702,8 @@
 				E210DEFD26D2B50D0044DA4E /* WaitWidget */,
 				E205D3EB26D2C567004EE31D /* Logging */,
 				E24D90B22712810E009EDE57 /* WaitTests */,
+				E2C9A1D62766AE47000C07F0 /* Checklist */,
+				E2C9A1E42766AE47000C07F0 /* ChecklistTests */,
 				E2E637AA2641A5FB00F872A4 /* Products */,
 				E276557E267E93FB002D13CC /* Frameworks */,
 			);
@@ -646,6 +721,8 @@
 				E210DEF826D2B50D0044DA4E /* WaitWidgetExtension.appex */,
 				E205D3EA26D2C567004EE31D /* Logging.framework */,
 				E24D90B12712810E009EDE57 /* WaitTests.xctest */,
+				E2C9A1D52766AE47000C07F0 /* Checklist.framework */,
+				E2C9A1DE2766AE47000C07F0 /* ChecklistTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -653,7 +730,6 @@
 		E2E637AB2641A5FB00F872A4 /* Wait */ = {
 			isa = PBXGroup;
 			children = (
-				E2AD4E9427602CDA002B86B1 /* ViewModel */,
 				E24BDEFC26D2CFCC00595E4A /* WaitRelease.entitlements */,
 				E25B746C26A33B7600BE0A9C /* Launch Screen.storyboard */,
 				E2F8D19826A2531600020A97 /* Wait.entitlements */,
@@ -694,8 +770,6 @@
 				E2211E2626C8280100041F5F /* Checklist.swift */,
 				E2D0796727010EBF00E8E469 /* SettingsView.swift */,
 				E2316FB6271B7D5300103050 /* StockCard.swift */,
-				E2429C47275EE3DB007E275B /* ChecklistCardView.swift */,
-				E2AD4E92276023E5002B86B1 /* ChecklistContentView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -793,6 +867,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				E2BC4192267F9C4600A853D2 /* Size.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2C9A1D02766AE47000C07F0 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -939,6 +1020,46 @@
 			productReference = E2BC418E267F9C4600A853D2 /* Size.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		E2C9A1D42766AE47000C07F0 /* Checklist */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E2C9A1F02766AE47000C07F0 /* Build configuration list for PBXNativeTarget "Checklist" */;
+			buildPhases = (
+				E2C9A1D02766AE47000C07F0 /* Headers */,
+				E2C9A1D12766AE47000C07F0 /* Sources */,
+				E2C9A1D22766AE47000C07F0 /* Frameworks */,
+				E2C9A1D32766AE47000C07F0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Checklist;
+			packageProductDependencies = (
+				E2C9A2192766BA4A000C07F0 /* ComposableArchitecture */,
+			);
+			productName = Checklist;
+			productReference = E2C9A1D52766AE47000C07F0 /* Checklist.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		E2C9A1DD2766AE47000C07F0 /* ChecklistTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E2C9A1F12766AE47000C07F0 /* Build configuration list for PBXNativeTarget "ChecklistTests" */;
+			buildPhases = (
+				E2C9A1DA2766AE47000C07F0 /* Sources */,
+				E2C9A1DB2766AE47000C07F0 /* Frameworks */,
+				E2C9A1DC2766AE47000C07F0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E2C9A1E12766AE47000C07F0 /* PBXTargetDependency */,
+				E2C9A1E32766AE47000C07F0 /* PBXTargetDependency */,
+			);
+			name = ChecklistTests;
+			productName = ChecklistTests;
+			productReference = E2C9A1DE2766AE47000C07F0 /* ChecklistTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		E2E637A82641A5FB00F872A4 /* Wait */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = E2E637B82641A5FD00F872A4 /* Build configuration list for PBXNativeTarget "Wait" */;
@@ -959,6 +1080,7 @@
 				E2BC4194267F9C4600A853D2 /* PBXTargetDependency */,
 				E210DF0426D2B50F0044DA4E /* PBXTargetDependency */,
 				E205D3F026D2C567004EE31D /* PBXTargetDependency */,
+				E2C9A1E92766AE47000C07F0 /* PBXTargetDependency */,
 			);
 			name = Wait;
 			packageProductDependencies = (
@@ -1065,6 +1187,13 @@
 					E2BC41AA267FFCBB00A853D2 = {
 						CreatedOnToolsVersion = 12.5;
 					};
+					E2C9A1D42766AE47000C07F0 = {
+						CreatedOnToolsVersion = 13.0;
+					};
+					E2C9A1DD2766AE47000C07F0 = {
+						CreatedOnToolsVersion = 13.0;
+						TestTargetID = E2E637A82641A5FB00F872A4;
+					};
 					E2E637A82641A5FB00F872A4 = {
 						CreatedOnToolsVersion = 12.5;
 					};
@@ -1118,6 +1247,8 @@
 				E2BC41AA267FFCBB00A853D2 /* Unused Code */,
 				E210DEF726D2B50D0044DA4E /* WaitWidgetExtension */,
 				E24D90B02712810E009EDE57 /* WaitTests */,
+				E2C9A1D42766AE47000C07F0 /* Checklist */,
+				E2C9A1DD2766AE47000C07F0 /* ChecklistTests */,
 			);
 		};
 /* End PBXProject section */
@@ -1160,6 +1291,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		E2BC418C267F9C4600A853D2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2C9A1D32766AE47000C07F0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2C9A1DC2766AE47000C07F0 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1272,6 +1417,28 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E2C9A1D12766AE47000C07F0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E2C9A1F52766AE9A000C07F0 /* ChecklistContentView.swift in Sources */,
+				E2C9A1F62766AEC7000C07F0 /* ChecklistViewModel.swift in Sources */,
+				E2C9A21C2766BA73000C07F0 /* ChecklistTCA.swift in Sources */,
+				E2C9A1D92766AE47000C07F0 /* Checklist.docc in Sources */,
+				E2C9A2222766EA67000C07F0 /* ChecklistRootTCA.swift in Sources */,
+				E2C9A1F42766AE9A000C07F0 /* ChecklistCardView.swift in Sources */,
+				E2C9A21E2766DE0C000C07F0 /* ChecklistCardTCA.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2C9A1DA2766AE47000C07F0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E2C9A1E62766AE47000C07F0 /* ChecklistTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E2E637A52641A5FB00F872A4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1285,7 +1452,6 @@
 				E2211E2526C81C5E00041F5F /* StockOverviewDataSource.swift in Sources */,
 				E2316FB7271B7D5300103050 /* StockCard.swift in Sources */,
 				E2D2B5D026518A9B001B5E32 /* StockDetailsView.swift in Sources */,
-				E2AD4E93276023E5002B86B1 /* ChecklistContentView.swift in Sources */,
 				E25A927826C08D81004A4EBB /* SearchStockDataSource.swift in Sources */,
 				E272A6F326ED115400163FF3 /* StockCurrentQuoteDataSource.swift in Sources */,
 				E2E637C02641A92A00F872A4 /* StockRow.swift in Sources */,
@@ -1298,7 +1464,6 @@
 				E2ABEDED26531F0A0001F0F9 /* SwiftUIChartViewController.swift in Sources */,
 				E2ABEDF72653235A0001F0F9 /* TimeSection.swift in Sources */,
 				E262496C269F7E2E001E7F31 /* StockRowTypeDisplaySheet.swift in Sources */,
-				E2429C48275EE3DB007E275B /* ChecklistCardView.swift in Sources */,
 				E2D0796827010EBF00E8E469 /* SettingsView.swift in Sources */,
 				E2ABEDF9265324690001F0F9 /* ChartViewDataSource.swift in Sources */,
 				E2C3D363269B889000466CC3 /* StockChartImageCache.swift in Sources */,
@@ -1311,7 +1476,6 @@
 				E2ABEE082653376D0001F0F9 /* ChartCache.swift in Sources */,
 				E275EDFF26483D6600752D8A /* SearchStockView.swift in Sources */,
 				E2211E2726C8280100041F5F /* Checklist.swift in Sources */,
-				E2AD4E9627602CF6002B86B1 /* ChecklistViewModel.swift in Sources */,
 				E2ABEDFB265324D00001F0F9 /* PriceHistoryDataSource.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1386,6 +1550,21 @@
 			isa = PBXTargetDependency;
 			target = E2BC418D267F9C4600A853D2 /* Size */;
 			targetProxy = E2BC4193267F9C4600A853D2 /* PBXContainerItemProxy */;
+		};
+		E2C9A1E12766AE47000C07F0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E2C9A1D42766AE47000C07F0 /* Checklist */;
+			targetProxy = E2C9A1E02766AE47000C07F0 /* PBXContainerItemProxy */;
+		};
+		E2C9A1E32766AE47000C07F0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E2E637A82641A5FB00F872A4 /* Wait */;
+			targetProxy = E2C9A1E22766AE47000C07F0 /* PBXContainerItemProxy */;
+		};
+		E2C9A1E92766AE47000C07F0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E2C9A1D42766AE47000C07F0 /* Checklist */;
+			targetProxy = E2C9A1E82766AE47000C07F0 /* PBXContainerItemProxy */;
 		};
 		E2FC1033267E9EB300CD98AF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1742,6 +1921,114 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		E2C9A1EC2766AE47000C07F0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 5WDN96EM72;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ck.Checklist;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		E2C9A1ED2766AE47000C07F0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 5WDN96EM72;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ck.Checklist;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		E2C9A1EE2766AE47000C07F0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ck.ChecklistTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wait.app/Wait";
+			};
+			name = Debug;
+		};
+		E2C9A1EF2766AE47000C07F0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ck.ChecklistTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wait.app/Wait";
 			};
 			name = Release;
 		};
@@ -2109,6 +2396,24 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		E2C9A1F02766AE47000C07F0 /* Build configuration list for PBXNativeTarget "Checklist" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E2C9A1EC2766AE47000C07F0 /* Debug */,
+				E2C9A1ED2766AE47000C07F0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E2C9A1F12766AE47000C07F0 /* Build configuration list for PBXNativeTarget "ChecklistTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E2C9A1EE2766AE47000C07F0 /* Debug */,
+				E2C9A1EF2766AE47000C07F0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		E2E637A42641A5FB00F872A4 /* Build configuration list for PBXProject "Wait" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -2436,6 +2741,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2C859B226438EE500F93321 /* XCRemoteSwiftPackageReference "Cache" */;
 			productName = Cache;
+		};
+		E2C9A2192766BA4A000C07F0 /* ComposableArchitecture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E24D90AA27128095009EDE57 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
 		};
 		E2D7BD302700F81300470AFD /* Hue */ = {
 			isa = XCSwiftPackageProductDependency;
