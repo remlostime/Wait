@@ -38,6 +38,26 @@
                ReferencedContainer = "container:Wait.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "E2C9A1DD2766AE47000C07F0"
+               BuildableName = "ChecklistTests.xctest"
+               BlueprintName = "ChecklistTests"
+               ReferencedContainer = "container:Wait.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "E2C9A2042766B035000C07F0"
+               BuildableName = "TestTests.xctest"
+               BlueprintName = "TestTests"
+               ReferencedContainer = "container:Wait.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

@@ -1,5 +1,7 @@
 // Created by kai_chen on 5/16/21.
 
+import Checklist
+import ComposableArchitecture
 import Model
 import Size
 import SwiftDate
@@ -162,7 +164,13 @@ struct StockDetailsView: View {
             Spacer()
 
             NavigationLink("Let's check") {
-              ChecklistContentView(checklistItems: $checklistItems)
+              ChecklistContentView(store: Store<ChecklistRootState, ChecklistRootAction>.init(
+                initialState: ChecklistRootState(
+                  rootState: ChecklistState(checklistItems: checklistItems)
+                ),
+                reducer: ChecklistRootReducerBuilder.build(),
+                environment: ChecklistRootEnvironment()
+              ))
             }
           }
         }
