@@ -3,10 +3,10 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
+import ComposableArchitecture
 import Model
 import Size
 import SwiftUI
-import ComposableArchitecture
 
 // MARK: - ChecklistCardView
 
@@ -54,7 +54,8 @@ struct ChecklistCardView_Previews: PreviewProvider {
     let store = Store<ChecklistCardState, ChecklistCardAction>.init(
       initialState: ChecklistCardState(checklistItem: ChecklistItem(name: "test"), currentChecklistItemIndex: 0),
       reducer: ChecklistCardReducerBuilder.build(),
-      environment: ChecklistCardEnvironment())
+      environment: ChecklistCardEnvironment()
+    )
     return ChecklistCardView(store: store)
       .previewLayout(.sizeThatFits)
   }

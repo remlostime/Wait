@@ -3,54 +3,21 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
+import ComposableArchitecture
 import Model
 import Size
 import SwiftUI
-import ComposableArchitecture
 
 // MARK: - ChecklistContentView
 
 public struct ChecklistContentView: View {
-  private let store: Store<ChecklistRootState, ChecklistRootAction>
-
-  var checklistItems: [ChecklistItem] = []
-
   // MARK: Lifecycle
 
   public init(store: Store<ChecklistRootState, ChecklistRootAction>) {
     self.store = store
   }
 
-  // MARK: Internal
-
-  enum ChecklistStyle {
-    case card
-    case list
-  }
-
-  enum ChecklistFilter {
-    case all
-    case checked
-    case unchecked
-  }
-
-  @Environment(\.colorScheme) var colorScheme
-
-  @State var style: ChecklistStyle = .card
-
-  @State var filter: ChecklistFilter = .unchecked
-
-  private var checklistStore: Store<ChecklistState, ChecklistAction> {
-    store.scope(
-      state: \.rootState,
-      action: ChecklistRootAction.rootAction)
-  }
-
-  private var checklistCardStore: Store<ChecklistCardState, ChecklistCardAction> {
-    store.scope(
-      state: \.cardState,
-      action: ChecklistRootAction.cardAction)
-  }
+  // MARK: Public
 
   public var body: some View {
     WithViewStore(checklistStore) { viewStore in
@@ -89,11 +56,48 @@ public struct ChecklistContentView: View {
     }
   }
 
+  // MARK: Internal
+
+  enum ChecklistStyle {
+    case card
+    case list
+  }
+
+  enum ChecklistFilter {
+    case all
+    case checked
+    case unchecked
+  }
+
+  var checklistItems: [ChecklistItem] = []
+
+  @Environment(\.colorScheme) var colorScheme
+
+  @State var style: ChecklistStyle = .card
+
+  @State var filter: ChecklistFilter = .unchecked
+
   // MARK: Private
+
+  private let store: Store<ChecklistRootState, ChecklistRootAction>
 
   @ObservedObject private var viewModel = ChecklistViewModel()
 
   @State private var cardTranslation: CGSize = .zero
+
+  private var checklistStore: Store<ChecklistState, ChecklistAction> {
+    store.scope(
+      state: \.rootState,
+      action: ChecklistRootAction.rootAction
+    )
+  }
+
+  private var checklistCardStore: Store<ChecklistCardState, ChecklistCardAction> {
+    store.scope(
+      state: \.cardState,
+      action: ChecklistRootAction.cardAction
+    )
+  }
 
   private var translation: Double { Double(cardTranslation.width / bounds.width) }
   private var bounds: CGRect { UIScreen.main.bounds }
@@ -107,7 +111,7 @@ public struct ChecklistContentView: View {
   }
 
   private var checklistCardView: some View {
-    return ChecklistCardView(store: checklistCardStore)
+    ChecklistCardView(store: checklistCardStore)
       .background(isLightMode ? Color.white : Color.gray)
       .cornerRadius(20)
       .shadow(radius: 10)

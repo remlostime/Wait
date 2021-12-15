@@ -1,11 +1,11 @@
 // Created by kai_chen on 5/16/21.
 
+import Checklist
+import ComposableArchitecture
 import Model
 import Size
 import SwiftDate
 import SwiftUI
-import Checklist
-import ComposableArchitecture
 
 // MARK: - StockDetailsView
 
@@ -169,7 +169,8 @@ struct StockDetailsView: View {
                   rootState: ChecklistState(checklistItems: checklistItems)
                 ),
                 reducer: ChecklistRootReducerBuilder.build(),
-                environment: ChecklistRootEnvironment()))
+                environment: ChecklistRootEnvironment()
+              ))
             }
           }
         }

@@ -3,22 +3,30 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import Foundation
 import ComposableArchitecture
+import Foundation
 import Model
+
+// MARK: - ChecklistAction
 
 public enum ChecklistAction {
   case goBack
   case startOver
 }
 
+// MARK: - ChecklistState
+
 public struct ChecklistState: Equatable {
-  var currentChecklistItemIndex: Int = 0
-  var checklistItems: [ChecklistItem]
+  // MARK: Lifecycle
 
   public init(checklistItems: [ChecklistItem]) {
     self.checklistItems = checklistItems
   }
+
+  // MARK: Internal
+
+  var currentChecklistItemIndex: Int = 0
+  var checklistItems: [ChecklistItem]
 }
 
 extension ChecklistState {
@@ -27,11 +35,15 @@ extension ChecklistState {
   }
 }
 
+// MARK: - ChecklistEnvironment
+
 public struct ChecklistEnvironment {}
 
 public typealias ChecklistReducer = Reducer<ChecklistState, ChecklistAction, ChecklistEnvironment>
 
-public struct ChecklistReducerBuilder {
+// MARK: - ChecklistReducerBuilder
+
+public enum ChecklistReducerBuilder {
   public static func build() -> ChecklistReducer {
     let checklistReducer = ChecklistReducer { state, action, _ in
       switch action {
@@ -53,7 +65,3 @@ public struct ChecklistReducerBuilder {
     return checklistReducer
   }
 }
-
-
-
-

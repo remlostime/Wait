@@ -3,25 +3,33 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import Foundation
 import ComposableArchitecture
+import Foundation
 import Model
+
+// MARK: - ChecklistCardAction
 
 public enum ChecklistCardAction {
   case check
   case uncheck
 }
 
+// MARK: - ChecklistCardState
+
 public struct ChecklistCardState: Equatable {
   var checklistItem: ChecklistItem
   var currentChecklistItemIndex: Int
 }
 
+// MARK: - ChecklistCardEnvironment
+
 public struct ChecklistCardEnvironment {}
 
 public typealias ChecklistCardReducer = Reducer<ChecklistCardState, ChecklistCardAction, ChecklistCardEnvironment>
 
-public struct ChecklistCardReducerBuilder {
+// MARK: - ChecklistCardReducerBuilder
+
+public enum ChecklistCardReducerBuilder {
   static func build() -> ChecklistCardReducer {
     let reducer = ChecklistCardReducer { state, action, _ in
       switch action {

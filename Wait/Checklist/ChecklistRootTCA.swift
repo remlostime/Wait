@@ -3,15 +3,27 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import Foundation
 import ComposableArchitecture
+import Foundation
+
+// MARK: - ChecklistRootAction
 
 public enum ChecklistRootAction {
   case cardAction(ChecklistCardAction)
   case rootAction(ChecklistAction)
 }
 
+// MARK: - ChecklistRootState
+
 public struct ChecklistRootState {
+  // MARK: Lifecycle
+
+  public init(rootState: ChecklistState) {
+    self.rootState = rootState
+  }
+
+  // MARK: Internal
+
   var rootState: ChecklistState
 
   var cardState: ChecklistCardState {
@@ -26,11 +38,9 @@ public struct ChecklistRootState {
       rootState.currentChecklistItemIndex = newValue.currentChecklistItemIndex % rootState.checklistItems.count
     }
   }
-
-  public init(rootState: ChecklistState) {
-    self.rootState = rootState
-  }
 }
+
+// MARK: - ChecklistRootEnvironment
 
 public struct ChecklistRootEnvironment {
   public init() {}
@@ -38,7 +48,9 @@ public struct ChecklistRootEnvironment {
 
 public typealias ChecklistRootReducer = Reducer<ChecklistRootState, ChecklistRootAction, ChecklistRootEnvironment>
 
-public struct ChecklistRootReducerBuilder {
+// MARK: - ChecklistRootReducerBuilder
+
+public enum ChecklistRootReducerBuilder {
   public static func build() -> ChecklistRootReducer {
     let cardReducer = ChecklistCardReducerBuilder.build()
     let checklistReducer = ChecklistReducerBuilder.build()
@@ -49,14 +61,16 @@ public struct ChecklistRootReducerBuilder {
         action: /ChecklistRootAction.cardAction,
         environment: { _ in
           ChecklistCardEnvironment()
-        }),
+        }
+      ),
 
       checklistReducer.pullback(
         state: \.rootState,
         action: /ChecklistRootAction.rootAction,
         environment: { _ in
           ChecklistEnvironment()
-        })
+        }
+      )
     )
 
     return reducer
