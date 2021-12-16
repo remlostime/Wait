@@ -18,8 +18,6 @@ public struct ChecklistContentView: View {
     _checklistItems = checklistItems
   }
 
-  @Binding var checklistItems: [ChecklistItem]
-
   // MARK: Public
 
   public var body: some View {
@@ -71,6 +69,8 @@ public struct ChecklistContentView: View {
     case checked
     case unchecked
   }
+
+  @Binding var checklistItems: [ChecklistItem]
 
   @Environment(\.colorScheme) var colorScheme
 
