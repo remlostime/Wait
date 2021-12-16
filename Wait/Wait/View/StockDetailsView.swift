@@ -164,13 +164,16 @@ struct StockDetailsView: View {
             Spacer()
 
             NavigationLink("Let's check") {
-              ChecklistContentView(store: Store<ChecklistRootState, ChecklistRootAction>.init(
-                initialState: ChecklistRootState(
-                  rootState: ChecklistState(checklistItems: checklistItems)
+              ChecklistContentView(
+                store: Store<ChecklistRootState, ChecklistRootAction>.init(
+                  initialState: ChecklistRootState(
+                    rootState: ChecklistState(checklistItems: checklistItems)
+                  ),
+                  reducer: ChecklistRootReducerBuilder.build(),
+                  environment: ChecklistRootEnvironment()
                 ),
-                reducer: ChecklistRootReducerBuilder.build(),
-                environment: ChecklistRootEnvironment()
-              ))
+                checklistItems: $checklistItems
+              )
             }
           }
         }

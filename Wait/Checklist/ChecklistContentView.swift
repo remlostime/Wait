@@ -13,9 +13,12 @@ import SwiftUI
 public struct ChecklistContentView: View {
   // MARK: Lifecycle
 
-  public init(store: Store<ChecklistRootState, ChecklistRootAction>) {
+  public init(store: Store<ChecklistRootState, ChecklistRootAction>, checklistItems: Binding<[ChecklistItem]>) {
     self.store = store
+    _checklistItems = checklistItems
   }
+
+  @Binding var checklistItems: [ChecklistItem]
 
   // MARK: Public
 
@@ -50,9 +53,9 @@ public struct ChecklistContentView: View {
         }
       }
       .navigationTitle(viewStore.progress)
-      .onDisappear {
-//        checklistItems = viewStore.checklistItems
-      }
+//      .onChange(of: viewStore.state.checklistItems, perform: { newValue in
+//        checklistItems = newValue
+//      })
     }
   }
 
@@ -68,8 +71,6 @@ public struct ChecklistContentView: View {
     case checked
     case unchecked
   }
-
-  var checklistItems: [ChecklistItem] = []
 
   @Environment(\.colorScheme) var colorScheme
 
@@ -189,7 +190,8 @@ struct ChecklistContentView_Previews: PreviewProvider {
           ])),
         reducer: ChecklistRootReducerBuilder.build(),
         environment: ChecklistRootEnvironment()
-      )
+      ),
+      checklistItems: .constant([ChecklistItem(name: "haha")])
     )
   }
 }
