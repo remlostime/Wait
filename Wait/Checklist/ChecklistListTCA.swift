@@ -32,10 +32,10 @@ public enum ChecklistListReducerBuilder {
   static func build() -> ChecklistListReducer {
     let reducer = ChecklistListReducer { state, action, _ in
       switch action {
-        case .check(let index):
+        case let .check(index):
           state.checklistItems[index].isChecked = true
           return .none
-        case .uncheck(let index):
+        case let .uncheck(index):
           state.checklistItems[index].isChecked = false
           return .none
       }
@@ -44,4 +44,3 @@ public enum ChecklistListReducerBuilder {
     return reducer
   }
 }
-

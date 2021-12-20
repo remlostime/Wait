@@ -104,7 +104,6 @@ public struct ChecklistContentView: View {
     store.scope(state: \.listState, action: ChecklistRootAction.listAction)
   }
 
-
   private var translation: Double { Double(cardTranslation.width / bounds.width) }
   private var bounds: CGRect { UIScreen.main.bounds }
 

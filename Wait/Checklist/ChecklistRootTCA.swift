@@ -88,8 +88,9 @@ public enum ChecklistRootReducerBuilder {
         state: \.listState,
         action: /ChecklistRootAction.listAction,
         environment: { _ in
-        ChecklistListEnvironment()
-      })
+          ChecklistListEnvironment()
+        }
+      )
     )
 
     return reducer

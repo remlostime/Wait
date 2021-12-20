@@ -8,13 +8,15 @@ import Model
 import Size
 import SwiftUI
 
+// MARK: - ChecklistListView
+
 struct ChecklistListView: View {
   let store: Store<ChecklistListState, ChecklistListAction>
 
   var body: some View {
     WithViewStore(store) { viewStore in
       List {
-        ForEach(0..<viewStore.checklistItems.count) { index in
+        ForEach(0 ..< viewStore.checklistItems.count) { index in
           Checklist(item: viewStore.checklistItems[index]) { item in
             if item.isChecked {
               viewStore.send(.uncheck(index: index))
@@ -28,6 +30,8 @@ struct ChecklistListView: View {
   }
 }
 
+// MARK: - ChecklistListView_Previews
+
 struct ChecklistListView_Previews: PreviewProvider {
   static var previews: some View {
     ChecklistListView(store: Store<ChecklistListState, ChecklistListAction>.init(
@@ -35,8 +39,10 @@ struct ChecklistListView_Previews: PreviewProvider {
         checklistItems: [
           ChecklistItem(name: "First"),
           ChecklistItem(name: "Second"),
-          ChecklistItem(name: "Third")]),
+          ChecklistItem(name: "Third"),
+        ]),
       reducer: ChecklistListReducerBuilder.build(),
-      environment: ChecklistListEnvironment()))
+      environment: ChecklistListEnvironment()
+    ))
   }
 }

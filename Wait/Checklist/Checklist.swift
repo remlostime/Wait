@@ -5,9 +5,10 @@
 
 import Model
 import SwiftUI
-//import PartialSheet
 
 // MARK: - Checklist
+
+// import PartialSheet
 
 struct Checklist: View {
   var item: ChecklistItem
