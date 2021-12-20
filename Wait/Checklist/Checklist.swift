@@ -5,17 +5,20 @@
 
 import Model
 import SwiftUI
+//import PartialSheet
 
 // MARK: - Checklist
 
 struct Checklist: View {
-  @Binding var item: ChecklistItem
+  var item: ChecklistItem
   @State var showFullText: Bool = false
+  var isTapped: (ChecklistItem) -> Void
 
   var body: some View {
     HStack {
       Button {
-        item.isChecked.toggle()
+        isTapped(item)
+        // item.isChecked.toggle()
       } label: {
         Image(systemName: item.isChecked ? "checkmark.square" : "square")
       }
@@ -33,10 +36,10 @@ struct Checklist: View {
           }
       }
     }
-    .partialSheet(isPresented: $showFullText) {
-      Text(item.name)
-        .padding()
-    }
+//    .partialSheet(isPresented: $showFullText) {
+//      Text(item.name)
+//        .padding()
+//    }
   }
 }
 
@@ -44,6 +47,6 @@ struct Checklist: View {
 
 struct Checklist_Previews: PreviewProvider {
   static var previews: some View {
-    Checklist(item: .constant(ChecklistItem.example))
+    Checklist(item: ChecklistItem.example, isTapped: { _ in })
   }
 }

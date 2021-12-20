@@ -11,6 +11,7 @@ import Foundation
 public enum ChecklistRootAction {
   case cardAction(ChecklistCardAction)
   case rootAction(ChecklistAction)
+  case listAction(ChecklistListAction)
 }
 
 // MARK: - ChecklistRootState
@@ -25,6 +26,16 @@ public struct ChecklistRootState {
   // MARK: Internal
 
   var rootState: ChecklistState
+
+  var listState: ChecklistListState {
+    get {
+      ChecklistListState(checklistItems: rootState.checklistItems)
+    }
+
+    set {
+      rootState.checklistItems = newValue.checklistItems
+    }
+  }
 
   var cardState: ChecklistCardState {
     get {
@@ -54,6 +65,7 @@ public enum ChecklistRootReducerBuilder {
   public static func build() -> ChecklistRootReducer {
     let cardReducer = ChecklistCardReducerBuilder.build()
     let checklistReducer = ChecklistReducerBuilder.build()
+    let listReducer = ChecklistListReducerBuilder.build()
 
     let reducer = ChecklistRootReducer.combine(
       cardReducer.pullback(
@@ -70,7 +82,14 @@ public enum ChecklistRootReducerBuilder {
         environment: { _ in
           ChecklistEnvironment()
         }
-      )
+      ),
+
+      listReducer.pullback(
+        state: \.listState,
+        action: /ChecklistRootAction.listAction,
+        environment: { _ in
+        ChecklistListEnvironment()
+      })
     )
 
     return reducer
