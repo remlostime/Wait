@@ -47,7 +47,7 @@ public struct ChecklistContentView: View {
               }
             }
           case .list:
-            Text("haha")
+            checklistListView
         }
       }
       .navigationTitle(viewStore.progress)
@@ -100,6 +100,10 @@ public struct ChecklistContentView: View {
     )
   }
 
+  private var checklistListStore: Store<ChecklistListState, ChecklistListAction> {
+    store.scope(state: \.listState, action: ChecklistRootAction.listAction)
+  }
+
   private var translation: Double { Double(cardTranslation.width / bounds.width) }
   private var bounds: CGRect { UIScreen.main.bounds }
 
@@ -109,6 +113,10 @@ public struct ChecklistContentView: View {
 
   private var isLightMode: Bool {
     colorScheme == .light
+  }
+
+  private var checklistListView: some View {
+    ChecklistListView(store: checklistListStore)
   }
 
   private var checklistCardView: some View {

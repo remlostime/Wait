@@ -22,6 +22,10 @@
 
 /* Begin PBXBuildFile section */
 		E2039B4B265750B3004B3BEF /* Charts in Frameworks */ = {isa = PBXBuildFile; productRef = E2039B4A265750B3004B3BEF /* Charts */; };
+		E204B304276BB5F500D2EB0D /* ChecklistListTCA.swift in Sources */ = {isa = PBXBuildFile; fileRef = E204B303276BB5F500D2EB0D /* ChecklistListTCA.swift */; };
+		E204B306276BB78800D2EB0D /* ChecklistListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E204B305276BB78800D2EB0D /* ChecklistListView.swift */; };
+		E204B307276BB8A600D2EB0D /* Checklist.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2211E2626C8280100041F5F /* Checklist.swift */; };
+		E204B309276BB90300D2EB0D /* PartialSheet in Frameworks */ = {isa = PBXBuildFile; productRef = E204B308276BB90300D2EB0D /* PartialSheet */; };
 		E205877F272475DB00D0052D /* Charts+UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E205877E272475DB00D0052D /* Charts+UIImage.swift */; };
 		E205878227247E9B00D0052D /* FirebaseAnalyticsSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = E205878127247E9B00D0052D /* FirebaseAnalyticsSwift-Beta */; };
 		E205878427247E9B00D0052D /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = E205878327247E9B00D0052D /* FirebaseAuth */; };
@@ -52,7 +56,6 @@
 		E2136DD5269A16530033AEB1 /* SwiftUIValuationChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2136DD4269A16530033AEB1 /* SwiftUIValuationChartViewController.swift */; };
 		E21D2E7A269B6DF80063C7ED /* Color.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E276556D267E9104002D13CC /* Color.framework */; };
 		E2211E2526C81C5E00041F5F /* StockOverviewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2211E2426C81C5E00041F5F /* StockOverviewDataSource.swift */; };
-		E2211E2726C8280100041F5F /* Checklist.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2211E2626C8280100041F5F /* Checklist.swift */; };
 		E2211E2926C82A3300041F5F /* ChecklistItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2211E2826C82A3300041F5F /* ChecklistItem.swift */; };
 		E2211E2C26C8444700041F5F /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = E2211E2B26C8444700041F5F /* SwiftDate */; };
 		E227D3A426BEE2930094A872 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = E227D3A326BEE2930094A872 /* Category.swift */; };
@@ -295,6 +298,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E204B303276BB5F500D2EB0D /* ChecklistListTCA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistListTCA.swift; sourceTree = "<group>"; };
+		E204B305276BB78800D2EB0D /* ChecklistListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistListView.swift; sourceTree = "<group>"; };
 		E205877E272475DB00D0052D /* Charts+UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Charts+UIImage.swift"; sourceTree = "<group>"; };
 		E205D3EA26D2C567004EE31D /* Logging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Logging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E205D3EC26D2C567004EE31D /* Logging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Logging.h; sourceTree = "<group>"; };
@@ -467,6 +472,7 @@
 			files = (
 				E2C9A2202766E862000C07F0 /* Size.framework in Frameworks */,
 				E2C9A21F2766E81C000C07F0 /* Model.framework in Frameworks */,
+				E204B309276BB90300D2EB0D /* PartialSheet in Frameworks */,
 				E2C9A21A2766BA4A000C07F0 /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -668,10 +674,13 @@
 		E2C9A1D62766AE47000C07F0 /* Checklist */ = {
 			isa = PBXGroup;
 			children = (
+				E2211E2626C8280100041F5F /* Checklist.swift */,
 				E2C9A2212766EA67000C07F0 /* ChecklistRootTCA.swift */,
 				E2C9A21D2766DE0C000C07F0 /* ChecklistCardTCA.swift */,
+				E204B303276BB5F500D2EB0D /* ChecklistListTCA.swift */,
 				E2C9A21B2766BA73000C07F0 /* ChecklistTCA.swift */,
 				E2AD4E9527602CF6002B86B1 /* ChecklistViewModel.swift */,
+				E204B305276BB78800D2EB0D /* ChecklistListView.swift */,
 				E2429C47275EE3DB007E275B /* ChecklistCardView.swift */,
 				E2AD4E92276023E5002B86B1 /* ChecklistContentView.swift */,
 				E2C9A1D82766AE47000C07F0 /* Checklist.docc */,
@@ -767,7 +776,6 @@
 				E2D2B5CF26518A9B001B5E32 /* StockDetailsView.swift */,
 				E25A1E9B266D7CAC004D2B24 /* StockStatsView.swift */,
 				E262496B269F7E2E001E7F31 /* StockRowTypeDisplaySheet.swift */,
-				E2211E2626C8280100041F5F /* Checklist.swift */,
 				E2D0796727010EBF00E8E469 /* SettingsView.swift */,
 				E2316FB6271B7D5300103050 /* StockCard.swift */,
 			);
@@ -1036,6 +1044,7 @@
 			name = Checklist;
 			packageProductDependencies = (
 				E2C9A2192766BA4A000C07F0 /* ComposableArchitecture */,
+				E204B308276BB90300D2EB0D /* PartialSheet */,
 			);
 			productName = Checklist;
 			productReference = E2C9A1D52766AE47000C07F0 /* Checklist.framework */;
@@ -1421,13 +1430,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E204B307276BB8A600D2EB0D /* Checklist.swift in Sources */,
 				E2C9A1F52766AE9A000C07F0 /* ChecklistContentView.swift in Sources */,
 				E2C9A1F62766AEC7000C07F0 /* ChecklistViewModel.swift in Sources */,
 				E2C9A21C2766BA73000C07F0 /* ChecklistTCA.swift in Sources */,
 				E2C9A1D92766AE47000C07F0 /* Checklist.docc in Sources */,
 				E2C9A2222766EA67000C07F0 /* ChecklistRootTCA.swift in Sources */,
 				E2C9A1F42766AE9A000C07F0 /* ChecklistCardView.swift in Sources */,
+				E204B306276BB78800D2EB0D /* ChecklistListView.swift in Sources */,
 				E2C9A21E2766DE0C000C07F0 /* ChecklistCardTCA.swift in Sources */,
+				E204B304276BB5F500D2EB0D /* ChecklistListTCA.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1475,7 +1487,6 @@
 				E2123A6B26472F9400A29222 /* StockCache.swift in Sources */,
 				E2ABEE082653376D0001F0F9 /* ChartCache.swift in Sources */,
 				E275EDFF26483D6600752D8A /* SearchStockView.swift in Sources */,
-				E2211E2726C8280100041F5F /* Checklist.swift in Sources */,
 				E2ABEDFB265324D00001F0F9 /* PriceHistoryDataSource.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2596,6 +2607,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2039B49265750B3004B3BEF /* XCRemoteSwiftPackageReference "Charts" */;
 			productName = Charts;
+		};
+		E204B308276BB90300D2EB0D /* PartialSheet */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E22A84202669C8B60099F107 /* XCRemoteSwiftPackageReference "PartialSheet" */;
+			productName = PartialSheet;
 		};
 		E205878127247E9B00D0052D /* FirebaseAnalyticsSwift-Beta */ = {
 			isa = XCSwiftPackageProductDependency;
