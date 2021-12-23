@@ -257,8 +257,8 @@ public class ChartViewController: UIViewController {
     let nonZeroComparedPrice = comparedPrice <= 0 ? 1.0 : comparedPrice
     let priceDiffRatio = abs(priceDifference / nonZeroComparedPrice * 100.0)
     pricePercentageChangeLabel.textColor = newColor
-    let percenteText = priceDiffRatio.rounded(numberOfDecimalPlaces: 2, rule: .up).string
-    pricePercentageChangeLabel.text = isPositive ? "(+\(percenteText)%)" : "(-\(percenteText)%)"
+    let percentText = String(priceDiffRatio)
+    pricePercentageChangeLabel.text = isPositive ? "(+\(percentText)%)" : "(-\(percentText)%)"
   }
 
   @objc

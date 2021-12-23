@@ -55,7 +55,6 @@
 		E22A84222669C8B60099F107 /* PartialSheet in Frameworks */ = {isa = PBXBuildFile; productRef = E22A84212669C8B60099F107 /* PartialSheet */; };
 		E2316FB7271B7D5300103050 /* StockCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2316FB6271B7D5300103050 /* StockCard.swift */; };
 		E2316FB9271B99C400103050 /* StockRowStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2316FB8271B99C400103050 /* StockRowStyle.swift */; };
-		E23B93E42652D52800E039D9 /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E23B93E32652D52800E039D9 /* SwifterSwift */; };
 		E24BDEFB26D2C8C400595E4A /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = E24BDEFA26D2C8C400595E4A /* Cache */; };
 		E24BDF0826D2EF5600595E4A /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E24BDF0726D2EF5600595E4A /* Alamofire */; };
 		E24BDF0926D2EF5B00595E4A /* Networking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC107A267EE38D00CD98AF /* Networking.framework */; };
@@ -65,9 +64,6 @@
 		E24BDF1526D3149E00595E4A /* StockCurrentQuoteNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A1E9D266DA3EA004D2B24 /* StockCurrentQuoteNetworkClient.swift */; };
 		E24D90AC27128095009EDE57 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = E24D90AB27128095009EDE57 /* ComposableArchitecture */; };
 		E24D90B42712810E009EDE57 /* WaitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24D90B32712810E009EDE57 /* WaitTests.swift */; };
-		E24D90BC271289C9009EDE57 /* ChecklistEditFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24D90BB271289C9009EDE57 /* ChecklistEditFeature.swift */; };
-		E24D90BE27128A47009EDE57 /* ChecklistEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24D90BD27128A47009EDE57 /* ChecklistEditView.swift */; };
-		E24D90C02713487A009EDE57 /* ChecklistCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24D90BF2713487A009EDE57 /* ChecklistCache.swift */; };
 		E25A1E9C266D7CAC004D2B24 /* StockStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A1E9B266D7CAC004D2B24 /* StockStatsView.swift */; };
 		E25A927826C08D81004A4EBB /* SearchStockDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A927726C08D81004A4EBB /* SearchStockDataSource.swift */; };
 		E25A927A26C08E32004A4EBB /* SearchStockNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A927926C08E32004A4EBB /* SearchStockNetworkClient.swift */; };
@@ -104,7 +100,18 @@
 		E2ABEDFB265324D00001F0F9 /* PriceHistoryDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEDFA265324D00001F0F9 /* PriceHistoryDataSource.swift */; };
 		E2ABEE082653376D0001F0F9 /* ChartCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEE072653376D0001F0F9 /* ChartCache.swift */; };
 		E2B5EAA32688105D0092663F /* Money+Format.swift in Sources */ = {isa = PBXBuildFile; fileRef = E23B93E02652D38D00E039D9 /* Money+Format.swift */; };
-		E2B5EAA5268810F00092663F /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E2B5EAA4268810F00092663F /* SwifterSwift */; };
+		E2B728EE27753079001CF022 /* ChecklistEditFeature.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2B728E627753078001CF022 /* ChecklistEditFeature.framework */; };
+		E2B728F527753079001CF022 /* ChecklistEditFeatureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2B728F427753079001CF022 /* ChecklistEditFeatureTests.swift */; };
+		E2B728F627753079001CF022 /* ChecklistEditFeature.h in Headers */ = {isa = PBXBuildFile; fileRef = E2B728E827753078001CF022 /* ChecklistEditFeature.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E2B728F927753079001CF022 /* ChecklistEditFeature.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2B728E627753078001CF022 /* ChecklistEditFeature.framework */; };
+		E2B728FA27753079001CF022 /* ChecklistEditFeature.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E2B728E627753078001CF022 /* ChecklistEditFeature.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E2B729012775309F001CF022 /* ChecklistEditFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24D90BB271289C9009EDE57 /* ChecklistEditFeature.swift */; };
+		E2B729022775309F001CF022 /* ChecklistEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24D90BD27128A47009EDE57 /* ChecklistEditView.swift */; };
+		E2B729032775309F001CF022 /* ChecklistCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24D90BF2713487A009EDE57 /* ChecklistCache.swift */; };
+		E2B72905277530F5001CF022 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = E2B72904277530F5001CF022 /* ComposableArchitecture */; };
+		E2B7290627753103001CF022 /* Model.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC102D267E9EB300CD98AF /* Model.framework */; };
+		E2B729072775311A001CF022 /* Logging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E205D3EA26D2C567004EE31D /* Logging.framework */; };
+		E2B7290927753121001CF022 /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = E2B7290827753121001CF022 /* Cache */; };
 		E2BC4192267F9C4600A853D2 /* Size.h in Headers */ = {isa = PBXBuildFile; fileRef = E2BC4190267F9C4600A853D2 /* Size.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E2BC4195267F9C4600A853D2 /* Size.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2BC418E267F9C4600A853D2 /* Size.framework */; };
 		E2BC4196267F9C4600A853D2 /* Size.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E2BC418E267F9C4600A853D2 /* Size.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -210,6 +217,27 @@
 			remoteGlobalIDString = E2765585267E9470002D13CC;
 			remoteInfo = UI;
 		};
+		E2B728EF27753079001CF022 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E2E637A12641A5FB00F872A4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E2B728E527753078001CF022;
+			remoteInfo = ChecklistEditFeature;
+		};
+		E2B728F127753079001CF022 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E2E637A12641A5FB00F872A4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E2E637A82641A5FB00F872A4;
+			remoteInfo = Wait;
+		};
+		E2B728F727753079001CF022 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E2E637A12641A5FB00F872A4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E2B728E527753078001CF022;
+			remoteInfo = ChecklistEditFeature;
+		};
 		E2BC4193267F9C4600A853D2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E2E637A12641A5FB00F872A4 /* Project object */;
@@ -278,6 +306,7 @@
 				E2FC1035267E9EB300CD98AF /* Model.framework in Embed Frameworks */,
 				E2BC4196267F9C4600A853D2 /* Size.framework in Embed Frameworks */,
 				E2C9A1EB2766AE47000C07F0 /* Checklist.framework in Embed Frameworks */,
+				E2B728FA27753079001CF022 /* ChecklistEditFeature.framework in Embed Frameworks */,
 				E2765575267E9104002D13CC /* Color.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -358,6 +387,10 @@
 		E2ABEE0B26533E1D0001F0F9 /* PriceHistoryNetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceHistoryNetworkClient.swift; sourceTree = "<group>"; };
 		E2AD4E92276023E5002B86B1 /* ChecklistContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistContentView.swift; sourceTree = "<group>"; };
 		E2AD4E9527602CF6002B86B1 /* ChecklistViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistViewModel.swift; sourceTree = "<group>"; };
+		E2B728E627753078001CF022 /* ChecklistEditFeature.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ChecklistEditFeature.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E2B728E827753078001CF022 /* ChecklistEditFeature.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChecklistEditFeature.h; sourceTree = "<group>"; };
+		E2B728ED27753079001CF022 /* ChecklistEditFeatureTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ChecklistEditFeatureTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E2B728F427753079001CF022 /* ChecklistEditFeatureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistEditFeatureTests.swift; sourceTree = "<group>"; };
 		E2BC418E267F9C4600A853D2 /* Size.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Size.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2BC4190267F9C4600A853D2 /* Size.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Size.h; sourceTree = "<group>"; };
 		E2BC4191267F9C4600A853D2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -446,6 +479,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E2B728E327753078001CF022 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E2B729072775311A001CF022 /* Logging.framework in Frameworks */,
+				E2B7290927753121001CF022 /* Cache in Frameworks */,
+				E2B7290627753103001CF022 /* Model.framework in Frameworks */,
+				E2B72905277530F5001CF022 /* ComposableArchitecture in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2B728EA27753079001CF022 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E2B728EE27753079001CF022 /* ChecklistEditFeature.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E2BC418B267F9C4600A853D2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -482,10 +534,10 @@
 				E2ABEDF5265322FA0001F0F9 /* SnapKit in Frameworks */,
 				E2FC1034267E9EB300CD98AF /* Model.framework in Frameworks */,
 				E2C859B426438EE500F93321 /* Cache in Frameworks */,
+				E2B728F927753079001CF022 /* ChecklistEditFeature.framework in Frameworks */,
 				E24D90AC27128095009EDE57 /* ComposableArchitecture in Frameworks */,
 				E2BC4195267F9C4600A853D2 /* Size.framework in Frameworks */,
 				E2123A602647115400A29222 /* Alamofire in Frameworks */,
-				E23B93E42652D52800E039D9 /* SwifterSwift in Frameworks */,
 				E2BDFCA726518CB90075E619 /* Money in Frameworks */,
 				E2765574267E9104002D13CC /* Color.framework in Frameworks */,
 				E22A84222669C8B60099F107 /* PartialSheet in Frameworks */,
@@ -506,7 +558,6 @@
 			files = (
 				E21D2E7A269B6DF80063C7ED /* Color.framework in Frameworks */,
 				E2FC1040267E9EE400CD98AF /* Money in Frameworks */,
-				E2B5EAA5268810F00092663F /* SwifterSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -568,16 +619,6 @@
 			path = WaitTests;
 			sourceTree = "<group>";
 		};
-		E24D90BA27128994009EDE57 /* ChecklistEditFeature */ = {
-			isa = PBXGroup;
-			children = (
-				E24D90BB271289C9009EDE57 /* ChecklistEditFeature.swift */,
-				E24D90BD27128A47009EDE57 /* ChecklistEditView.swift */,
-				E24D90BF2713487A009EDE57 /* ChecklistCache.swift */,
-			);
-			path = ChecklistEditFeature;
-			sourceTree = "<group>";
-		};
 		E25A927626C08D69004A4EBB /* DataSource */ = {
 			isa = PBXGroup;
 			children = (
@@ -636,6 +677,25 @@
 			path = Charts;
 			sourceTree = "<group>";
 		};
+		E2B728E727753078001CF022 /* ChecklistEditFeature */ = {
+			isa = PBXGroup;
+			children = (
+				E24D90BB271289C9009EDE57 /* ChecklistEditFeature.swift */,
+				E24D90BD27128A47009EDE57 /* ChecklistEditView.swift */,
+				E24D90BF2713487A009EDE57 /* ChecklistCache.swift */,
+				E2B728E827753078001CF022 /* ChecklistEditFeature.h */,
+			);
+			path = ChecklistEditFeature;
+			sourceTree = "<group>";
+		};
+		E2B728F327753079001CF022 /* ChecklistEditFeatureTests */ = {
+			isa = PBXGroup;
+			children = (
+				E2B728F427753079001CF022 /* ChecklistEditFeatureTests.swift */,
+			);
+			path = ChecklistEditFeatureTests;
+			sourceTree = "<group>";
+		};
 		E2BC418F267F9C4600A853D2 /* Size */ = {
 			isa = PBXGroup;
 			children = (
@@ -689,6 +749,8 @@
 				E24D90B22712810E009EDE57 /* WaitTests */,
 				E2C9A1D62766AE47000C07F0 /* Checklist */,
 				E2C9A1E42766AE47000C07F0 /* ChecklistTests */,
+				E2B728E727753078001CF022 /* ChecklistEditFeature */,
+				E2B728F327753079001CF022 /* ChecklistEditFeatureTests */,
 				E2E637AA2641A5FB00F872A4 /* Products */,
 				E276557E267E93FB002D13CC /* Frameworks */,
 			);
@@ -708,6 +770,8 @@
 				E24D90B12712810E009EDE57 /* WaitTests.xctest */,
 				E2C9A1D52766AE47000C07F0 /* Checklist.framework */,
 				E2C9A1DE2766AE47000C07F0 /* ChecklistTests.xctest */,
+				E2B728E627753078001CF022 /* ChecklistEditFeature.framework */,
+				E2B728ED27753079001CF022 /* ChecklistEditFeatureTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -719,7 +783,6 @@
 				E25B746C26A33B7600BE0A9C /* Launch Screen.storyboard */,
 				E2F8D19826A2531600020A97 /* Wait.entitlements */,
 				E2E637AC2641A5FB00F872A4 /* WaitApp.swift */,
-				E24D90BA27128994009EDE57 /* ChecklistEditFeature */,
 				E25A927626C08D69004A4EBB /* DataSource */,
 				E2136DCF269A134D0033AEB1 /* Valuation */,
 				E2FC1069267EDF0400CD98AF /* Network */,
@@ -843,6 +906,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				E276558A267E9470002D13CC /* UI.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2B728E127753078001CF022 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E2B728F627753079001CF022 /* ChecklistEditFeature.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -985,6 +1056,47 @@
 			productReference = E2765586267E9470002D13CC /* UI.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		E2B728E527753078001CF022 /* ChecklistEditFeature */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E2B728FB27753079001CF022 /* Build configuration list for PBXNativeTarget "ChecklistEditFeature" */;
+			buildPhases = (
+				E2B728E127753078001CF022 /* Headers */,
+				E2B728E227753078001CF022 /* Sources */,
+				E2B728E327753078001CF022 /* Frameworks */,
+				E2B728E427753078001CF022 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ChecklistEditFeature;
+			packageProductDependencies = (
+				E2B72904277530F5001CF022 /* ComposableArchitecture */,
+				E2B7290827753121001CF022 /* Cache */,
+			);
+			productName = ChecklistEditFeature;
+			productReference = E2B728E627753078001CF022 /* ChecklistEditFeature.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		E2B728EC27753079001CF022 /* ChecklistEditFeatureTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E2B728FE27753079001CF022 /* Build configuration list for PBXNativeTarget "ChecklistEditFeatureTests" */;
+			buildPhases = (
+				E2B728E927753079001CF022 /* Sources */,
+				E2B728EA27753079001CF022 /* Frameworks */,
+				E2B728EB27753079001CF022 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E2B728F027753079001CF022 /* PBXTargetDependency */,
+				E2B728F227753079001CF022 /* PBXTargetDependency */,
+			);
+			name = ChecklistEditFeatureTests;
+			productName = ChecklistEditFeatureTests;
+			productReference = E2B728ED27753079001CF022 /* ChecklistEditFeatureTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		E2BC418D267F9C4600A853D2 /* Size */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = E2BC4199267F9C4600A853D2 /* Build configuration list for PBXNativeTarget "Size" */;
@@ -1065,6 +1177,7 @@
 				E210DF0426D2B50F0044DA4E /* PBXTargetDependency */,
 				E205D3F026D2C567004EE31D /* PBXTargetDependency */,
 				E2C9A1E92766AE47000C07F0 /* PBXTargetDependency */,
+				E2B728F827753079001CF022 /* PBXTargetDependency */,
 			);
 			name = Wait;
 			packageProductDependencies = (
@@ -1075,7 +1188,6 @@
 				E2901FA4264CAC8B003A2C01 /* Shake */,
 				E2BDFCA626518CB90075E619 /* Money */,
 				E2A07D9A26520BDD0075E271 /* Hue */,
-				E23B93E32652D52800E039D9 /* SwifterSwift */,
 				E2ABEDEF265322670001F0F9 /* HMSegmentedControl */,
 				E2ABEDF4265322FA0001F0F9 /* SnapKit */,
 				E2039B4A265750B3004B3BEF /* Charts */,
@@ -1102,7 +1214,6 @@
 			name = Model;
 			packageProductDependencies = (
 				E2FC103F267E9EE400CD98AF /* Money */,
-				E2B5EAA4268810F00092663F /* SwifterSwift */,
 			);
 			productName = Model;
 			productReference = E2FC102D267E9EB300CD98AF /* Model.framework */;
@@ -1133,7 +1244,7 @@
 		E2E637A12641A5FB00F872A4 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1300;
+				LastSwiftUpdateCheck = 1320;
 				LastUpgradeCheck = 1250;
 				TargetAttributes = {
 					E205D3E926D2C567004EE31D = {
@@ -1152,6 +1263,13 @@
 					};
 					E2765585267E9470002D13CC = {
 						CreatedOnToolsVersion = 12.5;
+					};
+					E2B728E527753078001CF022 = {
+						CreatedOnToolsVersion = 13.2.1;
+					};
+					E2B728EC27753079001CF022 = {
+						CreatedOnToolsVersion = 13.2.1;
+						TestTargetID = E2E637A82641A5FB00F872A4;
 					};
 					E2BC418D267F9C4600A853D2 = {
 						CreatedOnToolsVersion = 12.5;
@@ -1195,7 +1313,6 @@
 				E2901FA3264CAC8B003A2C01 /* XCRemoteSwiftPackageReference "shake-ios" */,
 				E2BDFCA526518CB90075E619 /* XCRemoteSwiftPackageReference "Money" */,
 				E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */,
-				E23B93E22652D52800E039D9 /* XCRemoteSwiftPackageReference "SwifterSwift" */,
 				E2ABEDEE265322670001F0F9 /* XCRemoteSwiftPackageReference "HMSegmentedControl" */,
 				E2ABEDF3265322FA0001F0F9 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				E2039B49265750B3004B3BEF /* XCRemoteSwiftPackageReference "Charts" */,
@@ -1218,6 +1335,8 @@
 				E24D90B02712810E009EDE57 /* WaitTests */,
 				E2C9A1D42766AE47000C07F0 /* Checklist */,
 				E2C9A1DD2766AE47000C07F0 /* ChecklistTests */,
+				E2B728E527753078001CF022 /* ChecklistEditFeature */,
+				E2B728EC27753079001CF022 /* ChecklistEditFeatureTests */,
 			);
 		};
 /* End PBXProject section */
@@ -1253,6 +1372,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		E2765584267E9470002D13CC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2B728E427753078001CF022 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2B728EB27753079001CF022 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1377,6 +1510,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E2B728E227753078001CF022 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E2B729012775309F001CF022 /* ChecklistEditFeature.swift in Sources */,
+				E2B729022775309F001CF022 /* ChecklistEditView.swift in Sources */,
+				E2B729032775309F001CF022 /* ChecklistCache.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2B728E927753079001CF022 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E2B728F527753079001CF022 /* ChecklistEditFeatureTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E2BC418A267F9C4600A853D2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1419,7 +1570,6 @@
 				E2E637AF2641A5FB00F872A4 /* ContentView.swift in Sources */,
 				E2FC106D267EDFA300CD98AF /* StockOverviewNetworkClient.swift in Sources */,
 				E2136DD5269A16530033AEB1 /* SwiftUIValuationChartViewController.swift in Sources */,
-				E24D90BC271289C9009EDE57 /* ChecklistEditFeature.swift in Sources */,
 				E2BE76582641FC3300645629 /* StockExpectedPriceInputView.swift in Sources */,
 				E2211E2526C81C5E00041F5F /* StockOverviewDataSource.swift in Sources */,
 				E2316FB7271B7D5300103050 /* StockCard.swift in Sources */,
@@ -1432,7 +1582,6 @@
 				E2FC106C267EDF9700CD98AF /* PriceHistoryNetworkClient.swift in Sources */,
 				E2FC106A267EDF8E00CD98AF /* StockCurrentQuoteNetworkClient.swift in Sources */,
 				E2E637AD2641A5FB00F872A4 /* WaitApp.swift in Sources */,
-				E24D90C02713487A009EDE57 /* ChecklistCache.swift in Sources */,
 				E2ABEDED26531F0A0001F0F9 /* SwiftUIChartViewController.swift in Sources */,
 				E2ABEDF72653235A0001F0F9 /* TimeSection.swift in Sources */,
 				E262496C269F7E2E001E7F31 /* StockRowTypeDisplaySheet.swift in Sources */,
@@ -1442,7 +1591,6 @@
 				E205877F272475DB00D0052D /* Charts+UIImage.swift in Sources */,
 				E275EE0326483FE300752D8A /* SearchStockRow.swift in Sources */,
 				E25A1E9C266D7CAC004D2B24 /* StockStatsView.swift in Sources */,
-				E24D90BE27128A47009EDE57 /* ChecklistEditView.swift in Sources */,
 				E2136DD3269A13F90033AEB1 /* ValuationChartViewController.swift in Sources */,
 				E2123A6B26472F9400A29222 /* StockCache.swift in Sources */,
 				E2ABEE082653376D0001F0F9 /* ChartCache.swift in Sources */,
@@ -1516,6 +1664,21 @@
 			isa = PBXTargetDependency;
 			target = E2765585267E9470002D13CC /* UI */;
 			targetProxy = E276558B267E9470002D13CC /* PBXContainerItemProxy */;
+		};
+		E2B728F027753079001CF022 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E2B728E527753078001CF022 /* ChecklistEditFeature */;
+			targetProxy = E2B728EF27753079001CF022 /* PBXContainerItemProxy */;
+		};
+		E2B728F227753079001CF022 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E2E637A82641A5FB00F872A4 /* Wait */;
+			targetProxy = E2B728F127753079001CF022 /* PBXContainerItemProxy */;
+		};
+		E2B728F827753079001CF022 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E2B728E527753078001CF022 /* ChecklistEditFeature */;
+			targetProxy = E2B728F727753079001CF022 /* PBXContainerItemProxy */;
 		};
 		E2BC4194267F9C4600A853D2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1815,6 +1978,108 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		E2B728FC27753079001CF022 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 5WDN96EM72;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ck.ChecklistEditFeature;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		E2B728FD27753079001CF022 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 5WDN96EM72;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ck.ChecklistEditFeature;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		E2B728FF27753079001CF022 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ck.ChecklistEditFeatureTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wait.app/Wait";
+			};
+			name = Debug;
+		};
+		E2B7290027753079001CF022 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ck.ChecklistEditFeatureTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wait.app/Wait";
 			};
 			name = Release;
 		};
@@ -2349,6 +2614,24 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		E2B728FB27753079001CF022 /* Build configuration list for PBXNativeTarget "ChecklistEditFeature" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E2B728FC27753079001CF022 /* Debug */,
+				E2B728FD27753079001CF022 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E2B728FE27753079001CF022 /* Build configuration list for PBXNativeTarget "ChecklistEditFeatureTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E2B728FF27753079001CF022 /* Debug */,
+				E2B7290027753079001CF022 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		E2BC4199267F9C4600A853D2 /* Build configuration list for PBXNativeTarget "Size" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -2464,14 +2747,6 @@
 				minimumVersion = 2.1.11;
 			};
 		};
-		E23B93E22652D52800E039D9 /* XCRemoteSwiftPackageReference "SwifterSwift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SwifterSwift/SwifterSwift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.2.0;
-			};
-		};
 		E24D90AA27128095009EDE57 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
@@ -2566,11 +2841,6 @@
 			package = E22A84202669C8B60099F107 /* XCRemoteSwiftPackageReference "PartialSheet" */;
 			productName = PartialSheet;
 		};
-		E23B93E32652D52800E039D9 /* SwifterSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E23B93E22652D52800E039D9 /* XCRemoteSwiftPackageReference "SwifterSwift" */;
-			productName = SwifterSwift;
-		};
 		E24BDEFA26D2C8C400595E4A /* Cache */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E2C859B226438EE500F93321 /* XCRemoteSwiftPackageReference "Cache" */;
@@ -2616,10 +2886,15 @@
 			package = E2ABEDF3265322FA0001F0F9 /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
 		};
-		E2B5EAA4268810F00092663F /* SwifterSwift */ = {
+		E2B72904277530F5001CF022 /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = E23B93E22652D52800E039D9 /* XCRemoteSwiftPackageReference "SwifterSwift" */;
-			productName = SwifterSwift;
+			package = E24D90AA27128095009EDE57 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
+		};
+		E2B7290827753121001CF022 /* Cache */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E2C859B226438EE500F93321 /* XCRemoteSwiftPackageReference "Cache" */;
+			productName = Cache;
 		};
 		E2BDFCA626518CB90075E619 /* Money */ = {
 			isa = XCSwiftPackageProductDependency;

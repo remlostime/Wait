@@ -3,6 +3,7 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
+import ChecklistEditFeature
 import ComposableArchitecture
 import Model
 import SwiftUI
@@ -17,8 +18,8 @@ struct SettingsView: View {
       List {
         NavigationLink("Checklist") {
           ChecklistEditView(store: Store(
-            initialState: ChecklistEditState(),
-            reducer: settingsReducer,
+            initialState: ChecklistEditState(items: []),
+            reducer: ChecklistEditReducerBuilder.build(),
             environment: ChecklistEditEnvironment()
           ))
         }

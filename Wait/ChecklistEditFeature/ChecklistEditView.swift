@@ -9,10 +9,16 @@ import SwiftUI
 
 // MARK: - ChecklistEditView
 
-struct ChecklistEditView: View {
-  let store: Store<ChecklistEditState, ChecklistEditAction>
+public struct ChecklistEditView: View {
+  // MARK: Lifecycle
 
-  var body: some View {
+  public init(store: Store<ChecklistEditState, ChecklistEditAction>) {
+    self.store = store
+  }
+
+  // MARK: Public
+
+  public var body: some View {
     WithViewStore(self.store) { viewStore in
       List {
         ForEach(Array(viewStore.items.enumerated()), id: \.element.id) { index, _ in
@@ -41,6 +47,10 @@ struct ChecklistEditView: View {
       }
     }
   }
+
+  // MARK: Internal
+
+  let store: Store<ChecklistEditState, ChecklistEditAction>
 }
 
 // MARK: - ChecklistEditView_Previews
@@ -48,8 +58,8 @@ struct ChecklistEditView: View {
 struct ChecklistEditView_Previews: PreviewProvider {
   static var previews: some View {
     ChecklistEditView(store: Store(
-      initialState: ChecklistEditState(),
-      reducer: settingsReducer,
+      initialState: ChecklistEditState(items: []),
+      reducer: ChecklistEditReducerBuilder.build(),
       environment: ChecklistEditEnvironment()
     ))
   }

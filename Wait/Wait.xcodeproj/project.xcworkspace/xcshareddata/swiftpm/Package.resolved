@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/Alamofire/Alamofire",
         "state": {
           "branch": null,
-          "revision": "f96b619bcb2383b43d898402283924b80e2c4bae",
-          "version": "5.4.3"
+          "revision": "f82c23a8a7ef8dc1a49a8bfc6a96883e79121864",
+          "version": "5.5.0"
         }
       },
       {
@@ -69,8 +69,8 @@
         "repositoryURL": "https://github.com/AndreaMiotto/PartialSheet",
         "state": {
           "branch": null,
-          "revision": "936465232b6399e402e79d5b031622af9a5e9960",
-          "version": "2.1.11"
+          "revision": "422d748bfb149b2af4b48e43b7b6197bd8a727c1",
+          "version": "2.1.14"
         }
       },
       {
@@ -78,8 +78,8 @@
         "repositoryURL": "https://github.com/shakebugs/shake-ios",
         "state": {
           "branch": null,
-          "revision": "bece3fa332e5ff51c5bfd0795629475dcf8af164",
-          "version": "14.2.1"
+          "revision": "ffef60826e6e93695c96c6935bf2231156bddf1d",
+          "version": "14.4.0"
         }
       },
       {
@@ -105,8 +105,8 @@
         "repositoryURL": "https://github.com/apple/swift-collections",
         "state": {
           "branch": null,
-          "revision": "2d33a0ea89c961dcb2b3da2157963d9c0370347e",
-          "version": "1.0.1"
+          "revision": "48254824bb4248676bf7ce56014ff57b142b77eb",
+          "version": "1.0.2"
         }
       },
       {
@@ -114,8 +114,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-composable-architecture",
         "state": {
           "branch": null,
-          "revision": "599a2398adaaa7a4e3f5420cde7728c39e33677e",
-          "version": "0.28.1"
+          "revision": "9c162f485bbd4cc09b86163d3c2901aeab6e6288",
+          "version": "0.31.0"
         }
       },
       {
@@ -123,8 +123,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-custom-dump",
         "state": {
           "branch": null,
-          "revision": "c2dd2c64b753dda592f5619303e02f741cd3e862",
-          "version": "0.2.0"
+          "revision": "51698ece74ecf31959d3fa81733f0a5363ef1b4e",
+          "version": "0.3.0"
         }
       },
       {
@@ -132,17 +132,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-identified-collections",
         "state": {
           "branch": null,
-          "revision": "f76e7d3fe4265ee09216044ec3780d74f546ca82",
-          "version": "0.3.1"
-        }
-      },
-      {
-        "package": "SwifterSwift",
-        "repositoryURL": "https://github.com/SwifterSwift/SwifterSwift",
-        "state": {
-          "branch": null,
-          "revision": "dc813f3aa92f904a009fe543b99d5649dce7c134",
-          "version": "5.2.0"
+          "revision": "680bf440178a78a627b1c2c64c0855f6523ad5b9",
+          "version": "0.3.2"
         }
       },
       {
@@ -150,8 +141,8 @@
         "repositoryURL": "https://github.com/SwiftyBeaver/SwiftyBeaver",
         "state": {
           "branch": null,
-          "revision": "5cfd6888447adcc49b80b625281b6177104f011f",
-          "version": "1.9.4"
+          "revision": "2c039501d6eeb4d4cd4aec4a8d884ad28862e044",
+          "version": "1.9.5"
         }
       },
       {
