@@ -8,7 +8,6 @@ import Money
 import PartialSheet
 import Size
 import SwiftUI
-import SwiftyJSON
 
 // MARK: - ContentView
 
@@ -92,18 +91,6 @@ struct ContentView: View {
       }
       .onAppear {
         dataSource.fetchStocks()
-
-        // iCloud fetch
-        /*
-         networkClient.fetchStocks { result in
-           switch result {
-             case let .success(stocks):
-               logger.verbose(stocks)
-             case let .failure(error):
-               logger.error("Failed to fetch stocks from server: \(error.localizedDescription)")
-           }
-         }
-         */
       }
       .navigationTitle("Wait")
       .listStyle(InsetListStyle())

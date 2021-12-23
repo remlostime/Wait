@@ -27,12 +27,6 @@
 		E204B307276BB8A600D2EB0D /* Checklist.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2211E2626C8280100041F5F /* Checklist.swift */; };
 		E204B309276BB90300D2EB0D /* PartialSheet in Frameworks */ = {isa = PBXBuildFile; productRef = E204B308276BB90300D2EB0D /* PartialSheet */; };
 		E205877F272475DB00D0052D /* Charts+UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E205877E272475DB00D0052D /* Charts+UIImage.swift */; };
-		E205878227247E9B00D0052D /* FirebaseAnalyticsSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = E205878127247E9B00D0052D /* FirebaseAnalyticsSwift-Beta */; };
-		E205878427247E9B00D0052D /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = E205878327247E9B00D0052D /* FirebaseAuth */; };
-		E205878627247E9B00D0052D /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = E205878527247E9B00D0052D /* FirebaseCrashlytics */; };
-		E205878827247E9B00D0052D /* FirebaseDatabaseSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = E205878727247E9B00D0052D /* FirebaseDatabaseSwift-Beta */; };
-		E205878A27247E9B00D0052D /* FirebasePerformance in Frameworks */ = {isa = PBXBuildFile; productRef = E205878927247E9B00D0052D /* FirebasePerformance */; };
-		E205878C27247E9B00D0052D /* FirebaseStorageSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = E205878B27247E9B00D0052D /* FirebaseStorageSwift-Beta */; };
 		E205D3DF26D2C352004EE31D /* StockCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2123A6A26472F9400A29222 /* StockCache.swift */; };
 		E205D3E026D2C47D004EE31D /* Model.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC102D267E9EB300CD98AF /* Model.framework */; };
 		E205D3EE26D2C567004EE31D /* Logging.h in Headers */ = {isa = PBXBuildFile; fileRef = E205D3EC26D2C567004EE31D /* Logging.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -57,7 +51,6 @@
 		E21D2E7A269B6DF80063C7ED /* Color.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E276556D267E9104002D13CC /* Color.framework */; };
 		E2211E2526C81C5E00041F5F /* StockOverviewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2211E2426C81C5E00041F5F /* StockOverviewDataSource.swift */; };
 		E2211E2926C82A3300041F5F /* ChecklistItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2211E2826C82A3300041F5F /* ChecklistItem.swift */; };
-		E2211E2C26C8444700041F5F /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = E2211E2B26C8444700041F5F /* SwiftDate */; };
 		E227D3A426BEE2930094A872 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = E227D3A326BEE2930094A872 /* Category.swift */; };
 		E22A84222669C8B60099F107 /* PartialSheet in Frameworks */ = {isa = PBXBuildFile; productRef = E22A84212669C8B60099F107 /* PartialSheet */; };
 		E2316FB7271B7D5300103050 /* StockCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2316FB6271B7D5300103050 /* StockCard.swift */; };
@@ -80,8 +73,6 @@
 		E25A927A26C08E32004A4EBB /* SearchStockNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A927926C08E32004A4EBB /* SearchStockNetworkClient.swift */; };
 		E25B746D26A33B7600BE0A9C /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E25B746C26A33B7600BE0A9C /* Launch Screen.storyboard */; };
 		E262496C269F7E2E001E7F31 /* StockRowTypeDisplaySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E262496B269F7E2E001E7F31 /* StockRowTypeDisplaySheet.swift */; };
-		E267B86F2667FEBC009979C8 /* NVActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = E267B86E2667FEBC009979C8 /* NVActivityIndicatorView */; };
-		E267B8712667FEBC009979C8 /* NVActivityIndicatorViewExtended in Frameworks */ = {isa = PBXBuildFile; productRef = E267B8702667FEBC009979C8 /* NVActivityIndicatorViewExtended */; };
 		E270B6BB26ABADAF00A56A69 /* CloudNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C8951626A792620052B217 /* CloudNetworkClient.swift */; };
 		E272A6F326ED115400163FF3 /* StockCurrentQuoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E272A6F226ED115400163FF3 /* StockCurrentQuoteDataSource.swift */; };
 		E272A6F426EE674600163FF3 /* Logging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E205D3EA26D2C567004EE31D /* Logging.framework */; };
@@ -99,12 +90,10 @@
 		E2765592267E9486002D13CC /* UIViewController+ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A1E99266D64F6004D2B24 /* UIViewController+ActivityIndicator.swift */; };
 		E2765595267E94B9002D13CC /* Color.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E276556D267E9104002D13CC /* Color.framework */; };
 		E2765597267E94C3002D13CC /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = E2765596267E94C3002D13CC /* SnapKit */; };
-		E276559B267E9505002D13CC /* NVActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = E276559A267E9505002D13CC /* NVActivityIndicatorView */; };
 		E27C62E42653612000DD063C /* ChartHighlightMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E27C62E32653612000DD063C /* ChartHighlightMarker.swift */; };
 		E27C72C626603A8100AB008A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E27C72C526603A7B00AB008A /* GoogleService-Info.plist */; };
 		E2901FA5264CAC8B003A2C01 /* Shake in Frameworks */ = {isa = PBXBuildFile; productRef = E2901FA4264CAC8B003A2C01 /* Shake */; };
 		E2901FA7264CD22E003A2C01 /* bitrise_configuration.plist in Resources */ = {isa = PBXBuildFile; fileRef = E2901FA6264CD22E003A2C01 /* bitrise_configuration.plist */; };
-		E294F05D26A5F44400B76893 /* SkeletonUI in Frameworks */ = {isa = PBXBuildFile; productRef = E294F05C26A5F44400B76893 /* SkeletonUI */; };
 		E2A07D9B26520BDD0075E271 /* Hue in Frameworks */ = {isa = PBXBuildFile; productRef = E2A07D9A26520BDD0075E271 /* Hue */; };
 		E2ABEDED26531F0A0001F0F9 /* SwiftUIChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEDEC26531F0A0001F0F9 /* SwiftUIChartViewController.swift */; };
 		E2ABEDF0265322670001F0F9 /* HMSegmentedControl in Frameworks */ = {isa = PBXBuildFile; productRef = E2ABEDEF265322670001F0F9 /* HMSegmentedControl */; };
@@ -150,7 +139,6 @@
 		E2E637C02641A92A00F872A4 /* StockRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E637BF2641A92A00F872A4 /* StockRow.swift */; };
 		E2F8D19A26A2531900020A97 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2F8D19926A2531900020A97 /* CloudKit.framework */; };
 		E2F9CDD826D554870076F109 /* UpdatedHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F9CDD726D554870076F109 /* UpdatedHistory.swift */; };
-		E2F9CDDA26D5559B0076F109 /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = E2F9CDD926D5559B0076F109 /* SwiftDate */; };
 		E2FC1031267E9EB300CD98AF /* Model.h in Headers */ = {isa = PBXBuildFile; fileRef = E2FC102F267E9EB300CD98AF /* Model.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E2FC1034267E9EB300CD98AF /* Model.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC102D267E9EB300CD98AF /* Model.framework */; };
 		E2FC1035267E9EB300CD98AF /* Model.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC102D267E9EB300CD98AF /* Model.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -454,7 +442,6 @@
 			files = (
 				E2765597267E94C3002D13CC /* SnapKit in Frameworks */,
 				E2D7BD332700F85B00470AFD /* Hue in Frameworks */,
-				E276559B267E9505002D13CC /* NVActivityIndicatorView in Frameworks */,
 				E2765595267E94B9002D13CC /* Color.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -492,30 +479,20 @@
 				E2C9A1EA2766AE47000C07F0 /* Checklist.framework in Frameworks */,
 				E2F8D19A26A2531900020A97 /* CloudKit.framework in Frameworks */,
 				E2FC1081267EE38D00CD98AF /* Networking.framework in Frameworks */,
-				E205878A27247E9B00D0052D /* FirebasePerformance in Frameworks */,
 				E2ABEDF5265322FA0001F0F9 /* SnapKit in Frameworks */,
 				E2FC1034267E9EB300CD98AF /* Model.framework in Frameworks */,
 				E2C859B426438EE500F93321 /* Cache in Frameworks */,
 				E24D90AC27128095009EDE57 /* ComposableArchitecture in Frameworks */,
 				E2BC4195267F9C4600A853D2 /* Size.framework in Frameworks */,
-				E205878C27247E9B00D0052D /* FirebaseStorageSwift-Beta in Frameworks */,
-				E294F05D26A5F44400B76893 /* SkeletonUI in Frameworks */,
 				E2123A602647115400A29222 /* Alamofire in Frameworks */,
 				E23B93E42652D52800E039D9 /* SwifterSwift in Frameworks */,
-				E205878827247E9B00D0052D /* FirebaseDatabaseSwift-Beta in Frameworks */,
 				E2BDFCA726518CB90075E619 /* Money in Frameworks */,
 				E2765574267E9104002D13CC /* Color.framework in Frameworks */,
 				E22A84222669C8B60099F107 /* PartialSheet in Frameworks */,
 				E2123A682647198000A29222 /* SwiftyJSON in Frameworks */,
 				E2039B4B265750B3004B3BEF /* Charts in Frameworks */,
-				E205878227247E9B00D0052D /* FirebaseAnalyticsSwift-Beta in Frameworks */,
-				E205878627247E9B00D0052D /* FirebaseCrashlytics in Frameworks */,
-				E267B8712667FEBC009979C8 /* NVActivityIndicatorViewExtended in Frameworks */,
 				E2ABEDF0265322670001F0F9 /* HMSegmentedControl in Frameworks */,
 				E276558D267E9470002D13CC /* UI.framework in Frameworks */,
-				E267B86F2667FEBC009979C8 /* NVActivityIndicatorView in Frameworks */,
-				E2211E2C26C8444700041F5F /* SwiftDate in Frameworks */,
-				E205878427247E9B00D0052D /* FirebaseAuth in Frameworks */,
 				E205D3F126D2C567004EE31D /* Logging.framework in Frameworks */,
 				E2A07D9B26520BDD0075E271 /* Hue in Frameworks */,
 				E2123A652647158800A29222 /* SwiftyBeaver in Frameworks */,
@@ -527,7 +504,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E2F9CDDA26D5559B0076F109 /* SwiftDate in Frameworks */,
 				E21D2E7A269B6DF80063C7ED /* Color.framework in Frameworks */,
 				E2FC1040267E9EE400CD98AF /* Money in Frameworks */,
 				E2B5EAA5268810F00092663F /* SwifterSwift in Frameworks */,
@@ -1003,7 +979,6 @@
 			name = UI;
 			packageProductDependencies = (
 				E2765596267E94C3002D13CC /* SnapKit */,
-				E276559A267E9505002D13CC /* NVActivityIndicatorView */,
 				E2D7BD322700F85B00470AFD /* Hue */,
 			);
 			productName = UI;
@@ -1104,18 +1079,8 @@
 				E2ABEDEF265322670001F0F9 /* HMSegmentedControl */,
 				E2ABEDF4265322FA0001F0F9 /* SnapKit */,
 				E2039B4A265750B3004B3BEF /* Charts */,
-				E267B86E2667FEBC009979C8 /* NVActivityIndicatorView */,
-				E267B8702667FEBC009979C8 /* NVActivityIndicatorViewExtended */,
 				E22A84212669C8B60099F107 /* PartialSheet */,
-				E294F05C26A5F44400B76893 /* SkeletonUI */,
-				E2211E2B26C8444700041F5F /* SwiftDate */,
 				E24D90AB27128095009EDE57 /* ComposableArchitecture */,
-				E205878127247E9B00D0052D /* FirebaseAnalyticsSwift-Beta */,
-				E205878327247E9B00D0052D /* FirebaseAuth */,
-				E205878527247E9B00D0052D /* FirebaseCrashlytics */,
-				E205878727247E9B00D0052D /* FirebaseDatabaseSwift-Beta */,
-				E205878927247E9B00D0052D /* FirebasePerformance */,
-				E205878B27247E9B00D0052D /* FirebaseStorageSwift-Beta */,
 			);
 			productName = Wait;
 			productReference = E2E637A92641A5FB00F872A4 /* Wait.app */;
@@ -1138,7 +1103,6 @@
 			packageProductDependencies = (
 				E2FC103F267E9EE400CD98AF /* Money */,
 				E2B5EAA4268810F00092663F /* SwifterSwift */,
-				E2F9CDD926D5559B0076F109 /* SwiftDate */,
 			);
 			productName = Model;
 			productReference = E2FC102D267E9EB300CD98AF /* Model.framework */;
@@ -1235,12 +1199,8 @@
 				E2ABEDEE265322670001F0F9 /* XCRemoteSwiftPackageReference "HMSegmentedControl" */,
 				E2ABEDF3265322FA0001F0F9 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				E2039B49265750B3004B3BEF /* XCRemoteSwiftPackageReference "Charts" */,
-				E267B86D2667FEBC009979C8 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */,
 				E22A84202669C8B60099F107 /* XCRemoteSwiftPackageReference "PartialSheet" */,
-				E294F05B26A5F44400B76893 /* XCRemoteSwiftPackageReference "SkeletonUI" */,
-				E2211E2A26C8444700041F5F /* XCRemoteSwiftPackageReference "SwiftDate" */,
 				E24D90AA27128095009EDE57 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
-				E205878027247E9B00D0052D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = E2E637AA2641A5FB00F872A4 /* Products */;
 			projectDirPath = "";
@@ -2472,14 +2432,6 @@
 				version = 3.4.0;
 			};
 		};
-		E205878027247E9B00D0052D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 8.0.0;
-			};
-		};
 		E2123A5E2647115400A29222 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire";
@@ -2502,14 +2454,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 5.0.1;
-			};
-		};
-		E2211E2A26C8444700041F5F /* XCRemoteSwiftPackageReference "SwiftDate" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/malcommac/SwiftDate";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 6.3.1;
 			};
 		};
 		E22A84202669C8B60099F107 /* XCRemoteSwiftPackageReference "PartialSheet" */ = {
@@ -2536,28 +2480,12 @@
 				minimumVersion = 0.9.0;
 			};
 		};
-		E267B86D2667FEBC009979C8 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ninjaprox/NVActivityIndicatorView";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.1.1;
-			};
-		};
 		E2901FA3264CAC8B003A2C01 /* XCRemoteSwiftPackageReference "shake-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/shakebugs/shake-ios";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 14.2.1;
-			};
-		};
-		E294F05B26A5F44400B76893 /* XCRemoteSwiftPackageReference "SkeletonUI" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/CSolanaM/SkeletonUI";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.5;
 			};
 		};
 		E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */ = {
@@ -2613,36 +2541,6 @@
 			package = E22A84202669C8B60099F107 /* XCRemoteSwiftPackageReference "PartialSheet" */;
 			productName = PartialSheet;
 		};
-		E205878127247E9B00D0052D /* FirebaseAnalyticsSwift-Beta */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E205878027247E9B00D0052D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = "FirebaseAnalyticsSwift-Beta";
-		};
-		E205878327247E9B00D0052D /* FirebaseAuth */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E205878027247E9B00D0052D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAuth;
-		};
-		E205878527247E9B00D0052D /* FirebaseCrashlytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E205878027247E9B00D0052D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseCrashlytics;
-		};
-		E205878727247E9B00D0052D /* FirebaseDatabaseSwift-Beta */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E205878027247E9B00D0052D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = "FirebaseDatabaseSwift-Beta";
-		};
-		E205878927247E9B00D0052D /* FirebasePerformance */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E205878027247E9B00D0052D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebasePerformance;
-		};
-		E205878B27247E9B00D0052D /* FirebaseStorageSwift-Beta */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E205878027247E9B00D0052D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = "FirebaseStorageSwift-Beta";
-		};
 		E205D3F826D2C5DF004EE31D /* SwiftyBeaver */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E2123A632647158800A29222 /* XCRemoteSwiftPackageReference "SwiftyBeaver" */;
@@ -2662,11 +2560,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2123A662647198000A29222 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
 			productName = SwiftyJSON;
-		};
-		E2211E2B26C8444700041F5F /* SwiftDate */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2211E2A26C8444700041F5F /* XCRemoteSwiftPackageReference "SwiftDate" */;
-			productName = SwiftDate;
 		};
 		E22A84212669C8B60099F107 /* PartialSheet */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -2698,35 +2591,15 @@
 			package = E24D90AA27128095009EDE57 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
 			productName = ComposableArchitecture;
 		};
-		E267B86E2667FEBC009979C8 /* NVActivityIndicatorView */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E267B86D2667FEBC009979C8 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */;
-			productName = NVActivityIndicatorView;
-		};
-		E267B8702667FEBC009979C8 /* NVActivityIndicatorViewExtended */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E267B86D2667FEBC009979C8 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */;
-			productName = NVActivityIndicatorViewExtended;
-		};
 		E2765596267E94C3002D13CC /* SnapKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E2ABEDF3265322FA0001F0F9 /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
 		};
-		E276559A267E9505002D13CC /* NVActivityIndicatorView */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E267B86D2667FEBC009979C8 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */;
-			productName = NVActivityIndicatorView;
-		};
 		E2901FA4264CAC8B003A2C01 /* Shake */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E2901FA3264CAC8B003A2C01 /* XCRemoteSwiftPackageReference "shake-ios" */;
 			productName = Shake;
-		};
-		E294F05C26A5F44400B76893 /* SkeletonUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E294F05B26A5F44400B76893 /* XCRemoteSwiftPackageReference "SkeletonUI" */;
-			productName = SkeletonUI;
 		};
 		E2A07D9A26520BDD0075E271 /* Hue */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -2772,11 +2645,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */;
 			productName = Hue;
-		};
-		E2F9CDD926D5559B0076F109 /* SwiftDate */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2211E2A26C8444700041F5F /* XCRemoteSwiftPackageReference "SwiftDate" */;
-			productName = SwiftDate;
 		};
 		E2FC103F267E9EE400CD98AF /* Money */ = {
 			isa = XCSwiftPackageProductDependency;

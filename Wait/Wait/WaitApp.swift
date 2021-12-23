@@ -1,15 +1,11 @@
 // Created by kai_chen on 5/4/21.
 
 import Color
-import Firebase
 import Logging
 import PartialSheet
 import Shake
 import SwiftUI
 import SwiftyBeaver
-// import Trace
-
-// let logger = SwiftyBeaver.self
 
 // MARK: - WaitApp
 
@@ -20,7 +16,6 @@ struct WaitApp: App {
   init() {
     setupShake()
     setupLogger()
-    setupFirebase()
   }
 
   // MARK: Internal
@@ -46,13 +41,6 @@ struct WaitApp: App {
   }
 
   // MARK: Private
-
-//  private let trace = Trace.shared
-
-  private func setupFirebase() {
-    FirebaseApp.configure()
-    Database.database().isPersistenceEnabled = true
-  }
 
   private func setupShake() {
     Shake.configuration.isInvokedByShakeDeviceEvent = true

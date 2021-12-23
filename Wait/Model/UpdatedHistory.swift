@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SwiftDate
 
 // MARK: - UpdatedHistory
 
@@ -25,7 +24,9 @@ public struct UpdatedHistory: Codable, Identifiable {
 
 public extension UpdatedHistory {
   var formattedHistory: String {
-    var history = updatedTime.toFormat("MMM dd, yyyy: ")
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "MMM dd, yyyy"
+    var history = dateFormatter.string(from: updatedTime) + ": "
     if notes.isEmpty || notes.count == 1 {
       history += notes.first ?? ""
     } else {
