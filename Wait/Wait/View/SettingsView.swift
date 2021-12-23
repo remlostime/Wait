@@ -6,6 +6,7 @@
 import ComposableArchitecture
 import Model
 import SwiftUI
+import ChecklistEditFeature
 
 // MARK: - SettingsView
 
@@ -17,8 +18,8 @@ struct SettingsView: View {
       List {
         NavigationLink("Checklist") {
           ChecklistEditView(store: Store(
-            initialState: ChecklistEditState(),
-            reducer: settingsReducer,
+            initialState: ChecklistEditState(items: []),
+            reducer: ChecklistEditReducerBuilder.build(),
             environment: ChecklistEditEnvironment()
           ))
         }

@@ -3,7 +3,6 @@
 
 import Foundation
 import Money
-import SwifterSwift
 
 public extension Money {
   enum CurrencyFormat {
@@ -12,7 +11,7 @@ public extension Money {
   }
 
   var amountDoubleValue: Double {
-    amount.string.double() ?? 0.0
+    NSDecimalNumber(decimal: amount).doubleValue
   }
 
   var formattedCurrency: String {
@@ -28,7 +27,7 @@ public extension Money {
 
     switch format {
       case .full:
-        return formatter.string(for: amount) ?? amount.string
+        return formatter.string(for: amount) ?? String(describing: amount)
       case .short:
         let value: Double
         let suffixSign: String
@@ -51,7 +50,7 @@ public extension Money {
         if let formattedString = formatter.string(from: NSNumber(value: value)) {
           return formattedString + suffixSign
         } else {
-          return amount.string
+          return String(describing: amount)
         }
     }
   }

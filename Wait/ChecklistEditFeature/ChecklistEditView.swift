@@ -9,10 +9,14 @@ import SwiftUI
 
 // MARK: - ChecklistEditView
 
-struct ChecklistEditView: View {
+public struct ChecklistEditView: View {
   let store: Store<ChecklistEditState, ChecklistEditAction>
 
-  var body: some View {
+  public init(store: Store<ChecklistEditState, ChecklistEditAction>) {
+    self.store = store
+  }
+
+  public var body: some View {
     WithViewStore(self.store) { viewStore in
       List {
         ForEach(Array(viewStore.items.enumerated()), id: \.element.id) { index, _ in
@@ -48,8 +52,8 @@ struct ChecklistEditView: View {
 struct ChecklistEditView_Previews: PreviewProvider {
   static var previews: some View {
     ChecklistEditView(store: Store(
-      initialState: ChecklistEditState(),
-      reducer: settingsReducer,
+      initialState: ChecklistEditState(items: []),
+      reducer: ChecklistEditReducerBuilder.build(),
       environment: ChecklistEditEnvironment()
     ))
   }
