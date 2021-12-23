@@ -10,11 +10,13 @@ import SwiftUI
 // MARK: - ChecklistEditView
 
 public struct ChecklistEditView: View {
-  let store: Store<ChecklistEditState, ChecklistEditAction>
+  // MARK: Lifecycle
 
   public init(store: Store<ChecklistEditState, ChecklistEditAction>) {
     self.store = store
   }
+
+  // MARK: Public
 
   public var body: some View {
     WithViewStore(self.store) { viewStore in
@@ -45,6 +47,10 @@ public struct ChecklistEditView: View {
       }
     }
   }
+
+  // MARK: Internal
+
+  let store: Store<ChecklistEditState, ChecklistEditAction>
 }
 
 // MARK: - ChecklistEditView_Previews

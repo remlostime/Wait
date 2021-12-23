@@ -18,11 +18,15 @@ public enum ChecklistEditAction {
 // MARK: - ChecklistEditState
 
 public struct ChecklistEditState: Equatable {
-  var items: [ChecklistItem]
+  // MARK: Lifecycle
 
   public init(items: [ChecklistItem]) {
     self.items = items
   }
+
+  // MARK: Internal
+
+  var items: [ChecklistItem]
 }
 
 // MARK: - ChecklistEditEnvironment
@@ -35,7 +39,9 @@ public struct ChecklistEditEnvironment {
 
 public typealias ChecklistEditReducer = Reducer<ChecklistEditState, ChecklistEditAction, ChecklistEditEnvironment>
 
-public struct ChecklistEditReducerBuilder {
+// MARK: - ChecklistEditReducerBuilder
+
+public enum ChecklistEditReducerBuilder {
   public static func build() -> ChecklistEditReducer {
     let settingsReducer = ChecklistEditReducer { state, action, _ in
       switch action {

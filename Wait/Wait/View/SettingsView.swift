@@ -3,10 +3,10 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
+import ChecklistEditFeature
 import ComposableArchitecture
 import Model
 import SwiftUI
-import ChecklistEditFeature
 
 // MARK: - SettingsView
 
