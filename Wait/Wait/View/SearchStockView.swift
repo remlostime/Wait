@@ -6,7 +6,6 @@ import Model
 import Networking
 import Size
 import SwiftUI
-import SwiftyJSON
 
 // MARK: - SearchStockView
 

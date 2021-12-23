@@ -3,10 +3,7 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import Color
 import Foundation
-import Hue
-import NVActivityIndicatorView
 import SnapKit
 import UIKit
 
@@ -16,12 +13,10 @@ class ActivityIndicatorManager {
   // MARK: Lifecycle
 
   private init() {
-    activityIndicatorView = NVActivityIndicatorView(
-      frame: .zero,
-      type: .ballBeat,
-      color: .white,
-      padding: nil
-    )
+    activityIndicatorView = UIActivityIndicatorView(frame: .zero)
+    activityIndicatorView.snp.makeConstraints { make in
+      make.width.height.equalTo(50)
+    }
   }
 
   // MARK: Internal
@@ -29,24 +24,9 @@ class ActivityIndicatorManager {
   static let shared = ActivityIndicatorManager()
 
   func startAnimating(for view: UIView) {
-    let containerView = UIView(frame: .zero)
+    view.addSubview(activityIndicatorView)
 
-    containerView.backgroundColor = UIColor.black.alpha(0.1)
-    containerView.addSubview(activityIndicatorView)
     activityIndicatorView.snp.makeConstraints { make in
-      make.center.equalToSuperview()
-      make.height.equalTo(40.0)
-      make.width.equalTo(100.0)
-    }
-
-    // first we make sure we remove the actual to avoid double add
-    self.containerView?.removeFromSuperview()
-    self.containerView = containerView
-
-    view.addSubview(containerView)
-
-    containerView.snp.makeConstraints { make in
-      make.edges.equalToSuperview()
       make.center.equalToSuperview()
     }
 
@@ -55,13 +35,12 @@ class ActivityIndicatorManager {
 
   func stopAnimating() {
     activityIndicatorView.stopAnimating()
-    containerView?.removeFromSuperview()
+    activityIndicatorView.removeFromSuperview()
   }
 
   // MARK: Private
 
-  private let activityIndicatorView: NVActivityIndicatorView
-  private var containerView: UIView?
+  private let activityIndicatorView: UIActivityIndicatorView
 }
 
 public extension UIViewController {
