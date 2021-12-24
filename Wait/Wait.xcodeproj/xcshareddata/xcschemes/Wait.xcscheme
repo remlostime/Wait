@@ -68,6 +68,16 @@
                ReferencedContainer = "container:Wait.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "E28619C32776750D002DFCD0"
+               BuildableName = "StockChartsTests.xctest"
+               BlueprintName = "StockChartsTests"
+               ReferencedContainer = "container:Wait.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
