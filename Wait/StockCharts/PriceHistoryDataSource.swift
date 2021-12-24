@@ -7,7 +7,7 @@ import Model
 import Money
 import UIKit
 
-final public class PriceHistoryDataSource: ObservableObject, ChartViewDataSource {
+public final class PriceHistoryDataSource: ObservableObject, ChartViewDataSource {
   // MARK: Lifecycle
 
   public init(symbol: String) {
@@ -19,14 +19,10 @@ final public class PriceHistoryDataSource: ObservableObject, ChartViewDataSource
     chartData = [:]
   }
 
-  // MARK: Internal
-
-  typealias ChartModelType = [TimeSection: [StockQuote]]
+  // MARK: Public
 
   @Published public private(set) var chartData: [TimeSection: ChartData]
   public weak var delegate: ChartViewDataSourceDelegate?
-
-  var symbol: String
 
   public var currentPrice: Money<USD> {
     guard let quote = models[.day]?.last else {
@@ -71,6 +67,12 @@ final public class PriceHistoryDataSource: ObservableObject, ChartViewDataSource
       self.chartCache.setChartData(self.models)
     }
   }
+
+  // MARK: Internal
+
+  typealias ChartModelType = [TimeSection: [StockQuote]]
+
+  var symbol: String
 
   // MARK: Private
 
