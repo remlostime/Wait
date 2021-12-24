@@ -8,7 +8,7 @@ import Foundation
 import UIKit
 
 extension ChartData {
-  func buildChartImage() -> UIImage? {
+  public func buildChartImage() -> UIImage? {
     let chart = LineChartView(frame: CGRect(x: 0, y: 0, width: 80.0, height: 32.0))
     chart.setScaleEnabled(false)
     chart.xAxis.avoidFirstLastClippingEnabled = true

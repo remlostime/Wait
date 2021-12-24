@@ -43,8 +43,8 @@ struct StockDetailsView: View {
   var body: some View {
     ScrollView {
       VStack(alignment: .leading) {
-        SwiftUIChartViewController(symbol: stock.symbol)
-          .frame(minHeight: 256.0)
+//        SwiftUIChartViewController(symbol: stock.symbol)
+//          .frame(minHeight: 256.0)
 
         Divider()
           .padding()

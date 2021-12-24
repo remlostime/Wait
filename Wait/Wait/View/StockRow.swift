@@ -6,6 +6,7 @@ import Model
 import PartialSheet
 import Size
 import SwiftUI
+import StockCharts
 
 // MARK: - StockRowDetailType
 

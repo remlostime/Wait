@@ -7,10 +7,10 @@ import Model
 import Money
 import UIKit
 
-final class PriceHistoryDataSource: ObservableObject, ChartViewDataSource {
+final public class PriceHistoryDataSource: ObservableObject, ChartViewDataSource {
   // MARK: Lifecycle
 
-  init(symbol: String) {
+  public init(symbol: String) {
     self.symbol = symbol
     chartCache = ChartCache<ChartModelType>(
       cacheName: "price-history",
@@ -23,12 +23,12 @@ final class PriceHistoryDataSource: ObservableObject, ChartViewDataSource {
 
   typealias ChartModelType = [TimeSection: [StockQuote]]
 
-  @Published private(set) var chartData: [TimeSection: ChartData]
-  weak var delegate: ChartViewDataSourceDelegate?
+  @Published public private(set) var chartData: [TimeSection: ChartData]
+  public weak var delegate: ChartViewDataSourceDelegate?
 
   var symbol: String
 
-  var currentPrice: Money<USD> {
+  public var currentPrice: Money<USD> {
     guard let quote = models[.day]?.last else {
       return 0.0
     }
@@ -36,11 +36,11 @@ final class PriceHistoryDataSource: ObservableObject, ChartViewDataSource {
     return quote.close
   }
 
-  func setDelegate(delegate: ChartViewDataSourceDelegate) {
+  public func setDelegate(delegate: ChartViewDataSourceDelegate) {
     self.delegate = delegate
   }
 
-  func fetchData(for timeSections: [TimeSection]) {
+  public func fetchData(for timeSections: [TimeSection]) {
     models = [:]
 
     chartCache.getChartData { [weak self] chartCacheData in
