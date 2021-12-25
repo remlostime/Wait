@@ -1,6 +1,5 @@
 // Created by kai_chen on 5/4/21.
 
-import CloudKit
 import Color
 import Foundation
 import Money
@@ -9,7 +8,11 @@ import UIKit
 
 // MARK: - Stock
 
-public class Stock: Codable {
+public struct Stock: Codable, Equatable {
+  public static func == (lhs: Stock, rhs: Stock) -> Bool {
+    lhs.symbol == rhs.symbol
+  }
+
   // MARK: Lifecycle
 
   public init(
@@ -30,41 +33,6 @@ public class Stock: Codable {
     self.updatedHistory = updatedHistory
   }
 
-  public init(from record: CKRecord) {
-    symbol = (record["symbol"] as? String) ?? ""
-    name = (record["name"] as? String) ?? ""
-    let expectedPriceString = (record["expectedPrice"] as? String) ?? "0"
-    expectedPrice = Money<USD>(stringLiteral: expectedPriceString)
-    memo = (record["memo"] as? String) ?? ""
-
-    if let categoryInt = record["category"] as? Int,
-       let _category = StockCategory(rawValue: categoryInt)
-    {
-      category = _category
-    } else {
-      category = .research
-    }
-
-    // TODO(kai) - Fix this for iCloud
-    updatedHistory = []
-
-    if let currentQuoteRecord = record["currentQuote"] as? CKRecord.Reference {
-      currentQuote = .empty
-      let id = currentQuoteRecord.recordID
-
-      CloudNetworkClient.shared.fetch(recordID: id) { [weak self] result in
-        switch result {
-          case let .success(stockCurrentQuote):
-            self?.currentQuote = stockCurrentQuote
-          case let .failure(error):
-            print("error to fetch stock current quote: \(error.localizedDescription)")
-        }
-      }
-    } else {
-      currentQuote = .empty
-    }
-  }
-
   // MARK: Public
 
   public let symbol: String
@@ -74,7 +42,6 @@ public class Stock: Codable {
   public let category: StockCategory
   public private(set) var currentQuote: StockCurrentQuote
   public let updatedHistory: [UpdatedHistory]
-  public var uuid = UUID()
 
   public func with(currentQuote: StockCurrentQuote) -> Stock {
     Stock(
@@ -110,14 +77,6 @@ public class Stock: Codable {
       category: category,
       updatedHistory: updatedHistory
     )
-  }
-}
-
-// MARK: Equatable
-
-extension Stock: Equatable {
-  public static func == (lhs: Stock, rhs: Stock) -> Bool {
-    lhs.uuid == rhs.uuid
   }
 }
 
@@ -206,28 +165,4 @@ public extension Stock {
   var actionColor: Color {
     Color(actionUIColor)
   }
-}
-
-// MARK: - PriceChartImage
-
-public struct PriceChartImage: Codable, Equatable {
-  // MARK: Lifecycle
-
-  public init(image: UIImage) {
-    data = image.pngData()
-  }
-
-  // MARK: Public
-
-  public var image: UIImage? {
-    guard let data = data else {
-      return nil
-    }
-
-    return UIImage(data: data)
-  }
-
-  // MARK: Private
-
-  private let data: Data?
 }

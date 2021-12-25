@@ -9,6 +9,7 @@ import Model
 import Size
 import SwiftUI
 import WidgetKit
+import CacheService
 
 // MARK: - Provider
 

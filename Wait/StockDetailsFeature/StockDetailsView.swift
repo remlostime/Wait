@@ -6,10 +6,14 @@ import Model
 import Size
 import StockCharts
 import SwiftUI
+import CacheService
 
 // MARK: - StockDetailsView
 
-struct StockDetailsView: View {
+public struct StockDetailsView: View {
+  public init(stock: Stock) {
+    _stock = State(initialValue: stock)
+  }
   // MARK: Internal
 
   @State var stock: Stock
@@ -41,7 +45,7 @@ struct StockDetailsView: View {
     )
   }
 
-  var body: some View {
+  public var body: some View {
     ScrollView {
       VStack(alignment: .leading) {
         SwiftUIChartViewController(symbol: stock.symbol)

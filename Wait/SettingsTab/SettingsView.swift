@@ -10,10 +10,12 @@ import SwiftUI
 
 // MARK: - SettingsView
 
-struct SettingsView: View {
+public struct SettingsView: View {
   @AppStorage("stockRowStyle") var stockRowStyle: StockRowStyle = .card
 
-  var body: some View {
+  public init() {}
+
+  public var body: some View {
     NavigationView {
       List {
         NavigationLink("Checklist") {

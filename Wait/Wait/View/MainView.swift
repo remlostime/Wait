@@ -8,10 +8,11 @@ import Money
 import PartialSheet
 import Size
 import SwiftUI
+import StockDetailsFeature
 
-// MARK: - ContentView
+// MARK: - MainView
 
-struct ContentView: View {
+struct MainView: View {
   // MARK: Internal
 
   @State var stockRowDetailType: StockRowDetailType = .actionStatus
@@ -123,8 +124,6 @@ struct ContentView: View {
 
   @ObservedObject private var dataSource = StockCurrentQuoteDataSource()
 
-  private let networkClient = CloudNetworkClient.shared
-
   private let stockCurrentQuoteNetworkClient = StockCurrentQuoteNetworkClient()
 
   @State private var showingWaitStockView = false
@@ -135,6 +134,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
   static var previews: some View {
-    ContentView()
+    MainView()
   }
 }

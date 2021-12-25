@@ -7,7 +7,13 @@ import SwiftUI
 
 // MARK: - StockExpectedPriceInputView
 
-struct StockExpectedPriceInputView: View {
+public struct StockExpectedPriceInputView: View {
+  public init(searchStock: SearchStockResult, stock: Binding<Stock>, isPresented: Binding<Bool>) {
+    self.searchStock = searchStock
+    _stock = stock
+    _isPresented = isPresented
+  }
+
   // MARK: Internal
 
   class ExpectedPriceModel: ObservableObject {
@@ -35,7 +41,7 @@ struct StockExpectedPriceInputView: View {
   @Binding var stock: Stock
   @Binding var isPresented: Bool
 
-  var body: some View {
+  public var body: some View {
     VStack(alignment: .center) {
       Picker("Picker", selection: $category, content: {
         ForEach(StockCategory.allCases) { category in

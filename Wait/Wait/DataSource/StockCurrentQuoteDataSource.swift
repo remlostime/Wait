@@ -8,6 +8,7 @@ import Foundation
 import Logging
 import Model
 import SwiftUI
+import CacheService
 
 final class StockCurrentQuoteDataSource: ObservableObject {
   // MARK: Internal

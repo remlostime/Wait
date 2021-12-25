@@ -78,6 +78,36 @@
                ReferencedContainer = "container:Wait.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "E20AFA5D2777C9E600B0955F"
+               BuildableName = "SettingsTabTests.xctest"
+               BlueprintName = "SettingsTabTests"
+               ReferencedContainer = "container:Wait.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "E20AFA842777CE2800B0955F"
+               BuildableName = "StockDetailsFeatureTests.xctest"
+               BlueprintName = "StockDetailsFeatureTests"
+               ReferencedContainer = "container:Wait.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "E20AFAB32777CF6200B0955F"
+               BuildableName = "CacheServiceTests.xctest"
+               BlueprintName = "CacheServiceTests"
+               ReferencedContainer = "container:Wait.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
