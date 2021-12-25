@@ -25,13 +25,7 @@ public class ValuationChartViewController: UIViewController {
     fatalError("init(coder:) has not been implemented")
   }
 
-  // MARK: Internal
-
-  var stock: Stock {
-    didSet {
-      updateData()
-    }
-  }
+  // MARK: Public
 
   public override func viewDidLoad() {
     super.viewDidLoad()
@@ -42,6 +36,14 @@ public class ValuationChartViewController: UIViewController {
     }
 
     updateData()
+  }
+
+  // MARK: Internal
+
+  var stock: Stock {
+    didSet {
+      updateData()
+    }
   }
 
   func updateData() {

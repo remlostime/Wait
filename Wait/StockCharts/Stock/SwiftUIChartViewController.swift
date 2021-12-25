@@ -7,11 +7,13 @@ import UIKit
 // MARK: - SwiftUIChartViewController
 
 public struct SwiftUIChartViewController: UIViewControllerRepresentable {
-  let symbol: String
+  // MARK: Lifecycle
 
   public init(symbol: String) {
     self.symbol = symbol
   }
+
+  // MARK: Public
 
   public func makeCoordinator() -> ChartCoordinator {
     ChartCoordinator(self)
@@ -31,6 +33,10 @@ public struct SwiftUIChartViewController: UIViewControllerRepresentable {
   }
 
   public func updateUIViewController(_ viewController: ChartViewController, context: Context) {}
+
+  // MARK: Internal
+
+  let symbol: String
 }
 
 // MARK: - ChartCoordinator

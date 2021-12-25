@@ -6,7 +6,7 @@
 import Foundation
 import SwiftyBeaver
 
-public struct Logger {
+public enum Logger {
   public static let shared = SwiftyBeaver.self
 
   public static func setupLogger() {
@@ -15,7 +15,8 @@ public struct Logger {
     let cloud = SBPlatformDestination(
       appID: "o8QNxr",
       appSecret: "vrhdvzltfSrrHDfjjzwdjkuboghtghnr",
-      encryptionKey: "Y3ac3wvyk2piCsldmnzowqkxet26kPpJ")
+      encryptionKey: "Y3ac3wvyk2piCsldmnzowqkxet26kPpJ"
+    )
     shared.addDestination(console)
     shared.addDestination(file)
     shared.addDestination(cloud)
