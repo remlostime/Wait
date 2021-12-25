@@ -17,7 +17,7 @@ class StockOverviewDataSource: ObservableObject {
     networkClient.fetchStockOverview(stock: stock)
       .receive(on: DispatchQueue.main)
       .sink { _ in
-        logger.verbose("Successfully fetch stock overview: \(stock.symbol)")
+        Logger.shared.verbose("Successfully fetch stock overview: \(stock.symbol)")
       } receiveValue: { [weak self] stockOverview in
         self?.stockOverview = stockOverview
       }

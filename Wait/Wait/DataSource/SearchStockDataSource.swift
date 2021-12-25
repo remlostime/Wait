@@ -22,7 +22,7 @@ class SearchStockDataSource: ObservableObject {
     searchStockNetworkClient.searchStocks(for: keyword)
       .receive(on: DispatchQueue.main)
       .sink { _ in
-        logger.verbose("Successfully get recommend stocks for :\(keyword)")
+        Logger.shared.verbose("Successfully get recommend stocks for :\(keyword)")
       } receiveValue: { [weak self] in
         let acceptedExchange: Set<Exchange> = Set(Exchange.allCases)
         let stocks = $0.data

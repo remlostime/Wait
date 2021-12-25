@@ -25,9 +25,9 @@ class StockChartImageCache {
     storage?.async.setObject(image, forKey: symbol) { result in
       switch result {
         case .value:
-          logger.verbose("Successfully store stock image: \(symbol)")
+          Logger.shared.verbose("Successfully store stock image: \(symbol)")
         case let .error(error):
-          logger.error("Failed to store stock \(symbol) image: \(error.localizedDescription)")
+          Logger.shared.error("Failed to store stock \(symbol) image: \(error.localizedDescription)")
       }
     }
   }

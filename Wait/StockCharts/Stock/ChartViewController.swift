@@ -214,12 +214,12 @@ public class ChartViewController: UIViewController {
 
   private func updateChart(data: [TimeSection: ChartData]) {
     guard let timeSection = timeSection else {
-      logger.error("Failed to convert timeRangeSegmentedControl.selectedSegmentIndex to timeSection")
+      Logger.shared.error("Failed to convert timeRangeSegmentedControl.selectedSegmentIndex to timeSection")
       return
     }
 
     guard let newChartData = data[timeSection] else {
-      logger.error("Failed to load newChartData from timeSection: \(timeSection)")
+      Logger.shared.error("Failed to load newChartData from timeSection: \(timeSection)")
       return
     }
 

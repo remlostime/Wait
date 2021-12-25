@@ -29,9 +29,9 @@ class ChecklistCache {
     storage?.async.setObject(items, forKey: key) { result in
       switch result {
         case .value:
-          logger.verbose("Successfully store checklist")
+          Logger.shared.verbose("Successfully store checklist")
         case let .error(error):
-          logger.error("Failed to store checklist: \(error.localizedDescription)")
+          Logger.shared.error("Failed to store checklist: \(error.localizedDescription)")
       }
     }
   }

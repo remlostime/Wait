@@ -10,27 +10,31 @@ import UIKit
 
 // MARK: - SwiftUIValuationChartViewController
 
-struct SwiftUIValuationChartViewController: UIViewControllerRepresentable {
+public struct SwiftUIValuationChartViewController: UIViewControllerRepresentable {
   let stock: Stock
 
-  func makeCoordinator() -> ValuationChartCoordinator {
+  public init(stock: Stock) {
+    self.stock = stock
+  }
+
+  public func makeCoordinator() -> ValuationChartCoordinator {
     ValuationChartCoordinator(self)
   }
 
-  func makeUIViewController(context: Context) -> ValuationChartViewController {
+  public func makeUIViewController(context: Context) -> ValuationChartViewController {
     let viewController = ValuationChartViewController(stock: stock)
 
     return viewController
   }
 
-  func updateUIViewController(_ viewController: ValuationChartViewController, context: Context) {
+  public func updateUIViewController(_ viewController: ValuationChartViewController, context: Context) {
     viewController.stock = stock
   }
 }
 
 // MARK: - ValuationChartCoordinator
 
-class ValuationChartCoordinator: NSObject {
+public class ValuationChartCoordinator: NSObject {
   // MARK: Lifecycle
 
   init(_ viewController: SwiftUIValuationChartViewController) {

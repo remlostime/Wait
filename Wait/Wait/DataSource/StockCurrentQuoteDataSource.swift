@@ -31,9 +31,9 @@ final class StockCurrentQuoteDataSource: ObservableObject {
       .sink { result in
         switch result {
           case .finished:
-            logger.verbose("Successfully fetch stock: \(stock.symbol)")
+            Logger.shared.verbose("Successfully fetch stock: \(stock.symbol)")
           case let .failure(error):
-            logger.error("Failed to fetch stock: \(stock.symbol). Error: \(error.localizedDescription)")
+            Logger.shared.error("Failed to fetch stock: \(stock.symbol). Error: \(error.localizedDescription)")
         }
       } receiveValue: { stockQuote in
         let newStock = stock.with(currentQuote: stockQuote)
@@ -54,9 +54,9 @@ final class StockCurrentQuoteDataSource: ObservableObject {
           let symbols = stocks.map { $0.symbol }
           switch result {
             case .finished:
-              logger.verbose("Successfully fetch stocks: \(symbols)")
+              Logger.shared.verbose("Successfully fetch stocks: \(symbols)")
             case let .failure(error):
-              logger.error("Failed to fetch stock: \(symbols). Error: \(error.localizedDescription)")
+              Logger.shared.error("Failed to fetch stock: \(symbols). Error: \(error.localizedDescription)")
           }
         } receiveValue: { stockQuoteBatch in
           let newStocks: [Stock] = stocks.map {
@@ -68,7 +68,7 @@ final class StockCurrentQuoteDataSource: ObservableObject {
           }
 
           DispatchQueue.main.async {
-            logger.verbose("Update all stocks quote")
+            Logger.shared.verbose("Update all stocks quote")
             self.stocks = newStocks
             self.saveStocks()
           }

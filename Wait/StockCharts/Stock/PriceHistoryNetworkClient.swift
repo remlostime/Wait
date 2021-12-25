@@ -16,7 +16,7 @@ class PriceHistoryNetworkClient {
     completion: @escaping (([StockQuote]) -> Void)
   ) {
     guard let url = makeHistoryURL(symbol: symbol, timeSection: timeSection) else {
-      logger.error("Error to fetch price history")
+      Logger.shared.error("Error to fetch price history")
       return
     }
 
@@ -37,11 +37,11 @@ class PriceHistoryNetworkClient {
             let stockQuotes = try decoder.decode([StockQuote].self, from: rawData)
             completion(stockQuotes.reversed())
           } catch {
-            logger.error("Failed to decode price history: \(error.localizedDescription)")
+            Logger.shared.error("Failed to decode price history: \(error.localizedDescription)")
             completion([])
           }
         case let .failure(error):
-          logger.error("Failed to decode price history: \(error.localizedDescription)")
+          Logger.shared.error("Failed to decode price history: \(error.localizedDescription)")
           completion([])
       }
     }
