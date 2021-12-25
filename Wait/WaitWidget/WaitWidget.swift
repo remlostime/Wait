@@ -29,18 +29,18 @@ struct Provider: TimelineProvider {
     let maxCount = 3
     stocks = Array(stocks[..<min(maxCount, stocks.count)])
 
-    logger.verbose("I am here")
+    Logger.shared.verbose("I am here")
     stockCurrentQuoteNetworkClient.fetchDetails(stocks: stocks)
       .sink { result in
         let symbols = stocks.map { $0.symbol }
         switch result {
           case .finished:
-            logger.verbose("Successfully fetch stocks: \(symbols)")
+            Logger.shared.verbose("Successfully fetch stocks: \(symbols)")
           case let .failure(error):
-            logger.error("Failed to fetch stock: \(symbols). Error: \(error.localizedDescription)")
+            Logger.shared.error("Failed to fetch stock: \(symbols). Error: \(error.localizedDescription)")
         }
       } receiveValue: { stockQuoteBatch in
-        logger.verbose("I am here ahahah")
+        Logger.shared.verbose("I am here ahahah")
         let newStocks: [Stock] = stocks.map {
           if let quote = stockQuoteBatch.quotes[$0.symbol] {
             return $0.with(currentQuote: quote)

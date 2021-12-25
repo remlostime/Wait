@@ -4,6 +4,7 @@ import Checklist
 import ComposableArchitecture
 import Model
 import Size
+import StockCharts
 import SwiftUI
 
 // MARK: - StockDetailsView

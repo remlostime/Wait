@@ -28,7 +28,7 @@ class StockCache {
         case let .value(stocks):
           completion(stocks)
         case let .error(error):
-          logger.error("Failed to fetch stocks: \(error.localizedDescription)")
+          Logger.shared.error("Failed to fetch stocks: \(error.localizedDescription)")
       }
     }
   }
@@ -37,9 +37,9 @@ class StockCache {
     storage?.async.setObject(stocks, forKey: key) { result in
       switch result {
         case .value:
-          logger.verbose("Successfully store stocks")
+          Logger.shared.verbose("Successfully store stocks")
         case let .error(error):
-          logger.error("Failed to store stocks: \(error.localizedDescription)")
+          Logger.shared.error("Failed to store stocks: \(error.localizedDescription)")
       }
     }
   }

@@ -11,7 +11,7 @@ import UIKit
 
 // MARK: - ValuationChartViewController
 
-class ValuationChartViewController: UIViewController {
+public class ValuationChartViewController: UIViewController {
   // MARK: Lifecycle
 
   init(stock: Stock) {
@@ -25,15 +25,9 @@ class ValuationChartViewController: UIViewController {
     fatalError("init(coder:) has not been implemented")
   }
 
-  // MARK: Internal
+  // MARK: Public
 
-  var stock: Stock {
-    didSet {
-      updateData()
-    }
-  }
-
-  override func viewDidLoad() {
+  public override func viewDidLoad() {
     super.viewDidLoad()
 
     view.addSubview(chartView)
@@ -42,6 +36,14 @@ class ValuationChartViewController: UIViewController {
     }
 
     updateData()
+  }
+
+  // MARK: Internal
+
+  var stock: Stock {
+    didSet {
+      updateData()
+    }
   }
 
   func updateData() {

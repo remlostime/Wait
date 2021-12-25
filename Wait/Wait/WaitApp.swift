@@ -5,7 +5,6 @@ import Logging
 import PartialSheet
 import Shake
 import SwiftUI
-import SwiftyBeaver
 
 // MARK: - WaitApp
 
@@ -15,7 +14,7 @@ struct WaitApp: App {
 
   init() {
     setupShake()
-    setupLogger()
+    Logger.setupLogger()
   }
 
   // MARK: Internal
@@ -36,7 +35,6 @@ struct WaitApp: App {
           }
       }
       .accentColor(.waitMint)
-//      .preferredColorScheme(.light	)
     }
   }
 
@@ -50,14 +48,5 @@ struct WaitApp: App {
       clientId: "EMFDruyQ3NpZJixuCtgi2LiTl83hjfngf3tRFL3F",
       clientSecret: "wh1riTvDR93wmB0itrbltVmOKMsFToZyM4O6Y65pPtARpvdiLq4Xtd1"
     )
-  }
-
-  private func setupLogger() {
-    let console = ConsoleDestination()
-    let file = FileDestination()
-    let cloud = SBPlatformDestination(appID: "o8QNxr", appSecret: "vrhdvzltfSrrHDfjjzwdjkuboghtghnr", encryptionKey: "Y3ac3wvyk2piCsldmnzowqkxet26kPpJ")
-    logger.addDestination(console)
-    logger.addDestination(file)
-    logger.addDestination(cloud)
   }
 }

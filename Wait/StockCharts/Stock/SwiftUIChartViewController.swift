@@ -6,14 +6,20 @@ import UIKit
 
 // MARK: - SwiftUIChartViewController
 
-struct SwiftUIChartViewController: UIViewControllerRepresentable {
-  let symbol: String
+public struct SwiftUIChartViewController: UIViewControllerRepresentable {
+  // MARK: Lifecycle
 
-  func makeCoordinator() -> ChartCoordinator {
+  public init(symbol: String) {
+    self.symbol = symbol
+  }
+
+  // MARK: Public
+
+  public func makeCoordinator() -> ChartCoordinator {
     ChartCoordinator(self)
   }
 
-  func makeUIViewController(context: Context) -> ChartViewController {
+  public func makeUIViewController(context: Context) -> ChartViewController {
     let dataSource = PriceHistoryDataSource(symbol: symbol)
 
     let chartViewController = ChartViewController(
@@ -26,12 +32,16 @@ struct SwiftUIChartViewController: UIViewControllerRepresentable {
     return chartViewController
   }
 
-  func updateUIViewController(_ viewController: ChartViewController, context: Context) {}
+  public func updateUIViewController(_ viewController: ChartViewController, context: Context) {}
+
+  // MARK: Internal
+
+  let symbol: String
 }
 
 // MARK: - ChartCoordinator
 
-class ChartCoordinator: NSObject {
+public class ChartCoordinator: NSObject {
   // MARK: Lifecycle
 
   init(_ viewController: SwiftUIChartViewController) {
