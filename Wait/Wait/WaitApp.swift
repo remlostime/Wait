@@ -3,6 +3,7 @@
 import Color
 import Logging
 import PartialSheet
+import SettingsTab
 import Shake
 import SwiftUI
 
@@ -23,7 +24,7 @@ struct WaitApp: App {
     WindowGroup {
       TabView {
         let sheetManager = PartialSheetManager()
-        ContentView()
+        MainView()
           .tabItem {
             Image(systemName: "house")
           }

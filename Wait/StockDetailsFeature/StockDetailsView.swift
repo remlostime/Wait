@@ -1,5 +1,6 @@
 // Created by kai_chen on 5/16/21.
 
+import CacheService
 import Checklist
 import ComposableArchitecture
 import Model
@@ -9,39 +10,16 @@ import SwiftUI
 
 // MARK: - StockDetailsView
 
-struct StockDetailsView: View {
-  // MARK: Internal
+public struct StockDetailsView: View {
+  // MARK: Lifecycle
 
-  @State var stock: Stock
-
-  @ObservedObject var stockOverviewDatSource = StockOverviewDataSource()
-
-  @State var stockIsFavorited: Bool = true
-  @State var memo: String = ""
-  @State var isEditingPrice = false
-
-  @State var checklistItems = ChecklistItem.allItems
-
-  var checkedItemCounts: Int {
-    var counts = 0
-    for item in checklistItems {
-      counts += item.isChecked ? 1 : 0
-    }
-
-    return counts
+  public init(stock: Stock) {
+    _stock = State(initialValue: stock)
   }
 
-  var searchStock: SearchStockResult {
-    SearchStockResult(
-      symbol: stock.symbol,
-      name: stock.name,
-      exchange: "",
-      country: "",
-      currency: "US"
-    )
-  }
+  // MARK: Public
 
-  var body: some View {
+  public var body: some View {
     ScrollView {
       VStack(alignment: .leading) {
         SwiftUIChartViewController(symbol: stock.symbol)
@@ -220,6 +198,37 @@ struct StockDetailsView: View {
     .onChange(of: stockIsFavorited, perform: { value in
       stockFavoriteAction(value)
     })
+  }
+
+  // MARK: Internal
+
+  @State var stock: Stock
+
+  @ObservedObject var stockOverviewDatSource = StockOverviewDataSource()
+
+  @State var stockIsFavorited: Bool = true
+  @State var memo: String = ""
+  @State var isEditingPrice = false
+
+  @State var checklistItems = ChecklistItem.allItems
+
+  var checkedItemCounts: Int {
+    var counts = 0
+    for item in checklistItems {
+      counts += item.isChecked ? 1 : 0
+    }
+
+    return counts
+  }
+
+  var searchStock: SearchStockResult {
+    SearchStockResult(
+      symbol: stock.symbol,
+      name: stock.name,
+      exchange: "",
+      country: "",
+      currency: "US"
+    )
   }
 
   // MARK: Private

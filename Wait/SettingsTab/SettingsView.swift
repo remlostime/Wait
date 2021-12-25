@@ -10,10 +10,14 @@ import SwiftUI
 
 // MARK: - SettingsView
 
-struct SettingsView: View {
-  @AppStorage("stockRowStyle") var stockRowStyle: StockRowStyle = .card
+public struct SettingsView: View {
+  // MARK: Lifecycle
 
-  var body: some View {
+  public init() {}
+
+  // MARK: Public
+
+  public var body: some View {
     NavigationView {
       List {
         NavigationLink("Checklist") {
@@ -33,6 +37,10 @@ struct SettingsView: View {
       .navigationTitle("Settings")
     }
   }
+
+  // MARK: Internal
+
+  @AppStorage("stockRowStyle") var stockRowStyle: StockRowStyle = .card
 }
 
 // MARK: - SettingsView_Previews

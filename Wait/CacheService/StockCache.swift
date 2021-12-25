@@ -5,16 +5,16 @@ import Foundation
 import Logging
 import Model
 
-class StockCache {
+public class StockCache {
   // MARK: Lifecycle
 
   private init() {}
 
-  // MARK: Internal
+  // MARK: Public
 
-  static let shared = StockCache()
+  public static let shared = StockCache()
 
-  func getStocks() -> [Stock] {
+  public func getStocks() -> [Stock] {
     guard let stocks = try? storage?.object(forKey: key) else {
       return []
     }
@@ -22,7 +22,7 @@ class StockCache {
     return stocks
   }
 
-  func getStocks(completion: @escaping (([Stock]) -> Void)) {
+  public func getStocks(completion: @escaping (([Stock]) -> Void)) {
     storage?.async.object(forKey: key) { result in
       switch result {
         case let .value(stocks):
@@ -33,7 +33,7 @@ class StockCache {
     }
   }
 
-  func saveStocks(_ stocks: [Stock]) {
+  public func saveStocks(_ stocks: [Stock]) {
     storage?.async.setObject(stocks, forKey: key) { result in
       switch result {
         case .value:
@@ -44,7 +44,7 @@ class StockCache {
     }
   }
 
-  func saveStock(_ stock: Stock) {
+  public func saveStock(_ stock: Stock) {
     var stocks = getStocks()
     stocks.removeAll {
       stock.symbol == $0.symbol
@@ -54,7 +54,7 @@ class StockCache {
     saveStocks(stocks)
   }
 
-  func removeStock(_ stock: Stock) {
+  public func removeStock(_ stock: Stock) {
     var stocks = getStocks()
 
     stocks.removeAll {

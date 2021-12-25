@@ -3,6 +3,7 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
+import CacheService
 import Combine
 import Foundation
 import Logging
