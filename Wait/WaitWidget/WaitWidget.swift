@@ -3,13 +3,13 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
+import CacheService
 import Combine
 import Logging
 import Model
 import Size
 import SwiftUI
 import WidgetKit
-import CacheService
 
 // MARK: - Provider
 

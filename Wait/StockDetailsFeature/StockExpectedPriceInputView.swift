@@ -8,38 +8,15 @@ import SwiftUI
 // MARK: - StockExpectedPriceInputView
 
 public struct StockExpectedPriceInputView: View {
+  // MARK: Lifecycle
+
   public init(searchStock: SearchStockResult, stock: Binding<Stock>, isPresented: Binding<Bool>) {
     self.searchStock = searchStock
     _stock = stock
     _isPresented = isPresented
   }
 
-  // MARK: Internal
-
-  class ExpectedPriceModel: ObservableObject {
-    @Published var formattedPrice = "" {
-      didSet {
-        if let prefix = formattedPrice.first, prefix != "$" {
-          formattedPrice = "$" + formattedPrice
-        }
-      }
-    }
-
-    var price: String {
-      var _price = formattedPrice
-      while let prefix = _price.first, prefix == "$" {
-        _price = String(_price.dropFirst())
-      }
-
-      return _price
-    }
-  }
-
-  @State var category = StockCategory.waitlist
-
-  var searchStock: SearchStockResult
-  @Binding var stock: Stock
-  @Binding var isPresented: Bool
+  // MARK: Public
 
   public var body: some View {
     VStack(alignment: .center) {
@@ -80,6 +57,33 @@ public struct StockExpectedPriceInputView: View {
     .padding(.bottom, Size.verticalPadding24)
     .navigationTitle(searchStock.name)
   }
+
+  // MARK: Internal
+
+  class ExpectedPriceModel: ObservableObject {
+    @Published var formattedPrice = "" {
+      didSet {
+        if let prefix = formattedPrice.first, prefix != "$" {
+          formattedPrice = "$" + formattedPrice
+        }
+      }
+    }
+
+    var price: String {
+      var _price = formattedPrice
+      while let prefix = _price.first, prefix == "$" {
+        _price = String(_price.dropFirst())
+      }
+
+      return _price
+    }
+  }
+
+  @State var category = StockCategory.waitlist
+
+  var searchStock: SearchStockResult
+  @Binding var stock: Stock
+  @Binding var isPresented: Bool
 
   // MARK: Private
 

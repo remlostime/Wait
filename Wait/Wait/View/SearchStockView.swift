@@ -5,8 +5,8 @@ import Combine
 import Model
 import Networking
 import Size
-import SwiftUI
 import StockDetailsFeature
+import SwiftUI
 
 // MARK: - SearchStockView
 

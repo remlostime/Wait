@@ -3,9 +3,9 @@
 import Color
 import Logging
 import PartialSheet
+import SettingsTab
 import Shake
 import SwiftUI
-import SettingsTab
 
 // MARK: - WaitApp
 

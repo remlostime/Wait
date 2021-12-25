@@ -7,8 +7,8 @@ import Model
 import Money
 import PartialSheet
 import Size
-import SwiftUI
 import StockDetailsFeature
+import SwiftUI
 
 // MARK: - MainView
 

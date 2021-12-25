@@ -1,49 +1,23 @@
 // Created by kai_chen on 5/16/21.
 
+import CacheService
 import Checklist
 import ComposableArchitecture
 import Model
 import Size
 import StockCharts
 import SwiftUI
-import CacheService
 
 // MARK: - StockDetailsView
 
 public struct StockDetailsView: View {
+  // MARK: Lifecycle
+
   public init(stock: Stock) {
     _stock = State(initialValue: stock)
   }
-  // MARK: Internal
 
-  @State var stock: Stock
-
-  @ObservedObject var stockOverviewDatSource = StockOverviewDataSource()
-
-  @State var stockIsFavorited: Bool = true
-  @State var memo: String = ""
-  @State var isEditingPrice = false
-
-  @State var checklistItems = ChecklistItem.allItems
-
-  var checkedItemCounts: Int {
-    var counts = 0
-    for item in checklistItems {
-      counts += item.isChecked ? 1 : 0
-    }
-
-    return counts
-  }
-
-  var searchStock: SearchStockResult {
-    SearchStockResult(
-      symbol: stock.symbol,
-      name: stock.name,
-      exchange: "",
-      country: "",
-      currency: "US"
-    )
-  }
+  // MARK: Public
 
   public var body: some View {
     ScrollView {
@@ -224,6 +198,37 @@ public struct StockDetailsView: View {
     .onChange(of: stockIsFavorited, perform: { value in
       stockFavoriteAction(value)
     })
+  }
+
+  // MARK: Internal
+
+  @State var stock: Stock
+
+  @ObservedObject var stockOverviewDatSource = StockOverviewDataSource()
+
+  @State var stockIsFavorited: Bool = true
+  @State var memo: String = ""
+  @State var isEditingPrice = false
+
+  @State var checklistItems = ChecklistItem.allItems
+
+  var checkedItemCounts: Int {
+    var counts = 0
+    for item in checklistItems {
+      counts += item.isChecked ? 1 : 0
+    }
+
+    return counts
+  }
+
+  var searchStock: SearchStockResult {
+    SearchStockResult(
+      symbol: stock.symbol,
+      name: stock.name,
+      exchange: "",
+      country: "",
+      currency: "US"
+    )
   }
 
   // MARK: Private

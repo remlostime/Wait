@@ -10,7 +10,7 @@ public class StockCache {
 
   private init() {}
 
-  // MARK: Internal
+  // MARK: Public
 
   public static let shared = StockCache()
 

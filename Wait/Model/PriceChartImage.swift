@@ -29,4 +29,3 @@ public struct PriceChartImage: Codable, Equatable {
 
   private let data: Data?
 }
-

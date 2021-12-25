@@ -11,9 +11,11 @@ import SwiftUI
 // MARK: - SettingsView
 
 public struct SettingsView: View {
-  @AppStorage("stockRowStyle") var stockRowStyle: StockRowStyle = .card
+  // MARK: Lifecycle
 
   public init() {}
+
+  // MARK: Public
 
   public var body: some View {
     NavigationView {
@@ -35,6 +37,10 @@ public struct SettingsView: View {
       .navigationTitle("Settings")
     }
   }
+
+  // MARK: Internal
+
+  @AppStorage("stockRowStyle") var stockRowStyle: StockRowStyle = .card
 }
 
 // MARK: - SettingsView_Previews

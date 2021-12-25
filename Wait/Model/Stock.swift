@@ -9,10 +9,6 @@ import UIKit
 // MARK: - Stock
 
 public struct Stock: Codable, Equatable {
-  public static func == (lhs: Stock, rhs: Stock) -> Bool {
-    lhs.symbol == rhs.symbol
-  }
-
   // MARK: Lifecycle
 
   public init(
@@ -42,6 +38,10 @@ public struct Stock: Codable, Equatable {
   public let category: StockCategory
   public private(set) var currentQuote: StockCurrentQuote
   public let updatedHistory: [UpdatedHistory]
+
+  public static func == (lhs: Stock, rhs: Stock) -> Bool {
+    lhs.symbol == rhs.symbol
+  }
 
   public func with(currentQuote: StockCurrentQuote) -> Stock {
     Stock(
