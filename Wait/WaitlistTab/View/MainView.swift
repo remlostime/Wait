@@ -5,6 +5,7 @@ import Color
 import Logging
 import Model
 import Money
+import Networking
 import PartialSheet
 import Size
 import StockDetailsFeature
@@ -12,26 +13,14 @@ import SwiftUI
 
 // MARK: - MainView
 
-struct MainView: View {
-  // MARK: Internal
+public struct MainView: View {
+  // MARK: Lifecycle
 
-  @State var stockRowDetailType: StockRowDetailType = .actionStatus
-  @State var category: StockCategory = .waitlist
-  @State var selection: String? = nil
+  public init() {}
 
-  @AppStorage("stockRowStyle") var stockRowStyle: StockRowStyle = .card
+  // MARK: Public
 
-  var stocks: [Stock] {
-    dataSource.stocks
-  }
-
-  var stocksInCategory: [Stock] {
-    stocks.filter { stock in
-      stock.category == category
-    }
-  }
-
-  var body: some View {
+  public var body: some View {
     NavigationView {
       VStack {
         Picker("Picker", selection: $category, content: {
@@ -113,11 +102,31 @@ struct MainView: View {
         .accentColor(Color(UIColor.mint))
       })
     }
-    .addPartialSheet(style: .defaultStyle())
+//    .addPartialSheet(style: .defaultStyle())
     .onChange(of: newStock, perform: { value in
       dataSource.fetchStock(value)
     })
     .navigationViewStyle(StackNavigationViewStyle())
+  }
+
+  // MARK: Internal
+
+  // @EnvironmentObject var sheetManager: PartialSheetManager
+
+  @State var stockRowDetailType: StockRowDetailType = .actionStatus
+  @State var category: StockCategory = .waitlist
+  @State var selection: String? = nil
+
+  @AppStorage("stockRowStyle") var stockRowStyle: StockRowStyle = .card
+
+  var stocks: [Stock] {
+    dataSource.stocks
+  }
+
+  var stocksInCategory: [Stock] {
+    stocks.filter { stock in
+      stock.category == category
+    }
   }
 
   // MARK: Private
