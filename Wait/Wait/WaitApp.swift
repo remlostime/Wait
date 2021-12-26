@@ -6,6 +6,7 @@ import PartialSheet
 import SettingsTab
 import Shake
 import SwiftUI
+import WaitlistTab
 
 // MARK: - WaitApp
 
@@ -19,16 +20,16 @@ struct WaitApp: App {
   }
 
   // MARK: Internal
+  //let sheetManager = PartialSheetManager()
 
   var body: some Scene {
     WindowGroup {
       TabView {
-        let sheetManager = PartialSheetManager()
         MainView()
           .tabItem {
             Image(systemName: "house")
           }
-          .environmentObject(sheetManager)
+//          .environmentObject(self.sheetManager)
 
         SettingsView()
           .tabItem {

@@ -9,11 +9,15 @@ import PartialSheet
 import Size
 import StockDetailsFeature
 import SwiftUI
+import Networking
 
 // MARK: - MainView
 
-struct MainView: View {
+public struct MainView: View {
+  public init() {}
   // MARK: Internal
+
+  //@EnvironmentObject var sheetManager: PartialSheetManager
 
   @State var stockRowDetailType: StockRowDetailType = .actionStatus
   @State var category: StockCategory = .waitlist
@@ -31,7 +35,7 @@ struct MainView: View {
     }
   }
 
-  var body: some View {
+  public var body: some View {
     NavigationView {
       VStack {
         Picker("Picker", selection: $category, content: {
@@ -113,7 +117,7 @@ struct MainView: View {
         .accentColor(Color(UIColor.mint))
       })
     }
-    .addPartialSheet(style: .defaultStyle())
+//    .addPartialSheet(style: .defaultStyle())
     .onChange(of: newStock, perform: { value in
       dataSource.fetchStock(value)
     })

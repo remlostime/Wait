@@ -8,12 +8,12 @@ import Combine
 import Foundation
 import Logging
 import Model
-import Networking
 
-final class StockCurrentQuoteNetworkClient {
+final public class StockCurrentQuoteNetworkClient {
+  public init() {}
   // MARK: Internal
 
-  func fetchDetails(stock: Stock) -> AnyPublisher<StockCurrentQuote, Error> {
+  public func fetchDetails(stock: Stock) -> AnyPublisher<StockCurrentQuote, Error> {
     guard let url = buildStockQuoteURL(stock: stock) else {
       return Fail(error: URLError(.badURL))
         .eraseToAnyPublisher()
@@ -26,7 +26,7 @@ final class StockCurrentQuoteNetworkClient {
       .eraseToAnyPublisher()
   }
 
-  func fetchDetails(stocks: [Stock]) -> AnyPublisher<StockCurrentQuoteBatch, Error> {
+  public func fetchDetails(stocks: [Stock]) -> AnyPublisher<StockCurrentQuoteBatch, Error> {
     guard let url = buildStockQuoteURL(stocks: stocks) else {
       return Fail(error: URLError(.badURL))
         .eraseToAnyPublisher()

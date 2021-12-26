@@ -10,6 +10,7 @@ import Model
 import Size
 import SwiftUI
 import WidgetKit
+import Networking
 
 // MARK: - Provider
 

@@ -8,20 +8,20 @@ import Foundation
 import Logging
 import Model
 
-class StockChartImageCache {
+public class StockChartImageCache {
   // MARK: Lifecycle
 
   private init() {}
 
   // MARK: Internal
 
-  static let shared = StockChartImageCache()
+  public static let shared = StockChartImageCache()
 
-  func getImage(symbol: String) -> PriceChartImage? {
+  public func getImage(symbol: String) -> PriceChartImage? {
     try? storage?.object(forKey: symbol)
   }
 
-  func saveImage(symbol: String, image: PriceChartImage) {
+  public func saveImage(symbol: String, image: PriceChartImage) {
     storage?.async.setObject(image, forKey: symbol) { result in
       switch result {
         case .value:
