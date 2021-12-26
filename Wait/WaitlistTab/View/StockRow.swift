@@ -4,7 +4,6 @@ import CacheService
 import Charts
 import Combine
 import Model
-import PartialSheet
 import Size
 import StockCharts
 import SwiftUI
@@ -38,8 +37,8 @@ struct StockRow: View {
 
   // MARK: Internal
 
-  @EnvironmentObject var sheetManager: PartialSheetManager
   @Binding var stockRowDetailType: StockRowDetailType
+  @State var showDisplaySheet: Bool = false
 
   @State var stock: Stock
 
@@ -76,10 +75,13 @@ struct StockRow: View {
       Spacer(minLength: Size.horizontalPadding24)
 
       Button(buttonText) {
-        self.sheetManager.showPartialSheet {
-          StockRowTypeDisplaySheet(stockRowDetailType: $stockRowDetailType)
-        }
+        showDisplaySheet = true
       }
+      .sheet(isPresented: $showDisplaySheet, onDismiss: {
+        showDisplaySheet = false
+      }, content: {
+        StockRowTypeDisplaySheet(stockRowDetailType: $stockRowDetailType)
+      })
       .padding(EdgeInsets(top: Size.verticalPadding8, leading: Size.horizontalPadding16, bottom: Size.verticalPadding8, trailing: Size.horizontalPadding16))
       .background(stockRowDetailType == .actionStatus ? stock.actionColor : stock.priceColor)
       .cornerRadius(5.0)
