@@ -5,35 +5,20 @@ import Color
 import Logging
 import Model
 import Money
+import Networking
 import PartialSheet
 import Size
 import StockDetailsFeature
 import SwiftUI
-import Networking
 
 // MARK: - MainView
 
 public struct MainView: View {
+  // MARK: Lifecycle
+
   public init() {}
-  // MARK: Internal
 
-  //@EnvironmentObject var sheetManager: PartialSheetManager
-
-  @State var stockRowDetailType: StockRowDetailType = .actionStatus
-  @State var category: StockCategory = .waitlist
-  @State var selection: String? = nil
-
-  @AppStorage("stockRowStyle") var stockRowStyle: StockRowStyle = .card
-
-  var stocks: [Stock] {
-    dataSource.stocks
-  }
-
-  var stocksInCategory: [Stock] {
-    stocks.filter { stock in
-      stock.category == category
-    }
-  }
+  // MARK: Public
 
   public var body: some View {
     NavigationView {
@@ -122,6 +107,26 @@ public struct MainView: View {
       dataSource.fetchStock(value)
     })
     .navigationViewStyle(StackNavigationViewStyle())
+  }
+
+  // MARK: Internal
+
+  // @EnvironmentObject var sheetManager: PartialSheetManager
+
+  @State var stockRowDetailType: StockRowDetailType = .actionStatus
+  @State var category: StockCategory = .waitlist
+  @State var selection: String? = nil
+
+  @AppStorage("stockRowStyle") var stockRowStyle: StockRowStyle = .card
+
+  var stocks: [Stock] {
+    dataSource.stocks
+  }
+
+  var stocksInCategory: [Stock] {
+    stocks.filter { stock in
+      stock.category == category
+    }
   }
 
   // MARK: Private

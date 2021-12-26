@@ -9,9 +9,12 @@ import Foundation
 import Logging
 import Model
 
-final public class StockCurrentQuoteNetworkClient {
+public final class StockCurrentQuoteNetworkClient {
+  // MARK: Lifecycle
+
   public init() {}
-  // MARK: Internal
+
+  // MARK: Public
 
   public func fetchDetails(stock: Stock) -> AnyPublisher<StockCurrentQuote, Error> {
     guard let url = buildStockQuoteURL(stock: stock) else {

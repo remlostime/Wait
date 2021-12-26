@@ -8,8 +8,8 @@ import Combine
 import Foundation
 import Logging
 import Model
-import SwiftUI
 import Networking
+import SwiftUI
 
 final class StockCurrentQuoteDataSource: ObservableObject {
   // MARK: Internal

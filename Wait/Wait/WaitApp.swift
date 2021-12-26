@@ -20,7 +20,8 @@ struct WaitApp: App {
   }
 
   // MARK: Internal
-  //let sheetManager = PartialSheetManager()
+
+  // let sheetManager = PartialSheetManager()
 
   var body: some Scene {
     WindowGroup {

@@ -13,7 +13,7 @@ public class StockChartImageCache {
 
   private init() {}
 
-  // MARK: Internal
+  // MARK: Public
 
   public static let shared = StockChartImageCache()
 

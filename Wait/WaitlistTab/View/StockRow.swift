@@ -1,5 +1,6 @@
 // Created by kai_chen on 5/4/21.
 
+import CacheService
 import Charts
 import Combine
 import Model
@@ -7,7 +8,6 @@ import PartialSheet
 import Size
 import StockCharts
 import SwiftUI
-import CacheService
 
 // MARK: - StockRowDetailType
 
