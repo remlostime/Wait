@@ -13,7 +13,6 @@ import SwiftUI
 // MARK: - MainView
 
 public struct MainView: View {
-
   // MARK: Lifecycle
 
   public init() {}
