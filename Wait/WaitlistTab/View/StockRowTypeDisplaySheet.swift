@@ -4,14 +4,12 @@
 //
 
 import Foundation
-import PartialSheet
 import Size
 import SwiftUI
 
 // MARK: - StockRowTypeDisplaySheet
 
 struct StockRowTypeDisplaySheet: View {
-  @EnvironmentObject var sheetManager: PartialSheetManager
   @Binding var stockRowDetailType: StockRowDetailType
 
   var body: some View {
@@ -25,7 +23,6 @@ struct StockRowTypeDisplaySheet: View {
       ForEach(StockRowDetailType.allCases) { type in
         Button(action: {
           stockRowDetailType = type
-          self.sheetManager.closePartialSheet()
         }, label: {
           HStack {
             Text(type.rawValue)

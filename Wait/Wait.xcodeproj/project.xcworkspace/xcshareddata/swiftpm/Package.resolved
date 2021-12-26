@@ -65,15 +65,6 @@
         }
       },
       {
-        "package": "PartialSheet",
-        "repositoryURL": "https://github.com/AndreaMiotto/PartialSheet",
-        "state": {
-          "branch": null,
-          "revision": "422d748bfb149b2af4b48e43b7b6197bd8a727c1",
-          "version": "2.1.14"
-        }
-      },
-      {
         "package": "Shake",
         "repositoryURL": "https://github.com/shakebugs/shake-ios",
         "state": {

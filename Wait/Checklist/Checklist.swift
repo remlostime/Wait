@@ -8,8 +8,6 @@ import SwiftUI
 
 // MARK: - Checklist
 
-// import PartialSheet
-
 struct Checklist: View {
   var item: ChecklistItem
   @State var showFullText: Bool = false
@@ -37,10 +35,10 @@ struct Checklist: View {
           }
       }
     }
-//    .partialSheet(isPresented: $showFullText) {
-//      Text(item.name)
-//        .padding()
-//    }
+    .sheet(isPresented: $showFullText, onDismiss: nil) {
+      Text(item.name)
+        .padding()
+    }
   }
 }
 

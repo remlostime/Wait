@@ -24,7 +24,6 @@
 		E204B304276BB5F500D2EB0D /* ChecklistListTCA.swift in Sources */ = {isa = PBXBuildFile; fileRef = E204B303276BB5F500D2EB0D /* ChecklistListTCA.swift */; };
 		E204B306276BB78800D2EB0D /* ChecklistListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E204B305276BB78800D2EB0D /* ChecklistListView.swift */; };
 		E204B307276BB8A600D2EB0D /* Checklist.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2211E2626C8280100041F5F /* Checklist.swift */; };
-		E204B309276BB90300D2EB0D /* PartialSheet in Frameworks */ = {isa = PBXBuildFile; productRef = E204B308276BB90300D2EB0D /* PartialSheet */; };
 		E205D3E026D2C47D004EE31D /* Model.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC102D267E9EB300CD98AF /* Model.framework */; };
 		E205D3EE26D2C567004EE31D /* Logging.h in Headers */ = {isa = PBXBuildFile; fileRef = E205D3EC26D2C567004EE31D /* Logging.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E205D3F126D2C567004EE31D /* Logging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E205D3EA26D2C567004EE31D /* Logging.framework */; };
@@ -85,7 +84,6 @@
 		E21D2E7A269B6DF80063C7ED /* Color.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E276556D267E9104002D13CC /* Color.framework */; };
 		E2211E2926C82A3300041F5F /* ChecklistItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2211E2826C82A3300041F5F /* ChecklistItem.swift */; };
 		E227D3A426BEE2930094A872 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = E227D3A326BEE2930094A872 /* Category.swift */; };
-		E22A84222669C8B60099F107 /* PartialSheet in Frameworks */ = {isa = PBXBuildFile; productRef = E22A84212669C8B60099F107 /* PartialSheet */; };
 		E2316FB9271B99C400103050 /* StockRowStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2316FB8271B99C400103050 /* StockRowStyle.swift */; };
 		E24BDEFB26D2C8C400595E4A /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = E24BDEFA26D2C8C400595E4A /* Cache */; };
 		E24BDF0826D2EF5600595E4A /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E24BDF0726D2EF5600595E4A /* Alamofire */; };
@@ -109,7 +107,6 @@
 		E26C1CA02779111300E8C16A /* Logging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E205D3EA26D2C567004EE31D /* Logging.framework */; platformFilter = ios; };
 		E26C1CA42779111900E8C16A /* Model.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC102D267E9EB300CD98AF /* Model.framework */; platformFilter = ios; };
 		E26C1CA92779111F00E8C16A /* Money in Frameworks */ = {isa = PBXBuildFile; productRef = E26C1CA82779111F00E8C16A /* Money */; };
-		E26C1CAB2779112800E8C16A /* PartialSheet in Frameworks */ = {isa = PBXBuildFile; productRef = E26C1CAA2779112800E8C16A /* PartialSheet */; };
 		E26C1CAC2779112E00E8C16A /* Size.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2BC418E267F9C4600A853D2 /* Size.framework */; platformFilter = ios; };
 		E26C1CB02779113500E8C16A /* StockDetailsFeature.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFA7E2777CE2800B0955F /* StockDetailsFeature.framework */; platformFilter = ios; };
 		E26C1CB42779115A00E8C16A /* StockRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E637BF2641A92A00F872A4 /* StockRow.swift */; };
@@ -782,7 +779,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E26C1CB72779117400E8C16A /* StockCharts.framework in Frameworks */,
-				E26C1CAB2779112800E8C16A /* PartialSheet in Frameworks */,
 				E26C1CBC277911BC00E8C16A /* CacheService.framework in Frameworks */,
 				E26C1CA42779111900E8C16A /* Model.framework in Frameworks */,
 				E26C1CAC2779112E00E8C16A /* Size.framework in Frameworks */,
@@ -880,7 +876,6 @@
 			files = (
 				E2C9A2202766E862000C07F0 /* Size.framework in Frameworks */,
 				E2C9A21F2766E81C000C07F0 /* Model.framework in Frameworks */,
-				E204B309276BB90300D2EB0D /* PartialSheet in Frameworks */,
 				E2C9A21A2766BA4A000C07F0 /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -913,7 +908,6 @@
 				E2765574267E9104002D13CC /* Color.framework in Frameworks */,
 				E28619D02776750D002DFCD0 /* StockCharts.framework in Frameworks */,
 				E20AFA6A2777C9E600B0955F /* SettingsTab.framework in Frameworks */,
-				E22A84222669C8B60099F107 /* PartialSheet in Frameworks */,
 				E2123A682647198000A29222 /* SwiftyJSON in Frameworks */,
 				E2ABEDF0265322670001F0F9 /* HMSegmentedControl in Frameworks */,
 				E276558D267E9470002D13CC /* UI.framework in Frameworks */,
@@ -1664,7 +1658,6 @@
 			packageProductDependencies = (
 				E26C1C992779110800E8C16A /* Alamofire */,
 				E26C1CA82779111F00E8C16A /* Money */,
-				E26C1CAA2779112800E8C16A /* PartialSheet */,
 				E26C1CB52779116600E8C16A /* Charts */,
 			);
 			productName = WaitlistTab;
@@ -1855,7 +1848,6 @@
 			name = Checklist;
 			packageProductDependencies = (
 				E2C9A2192766BA4A000C07F0 /* ComposableArchitecture */,
-				E204B308276BB90300D2EB0D /* PartialSheet */,
 			);
 			productName = Checklist;
 			productReference = E2C9A1D52766AE47000C07F0 /* Checklist.framework */;
@@ -1919,7 +1911,6 @@
 				E2A07D9A26520BDD0075E271 /* Hue */,
 				E2ABEDEF265322670001F0F9 /* HMSegmentedControl */,
 				E2ABEDF4265322FA0001F0F9 /* SnapKit */,
-				E22A84212669C8B60099F107 /* PartialSheet */,
 				E24D90AB27128095009EDE57 /* ComposableArchitecture */,
 				E25DB48827767BF6002D5A88 /* Charts */,
 			);
@@ -2079,7 +2070,6 @@
 				E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */,
 				E2ABEDEE265322670001F0F9 /* XCRemoteSwiftPackageReference "HMSegmentedControl" */,
 				E2ABEDF3265322FA0001F0F9 /* XCRemoteSwiftPackageReference "SnapKit" */,
-				E22A84202669C8B60099F107 /* XCRemoteSwiftPackageReference "PartialSheet" */,
 				E24D90AA27128095009EDE57 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 				E25DB48727767BF6002D5A88 /* XCRemoteSwiftPackageReference "Charts" */,
 			);
@@ -4387,14 +4377,6 @@
 				minimumVersion = 5.0.1;
 			};
 		};
-		E22A84202669C8B60099F107 /* XCRemoteSwiftPackageReference "PartialSheet" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/AndreaMiotto/PartialSheet";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.1.11;
-			};
-		};
 		E24D90AA27128095009EDE57 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
@@ -4462,11 +4444,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		E204B308276BB90300D2EB0D /* PartialSheet */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E22A84202669C8B60099F107 /* XCRemoteSwiftPackageReference "PartialSheet" */;
-			productName = PartialSheet;
-		};
 		E205D3F826D2C5DF004EE31D /* SwiftyBeaver */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E2123A632647158800A29222 /* XCRemoteSwiftPackageReference "SwiftyBeaver" */;
@@ -4507,11 +4484,6 @@
 			package = E2123A662647198000A29222 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
 			productName = SwiftyJSON;
 		};
-		E22A84212669C8B60099F107 /* PartialSheet */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E22A84202669C8B60099F107 /* XCRemoteSwiftPackageReference "PartialSheet" */;
-			productName = PartialSheet;
-		};
 		E24BDEFA26D2C8C400595E4A /* Cache */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E2C859B226438EE500F93321 /* XCRemoteSwiftPackageReference "Cache" */;
@@ -4551,11 +4523,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2BDFCA526518CB90075E619 /* XCRemoteSwiftPackageReference "Money" */;
 			productName = Money;
-		};
-		E26C1CAA2779112800E8C16A /* PartialSheet */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E22A84202669C8B60099F107 /* XCRemoteSwiftPackageReference "PartialSheet" */;
-			productName = PartialSheet;
 		};
 		E26C1CB52779116600E8C16A /* Charts */ = {
 			isa = XCSwiftPackageProductDependency;

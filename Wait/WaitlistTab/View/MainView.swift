@@ -6,7 +6,6 @@ import Logging
 import Model
 import Money
 import Networking
-import PartialSheet
 import Size
 import StockDetailsFeature
 import SwiftUI
@@ -14,6 +13,7 @@ import SwiftUI
 // MARK: - MainView
 
 public struct MainView: View {
+
   // MARK: Lifecycle
 
   public init() {}
@@ -102,7 +102,6 @@ public struct MainView: View {
         .accentColor(Color(UIColor.mint))
       })
     }
-//    .addPartialSheet(style: .defaultStyle())
     .onChange(of: newStock, perform: { value in
       dataSource.fetchStock(value)
     })
@@ -110,8 +109,6 @@ public struct MainView: View {
   }
 
   // MARK: Internal
-
-  // @EnvironmentObject var sheetManager: PartialSheetManager
 
   @State var stockRowDetailType: StockRowDetailType = .actionStatus
   @State var category: StockCategory = .waitlist
