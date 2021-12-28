@@ -8,28 +8,6 @@ import Model
 import XCTest
 @testable import ChecklistEditFeature
 
-// MARK: - MockChecklistDataManager
-
-class MockChecklistDataManager: ChecklistDataManager {
-  // MARK: Lifecycle
-
-  init(items: [ChecklistItem] = []) {
-    self.items = items
-  }
-
-  // MARK: Internal
-
-  var items: [ChecklistItem] = []
-
-  func save(items: [ChecklistItem]) {
-    self.items = items
-  }
-
-  func load() -> [ChecklistItem]? {
-    items
-  }
-}
-
 // MARK: - ChecklistEditFeatureTests
 
 class ChecklistEditFeatureTests: XCTestCase {

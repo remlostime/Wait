@@ -19,13 +19,14 @@ public enum ChecklistAction {
 public struct ChecklistState: Equatable {
   // MARK: Lifecycle
 
-  public init(checklistItems: [ChecklistItem]) {
+  public init(checklistItems: [ChecklistItem], currentChceklistItemIndex: Int = 0) {
     self.checklistItems = checklistItems
+    currentChecklistItemIndex = currentChceklistItemIndex
   }
 
   // MARK: Internal
 
-  var currentChecklistItemIndex: Int = 0
+  var currentChecklistItemIndex: Int
   var checklistItems: [ChecklistItem]
 }
 

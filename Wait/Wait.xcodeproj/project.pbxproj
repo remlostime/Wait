@@ -78,6 +78,9 @@
 		E210DEFF26D2B50D0044DA4E /* WaitWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E210DEFE26D2B50D0044DA4E /* WaitWidget.swift */; };
 		E210DF0126D2B50F0044DA4E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E210DF0026D2B50F0044DA4E /* Assets.xcassets */; };
 		E210DF0526D2B50F0044DA4E /* WaitWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = E210DEF826D2B50D0044DA4E /* WaitWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		E2118085277BB78300268B3C /* MockChecklistDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2118084277BB78300268B3C /* MockChecklistDataManager.swift */; };
+		E2118087277BB88C00268B3C /* ChecklistListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2118086277BB88C00268B3C /* ChecklistListTests.swift */; };
+		E2118089277BBA2000268B3C /* ChecklistCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2118088277BBA2000268B3C /* ChecklistCardTests.swift */; };
 		E2123A602647115400A29222 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E2123A5F2647115400A29222 /* Alamofire */; };
 		E2123A652647158800A29222 /* SwiftyBeaver in Frameworks */ = {isa = PBXBuildFile; productRef = E2123A642647158800A29222 /* SwiftyBeaver */; };
 		E2123A682647198000A29222 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E2123A672647198000A29222 /* SwiftyJSON */; };
@@ -577,6 +580,9 @@
 		E210DEFE26D2B50D0044DA4E /* WaitWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitWidget.swift; sourceTree = "<group>"; };
 		E210DF0026D2B50F0044DA4E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E210DF0226D2B50F0044DA4E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E2118084277BB78300268B3C /* MockChecklistDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockChecklistDataManager.swift; sourceTree = "<group>"; };
+		E2118086277BB88C00268B3C /* ChecklistListTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistListTests.swift; sourceTree = "<group>"; };
+		E2118088277BBA2000268B3C /* ChecklistCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistCardTests.swift; sourceTree = "<group>"; };
 		E2123A61264713CC00A29222 /* StockCurrentQuote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCurrentQuote.swift; sourceTree = "<group>"; };
 		E2123A6A26472F9400A29222 /* StockCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCache.swift; sourceTree = "<group>"; };
 		E2136DD2269A13F90033AEB1 /* ValuationChartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValuationChartViewController.swift; sourceTree = "<group>"; };
@@ -1171,6 +1177,7 @@
 			isa = PBXGroup;
 			children = (
 				E2B728F427753079001CF022 /* ChecklistEditFeatureTests.swift */,
+				E2118084277BB78300268B3C /* MockChecklistDataManager.swift */,
 			);
 			path = ChecklistEditFeatureTests;
 			sourceTree = "<group>";
@@ -1207,6 +1214,8 @@
 			isa = PBXGroup;
 			children = (
 				E2C9A1E52766AE47000C07F0 /* ChecklistTests.swift */,
+				E2118086277BB88C00268B3C /* ChecklistListTests.swift */,
+				E2118088277BBA2000268B3C /* ChecklistCardTests.swift */,
 			);
 			path = ChecklistTests;
 			sourceTree = "<group>";
@@ -2047,7 +2056,6 @@
 					};
 					E2C9A1DD2766AE47000C07F0 = {
 						CreatedOnToolsVersion = 13.0;
-						TestTargetID = E2E637A82641A5FB00F872A4;
 					};
 					E2E637A82641A5FB00F872A4 = {
 						CreatedOnToolsVersion = 12.5;
@@ -2469,6 +2477,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E2118085277BB78300268B3C /* MockChecklistDataManager.swift in Sources */,
 				E2B728F527753079001CF022 /* ChecklistEditFeatureTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2503,6 +2512,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E2118087277BB88C00268B3C /* ChecklistListTests.swift in Sources */,
+				E2118089277BBA2000268B3C /* ChecklistCardTests.swift in Sources */,
 				E2C9A1E62766AE47000C07F0 /* ChecklistTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3803,7 +3814,6 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wait.app/Wait";
 			};
 			name = Debug;
 		};
@@ -3826,7 +3836,6 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wait.app/Wait";
 			};
 			name = Release;
 		};
