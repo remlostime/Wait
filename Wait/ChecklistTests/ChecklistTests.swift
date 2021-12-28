@@ -9,6 +9,18 @@ import XCTest
 @testable import Checklist
 
 class ChecklistTests: XCTestCase {
+  func testChecklistState() {
+    let state = ChecklistState(
+      checklistItems: [
+        ChecklistItem(name: "first"),
+        ChecklistItem(name: "second"),
+      ],
+      currentChceklistItemIndex: 1
+    )
+
+    XCTAssertEqual(state.progress, "\(state.currentChecklistItemIndex + 1) / \(state.checklistItems.count)")
+  }
+
   func testGoBack() {
     let state = ChecklistState(
       checklistItems: [
