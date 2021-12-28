@@ -5,9 +5,9 @@
 
 import ComposableArchitecture
 import Foundation
+import Logging
 import Model
 import SwiftUI
-import Logging
 
 // MARK: - ChecklistEditAction
 
@@ -35,11 +35,15 @@ public struct ChecklistEditState: Equatable {
 // MARK: - ChecklistEditEnvironment
 
 public struct ChecklistEditEnvironment {
-  let checklistDataManager: ChecklistDataManager
+  // MARK: Lifecycle
 
   public init(checklistDataManager: ChecklistDataManager) {
     self.checklistDataManager = checklistDataManager
   }
+
+  // MARK: Internal
+
+  let checklistDataManager: ChecklistDataManager
 }
 
 // MARK: - ChecklistEditReducerBuilder

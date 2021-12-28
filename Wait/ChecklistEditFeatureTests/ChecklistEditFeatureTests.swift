@@ -3,39 +3,47 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import XCTest
 import ComposableArchitecture
 import Model
+import XCTest
 @testable import ChecklistEditFeature
 
+// MARK: - MockChecklistDataManager
+
 class MockChecklistDataManager: ChecklistDataManager {
-  var items: [ChecklistItem] = []
+  // MARK: Lifecycle
 
   init(items: [ChecklistItem] = []) {
     self.items = items
   }
+
+  // MARK: Internal
+
+  var items: [ChecklistItem] = []
 
   func save(items: [ChecklistItem]) {
     self.items = items
   }
 
   func load() -> [ChecklistItem]? {
-    return items
+    items
   }
 }
 
-class ChecklistEditFeatureTests: XCTestCase {
+// MARK: - ChecklistEditFeatureTests
 
+class ChecklistEditFeatureTests: XCTestCase {
   func testAddNewItem() {
     let state = ChecklistEditState(items: [
       ChecklistItem(name: "First"),
       ChecklistItem(name: "Second"),
-      ChecklistItem(name: "Third")
+      ChecklistItem(name: "Third"),
     ])
     let store = TestStore(
       initialState: state,
       reducer: ChecklistEditReducerBuilder.build(),
-      environment: ChecklistEditEnvironment(checklistDataManager: MockChecklistDataManager()))
+      environment: ChecklistEditEnvironment(checklistDataManager: MockChecklistDataManager())
+    )
 
     store.send(.addItem) {
       $0.items.insert(ChecklistItem(name: ""), at: 0)
@@ -56,13 +64,14 @@ class ChecklistEditFeatureTests: XCTestCase {
     let items = [
       ChecklistItem(name: "First"),
       ChecklistItem(name: "Second"),
-      ChecklistItem(name: "Third")
+      ChecklistItem(name: "Third"),
     ]
 
     let store = TestStore(
       initialState: .init(items: []),
       reducer: ChecklistEditReducerBuilder.build(),
-      environment: ChecklistEditEnvironment(checklistDataManager: MockChecklistDataManager(items: items)))
+      environment: ChecklistEditEnvironment(checklistDataManager: MockChecklistDataManager(items: items))
+    )
 
     store.send(.load) {
       $0.items = items
@@ -73,18 +82,18 @@ class ChecklistEditFeatureTests: XCTestCase {
     let items = [
       ChecklistItem(name: "First"),
       ChecklistItem(name: "Second"),
-      ChecklistItem(name: "Third")
+      ChecklistItem(name: "Third"),
     ]
 
     let dataManager = MockChecklistDataManager()
     let store = TestStore(
       initialState: .init(items: items),
       reducer: ChecklistEditReducerBuilder.build(),
-      environment: ChecklistEditEnvironment(checklistDataManager: dataManager))
+      environment: ChecklistEditEnvironment(checklistDataManager: dataManager)
+    )
 
     store.send(.save) { _ in }
 
     XCTAssertEqual(items, dataManager.items)
   }
-
 }

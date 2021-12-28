@@ -64,7 +64,7 @@ struct ChecklistEditView_Previews: PreviewProvider {
       ChecklistEditView(store: Store(
         initialState: ChecklistEditState(items: [
           ChecklistItem(name: "First"),
-          ChecklistItem(name: "Second")
+          ChecklistItem(name: "Second"),
         ]),
         reducer: ChecklistEditReducerBuilder.build(),
         environment: ChecklistEditEnvironment(checklistDataManager: DefaultChecklistDataManager())

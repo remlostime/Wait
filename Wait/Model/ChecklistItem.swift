@@ -18,6 +18,7 @@ public struct ChecklistItem: Codable, Identifiable, Hashable {
 
   public var name: String
   public var isChecked: Bool = false
+
   public var id: String {
     name
   }

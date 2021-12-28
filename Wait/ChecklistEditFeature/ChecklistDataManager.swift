@@ -4,25 +4,24 @@
 //
 
 import Foundation
-import Model
 import Logging
+import Model
+
+// MARK: - ChecklistDataManager
 
 public protocol ChecklistDataManager {
   func save(items: [ChecklistItem])
   func load() -> [ChecklistItem]?
 }
 
+// MARK: - DefaultChecklistDataManager
+
 public struct DefaultChecklistDataManager: ChecklistDataManager {
+  // MARK: Lifecycle
 
   public init() {}
 
-  private var checklistItemURL: URL {
-    let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
-    let url = URL(fileURLWithPath: path)
-    let checklistItemURL = url.appendingPathComponent("checklist-items.json")
-
-    return checklistItemURL
-  }
+  // MARK: Public
 
   public func save(items: [ChecklistItem]) {
     guard let data = try? JSONEncoder().encode(items) else {
@@ -49,5 +48,15 @@ public struct DefaultChecklistDataManager: ChecklistDataManager {
       Logger.shared.error("failed to decode checklist item")
       return nil
     }
+  }
+
+  // MARK: Private
+
+  private var checklistItemURL: URL {
+    let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+    let url = URL(fileURLWithPath: path)
+    let checklistItemURL = url.appendingPathComponent("checklist-items.json")
+
+    return checklistItemURL
   }
 }
