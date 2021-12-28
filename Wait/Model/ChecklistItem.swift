@@ -18,7 +18,9 @@ public struct ChecklistItem: Codable, Identifiable, Hashable {
 
   public var name: String
   public var isChecked: Bool = false
-  public var id = UUID()
+  public var id: String {
+    name
+  }
 }
 
 public extension ChecklistItem {

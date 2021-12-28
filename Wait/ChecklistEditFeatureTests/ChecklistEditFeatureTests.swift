@@ -4,29 +4,87 @@
 //
 
 import XCTest
+import ComposableArchitecture
+import Model
 @testable import ChecklistEditFeature
 
+class MockChecklistDataManager: ChecklistDataManager {
+  var items: [ChecklistItem] = []
+
+  init(items: [ChecklistItem] = []) {
+    self.items = items
+  }
+
+  func save(items: [ChecklistItem]) {
+    self.items = items
+  }
+
+  func load() -> [ChecklistItem]? {
+    return items
+  }
+}
+
 class ChecklistEditFeatureTests: XCTestCase {
-  override func setUpWithError() throws {
-    // Put setup code here. This method is called before the invocation of each test method in the class.
-  }
 
-  override func tearDownWithError() throws {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
-  }
+  func testAddNewItem() {
+    let state = ChecklistEditState(items: [
+      ChecklistItem(name: "First"),
+      ChecklistItem(name: "Second"),
+      ChecklistItem(name: "Third")
+    ])
+    let store = TestStore(
+      initialState: state,
+      reducer: ChecklistEditReducerBuilder.build(),
+      environment: ChecklistEditEnvironment(checklistDataManager: MockChecklistDataManager()))
 
-  func testExample() throws {
-    // This is an example of a functional test case.
-    // Use XCTAssert and related functions to verify your tests produce the correct results.
-    // Any test you write for XCTest can be annotated as throws and async.
-    // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-    // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-  }
+    store.send(.addItem) {
+      $0.items.insert(ChecklistItem(name: ""), at: 0)
+    }
 
-  func testPerformanceExample() throws {
-    // This is an example of a performance test case.
-    measure {
-      // Put the code you want to measure the time of here.
+    store.send(.itemDidChange(index: 0, text: "New")) {
+      guard var firstItem = $0.items.first else {
+        XCTFail("Item is empty")
+        return
+      }
+
+      firstItem.name = "New"
+      $0.items[0] = firstItem
     }
   }
+
+  func testLoadItems() {
+    let items = [
+      ChecklistItem(name: "First"),
+      ChecklistItem(name: "Second"),
+      ChecklistItem(name: "Third")
+    ]
+
+    let store = TestStore(
+      initialState: .init(items: []),
+      reducer: ChecklistEditReducerBuilder.build(),
+      environment: ChecklistEditEnvironment(checklistDataManager: MockChecklistDataManager(items: items)))
+
+    store.send(.load) {
+      $0.items = items
+    }
+  }
+
+  func testSaveItems() {
+    let items = [
+      ChecklistItem(name: "First"),
+      ChecklistItem(name: "Second"),
+      ChecklistItem(name: "Third")
+    ]
+
+    let dataManager = MockChecklistDataManager()
+    let store = TestStore(
+      initialState: .init(items: items),
+      reducer: ChecklistEditReducerBuilder.build(),
+      environment: ChecklistEditEnvironment(checklistDataManager: dataManager))
+
+    store.send(.save) { _ in }
+
+    XCTAssertEqual(items, dataManager.items)
+  }
+
 }

@@ -161,6 +161,9 @@
 		E28619EF27767600002DFCD0 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E28619EE27767600002DFCD0 /* Alamofire */; };
 		E28619F12776760D002DFCD0 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E28619F02776760D002DFCD0 /* SwiftyJSON */; };
 		E28619F227767617002DFCD0 /* Networking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC107A267EE38D00CD98AF /* Networking.framework */; };
+		E28AEECE277A886500977C61 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = E28AEECD277A886500977C61 /* ComposableArchitecture */; };
+		E28AEECF277A886B00977C61 /* Model.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC102D267E9EB300CD98AF /* Model.framework */; };
+		E28AEED1277AA65B00977C61 /* ChecklistDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28AEED0277AA65B00977C61 /* ChecklistDataManager.swift */; };
 		E2901FA5264CAC8B003A2C01 /* Shake in Frameworks */ = {isa = PBXBuildFile; productRef = E2901FA4264CAC8B003A2C01 /* Shake */; };
 		E2901FA7264CD22E003A2C01 /* bitrise_configuration.plist in Resources */ = {isa = PBXBuildFile; fileRef = E2901FA6264CD22E003A2C01 /* bitrise_configuration.plist */; };
 		E2A07D9B26520BDD0075E271 /* Hue in Frameworks */ = {isa = PBXBuildFile; productRef = E2A07D9A26520BDD0075E271 /* Hue */; };
@@ -172,7 +175,7 @@
 		E2B728F627753079001CF022 /* ChecklistEditFeature.h in Headers */ = {isa = PBXBuildFile; fileRef = E2B728E827753078001CF022 /* ChecklistEditFeature.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E2B728F927753079001CF022 /* ChecklistEditFeature.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2B728E627753078001CF022 /* ChecklistEditFeature.framework */; };
 		E2B728FA27753079001CF022 /* ChecklistEditFeature.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E2B728E627753078001CF022 /* ChecklistEditFeature.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		E2B729012775309F001CF022 /* ChecklistEditFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24D90BB271289C9009EDE57 /* ChecklistEditFeature.swift */; };
+		E2B729012775309F001CF022 /* ChecklistEditTCA.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24D90BB271289C9009EDE57 /* ChecklistEditTCA.swift */; };
 		E2B729022775309F001CF022 /* ChecklistEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24D90BD27128A47009EDE57 /* ChecklistEditView.swift */; };
 		E2B729032775309F001CF022 /* ChecklistCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24D90BF2713487A009EDE57 /* ChecklistCache.swift */; };
 		E2B72905277530F5001CF022 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = E2B72904277530F5001CF022 /* ComposableArchitecture */; };
@@ -591,7 +594,7 @@
 		E24BDF1226D3051100595E4A /* WidgetStockRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetStockRow.swift; sourceTree = "<group>"; };
 		E24D90B12712810E009EDE57 /* WaitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WaitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E24D90B32712810E009EDE57 /* WaitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitTests.swift; sourceTree = "<group>"; };
-		E24D90BB271289C9009EDE57 /* ChecklistEditFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistEditFeature.swift; sourceTree = "<group>"; };
+		E24D90BB271289C9009EDE57 /* ChecklistEditTCA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistEditTCA.swift; sourceTree = "<group>"; };
 		E24D90BD27128A47009EDE57 /* ChecklistEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistEditView.swift; sourceTree = "<group>"; };
 		E24D90BF2713487A009EDE57 /* ChecklistCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistCache.swift; sourceTree = "<group>"; };
 		E25A1E81266BB862004D2B24 /* Exchange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exchange.swift; sourceTree = "<group>"; };
@@ -627,6 +630,7 @@
 		E28619BF2776750D002DFCD0 /* StockCharts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StockCharts.h; sourceTree = "<group>"; };
 		E28619C42776750D002DFCD0 /* StockChartsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StockChartsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E28619CB2776750D002DFCD0 /* StockChartsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockChartsTests.swift; sourceTree = "<group>"; };
+		E28AEED0277AA65B00977C61 /* ChecklistDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistDataManager.swift; sourceTree = "<group>"; };
 		E28E475D265584C800C1D60E /* StockQuote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockQuote.swift; sourceTree = "<group>"; };
 		E2901FA6264CD22E003A2C01 /* bitrise_configuration.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = bitrise_configuration.plist; sourceTree = "<group>"; };
 		E2A07D952651BF270075E271 /* NetworkingURLBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingURLBuilder.swift; sourceTree = "<group>"; };
@@ -859,6 +863,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E28AEECF277A886B00977C61 /* Model.framework in Frameworks */,
+				E28AEECE277A886500977C61 /* ComposableArchitecture in Frameworks */,
 				E2B728EE27753079001CF022 /* ChecklistEditFeature.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1152,7 +1158,8 @@
 		E2B728E727753078001CF022 /* ChecklistEditFeature */ = {
 			isa = PBXGroup;
 			children = (
-				E24D90BB271289C9009EDE57 /* ChecklistEditFeature.swift */,
+				E28AEED0277AA65B00977C61 /* ChecklistDataManager.swift */,
+				E24D90BB271289C9009EDE57 /* ChecklistEditTCA.swift */,
 				E24D90BD27128A47009EDE57 /* ChecklistEditView.swift */,
 				E24D90BF2713487A009EDE57 /* ChecklistCache.swift */,
 				E2B728E827753078001CF022 /* ChecklistEditFeature.h */,
@@ -1810,6 +1817,9 @@
 				E2B728F227753079001CF022 /* PBXTargetDependency */,
 			);
 			name = ChecklistEditFeatureTests;
+			packageProductDependencies = (
+				E28AEECD277A886500977C61 /* ComposableArchitecture */,
+			);
 			productName = ChecklistEditFeatureTests;
 			productReference = E2B728ED27753079001CF022 /* ChecklistEditFeatureTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -2024,7 +2034,6 @@
 					};
 					E2B728EC27753079001CF022 = {
 						CreatedOnToolsVersion = 13.2.1;
-						TestTargetID = E2E637A82641A5FB00F872A4;
 					};
 					E2BC418D267F9C4600A853D2 = {
 						CreatedOnToolsVersion = 12.5;
@@ -2449,7 +2458,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E2B729012775309F001CF022 /* ChecklistEditFeature.swift in Sources */,
+				E28AEED1277AA65B00977C61 /* ChecklistDataManager.swift in Sources */,
+				E2B729012775309F001CF022 /* ChecklistEditTCA.swift in Sources */,
 				E2B729022775309F001CF022 /* ChecklistEditView.swift in Sources */,
 				E2B729032775309F001CF022 /* ChecklistCache.swift in Sources */,
 			);
@@ -3614,7 +3624,6 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wait.app/Wait";
 			};
 			name = Debug;
 		};
@@ -3633,7 +3642,6 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wait.app/Wait";
 			};
 			name = Release;
 		};
@@ -4563,6 +4571,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2123A662647198000A29222 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
 			productName = SwiftyJSON;
+		};
+		E28AEECD277A886500977C61 /* ComposableArchitecture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E24D90AA27128095009EDE57 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
 		};
 		E2901FA4264CAC8B003A2C01 /* Shake */ = {
 			isa = XCSwiftPackageProductDependency;

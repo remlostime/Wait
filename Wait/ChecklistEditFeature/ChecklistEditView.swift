@@ -45,6 +45,9 @@ public struct ChecklistEditView: View {
       .onDisappear {
         viewStore.send(.save)
       }
+      .onAppear {
+        viewStore.send(.load)
+      }
     }
   }
 
@@ -57,10 +60,15 @@ public struct ChecklistEditView: View {
 
 struct ChecklistEditView_Previews: PreviewProvider {
   static var previews: some View {
-    ChecklistEditView(store: Store(
-      initialState: ChecklistEditState(items: []),
-      reducer: ChecklistEditReducerBuilder.build(),
-      environment: ChecklistEditEnvironment()
-    ))
+    NavigationView {
+      ChecklistEditView(store: Store(
+        initialState: ChecklistEditState(items: [
+          ChecklistItem(name: "First"),
+          ChecklistItem(name: "Second")
+        ]),
+        reducer: ChecklistEditReducerBuilder.build(),
+        environment: ChecklistEditEnvironment(checklistDataManager: DefaultChecklistDataManager())
+      ))
+    }
   }
 }

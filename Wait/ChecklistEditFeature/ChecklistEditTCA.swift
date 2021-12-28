@@ -6,12 +6,15 @@
 import ComposableArchitecture
 import Foundation
 import Model
+import SwiftUI
+import Logging
 
 // MARK: - ChecklistEditAction
 
 public enum ChecklistEditAction {
   case addItem
   case save
+  case load
   case itemDidChange(index: Int, text: String)
 }
 
@@ -32,7 +35,11 @@ public struct ChecklistEditState: Equatable {
 // MARK: - ChecklistEditEnvironment
 
 public struct ChecklistEditEnvironment {
-  public init() {}
+  let checklistDataManager: ChecklistDataManager
+
+  public init(checklistDataManager: ChecklistDataManager) {
+    self.checklistDataManager = checklistDataManager
+  }
 }
 
 // MARK: - ChecklistEditReducerBuilder
@@ -43,13 +50,18 @@ public typealias ChecklistEditReducer = Reducer<ChecklistEditState, ChecklistEdi
 
 public enum ChecklistEditReducerBuilder {
   public static func build() -> ChecklistEditReducer {
-    let settingsReducer = ChecklistEditReducer { state, action, _ in
+    let reducer = ChecklistEditReducer { state, action, environment in
       switch action {
         case .addItem:
           state.items.insert(ChecklistItem(name: ""), at: 0)
           return .none
+        case .load:
+          if let checklistItems = environment.checklistDataManager.load() {
+            state.items = checklistItems
+          }
+          return .none
         case .save:
-          ChecklistCache.shared.saveItems(state.items)
+          environment.checklistDataManager.save(items: state.items)
           return .none
         case let .itemDidChange(index, text):
           state.items[index].name = text
@@ -57,6 +69,6 @@ public enum ChecklistEditReducerBuilder {
       }
     }
 
-    return settingsReducer
+    return reducer
   }
 }
