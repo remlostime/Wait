@@ -21,7 +21,7 @@ public struct ChecklistState: Equatable {
 
   public init(checklistItems: [ChecklistItem], currentChceklistItemIndex: Int = 0) {
     self.checklistItems = checklistItems
-    self.currentChecklistItemIndex = currentChceklistItemIndex
+    currentChecklistItemIndex = currentChceklistItemIndex
   }
 
   // MARK: Internal

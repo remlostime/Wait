@@ -3,9 +3,9 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import XCTest
 import ComposableArchitecture
 import Model
+import XCTest
 @testable import Checklist
 
 class ChecklistCardTests: XCTestCase {
@@ -18,7 +18,8 @@ class ChecklistCardTests: XCTestCase {
     let store = TestStore(
       initialState: state,
       reducer: ChecklistCardReducerBuilder.build(),
-      environment: ChecklistCardEnvironment())
+      environment: ChecklistCardEnvironment()
+    )
 
     store.send(.check) {
       $0.checklistItem.isChecked = true
@@ -35,7 +36,8 @@ class ChecklistCardTests: XCTestCase {
     let store = TestStore(
       initialState: state,
       reducer: ChecklistCardReducerBuilder.build(),
-      environment: ChecklistCardEnvironment())
+      environment: ChecklistCardEnvironment()
+    )
 
     store.send(.uncheck) {
       $0.checklistItem.isChecked = false

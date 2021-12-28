@@ -3,18 +3,17 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import XCTest
 import ComposableArchitecture
 import Model
+import XCTest
 @testable import Checklist
 
 class ChecklistTests: XCTestCase {
-
   func testGoBack() {
     let state = ChecklistState(
       checklistItems: [
         ChecklistItem(name: "first"),
-        ChecklistItem(name: "second")
+        ChecklistItem(name: "second"),
       ],
       currentChceklistItemIndex: 1
     )
@@ -22,12 +21,13 @@ class ChecklistTests: XCTestCase {
     let store = TestStore(
       initialState: state,
       reducer: ChecklistReducerBuilder.build(),
-      environment: ChecklistEnvironment())
+      environment: ChecklistEnvironment()
+    )
 
     store.send(.goBack) {
       $0.currentChecklistItemIndex -= 1
     }
-    
+
     store.send(.goBack) {
       $0.currentChecklistItemIndex = 0
     }
@@ -37,7 +37,7 @@ class ChecklistTests: XCTestCase {
     let state = ChecklistState(
       checklistItems: [
         ChecklistItem(name: "first"),
-        ChecklistItem(name: "second")
+        ChecklistItem(name: "second"),
       ],
       currentChceklistItemIndex: 1
     )
@@ -45,11 +45,11 @@ class ChecklistTests: XCTestCase {
     let store = TestStore(
       initialState: state,
       reducer: ChecklistReducerBuilder.build(),
-      environment: ChecklistEnvironment())
+      environment: ChecklistEnvironment()
+    )
 
     store.send(.startOver) {
       $0.currentChecklistItemIndex = 0
     }
   }
-
 }
