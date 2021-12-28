@@ -24,7 +24,7 @@ public struct SettingsView: View {
           ChecklistEditView(store: Store(
             initialState: ChecklistEditState(items: []),
             reducer: ChecklistEditReducerBuilder.build(),
-            environment: ChecklistEditEnvironment()
+            environment: ChecklistEditEnvironment(checklistDataManager: DefaultChecklistDataManager())
           ))
         }
 
