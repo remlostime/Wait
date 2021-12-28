@@ -4,26 +4,52 @@
 //
 
 import XCTest
+import ComposableArchitecture
+import Model
 @testable import Checklist
 
 class ChecklistTests: XCTestCase {
-  override func setUpWithError() throws {
-    // Put setup code here. This method is called before the invocation of each test method in the class.
-  }
 
-  override func tearDownWithError() throws {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
-  }
+  func testGoBack() {
+    let state = ChecklistState(
+      checklistItems: [
+        ChecklistItem(name: "first"),
+        ChecklistItem(name: "second")
+      ],
+      currentChceklistItemIndex: 1
+    )
 
-  func testExample() throws {
-    // This is an example of a functional test case.
-    // Use XCTAssert and related functions to verify your tests produce the correct results.
-  }
+    let store = TestStore(
+      initialState: state,
+      reducer: ChecklistReducerBuilder.build(),
+      environment: ChecklistEnvironment())
 
-  func testPerformanceExample() throws {
-    // This is an example of a performance test case.
-    measure {
-      // Put the code you want to measure the time of here.
+    store.send(.goBack) {
+      $0.currentChecklistItemIndex -= 1
+    }
+    
+    store.send(.goBack) {
+      $0.currentChecklistItemIndex = 0
     }
   }
+
+  func testStartOver() {
+    let state = ChecklistState(
+      checklistItems: [
+        ChecklistItem(name: "first"),
+        ChecklistItem(name: "second")
+      ],
+      currentChceklistItemIndex: 1
+    )
+
+    let store = TestStore(
+      initialState: state,
+      reducer: ChecklistReducerBuilder.build(),
+      environment: ChecklistEnvironment())
+
+    store.send(.startOver) {
+      $0.currentChecklistItemIndex = 0
+    }
+  }
+
 }
