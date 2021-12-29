@@ -8,7 +8,7 @@ import Money
 
 // MARK: - StockOverview
 
-public struct StockOverview: Decodable {
+public struct StockOverview: Decodable, Equatable {
   // MARK: Lifecycle
 
   public init(
@@ -74,17 +74,17 @@ public struct StockOverview: Decodable {
 
 public extension StockOverview {
   static let empty = StockOverview(
-    name: "",
-    description: "",
-    PERatio: "",
-    PBRatio: "",
-    PEGRatio: "",
+    name: "empty",
+    description: "empty",
+    PERatio: "0",
+    PBRatio: "0",
+    PEGRatio: "0",
     marketCap: 0,
-    dividendPerShare: "",
-    profitMargin: "",
-    weekHigh52: "",
-    weekLow52: "",
-    returnOnEquity: "",
-    returnOnAssets: ""
+    dividendPerShare: "0",
+    profitMargin: "0",
+    weekHigh52: "0",
+    weekLow52: "0",
+    returnOnEquity: "0",
+    returnOnAssets: "0"
   )
 }
