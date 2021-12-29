@@ -3,13 +3,12 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
+import SnapshotTesting
 import SwiftUI
 import XCTest
 @testable import StockDetailsFeature
-import SnapshotTesting
 
 class StockStatsViewSnapshotTests: XCTestCase {
-
   func testView() {
     let view = StockStatsView(title: "PE", value: "10.0")
     let vc = UIHostingController(rootView: view)
