@@ -9,6 +9,12 @@ import Logging
 import Model
 
 class StockOverviewDataSource: ObservableObject {
+  // MARK: Lifecycle
+
+  init(networkClient: StockOverviewNetworkClient) {
+    self.networkClient = networkClient
+  }
+
   // MARK: Internal
 
   @Published var stockOverview = StockOverview.empty
@@ -26,6 +32,6 @@ class StockOverviewDataSource: ObservableObject {
 
   // MARK: Private
 
-  private let networkClient = StockOverviewNetworkClient()
+  private let networkClient: StockOverviewNetworkClient
   private var subscriptions = [AnyCancellable]()
 }

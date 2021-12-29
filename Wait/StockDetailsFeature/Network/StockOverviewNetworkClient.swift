@@ -10,7 +10,15 @@ import Model
 import Networking
 import SwiftUI
 
-final class StockOverviewNetworkClient {
+// MARK: - StockOverviewNetworkClient
+
+protocol StockOverviewNetworkClient {
+  func fetchStockOverview(stock: Stock) -> AnyPublisher<StockOverview, Error>
+}
+
+// MARK: - DefaultStockOverviewNetworkClient
+
+final class DefaultStockOverviewNetworkClient: StockOverviewNetworkClient {
   // MARK: Internal
 
   func fetchStockOverview(stock: Stock) -> AnyPublisher<StockOverview, Error> {

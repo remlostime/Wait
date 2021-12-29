@@ -5,6 +5,27 @@ import Money
 import Size
 import SwiftUI
 
+// MARK: - ExpectedPriceModel
+
+private class ExpectedPriceModel: ObservableObject {
+  @Published var formattedPrice = "" {
+    didSet {
+      if let prefix = formattedPrice.first, prefix != "$" {
+        formattedPrice = "$" + formattedPrice
+      }
+    }
+  }
+
+  var price: String {
+    var _price = formattedPrice
+    while let prefix = _price.first, prefix == "$" {
+      _price = String(_price.dropFirst())
+    }
+
+    return _price
+  }
+}
+
 // MARK: - StockExpectedPriceInputView
 
 public struct StockExpectedPriceInputView: View {
@@ -59,25 +80,6 @@ public struct StockExpectedPriceInputView: View {
   }
 
   // MARK: Internal
-
-  class ExpectedPriceModel: ObservableObject {
-    @Published var formattedPrice = "" {
-      didSet {
-        if let prefix = formattedPrice.first, prefix != "$" {
-          formattedPrice = "$" + formattedPrice
-        }
-      }
-    }
-
-    var price: String {
-      var _price = formattedPrice
-      while let prefix = _price.first, prefix == "$" {
-        _price = String(_price.dropFirst())
-      }
-
-      return _price
-    }
-  }
 
   @State var category = StockCategory.waitlist
 
