@@ -5,6 +5,8 @@ import Money
 import Size
 import SwiftUI
 
+// MARK: - ExpectedPriceModel
+
 private class ExpectedPriceModel: ObservableObject {
   @Published var formattedPrice = "" {
     didSet {

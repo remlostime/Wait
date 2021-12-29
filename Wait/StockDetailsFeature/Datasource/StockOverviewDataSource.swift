@@ -9,6 +9,7 @@ import Logging
 import Model
 
 class StockOverviewDataSource: ObservableObject {
+  // MARK: Lifecycle
 
   init(networkClient: StockOverviewNetworkClient) {
     self.networkClient = networkClient

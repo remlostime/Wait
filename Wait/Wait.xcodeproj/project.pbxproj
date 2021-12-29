@@ -88,10 +88,8 @@
 		E2211E2926C82A3300041F5F /* ChecklistItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2211E2826C82A3300041F5F /* ChecklistItem.swift */; };
 		E227D3A426BEE2930094A872 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = E227D3A326BEE2930094A872 /* Category.swift */; };
 		E22CF90D277D0B05005D4EAB /* StockOverviewNetworkClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22CF90C277D0B05005D4EAB /* StockOverviewNetworkClientTests.swift */; };
-		E22CF910277D1741005D4EAB /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = E22CF90F277D1741005D4EAB /* SnapshotTesting */; };
-		E22CF914277D175E005D4EAB /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = E22CF913277D175E005D4EAB /* SnapshotTesting */; };
 		E22CF916277D1798005D4EAB /* StockStatsViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22CF915277D1798005D4EAB /* StockStatsViewSnapshotTests.swift */; };
-		E22CF918277D1996005D4EAB /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E22CF917277D1996005D4EAB /* XCTest.framework */; };
+		E22CF91B277D1D1E005D4EAB /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = E22CF91A277D1D1E005D4EAB /* SnapshotTesting */; };
 		E2316FB9271B99C400103050 /* StockRowStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2316FB8271B99C400103050 /* StockRowStyle.swift */; };
 		E24BDEFB26D2C8C400595E4A /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = E24BDEFA26D2C8C400595E4A /* Cache */; };
 		E24BDF0826D2EF5600595E4A /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E24BDF0726D2EF5600595E4A /* Alamofire */; };
@@ -747,9 +745,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E22CF918277D1996005D4EAB /* XCTest.framework in Frameworks */,
+				E22CF91B277D1D1E005D4EAB /* SnapshotTesting in Frameworks */,
 				E20AFA862777CE2800B0955F /* StockDetailsFeature.framework in Frameworks */,
-				E22CF914277D175E005D4EAB /* SnapshotTesting in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -934,7 +931,6 @@
 				E2ABEDF0265322670001F0F9 /* HMSegmentedControl in Frameworks */,
 				E276558D267E9470002D13CC /* UI.framework in Frameworks */,
 				E205D3F126D2C567004EE31D /* Logging.framework in Frameworks */,
-				E22CF910277D1741005D4EAB /* SnapshotTesting in Frameworks */,
 				E2A07D9B26520BDD0075E271 /* Hue in Frameworks */,
 				E2123A652647158800A29222 /* SwiftyBeaver in Frameworks */,
 				E2901FA5264CAC8B003A2C01 /* Shake in Frameworks */,
@@ -1603,7 +1599,7 @@
 			);
 			name = StockDetailsFeatureTests;
 			packageProductDependencies = (
-				E22CF913277D175E005D4EAB /* SnapshotTesting */,
+				E22CF91A277D1D1E005D4EAB /* SnapshotTesting */,
 			);
 			productName = StockDetailsFeatureTests;
 			productReference = E20AFA852777CE2800B0955F /* StockDetailsFeatureTests.xctest */;
@@ -1973,7 +1969,6 @@
 				E2ABEDF4265322FA0001F0F9 /* SnapKit */,
 				E24D90AB27128095009EDE57 /* ComposableArchitecture */,
 				E25DB48827767BF6002D5A88 /* Charts */,
-				E22CF90F277D1741005D4EAB /* SnapshotTesting */,
 			);
 			productName = Wait;
 			productReference = E2E637A92641A5FB00F872A4 /* Wait.app */;
@@ -2130,7 +2125,7 @@
 				E2ABEDF3265322FA0001F0F9 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				E24D90AA27128095009EDE57 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 				E25DB48727767BF6002D5A88 /* XCRemoteSwiftPackageReference "Charts" */,
-				E22CF90E277D1741005D4EAB /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
+				E22CF919277D1D1E005D4EAB /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
 			);
 			productRefGroup = E2E637AA2641A5FB00F872A4 /* Products */;
 			projectDirPath = "";
@@ -4436,7 +4431,7 @@
 				minimumVersion = 5.0.1;
 			};
 		};
-		E22CF90E277D1741005D4EAB /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
+		E22CF919277D1D1E005D4EAB /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing";
 			requirement = {
@@ -4551,14 +4546,9 @@
 			package = E2123A662647198000A29222 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
 			productName = SwiftyJSON;
 		};
-		E22CF90F277D1741005D4EAB /* SnapshotTesting */ = {
+		E22CF91A277D1D1E005D4EAB /* SnapshotTesting */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = E22CF90E277D1741005D4EAB /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
-			productName = SnapshotTesting;
-		};
-		E22CF913277D175E005D4EAB /* SnapshotTesting */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E22CF90E277D1741005D4EAB /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
+			package = E22CF919277D1D1E005D4EAB /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
 			productName = SnapshotTesting;
 		};
 		E24BDEFA26D2C8C400595E4A /* Cache */ = {

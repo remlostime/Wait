@@ -3,28 +3,36 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import XCTest
-import Model
 import Combine
+import Model
+import XCTest
 @testable import StockDetailsFeature
 
-class MockStockOverviewNetworkClient: StockOverviewNetworkClient {
+// MARK: - MockStockOverviewNetworkClient
 
-  private let stockOverview: StockOverview
+class MockStockOverviewNetworkClient: StockOverviewNetworkClient {
+  // MARK: Lifecycle
 
   init(stockOverview: StockOverview) {
     self.stockOverview = stockOverview
   }
 
+  // MARK: Internal
+
   func fetchStockOverview(stock: Stock) -> AnyPublisher<StockOverview, Error> {
     Result.Publisher(.success(stockOverview))
       .eraseToAnyPublisher()
   }
+
+  // MARK: Private
+
+  private let stockOverview: StockOverview
 }
 
-class StockOverviewNetworkClientTests: XCTestCase {
+// MARK: - StockOverviewNetworkClientTests
 
-  private var cancellable: AnyCancellable?
+class StockOverviewNetworkClientTests: XCTestCase {
+  // MARK: Internal
 
   func testFetchStockOverview() {
     let stockOverview = StockOverview.empty
@@ -37,4 +45,8 @@ class StockOverviewNetworkClientTests: XCTestCase {
       XCTAssertEqual(newStockOverview, stockOverview)
     }
   }
+
+  // MARK: Private
+
+  private var cancellable: AnyCancellable?
 }

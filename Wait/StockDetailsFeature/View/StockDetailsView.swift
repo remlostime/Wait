@@ -19,6 +19,84 @@ public struct StockDetailsView: View {
 
   // MARK: Public
 
+  public var body: some View {
+    ScrollView {
+      VStack(alignment: .leading) {
+        chartView
+
+        Divider()
+          .padding()
+
+        statsView
+          .padding()
+
+        valuationView
+          .padding()
+
+        checklistView
+          .padding()
+
+        memoView
+          .padding()
+
+        versionView
+          .padding()
+      }
+      .multilineTextAlignment(.leading)
+      .navigationTitle(stock.name)
+      .navigationBarItems(trailing:
+        Button(action: { stockIsFavorited.toggle() }, label: {
+          if stockIsFavorited {
+            Image(systemName: "star.fill")
+              .foregroundColor(.banana)
+          } else {
+            Image(systemName: "star")
+          }
+        })
+      )
+    }
+    .onAppear {
+      stockOverviewDatSource.fetchStockOverview(stock: stock)
+      memo = stock.memo
+    }
+    .onChange(of: stockIsFavorited, perform: { value in
+      stockFavoriteAction(value)
+    })
+  }
+
+  // MARK: Internal
+
+  @State var stock: Stock
+
+  @ObservedObject var stockOverviewDatSource = StockOverviewDataSource(networkClient: DefaultStockOverviewNetworkClient())
+
+  @State var stockIsFavorited: Bool = true
+  @State var memo: String = ""
+  @State var isEditingPrice = false
+
+  @State var checklistItems = ChecklistItem.allItems
+
+  var checkedItemCounts: Int {
+    var counts = 0
+    for item in checklistItems {
+      counts += item.isChecked ? 1 : 0
+    }
+
+    return counts
+  }
+
+  var searchStock: SearchStockResult {
+    SearchStockResult(
+      symbol: stock.symbol,
+      name: stock.name,
+      exchange: "",
+      country: "",
+      currency: "US"
+    )
+  }
+
+  // MARK: Private
+
   private var chartView: some View {
     SwiftUIChartViewController(symbol: stock.symbol)
       .frame(minHeight: 256.0)
@@ -178,84 +256,6 @@ public struct StockDetailsView: View {
       }
     }
   }
-
-  public var body: some View {
-    ScrollView {
-      VStack(alignment: .leading) {
-        chartView
-
-        Divider()
-          .padding()
-
-        statsView
-          .padding()
-
-        valuationView
-          .padding()
-
-        checklistView
-          .padding()
-
-        memoView
-          .padding()
-
-        versionView
-          .padding()
-      }
-      .multilineTextAlignment(.leading)
-      .navigationTitle(stock.name)
-      .navigationBarItems(trailing:
-        Button(action: { stockIsFavorited.toggle() }, label: {
-          if stockIsFavorited {
-            Image(systemName: "star.fill")
-              .foregroundColor(.banana)
-          } else {
-            Image(systemName: "star")
-          }
-        })
-      )
-    }
-    .onAppear {
-      stockOverviewDatSource.fetchStockOverview(stock: stock)
-      memo = stock.memo
-    }
-    .onChange(of: stockIsFavorited, perform: { value in
-      stockFavoriteAction(value)
-    })
-  }
-
-  // MARK: Internal
-
-  @State var stock: Stock
-
-  @ObservedObject var stockOverviewDatSource = StockOverviewDataSource(networkClient: DefaultStockOverviewNetworkClient())
-
-  @State var stockIsFavorited: Bool = true
-  @State var memo: String = ""
-  @State var isEditingPrice = false
-
-  @State var checklistItems = ChecklistItem.allItems
-
-  var checkedItemCounts: Int {
-    var counts = 0
-    for item in checklistItems {
-      counts += item.isChecked ? 1 : 0
-    }
-
-    return counts
-  }
-
-  var searchStock: SearchStockResult {
-    SearchStockResult(
-      symbol: stock.symbol,
-      name: stock.name,
-      exchange: "",
-      country: "",
-      currency: "US"
-    )
-  }
-
-  // MARK: Private
 
   private func stockFavoriteAction(_ isFavorited: Bool) {
     if isFavorited {
