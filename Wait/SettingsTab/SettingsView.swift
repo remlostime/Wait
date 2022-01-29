@@ -20,6 +20,7 @@ public struct SettingsView: View {
   public var body: some View {
     NavigationView {
       List {
+        /*
         NavigationLink("Checklist") {
           ChecklistEditView(store: Store(
             initialState: ChecklistEditState(items: []),
@@ -27,6 +28,7 @@ public struct SettingsView: View {
             environment: ChecklistEditEnvironment(checklistDataManager: DefaultChecklistDataManager())
           ))
         }
+         */
 
         Picker("Stock Row Style", selection: $stockRowStyle) {
           ForEach(StockRowStyle.allCases) { style in
