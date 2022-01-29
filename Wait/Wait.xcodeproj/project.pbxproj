@@ -142,6 +142,7 @@
 		E2765592267E9486002D13CC /* UIViewController+ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A1E99266D64F6004D2B24 /* UIViewController+ActivityIndicator.swift */; };
 		E2765595267E94B9002D13CC /* Color.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E276556D267E9104002D13CC /* Color.framework */; };
 		E2765597267E94C3002D13CC /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = E2765596267E94C3002D13CC /* SnapKit */; };
+		E279E66C27A5C24F0078519E /* Model.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC102D267E9EB300CD98AF /* Model.framework */; };
 		E27C72C626603A8100AB008A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E27C72C526603A7B00AB008A /* GoogleService-Info.plist */; };
 		E28619C52776750D002DFCD0 /* StockCharts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E28619BD2776750D002DFCD0 /* StockCharts.framework */; };
 		E28619CC2776750D002DFCD0 /* StockChartsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28619CB2776750D002DFCD0 /* StockChartsTests.swift */; };
@@ -951,6 +952,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E279E66C27A5C24F0078519E /* Model.framework in Frameworks */,
 				E205D3FA26D2C6B5004EE31D /* Logging.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
