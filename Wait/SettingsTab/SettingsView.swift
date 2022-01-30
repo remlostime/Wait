@@ -20,15 +20,13 @@ public struct SettingsView: View {
   public var body: some View {
     NavigationView {
       List {
-        /*
-         NavigationLink("Checklist") {
-           ChecklistEditView(store: Store(
-             initialState: ChecklistEditState(items: []),
-             reducer: ChecklistEditReducerBuilder.build(),
-             environment: ChecklistEditEnvironment(checklistDataManager: DefaultChecklistDataManager())
-           ))
-         }
-          */
+        NavigationLink("Checklist") {
+          ChecklistEditView(store: Store(
+            initialState: ChecklistEditState(items: []),
+            reducer: ChecklistEditReducerBuilder.build(),
+            environment: ChecklistEditEnvironment(checklistDataManager: DefaultChecklistDataManager())
+          ))
+        }
 
         Picker("Stock Row Style", selection: $stockRowStyle) {
           ForEach(StockRowStyle.allCases) { style in
