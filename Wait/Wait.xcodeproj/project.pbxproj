@@ -46,7 +46,6 @@
 		E20AFA762777CA6200B0955F /* ChecklistEditFeature.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2B728E627753078001CF022 /* ChecklistEditFeature.framework */; };
 		E20AFA782777CDC800B0955F /* PriceChartImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20AFA772777CDC800B0955F /* PriceChartImage.swift */; };
 		E20AFA862777CE2800B0955F /* StockDetailsFeature.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFA7E2777CE2800B0955F /* StockDetailsFeature.framework */; };
-		E20AFA8D2777CE2800B0955F /* StockDetailsFeatureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20AFA8C2777CE2800B0955F /* StockDetailsFeatureTests.swift */; };
 		E20AFA8E2777CE2800B0955F /* StockDetailsFeature.h in Headers */ = {isa = PBXBuildFile; fileRef = E20AFA802777CE2800B0955F /* StockDetailsFeature.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E20AFA912777CE2800B0955F /* StockDetailsFeature.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFA7E2777CE2800B0955F /* StockDetailsFeature.framework */; };
 		E20AFA922777CE2800B0955F /* StockDetailsFeature.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFA7E2777CE2800B0955F /* StockDetailsFeature.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -574,7 +573,6 @@
 		E20AFA7E2777CE2800B0955F /* StockDetailsFeature.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StockDetailsFeature.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E20AFA802777CE2800B0955F /* StockDetailsFeature.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StockDetailsFeature.h; sourceTree = "<group>"; };
 		E20AFA852777CE2800B0955F /* StockDetailsFeatureTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StockDetailsFeatureTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		E20AFA8C2777CE2800B0955F /* StockDetailsFeatureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailsFeatureTests.swift; sourceTree = "<group>"; };
 		E20AFAAD2777CF6200B0955F /* CacheService.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CacheService.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E20AFAAF2777CF6200B0955F /* CacheService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CacheService.h; sourceTree = "<group>"; };
 		E20AFAB42777CF6200B0955F /* CacheServiceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CacheServiceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1019,7 +1017,6 @@
 		E20AFA8B2777CE2800B0955F /* StockDetailsFeatureTests */ = {
 			isa = PBXGroup;
 			children = (
-				E20AFA8C2777CE2800B0955F /* StockDetailsFeatureTests.swift */,
 				E22CF90C277D0B05005D4EAB /* StockOverviewNetworkClientTests.swift */,
 				E22CF915277D1798005D4EAB /* StockStatsViewSnapshotTests.swift */,
 			);
@@ -2398,7 +2395,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E22CF916277D1798005D4EAB /* StockStatsViewSnapshotTests.swift in Sources */,
-				E20AFA8D2777CE2800B0955F /* StockDetailsFeatureTests.swift in Sources */,
 				E22CF90D277D0B05005D4EAB /* StockOverviewNetworkClientTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
