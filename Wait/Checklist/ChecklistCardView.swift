@@ -52,7 +52,7 @@ struct ChecklistCardView: View {
 struct ChecklistCardView_Previews: PreviewProvider {
   static var previews: some View {
     let store = Store<ChecklistCardState, ChecklistCardAction>.init(
-      initialState: ChecklistCardState(checklistItem: ChecklistItem(name: "test"), currentChecklistItemIndex: 0),
+      initialState: ChecklistCardState(checklistItem: ChecklistItem(name: "test", id: UUID()), currentChecklistItemIndex: 0),
       reducer: ChecklistCardReducerBuilder.build(),
       environment: ChecklistCardEnvironment()
     )

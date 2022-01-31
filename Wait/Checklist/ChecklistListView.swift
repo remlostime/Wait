@@ -37,9 +37,9 @@ struct ChecklistListView_Previews: PreviewProvider {
     ChecklistListView(store: Store<ChecklistListState, ChecklistListAction>.init(
       initialState: ChecklistListState(
         checklistItems: [
-          ChecklistItem(name: "First"),
-          ChecklistItem(name: "Second"),
-          ChecklistItem(name: "Third"),
+          ChecklistItem(name: "First", id: UUID()),
+          ChecklistItem(name: "Second", id: UUID()),
+          ChecklistItem(name: "Third", id: UUID()),
         ]),
       reducer: ChecklistListReducerBuilder.build(),
       environment: ChecklistListEnvironment()

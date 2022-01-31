@@ -37,13 +37,15 @@ public struct ChecklistEditState: Equatable {
 public struct ChecklistEditEnvironment {
   // MARK: Lifecycle
 
-  public init(checklistDataManager: ChecklistDataManager) {
+  public init(checklistDataManager: ChecklistDataManager, uuid: @escaping (() -> UUID)) {
     self.checklistDataManager = checklistDataManager
+    self.uuid = uuid
   }
 
   // MARK: Internal
 
   let checklistDataManager: ChecklistDataManager
+  let uuid: () -> UUID
 }
 
 // MARK: - ChecklistEditReducerBuilder
@@ -57,7 +59,7 @@ public enum ChecklistEditReducerBuilder {
     let reducer = ChecklistEditReducer { state, action, environment in
       switch action {
         case .addItem:
-          state.items.insert(ChecklistItem(name: ""), at: 0)
+          state.items.insert(ChecklistItem(name: "", id: environment.uuid()), at: 0)
           return .none
         case .load:
           if let checklistItems = environment.checklistDataManager.load() {

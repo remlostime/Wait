@@ -192,14 +192,14 @@ struct ChecklistContentView_Previews: PreviewProvider {
       store: Store<ChecklistRootState, ChecklistRootAction>(
         initialState: ChecklistRootState(
           rootState: ChecklistState(checklistItems: [
-            ChecklistItem(name: "This is first"),
-            ChecklistItem(name: "This is second"),
-            ChecklistItem(name: "This is third"),
+            ChecklistItem(name: "This is first", id: UUID()),
+            ChecklistItem(name: "This is second", id: UUID()),
+            ChecklistItem(name: "This is third", id: UUID()),
           ])),
         reducer: ChecklistRootReducerBuilder.build(),
         environment: ChecklistRootEnvironment()
       ),
-      checklistItems: .constant([ChecklistItem(name: "haha")])
+      checklistItems: .constant([ChecklistItem(name: "haha", id: UUID())])
     )
   }
 }

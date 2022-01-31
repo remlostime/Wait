@@ -8,23 +8,44 @@ import Model
 import XCTest
 @testable import ChecklistEditFeature
 
+// MARK: - UUIDGenerator
+
+private class UUIDGenerator {
+  // MARK: Lifecycle
+
+  init(uuid: UUID) {
+    self.uuid = uuid
+  }
+
+  // MARK: Internal
+
+  var uuid: UUID
+
+  func callAsFunction() -> UUID {
+    uuid
+  }
+}
+
 // MARK: - ChecklistEditFeatureTests
 
 class ChecklistEditFeatureTests: XCTestCase {
   func testAddNewItem() {
     let state = ChecklistEditState(items: [
-      ChecklistItem(name: "First"),
-      ChecklistItem(name: "Second"),
-      ChecklistItem(name: "Third"),
+      ChecklistItem(name: "First", id: UUID()),
+      ChecklistItem(name: "Second", id: UUID()),
+      ChecklistItem(name: "Third", id: UUID()),
     ])
+
+    let uuidGenerator = UUIDGenerator(uuid: UUID())
+
     let store = TestStore(
       initialState: state,
       reducer: ChecklistEditReducerBuilder.build(),
-      environment: ChecklistEditEnvironment(checklistDataManager: MockChecklistDataManager())
+      environment: ChecklistEditEnvironment(checklistDataManager: MockChecklistDataManager(), uuid: { uuidGenerator() })
     )
 
     store.send(.addItem) {
-      $0.items.insert(ChecklistItem(name: ""), at: 0)
+      $0.items.insert(ChecklistItem(name: "", id: uuidGenerator.uuid), at: 0)
     }
 
     store.send(.itemDidChange(index: 0, text: "New")) {
@@ -40,15 +61,17 @@ class ChecklistEditFeatureTests: XCTestCase {
 
   func testLoadItems() {
     let items = [
-      ChecklistItem(name: "First"),
-      ChecklistItem(name: "Second"),
-      ChecklistItem(name: "Third"),
+      ChecklistItem(name: "First", id: UUID()),
+      ChecklistItem(name: "Second", id: UUID()),
+      ChecklistItem(name: "Third", id: UUID()),
     ]
+
+    let uuidGenerator = UUIDGenerator(uuid: UUID())
 
     let store = TestStore(
       initialState: .init(items: []),
       reducer: ChecklistEditReducerBuilder.build(),
-      environment: ChecklistEditEnvironment(checklistDataManager: MockChecklistDataManager(items: items))
+      environment: ChecklistEditEnvironment(checklistDataManager: MockChecklistDataManager(items: items), uuid: { uuidGenerator() })
     )
 
     store.send(.load) {
@@ -58,16 +81,17 @@ class ChecklistEditFeatureTests: XCTestCase {
 
   func testSaveItems() {
     let items = [
-      ChecklistItem(name: "First"),
-      ChecklistItem(name: "Second"),
-      ChecklistItem(name: "Third"),
+      ChecklistItem(name: "First", id: UUID()),
+      ChecklistItem(name: "Second", id: UUID()),
+      ChecklistItem(name: "Third", id: UUID()),
     ]
 
     let dataManager = MockChecklistDataManager()
+    let uuidGenerator = UUIDGenerator(uuid: UUID())
     let store = TestStore(
       initialState: .init(items: items),
       reducer: ChecklistEditReducerBuilder.build(),
-      environment: ChecklistEditEnvironment(checklistDataManager: dataManager)
+      environment: ChecklistEditEnvironment(checklistDataManager: dataManager, uuid: { uuidGenerator() })
     )
 
     store.send(.save) { _ in }

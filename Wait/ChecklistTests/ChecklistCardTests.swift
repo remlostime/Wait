@@ -11,7 +11,7 @@ import XCTest
 class ChecklistCardTests: XCTestCase {
   func testCheckAction() {
     let state = ChecklistCardState(
-      checklistItem: ChecklistItem(name: "first"),
+      checklistItem: ChecklistItem(name: "first", id: UUID()),
       currentChecklistItemIndex: 0
     )
 
@@ -29,7 +29,7 @@ class ChecklistCardTests: XCTestCase {
 
   func testUncheckAction() {
     let state = ChecklistCardState(
-      checklistItem: ChecklistItem(name: "first"),
+      checklistItem: ChecklistItem(name: "first", id: UUID()),
       currentChecklistItemIndex: 0
     )
 
