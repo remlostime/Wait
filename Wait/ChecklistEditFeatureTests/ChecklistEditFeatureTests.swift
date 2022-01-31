@@ -8,15 +8,21 @@ import Model
 import XCTest
 @testable import ChecklistEditFeature
 
+// MARK: - UUIDGenerator
+
 private class UUIDGenerator {
+  // MARK: Lifecycle
+
   init(uuid: UUID) {
     self.uuid = uuid
   }
 
+  // MARK: Internal
+
   var uuid: UUID
 
   func callAsFunction() -> UUID {
-    return uuid
+    uuid
   }
 }
 
