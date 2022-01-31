@@ -12,8 +12,8 @@ class ChecklistTests: XCTestCase {
   func testChecklistState() {
     let state = ChecklistState(
       checklistItems: [
-        ChecklistItem(name: "first"),
-        ChecklistItem(name: "second"),
+        ChecklistItem(name: "first", id: UUID()),
+        ChecklistItem(name: "second", id: UUID()),
       ],
       currentChceklistItemIndex: 1
     )
@@ -24,8 +24,8 @@ class ChecklistTests: XCTestCase {
   func testGoBack() {
     let state = ChecklistState(
       checklistItems: [
-        ChecklistItem(name: "first"),
-        ChecklistItem(name: "second"),
+        ChecklistItem(name: "first", id: UUID()),
+        ChecklistItem(name: "second", id: UUID()),
       ],
       currentChceklistItemIndex: 1
     )
@@ -48,8 +48,8 @@ class ChecklistTests: XCTestCase {
   func testStartOver() {
     let state = ChecklistState(
       checklistItems: [
-        ChecklistItem(name: "first"),
-        ChecklistItem(name: "second"),
+        ChecklistItem(name: "first", id: UUID()),
+        ChecklistItem(name: "second", id: UUID()),
       ],
       currentChceklistItemIndex: 1
     )
