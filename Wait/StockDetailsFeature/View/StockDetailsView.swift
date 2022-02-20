@@ -192,12 +192,12 @@ public struct StockDetailsView: View {
             isPresented: $isEditingPrice
           )
         })
-        .onChange(of: stock, perform: { _ in
+        .onChange(of: stock.expectedPrice, perform: { _ in
           StockCache.shared.saveStock(stock)
         })
       }
 
-      SwiftUIValuationChartViewController(stock: stock)
+      SwiftUIValuationChartViewController(stock: $stock)
         .frame(height: 120)
     }
   }
