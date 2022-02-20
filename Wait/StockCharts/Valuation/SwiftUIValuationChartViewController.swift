@@ -29,9 +29,7 @@ public struct SwiftUIValuationChartViewController: UIViewControllerRepresentable
     return viewController
   }
 
-  public func updateUIViewController(_ viewController: ValuationChartViewController, context: Context) {
-
-  }
+  public func updateUIViewController(_ viewController: ValuationChartViewController, context: Context) {}
 
   // MARK: Internal
 
