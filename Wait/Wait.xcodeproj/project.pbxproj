@@ -85,7 +85,6 @@
 		E2123A682647198000A29222 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E2123A672647198000A29222 /* SwiftyJSON */; };
 		E21D2E7A269B6DF80063C7ED /* Color.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E276556D267E9104002D13CC /* Color.framework */; };
 		E2211E2926C82A3300041F5F /* ChecklistItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2211E2826C82A3300041F5F /* ChecklistItem.swift */; };
-		E227D3A426BEE2930094A872 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = E227D3A326BEE2930094A872 /* Category.swift */; };
 		E22CF90D277D0B05005D4EAB /* StockOverviewNetworkClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22CF90C277D0B05005D4EAB /* StockOverviewNetworkClientTests.swift */; };
 		E22CF916277D1798005D4EAB /* StockStatsViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22CF915277D1798005D4EAB /* StockStatsViewSnapshotTests.swift */; };
 		E22CF91B277D1D1E005D4EAB /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = E22CF91A277D1D1E005D4EAB /* SnapshotTesting */; };
@@ -593,7 +592,6 @@
 		E2211E2426C81C5E00041F5F /* StockOverviewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOverviewDataSource.swift; sourceTree = "<group>"; };
 		E2211E2626C8280100041F5F /* Checklist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Checklist.swift; sourceTree = "<group>"; };
 		E2211E2826C82A3300041F5F /* ChecklistItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistItem.swift; sourceTree = "<group>"; };
-		E227D3A326BEE2930094A872 /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		E22CF90C277D0B05005D4EAB /* StockOverviewNetworkClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOverviewNetworkClientTests.swift; sourceTree = "<group>"; };
 		E22CF915277D1798005D4EAB /* StockStatsViewSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockStatsViewSnapshotTests.swift; sourceTree = "<group>"; };
 		E22CF917277D1996005D4EAB /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -1353,7 +1351,6 @@
 				E28E475D265584C800C1D60E /* StockQuote.swift */,
 				E25A1E81266BB862004D2B24 /* Exchange.swift */,
 				E25A1E9F266DA6F6004D2B24 /* StockOverview.swift */,
-				E227D3A326BEE2930094A872 /* Category.swift */,
 				E2211E2826C82A3300041F5F /* ChecklistItem.swift */,
 				E2F9CDD726D554870076F109 /* UpdatedHistory.swift */,
 				E2316FB8271B99C400103050 /* StockRowStyle.swift */,
@@ -2579,7 +2576,6 @@
 				E2F9CDD826D554870076F109 /* UpdatedHistory.swift in Sources */,
 				E2FC103A267E9EBF00CD98AF /* StockOverview.swift in Sources */,
 				E2FC103B267E9EBF00CD98AF /* StockQuote.swift in Sources */,
-				E227D3A426BEE2930094A872 /* Category.swift in Sources */,
 				E20AFA782777CDC800B0955F /* PriceChartImage.swift in Sources */,
 				E2FC103D267E9EBF00CD98AF /* Stock.swift in Sources */,
 				E2FC103E267E9EBF00CD98AF /* SearchStock.swift in Sources */,
