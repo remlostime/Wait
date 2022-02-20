@@ -22,14 +22,6 @@ public struct MainView: View {
   public var body: some View {
     NavigationView {
       VStack {
-        Picker("Picker", selection: $category, content: {
-          ForEach(StockCategory.allCases) { category in
-            Text(category.description).tag(category)
-          }
-        })
-          .pickerStyle(SegmentedPickerStyle())
-          .padding(.all, 10)
-
         switch stockRowStyle {
           case .card:
             ScrollView {
@@ -40,7 +32,7 @@ public struct MainView: View {
                 ],
                 spacing: 16
               ) {
-                ForEach(stocksInCategory, id: \.symbol) { stock in
+                ForEach(stocks, id: \.symbol) { stock in
                   NavigationLink {
                     StockDetailsView(stock: stock)
                   } label: {
@@ -51,7 +43,7 @@ public struct MainView: View {
             }
           case .row:
             List {
-              ForEach(stocksInCategory, id: \.symbol) { stock in
+              ForEach(stocks, id: \.symbol) { stock in
                 HStack {
                   StockRow(stockRowDetailType: $stockRowDetailType, stock: stock)
 
@@ -70,7 +62,7 @@ public struct MainView: View {
               }
               .onDelete(perform: { indexSet in
                 for index in indexSet {
-                  let stock = stocksInCategory[index]
+                  let stock = stocks[index]
                   dataSource.removeStock(stock)
                 }
               })
@@ -110,19 +102,12 @@ public struct MainView: View {
   // MARK: Internal
 
   @State var stockRowDetailType: StockRowDetailType = .actionStatus
-  @State var category: StockCategory = .waitlist
   @State var selection: String? = nil
 
   @AppStorage("stockRowStyle") var stockRowStyle: StockRowStyle = .card
 
   var stocks: [Stock] {
     dataSource.stocks
-  }
-
-  var stocksInCategory: [Stock] {
-    stocks.filter { stock in
-      stock.category == category
-    }
   }
 
   // MARK: Private

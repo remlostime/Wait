@@ -17,7 +17,6 @@ public struct Stock: Codable, Equatable {
     expectedPrice: Money<USD>,
     memo: String = "",
     currentQuote: StockCurrentQuote,
-    category: StockCategory,
     updatedHistory: [UpdatedHistory]
   ) {
     self.symbol = symbol
@@ -25,7 +24,6 @@ public struct Stock: Codable, Equatable {
     self.expectedPrice = expectedPrice
     self.memo = memo
     self.currentQuote = currentQuote
-    self.category = category
     self.updatedHistory = updatedHistory
   }
 
@@ -35,7 +33,6 @@ public struct Stock: Codable, Equatable {
   public let name: String
   public let expectedPrice: Money<USD>
   public let memo: String
-  public let category: StockCategory
   public private(set) var currentQuote: StockCurrentQuote
   public let updatedHistory: [UpdatedHistory]
 
@@ -50,7 +47,6 @@ public struct Stock: Codable, Equatable {
       expectedPrice: expectedPrice,
       memo: memo,
       currentQuote: currentQuote,
-      category: category,
       updatedHistory: updatedHistory
     )
   }
@@ -62,19 +58,6 @@ public struct Stock: Codable, Equatable {
       expectedPrice: expectedPrice,
       memo: memo,
       currentQuote: currentQuote,
-      category: category,
-      updatedHistory: updatedHistory
-    )
-  }
-
-  public func with(category: StockCategory) -> Stock {
-    Stock(
-      symbol: symbol,
-      name: name,
-      expectedPrice: expectedPrice,
-      memo: memo,
-      currentQuote: currentQuote,
-      category: category,
       updatedHistory: updatedHistory
     )
   }
@@ -98,7 +81,6 @@ public extension Stock {
       expectedPrice: 0.0,
       memo: "Empty",
       currentQuote: .empty,
-      category: .waitlist,
       updatedHistory: []
     )
   }
