@@ -77,10 +77,16 @@ struct StockRow: View {
       Button(buttonText) {
         showDisplaySheet = true
       }
-      .sheet(isPresented: $showDisplaySheet, onDismiss: {
-        showDisplaySheet = false
-      }, content: {
-        StockRowTypeDisplaySheet(stockRowDetailType: $stockRowDetailType)
+      .confirmationDialog("Display Data", isPresented: $showDisplaySheet, titleVisibility: .visible, actions: {
+        ForEach(StockRowDetailType.allCases) { type in
+          Button(type.rawValue) {
+            stockRowDetailType = type
+          }
+        }
+
+        Button("Cancel", role: .cancel) {
+          showDisplaySheet = false
+        }
       })
       .padding(EdgeInsets(top: Size.verticalPadding8, leading: Size.horizontalPadding16, bottom: Size.verticalPadding8, trailing: Size.horizontalPadding16))
       .background(stockRowDetailType == .actionStatus ? stock.actionColor : stock.priceColor)

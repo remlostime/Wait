@@ -119,7 +119,6 @@
 		E26C1CBB277911A100E8C16A /* StockChartImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C3D362269B889000466CC3 /* StockChartImageCache.swift */; };
 		E26C1CBC277911BC00E8C16A /* CacheService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFAAD2777CF6200B0955F /* CacheService.framework */; platformFilter = ios; };
 		E26C1CC1277911EF00E8C16A /* StockCurrentQuoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E272A6F226ED115400163FF3 /* StockCurrentQuoteDataSource.swift */; };
-		E26C1CC22779120A00E8C16A /* StockRowTypeDisplaySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E262496B269F7E2E001E7F31 /* StockRowTypeDisplaySheet.swift */; };
 		E26C1CC32779121D00E8C16A /* SearchStockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EDFE26483D6600752D8A /* SearchStockView.swift */; };
 		E26C1CC42779123300E8C16A /* SearchStockDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A927726C08D81004A4EBB /* SearchStockDataSource.swift */; };
 		E26C1CC52779124000E8C16A /* SearchStockNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A927926C08E32004A4EBB /* SearchStockNetworkClient.swift */; };
@@ -619,7 +618,6 @@
 		E25A927726C08D81004A4EBB /* SearchStockDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchStockDataSource.swift; sourceTree = "<group>"; };
 		E25A927926C08E32004A4EBB /* SearchStockNetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchStockNetworkClient.swift; sourceTree = "<group>"; };
 		E25B746C26A33B7600BE0A9C /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
-		E262496B269F7E2E001E7F31 /* StockRowTypeDisplaySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockRowTypeDisplaySheet.swift; sourceTree = "<group>"; };
 		E26C1C7D277910D300E8C16A /* WaitlistTab.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WaitlistTab.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E26C1C7F277910D300E8C16A /* WaitlistTab.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WaitlistTab.h; sourceTree = "<group>"; };
 		E26C1C84277910D400E8C16A /* WaitlistTabTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WaitlistTabTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1117,7 +1115,6 @@
 			children = (
 				E2E637BF2641A92A00F872A4 /* StockRow.swift */,
 				E2E637AE2641A5FB00F872A4 /* MainView.swift */,
-				E262496B269F7E2E001E7F31 /* StockRowTypeDisplaySheet.swift */,
 				E275EDFE26483D6600752D8A /* SearchStockView.swift */,
 				E275EE0226483FE300752D8A /* SearchStockRow.swift */,
 				E2316FB6271B7D5300103050 /* StockCard.swift */,
@@ -2441,7 +2438,6 @@
 				E26C1CB42779115A00E8C16A /* StockRow.swift in Sources */,
 				E26C1CC62779125C00E8C16A /* StockCard.swift in Sources */,
 				E26C1CC52779124000E8C16A /* SearchStockNetworkClient.swift in Sources */,
-				E26C1CC22779120A00E8C16A /* StockRowTypeDisplaySheet.swift in Sources */,
 				E26C1CC32779121D00E8C16A /* SearchStockView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
