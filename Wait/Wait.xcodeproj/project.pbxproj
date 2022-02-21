@@ -64,7 +64,6 @@
 		E20AFAA72777CF0800B0955F /* StockExpectedPriceInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BE76572641FC3300645629 /* StockExpectedPriceInputView.swift */; };
 		E20AFAB52777CF6200B0955F /* CacheService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFAAD2777CF6200B0955F /* CacheService.framework */; };
 		E20AFABC2777CF6300B0955F /* CacheServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20AFABB2777CF6300B0955F /* CacheServiceTests.swift */; };
-		E20AFABD2777CF6300B0955F /* CacheService.h in Headers */ = {isa = PBXBuildFile; fileRef = E20AFAAF2777CF6200B0955F /* CacheService.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E20AFAC02777CF6300B0955F /* CacheService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFAAD2777CF6200B0955F /* CacheService.framework */; };
 		E20AFAC12777CF6300B0955F /* CacheService.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFAAD2777CF6200B0955F /* CacheService.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E20AFAC82777CF6C00B0955F /* StockCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2123A6A26472F9400A29222 /* StockCache.swift */; };
@@ -572,7 +571,6 @@
 		E20AFA802777CE2800B0955F /* StockDetailsFeature.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StockDetailsFeature.h; sourceTree = "<group>"; };
 		E20AFA852777CE2800B0955F /* StockDetailsFeatureTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StockDetailsFeatureTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E20AFAAD2777CF6200B0955F /* CacheService.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CacheService.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E20AFAAF2777CF6200B0955F /* CacheService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CacheService.h; sourceTree = "<group>"; };
 		E20AFAB42777CF6200B0955F /* CacheServiceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CacheServiceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E20AFABB2777CF6300B0955F /* CacheServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheServiceTests.swift; sourceTree = "<group>"; };
 		E210DEF826D2B50D0044DA4E /* WaitWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WaitWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1024,7 +1022,6 @@
 			children = (
 				E2C3D362269B889000466CC3 /* StockChartImageCache.swift */,
 				E2123A6A26472F9400A29222 /* StockCache.swift */,
-				E20AFAAF2777CF6200B0955F /* CacheService.h */,
 			);
 			path = CacheService;
 			sourceTree = "<group>";
@@ -1417,7 +1414,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E20AFABD2777CF6300B0955F /* CacheService.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3091,6 +3087,7 @@
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -3124,6 +3121,7 @@
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";

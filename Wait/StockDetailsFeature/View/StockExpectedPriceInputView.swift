@@ -31,10 +31,11 @@ private class ExpectedPriceModel: ObservableObject {
 public struct StockExpectedPriceInputView: View {
   // MARK: Lifecycle
 
-  public init(searchStock: SearchStockResult, stock: Binding<Stock>, isPresented: Binding<Bool>) {
+  public init(searchStock: SearchStockResult, stock: Binding<Stock>, isPresented: Binding<Bool>, a: Binding<Money<USD>>) {
     self.searchStock = searchStock
     _stock = stock
     _isPresented = isPresented
+    _a = a
   }
 
   // MARK: Public
@@ -52,7 +53,10 @@ public struct StockExpectedPriceInputView: View {
 
       Button("Add") {
         var updatedHistory = stock.updatedHistory
-        updatedHistory.append(UpdatedHistory(notes: ["Expected Price Updated"]))
+        updatedHistory.append(UpdatedHistory(notes: ["Expected Price Updated: \(expectedPriceModel.formattedPrice)"]))
+
+        print("stock expected price: \(stock.expectedPrice)")
+        print("a: \(a.amountDoubleValue)")
 
         stock = Stock(
           symbol: searchStock.symbol,
@@ -61,6 +65,12 @@ public struct StockExpectedPriceInputView: View {
           currentQuote: stock.currentQuote,
           updatedHistory: updatedHistory
         )
+
+        print("stock expected price(after updated): \(stock.expectedPrice)")
+
+        a = Money<USD>(floatLiteral: Double(expectedPriceModel.price) ?? 0.0)
+
+        print("a(after updated): \(a.amountDoubleValue)")
 
         isPresented.toggle()
       }
@@ -75,6 +85,7 @@ public struct StockExpectedPriceInputView: View {
   var searchStock: SearchStockResult
   @Binding var stock: Stock
   @Binding var isPresented: Bool
+  @Binding var a: Money<USD>
 
   // MARK: Private
 
@@ -88,7 +99,8 @@ struct WaitStockView_Previews: PreviewProvider {
     StockExpectedPriceInputView(
       searchStock: SearchStockResult(symbol: "FB", name: "Facebook", exchange: "NYSE", country: "US", currency: "USD"),
       stock: .constant(Stock.empty),
-      isPresented: .constant(true)
+      isPresented: .constant(true),
+      a: .constant("aa")
     )
   }
 }

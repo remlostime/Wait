@@ -11,7 +11,6 @@ import UIKit
 // MARK: - SwiftUIValuationChartViewController
 
 public struct SwiftUIValuationChartViewController: UIViewControllerRepresentable {
-  // MARK: Lifecycle
 
   public init(stock: Binding<Stock>) {
     _stock = stock
@@ -29,11 +28,12 @@ public struct SwiftUIValuationChartViewController: UIViewControllerRepresentable
     return viewController
   }
 
-  public func updateUIViewController(_ viewController: ValuationChartViewController, context: Context) {}
+  public func updateUIViewController(_ viewController: ValuationChartViewController, context: Context) {
+    viewController.stock = stock
+  }
 
   // MARK: Internal
 
-  // TODO(kai) - Edit chart price does not work, maybe fix here
   @Binding var stock: Stock
 }
 

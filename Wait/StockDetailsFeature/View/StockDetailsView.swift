@@ -57,7 +57,6 @@ public struct StockDetailsView: View {
     }
     .onAppear {
       stockOverviewDatSource.fetchStockOverview(stock: stock)
-      memo = stock.memo
     }
     .onChange(of: stockIsFavorited, perform: { value in
       stockFavoriteAction(value)
@@ -71,7 +70,6 @@ public struct StockDetailsView: View {
   @ObservedObject var stockOverviewDatSource = StockOverviewDataSource(networkClient: DefaultStockOverviewNetworkClient())
 
   @State var stockIsFavorited: Bool = true
-  @State var memo: String = ""
   @State var isEditingPrice = false
 
   @State var checklistItems = ChecklistItem.allItems
@@ -197,10 +195,14 @@ public struct StockDetailsView: View {
         })
       }
 
+      Text("Stock Price: \(stock.expectedPrice.amountDoubleValue)")
+
       SwiftUIValuationChartViewController(stock: $stock)
         .frame(height: 120)
     }
   }
+
+
 
   private var checklistView: some View {
     VStack(alignment: .leading, spacing: 12.0) {
@@ -236,11 +238,18 @@ public struct StockDetailsView: View {
 
   private var memoView: some View {
     VStack(alignment: .leading, spacing: 12.0) {
-      Text("Memo")
-        .font(.title)
+      HStack {
+        Text("Memo")
+          .font(.title)
 
-      TextField("Write some notes...", text: $memo, onCommit: {
-        stock = stock.with(memo: memo)
+        Spacer()
+
+        Button("Save") {
+          StockCache.shared.saveStock(stock)
+        }
+      }
+
+      TextField("Write some notes...", text: $stock.memo, onCommit: {
         StockCache.shared.saveStock(stock)
       })
     }

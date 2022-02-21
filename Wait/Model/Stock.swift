@@ -32,7 +32,7 @@ public struct Stock: Codable, Equatable {
   public let symbol: String
   public let name: String
   public let expectedPrice: Money<USD>
-  public let memo: String
+  public var memo: String
   public private(set) var currentQuote: StockCurrentQuote
   public let updatedHistory: [UpdatedHistory]
 

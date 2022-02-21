@@ -21,7 +21,7 @@ struct SearchStockView: View {
     VStack {
       List {
         ForEach(dataSource.searchStocks, id: \.symbol) { searchStock in
-          NavigationLink(destination: StockExpectedPriceInputView(searchStock: searchStock, stock: $stock, isPresented: $isPresented)) {
+          NavigationLink(destination: StockExpectedPriceInputView(searchStock: searchStock, stock: $stock, isPresented: $isPresented, a: .constant("23"))) {
             SearchStockRow(stock: searchStock)
           }
         }
