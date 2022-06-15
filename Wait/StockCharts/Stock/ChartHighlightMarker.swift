@@ -1,10 +1,11 @@
 // Created by kai_chen on 5/17/21.
 
-import Charts
+//import Charts
 import Foundation
 import Model
 import UIKit
 
+/*
 class ChartHighlightMarker: MarkerImage {
   // MARK: Lifecycle
 
@@ -145,3 +146,4 @@ class ChartHighlightMarker: MarkerImage {
     self.size = size
   }
 }
+*/

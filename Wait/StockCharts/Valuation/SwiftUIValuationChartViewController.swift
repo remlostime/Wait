@@ -10,6 +10,7 @@ import UIKit
 
 // MARK: - SwiftUIValuationChartViewController
 
+/*
 public struct SwiftUIValuationChartViewController: UIViewControllerRepresentable {
   // MARK: Lifecycle
 
@@ -50,3 +51,5 @@ public class ValuationChartCoordinator: NSObject {
 
   let viewController: SwiftUIValuationChartViewController
 }
+
+*/

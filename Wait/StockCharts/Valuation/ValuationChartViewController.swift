@@ -3,7 +3,7 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import Charts
+//import Charts
 import Color
 import Model
 import SnapKit
@@ -11,6 +11,7 @@ import UIKit
 
 // MARK: - ValuationChartViewController
 
+/*
 public class ValuationChartViewController: UIViewController {
   // MARK: Lifecycle
 
@@ -111,3 +112,5 @@ public class ValuationChartViewController: UIViewController {
 // MARK: ChartViewDelegate
 
 extension ValuationChartViewController: ChartViewDelegate {}
+
+*/

@@ -1,7 +1,6 @@
 // Created by kai_chen on 5/4/21.
 
 import CacheService
-import Charts
 import Combine
 import Model
 import Size
@@ -63,7 +62,10 @@ struct StockRow: View {
           .resizable()
           .frame(width: 80.0, height: 32.0)
           .scaledToFit()
-      } else if let chartData = priceHistoryDataSource.chartData[.day],
+      }
+      
+      /*
+      else if let chartData = priceHistoryDataSource.chartData[.day],
                 let image = chartData.buildChartImage()
       {
         Image(uiImage: image)
@@ -71,6 +73,7 @@ struct StockRow: View {
           .frame(width: 80.0, height: 32.0)
           .scaledToFit()
       }
+       */
 
       Spacer(minLength: Size.horizontalPadding24)
 

@@ -7,6 +7,7 @@ import Model
 import Size
 import StockCharts
 import SwiftUI
+import Charts
 
 // MARK: - StockDetailsView
 
@@ -22,7 +23,7 @@ public struct StockDetailsView: View {
   public var body: some View {
     ScrollView {
       VStack(alignment: .leading) {
-        chartView
+        // chartView
 
         Divider()
           .padding()
@@ -97,10 +98,12 @@ public struct StockDetailsView: View {
 
   // MARK: Private
 
+  /*
   private var chartView: some View {
     SwiftUIChartViewController(symbol: stock.symbol)
       .frame(minHeight: 256.0)
   }
+   */
 
   private var statsView: some View {
     VStack(alignment: .leading, spacing: 12.0) {
@@ -196,9 +199,12 @@ public struct StockDetailsView: View {
           StockCache.shared.saveStock(stock)
         })
       }
-
-      SwiftUIValuationChartViewController(stock: $stock)
-        .frame(height: 120)
+      
+      Chart {
+        BarMark(x: .value("Price", 100), y: .value("Name", "Current"))
+        BarMark(x: .value("Price", 120), y: .value("Name", "Expected"))
+      }
+      .frame(height: 120)
     }
   }
 

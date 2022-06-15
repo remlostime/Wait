@@ -5,6 +5,7 @@ import SwiftUI
 import UIKit
 
 // MARK: - SwiftUIChartViewController
+/*
 
 public struct SwiftUIChartViewController: UIViewControllerRepresentable {
   // MARK: Lifecycle
@@ -52,3 +53,5 @@ public class ChartCoordinator: NSObject {
 
   let viewController: SwiftUIChartViewController
 }
+
+*/

@@ -24,14 +24,12 @@ class SearchStockDataSource: ObservableObject {
       .sink { _ in
         Logger.shared.verbose("Successfully get recommend stocks for :\(keyword)")
       } receiveValue: { [weak self] in
-        let acceptedExchange: Set<Exchange> = Set(Exchange.allCases)
         let stocks = $0.data
-        self?.searchStocks = stocks.filter {
-          guard let exchangeType = Exchange(rawValue: $0.exchange) else {
-            return false
+        
+        DispatchQueue.main.async {
+          self?.searchStocks = stocks.filter {
+            Exchange(rawValue: $0.exchange) == nil ? false : true
           }
-
-          return acceptedExchange.contains(exchangeType)
         }
       }
       .store(in: &subscriptions)
