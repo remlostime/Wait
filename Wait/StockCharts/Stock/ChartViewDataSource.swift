@@ -1,7 +1,11 @@
 // Created by kai_chen on 5/17/21.
 
-import Charts
 import Money
+
+// MARK: - ChartData
+
+// TODO(kai) - remove this placeholder
+public struct ChartData {}
 
 // MARK: - ChartViewDataSource
 

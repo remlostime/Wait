@@ -6,49 +6,53 @@ import UIKit
 
 // MARK: - SwiftUIChartViewController
 
-public struct SwiftUIChartViewController: UIViewControllerRepresentable {
-  // MARK: Lifecycle
+/*
 
-  public init(symbol: String) {
-    self.symbol = symbol
-  }
+ public struct SwiftUIChartViewController: UIViewControllerRepresentable {
+   // MARK: Lifecycle
 
-  // MARK: Public
+   public init(symbol: String) {
+     self.symbol = symbol
+   }
 
-  public func makeCoordinator() -> ChartCoordinator {
-    ChartCoordinator(self)
-  }
+   // MARK: Public
 
-  public func makeUIViewController(context: Context) -> ChartViewController {
-    let dataSource = PriceHistoryDataSource(symbol: symbol)
+   public func makeCoordinator() -> ChartCoordinator {
+     ChartCoordinator(self)
+   }
 
-    let chartViewController = ChartViewController(
-      symbol: symbol,
-      dataSource: dataSource,
-      showPercent: true,
-      selectedTimeSection: .day
-    )
+   public func makeUIViewController(context: Context) -> ChartViewController {
+     let dataSource = PriceHistoryDataSource(symbol: symbol)
 
-    return chartViewController
-  }
+     let chartViewController = ChartViewController(
+       symbol: symbol,
+       dataSource: dataSource,
+       showPercent: true,
+       selectedTimeSection: .day
+     )
 
-  public func updateUIViewController(_ viewController: ChartViewController, context: Context) {}
+     return chartViewController
+   }
 
-  // MARK: Internal
+   public func updateUIViewController(_ viewController: ChartViewController, context: Context) {}
 
-  let symbol: String
-}
+   // MARK: Internal
 
-// MARK: - ChartCoordinator
+   let symbol: String
+ }
 
-public class ChartCoordinator: NSObject {
-  // MARK: Lifecycle
+ // MARK: - ChartCoordinator
 
-  init(_ viewController: SwiftUIChartViewController) {
-    self.viewController = viewController
-  }
+ public class ChartCoordinator: NSObject {
+   // MARK: Lifecycle
 
-  // MARK: Internal
+   init(_ viewController: SwiftUIChartViewController) {
+     self.viewController = viewController
+   }
 
-  let viewController: SwiftUIChartViewController
-}
+   // MARK: Internal
+
+   let viewController: SwiftUIChartViewController
+ }
+
+ */

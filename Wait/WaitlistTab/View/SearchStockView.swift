@@ -17,29 +17,32 @@ struct SearchStockView: View {
 
   @ObservedObject var dataSource = SearchStockDataSource()
 
+  // TODO(Kai) - hard code it, since there's a bug in SwiftUI 16. Need to remove when it's fixed.
+  var searchStocks = [
+    SearchStockResult(symbol: "baba", name: "Baba", exchange: "ok", country: "ok", currency: "adsf"),
+  ]
+
   var body: some View {
-    VStack {
-      List {
-        ForEach(dataSource.searchStocks, id: \.symbol) { searchStock in
-          NavigationLink(destination: StockExpectedPriceInputView(searchStock: searchStock, stock: $stock, isPresented: $isPresented)) {
-            SearchStockRow(stock: searchStock)
+    NavigationView {
+      List(dataSource.searchStocks, id: \.symbol) { searchStock in
+        NavigationLink(destination: StockExpectedPriceInputView(searchStock: searchStock, stock: $stock, isPresented: $isPresented)) {
+          SearchStockRow(stock: searchStock)
+        }
+      }
+      .searchable(text: $keyword)
+      .onChange(of: keyword, perform: { value in
+        guard !keyword.isEmpty else {
+          return
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+          if keyword == value {
+            dataSource.searchStocks(for: value)
           }
         }
-      }
+      })
+      .navigationTitle("Companies")
     }
-    .searchable(text: $keyword)
-    .onChange(of: keyword, perform: { value in
-      guard !keyword.isEmpty else {
-        return
-      }
-
-      DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-        if keyword == value {
-          dataSource.searchStocks(for: value)
-        }
-      }
-    })
-    .navigationTitle("Companies")
   }
 }
 
@@ -49,7 +52,7 @@ struct SearchStockView_Previews: PreviewProvider {
   static var previews: some View {
     SearchStockView(
       isPresented: .constant(true),
-      stock: .constant(.empty)
+      stock: .constant(Stock.empty)
     )
   }
 }

@@ -1,6 +1,5 @@
 // Created by kai_chen on 5/17/21.
 
-import Charts
 import Color
 import Foundation
 import Model
@@ -22,6 +21,7 @@ public final class PriceHistoryDataSource: ObservableObject, ChartViewDataSource
   // MARK: Public
 
   @Published public private(set) var chartData: [TimeSection: ChartData]
+
   public weak var delegate: ChartViewDataSourceDelegate?
 
   public var currentPrice: Money<USD> {
@@ -82,45 +82,48 @@ public final class PriceHistoryDataSource: ObservableObject, ChartViewDataSource
   private let chartCache: ChartCache<ChartModelType>
 
   private func buildChartData(quotes: [StockQuote]) -> ChartData {
-    var entries: [ChartDataEntry] = []
-    var index = 0
-    for quote in quotes {
-      let y = quote.close.amountDoubleValue
+    /*
+     var entries: [ChartDataEntry] = []
+     var index = 0
+     for quote in quotes {
+       let y = quote.close.amountDoubleValue
 
-      let data = ChartDataEntry(x: Double(index), y: y, data: quote)
+       let data = ChartDataEntry(x: Double(index), y: y, data: quote)
 
-      entries.append(data)
+       entries.append(data)
 
-      index += 1
-    }
+       index += 1
+     }
 
-    let chartDataSet = LineChartDataSet(entries: entries)
-    chartDataSet.drawIconsEnabled = false
-    chartDataSet.lineWidth = 2.0
-    chartDataSet.drawCirclesEnabled = false
-    chartDataSet.drawValuesEnabled = false
-    chartDataSet.valueFont = .systemFont(ofSize: 9)
-    chartDataSet.drawVerticalHighlightIndicatorEnabled = true
-    chartDataSet.drawHorizontalHighlightIndicatorEnabled = false
-    chartDataSet.highlightLineWidth = 1.0
-    chartDataSet.highlightColor = .lightGray
+     let chartDataSet = LineChartDataSet(entries: entries)
+     chartDataSet.drawIconsEnabled = false
+     chartDataSet.lineWidth = 2.0
+     chartDataSet.drawCirclesEnabled = false
+     chartDataSet.drawValuesEnabled = false
+     chartDataSet.valueFont = .systemFont(ofSize: 9)
+     chartDataSet.drawVerticalHighlightIndicatorEnabled = true
+     chartDataSet.drawHorizontalHighlightIndicatorEnabled = false
+     chartDataSet.highlightLineWidth = 1.0
+     chartDataSet.highlightColor = .lightGray
 
-    let chartColor: UIColor
-    if
-      let firstPrice = quotes.first?.close,
-      let lastPrice = quotes.last?.close
-    {
-      chartColor = lastPrice >= firstPrice ? .stockGreen : .stockRed
-    } else {
-      chartColor = .stockGreen
-    }
+     let chartColor: UIColor
+     if
+       let firstPrice = quotes.first?.close,
+       let lastPrice = quotes.last?.close
+     {
+       chartColor = lastPrice >= firstPrice ? .stockGreen : .stockRed
+     } else {
+       chartColor = .stockGreen
+     }
 
-    chartDataSet.setColor(chartColor)
-    chartDataSet.fillColor = chartColor
+     chartDataSet.setColor(chartColor)
+     chartDataSet.fillColor = chartColor
 
-    let data = LineChartData(dataSet: chartDataSet)
+     let data = LineChartData(dataSet: chartDataSet)
 
-    return data
+     return data
+      */
+    return ChartData()
   }
 
   private func updateChartData() {

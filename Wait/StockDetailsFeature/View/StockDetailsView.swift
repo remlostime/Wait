@@ -1,6 +1,7 @@
 // Created by kai_chen on 5/16/21.
 
 import CacheService
+import Charts
 import Checklist
 import ComposableArchitecture
 import Model
@@ -22,7 +23,7 @@ public struct StockDetailsView: View {
   public var body: some View {
     ScrollView {
       VStack(alignment: .leading) {
-        chartView
+        // chartView
 
         Divider()
           .padding()
@@ -97,10 +98,12 @@ public struct StockDetailsView: View {
 
   // MARK: Private
 
-  private var chartView: some View {
-    SwiftUIChartViewController(symbol: stock.symbol)
-      .frame(minHeight: 256.0)
-  }
+  /*
+   private var chartView: some View {
+     SwiftUIChartViewController(symbol: stock.symbol)
+       .frame(minHeight: 256.0)
+   }
+    */
 
   private var statsView: some View {
     VStack(alignment: .leading, spacing: 12.0) {
@@ -197,8 +200,11 @@ public struct StockDetailsView: View {
         })
       }
 
-      SwiftUIValuationChartViewController(stock: $stock)
-        .frame(height: 120)
+      Chart {
+        BarMark(x: .value("Price", 100), y: .value("Name", "Current"))
+        BarMark(x: .value("Price", 120), y: .value("Name", "Expected"))
+      }
+      .frame(height: 120)
     }
   }
 
