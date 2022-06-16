@@ -164,7 +164,7 @@ public class NumberScrollCounter: UIView {
    Updates the location of the prefix (if there is one), and then animates any changes accordingly.
    */
   func updatePrefix() {
-    guard let animator = self.animator else {
+    guard let animator = animator else {
       return
     }
 
@@ -184,7 +184,7 @@ public class NumberScrollCounter: UIView {
       prefixView = prefixLabel
     }
 
-    if let prefixView = self.prefixView {
+    if let prefixView = prefixView {
       var prefixX: CGFloat = 0
       if let negativeSignView = negativeSignView, includeNegativeSign {
         prefixX = negativeSignView.frame.width
@@ -202,7 +202,7 @@ public class NumberScrollCounter: UIView {
    Updates the location of the suffix (if there is one), and then animates any changes accordingly.
    */
   func updateSuffix() {
-    guard let animator = self.animator else {
+    guard let animator = animator else {
       return
     }
 
@@ -219,7 +219,7 @@ public class NumberScrollCounter: UIView {
       suffixView = suffixLabel
     }
 
-    if let suffixView = self.suffixView, let scroller = digitScrollers.first {
+    if let suffixView = suffixView, let scroller = digitScrollers.first {
       var suffixX: CGFloat = 0
       suffixX += scroller.frame.width * CGFloat(digitScrollers.count)
       if let view = seperatorView {
@@ -336,7 +336,7 @@ public class NumberScrollCounter: UIView {
    - animated: Whether or not the scrolling should be animated.  Defaults to `true`.
    */
   private func updateScrollerLayout(animated: Bool) {
-    if let animator = self.animator {
+    if let animator = animator {
       animator.stopAnimation(true)
     }
 
@@ -444,7 +444,7 @@ public class NumberScrollCounter: UIView {
    Updates the layout of each item in `digitScrollers` and the seperator accordingly.
    */
   private func updateDigitScrollersLayout() {
-    guard let animator = self.animator else {
+    guard let animator = animator else {
       return
     }
 
@@ -500,7 +500,7 @@ public class NumberScrollCounter: UIView {
    Updates whether or not a negative sign is needed, and then animates any changes accordingly.
    */
   private func updateNegativeSign() {
-    guard let animator = self.animator else {
+    guard let animator = animator else {
       return
     }
 

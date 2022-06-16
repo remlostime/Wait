@@ -25,7 +25,7 @@ class SearchStockDataSource: ObservableObject {
         Logger.shared.verbose("Successfully get recommend stocks for :\(keyword)")
       } receiveValue: { [weak self] in
         let stocks = $0.data
-        
+
         DispatchQueue.main.async {
           self?.searchStocks = stocks.filter {
             Exchange(rawValue: $0.exchange) == nil ? false : true

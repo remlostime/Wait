@@ -2,10 +2,10 @@
 
 import Money
 
+// MARK: - ChartData
+
 // TODO(kai) - remove this placeholder
-public struct ChartData {
-  
-}
+public struct ChartData {}
 
 // MARK: - ChartViewDataSource
 

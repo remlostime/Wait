@@ -11,45 +11,45 @@ import UIKit
 // MARK: - SwiftUIValuationChartViewController
 
 /*
-public struct SwiftUIValuationChartViewController: UIViewControllerRepresentable {
-  // MARK: Lifecycle
+ public struct SwiftUIValuationChartViewController: UIViewControllerRepresentable {
+   // MARK: Lifecycle
 
-  public init(stock: Binding<Stock>) {
-    _stock = stock
-  }
+   public init(stock: Binding<Stock>) {
+     _stock = stock
+   }
 
-  // MARK: Public
+   // MARK: Public
 
-  public func makeCoordinator() -> ValuationChartCoordinator {
-    ValuationChartCoordinator(self)
-  }
+   public func makeCoordinator() -> ValuationChartCoordinator {
+     ValuationChartCoordinator(self)
+   }
 
-  public func makeUIViewController(context: Context) -> ValuationChartViewController {
-    let viewController = ValuationChartViewController(stock: stock)
+   public func makeUIViewController(context: Context) -> ValuationChartViewController {
+     let viewController = ValuationChartViewController(stock: stock)
 
-    return viewController
-  }
+     return viewController
+   }
 
-  public func updateUIViewController(_ viewController: ValuationChartViewController, context: Context) {}
+   public func updateUIViewController(_ viewController: ValuationChartViewController, context: Context) {}
 
-  // MARK: Internal
+   // MARK: Internal
 
-  // TODO(kai) - Edit chart price does not work, maybe fix here
-  @Binding var stock: Stock
-}
+   // TODO(kai) - Edit chart price does not work, maybe fix here
+   @Binding var stock: Stock
+ }
 
-// MARK: - ValuationChartCoordinator
+ // MARK: - ValuationChartCoordinator
 
-public class ValuationChartCoordinator: NSObject {
-  // MARK: Lifecycle
+ public class ValuationChartCoordinator: NSObject {
+   // MARK: Lifecycle
 
-  init(_ viewController: SwiftUIValuationChartViewController) {
-    self.viewController = viewController
-  }
+   init(_ viewController: SwiftUIValuationChartViewController) {
+     self.viewController = viewController
+   }
 
-  // MARK: Internal
+   // MARK: Internal
 
-  let viewController: SwiftUIValuationChartViewController
-}
+   let viewController: SwiftUIValuationChartViewController
+ }
 
-*/
+ */

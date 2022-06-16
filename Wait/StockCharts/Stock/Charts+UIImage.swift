@@ -3,7 +3,7 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-//import Charts
+// import Charts
 import Foundation
 import UIKit
 
@@ -21,10 +21,10 @@ import UIKit
  chart.leftAxis.enabled = false
  chart.rightAxis.enabled = false
  chart.isOpaque = false
- 
+
  chart.data = self
  let image = chart.getChartImage(transparent: true)
- 
+
  return image
  }
  }

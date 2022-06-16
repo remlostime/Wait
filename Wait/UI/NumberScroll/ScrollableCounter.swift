@@ -172,9 +172,9 @@ public class ScrollableCounter: UIView {
     }
 
     var minDistance = CGFloat.greatestFiniteMagnitude
-    var minDistIndex: Int = 0
+    var minDistIndex = 0
     var minDistance2 = CGFloat.greatestFiniteMagnitude
-    var minDistIndex2: Int = 0
+    var minDistIndex2 = 0
     for (index, item) in itemsBeingAnimated.enumerated() {
       let distance = abs(item.frame.origin.y)
       if distance < minDistance {
