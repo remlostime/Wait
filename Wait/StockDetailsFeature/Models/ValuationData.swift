@@ -3,19 +3,19 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
+import Charts
 import Foundation
 import Money
-import Charts
 
 struct ValuationData: Identifiable {
   enum `Type`: String, Plottable {
     case expected
     case current
   }
-  
+
   let price: Money<USD>
   let type: Type
-  
+
   var id: Type {
     type
   }

@@ -176,11 +176,11 @@ public struct StockDetailsView: View {
       .font(.subheadline)
     }
   }
-  
+
   private var valuationData: [ValuationData] {
     [
       ValuationData(price: stock.currentPrice, type: .current),
-      ValuationData(price: stock.expectedPrice, type: .expected)
+      ValuationData(price: stock.expectedPrice, type: .expected),
     ]
   }
 
