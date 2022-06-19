@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		47F93C13285F8A6100240CB4 /* ValuationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F93C12285F8A6100240CB4 /* ValuationData.swift */; };
 		E204B304276BB5F500D2EB0D /* ChecklistListTCA.swift in Sources */ = {isa = PBXBuildFile; fileRef = E204B303276BB5F500D2EB0D /* ChecklistListTCA.swift */; };
 		E204B306276BB78800D2EB0D /* ChecklistListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E204B305276BB78800D2EB0D /* ChecklistListView.swift */; };
 		E204B307276BB8A600D2EB0D /* Checklist.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2211E2626C8280100041F5F /* Checklist.swift */; };
@@ -553,6 +554,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		47F93C12285F8A6100240CB4 /* ValuationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValuationData.swift; sourceTree = "<group>"; };
 		E204B303276BB5F500D2EB0D /* ChecklistListTCA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistListTCA.swift; sourceTree = "<group>"; };
 		E204B305276BB78800D2EB0D /* ChecklistListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistListView.swift; sourceTree = "<group>"; };
 		E205877E272475DB00D0052D /* Charts+UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Charts+UIImage.swift"; sourceTree = "<group>"; };
@@ -950,6 +952,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		47F93C11285F8A4E00240CB4 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				47F93C12285F8A6100240CB4 /* ValuationData.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		E205D3EB26D2C567004EE31D /* Logging */ = {
 			isa = PBXGroup;
 			children = (
@@ -996,6 +1006,7 @@
 		E20AFA7F2777CE2800B0955F /* StockDetailsFeature */ = {
 			isa = PBXGroup;
 			children = (
+				47F93C11285F8A4E00240CB4 /* Models */,
 				E22CF909277D09A3005D4EAB /* View */,
 				E22CF90A277D09AC005D4EAB /* Network */,
 				E22CF90B277D09B2005D4EAB /* Datasource */,
@@ -2369,6 +2380,7 @@
 				E20AFAA22777CEB300B0955F /* StockOverviewNetworkClient.swift in Sources */,
 				E20AFAA62777CEEC00B0955F /* StockStatsView.swift in Sources */,
 				E20AFAA02777CEA000B0955F /* StockOverviewDataSource.swift in Sources */,
+				47F93C13285F8A6100240CB4 /* ValuationData.swift in Sources */,
 				E20AFAA72777CF0800B0955F /* StockExpectedPriceInputView.swift in Sources */,
 				E20AFA992777CE4700B0955F /* StockDetailsView.swift in Sources */,
 			);

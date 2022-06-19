@@ -176,6 +176,13 @@ public struct StockDetailsView: View {
       .font(.subheadline)
     }
   }
+  
+  private var valuationData: [ValuationData] {
+    [
+      ValuationData(price: stock.currentPrice, type: .current),
+      ValuationData(price: stock.expectedPrice, type: .expected)
+    ]
+  }
 
   private var valuationView: some View {
     VStack(alignment: .leading, spacing: 12.0) {
@@ -200,9 +207,13 @@ public struct StockDetailsView: View {
         })
       }
 
-      Chart {
-        BarMark(x: .value("Price", 100), y: .value("Name", "Current"))
-        BarMark(x: .value("Price", 120), y: .value("Name", "Expected"))
+      Chart(valuationData) { data in
+        BarMark(x: .value("Price", data.price.amountDoubleValue), y: .value("Type", data.type))
+          .foregroundStyle(by: .value("Type", data.type))
+          .annotation(position: .trailing) {
+            Text(data.price.formattedCurrency)
+              .font(.caption)
+          }
       }
       .frame(height: 120)
     }
