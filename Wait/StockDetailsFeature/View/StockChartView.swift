@@ -3,24 +3,19 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import SwiftUI
-import StockCharts
 import Charts
+import StockCharts
+import SwiftUI
+
+// MARK: - StockChartView
 
 struct StockChartView: View {
+  // MARK: Internal
+
   @StateObject var dataSource: PriceHistoryDataSource
-  @State private var selectedTimeSection: TimeSection = .day
-  
-  private var chartData: ChartData? {
-    allChartData[selectedTimeSection]
-  }
-  
-  private var allChartData: [TimeSection: ChartData] {
-    dataSource.chartData
-  }
-  
+
   var body: some View {
-    return VStack {
+    VStack {
       if let chartData = chartData {
         Chart(chartData.points) { point in
           LineMark(x: .value("timestamp", point.x), y: .value("price", point.y))
@@ -42,9 +37,22 @@ struct StockChartView: View {
     .onAppear {
       dataSource.fetchData(for: TimeSection.allCases)
     }
+  }
 
+  // MARK: Private
+
+  @State private var selectedTimeSection: TimeSection = .day
+
+  private var chartData: ChartData? {
+    allChartData[selectedTimeSection]
+  }
+
+  private var allChartData: [TimeSection: ChartData] {
+    dataSource.chartData
   }
 }
+
+// MARK: - StockChartView_Previews
 
 struct StockChartView_Previews: PreviewProvider {
   static var previews: some View {

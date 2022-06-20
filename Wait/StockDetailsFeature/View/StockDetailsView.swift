@@ -98,12 +98,12 @@ public struct StockDetailsView: View {
 
   // MARK: Private
 
-   private var chartView: some View {
-     let dataSource = PriceHistoryDataSource(symbol: stock.symbol)
-     
-     return StockChartView(dataSource: dataSource)
-       .frame(minHeight: 256.0)
-   }
+  private var chartView: some View {
+    let dataSource = PriceHistoryDataSource(symbol: stock.symbol)
+
+    return StockChartView(dataSource: dataSource)
+      .frame(minHeight: 256.0)
+  }
 
   private var statsView: some View {
     VStack(alignment: .leading, spacing: 12.0) {

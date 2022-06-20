@@ -3,6 +3,8 @@
 import Foundation
 import Money
 
+// MARK: - StockQuote
+
 public struct StockQuote: Codable {
   // MARK: Public
 
@@ -22,6 +24,8 @@ public struct StockQuote: Codable {
     case date = "datetime"
   }
 }
+
+// MARK: Identifiable
 
 extension StockQuote: Identifiable {
   public var id: Date {

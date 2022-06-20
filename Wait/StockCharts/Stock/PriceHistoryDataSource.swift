@@ -4,8 +4,8 @@ import Color
 import Foundation
 import Model
 import Money
-import UIKit
 import SwiftUI
+import UIKit
 
 public final class PriceHistoryDataSource: ObservableObject, ChartViewDataSource {
   // MARK: Lifecycle
@@ -92,7 +92,7 @@ public final class PriceHistoryDataSource: ObservableObject, ChartViewDataSource
     } else {
       chartColor = .stockGreen
     }
-    
+
     return ChartData(chartColor: chartColor, quotes: quotes)
   }
 

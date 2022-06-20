@@ -34,7 +34,7 @@ public final class StockCurrentQuoteNetworkClient {
       return Fail(error: URLError(.badURL))
         .eraseToAnyPublisher()
     }
-    
+
     guard stocks.count > 1 else {
       return URLSession.shared
         .dataTaskPublisher(for: url)

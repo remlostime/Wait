@@ -29,7 +29,7 @@ public struct StockCurrentQuoteBatch: Codable {
     // Finish decoding all Student objects. Thus assign tempArray to array.
     quotes = tempQuotes
   }
-  
+
   public init(quotes: [String: StockCurrentQuote]) {
     self.quotes = quotes
   }
