@@ -35,7 +35,6 @@
 		E205D3FA26D2C6B5004EE31D /* Logging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E205D3EA26D2C567004EE31D /* Logging.framework */; };
 		E20A8115267EE3C5001F31A6 /* URLDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A07D972651C0A20075E271 /* URLDomain.swift */; };
 		E20A8116267EE3C5001F31A6 /* NetworkingURLBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A07D952651BF270075E271 /* NetworkingURLBuilder.swift */; };
-		E20AFA502777BF4F00B0955F /* ValuationChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2136DD2269A13F90033AEB1 /* ValuationChartViewController.swift */; };
 		E20AFA512777BF5500B0955F /* SwiftUIValuationChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2136DD4269A16530033AEB1 /* SwiftUIValuationChartViewController.swift */; };
 		E20AFA5F2777C9E600B0955F /* SettingsTab.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFA572777C9E600B0955F /* SettingsTab.framework */; };
 		E20AFA662777C9E600B0955F /* SettingsTabTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20AFA652777C9E600B0955F /* SettingsTabTests.swift */; };
@@ -135,9 +134,7 @@
 		E276558A267E9470002D13CC /* UI.h in Headers */ = {isa = PBXBuildFile; fileRef = E2765588267E9470002D13CC /* UI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E276558D267E9470002D13CC /* UI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2765586267E9470002D13CC /* UI.framework */; };
 		E276558E267E9470002D13CC /* UI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E2765586267E9470002D13CC /* UI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		E2765592267E9486002D13CC /* UIViewController+ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A1E99266D64F6004D2B24 /* UIViewController+ActivityIndicator.swift */; };
 		E2765595267E94B9002D13CC /* Color.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E276556D267E9104002D13CC /* Color.framework */; };
-		E2765597267E94C3002D13CC /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = E2765596267E94C3002D13CC /* SnapKit */; };
 		E279E66C27A5C24F0078519E /* Model.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC102D267E9EB300CD98AF /* Model.framework */; };
 		E279E66E27A5CD0D0078519E /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E279E66D27A5CD0D0078519E /* Alamofire */; };
 		E27C72C626603A8100AB008A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E27C72C526603A7B00AB008A /* GoogleService-Info.plist */; };
@@ -153,7 +150,6 @@
 		E28619DE27767532002DFCD0 /* PriceHistoryDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEDFA265324D00001F0F9 /* PriceHistoryDataSource.swift */; };
 		E28619DF27767532002DFCD0 /* Charts+UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E205877E272475DB00D0052D /* Charts+UIImage.swift */; };
 		E28619E327767557002DFCD0 /* Money in Frameworks */ = {isa = PBXBuildFile; productRef = E28619E227767557002DFCD0 /* Money */; };
-		E28619E527767562002DFCD0 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = E28619E427767562002DFCD0 /* SnapKit */; };
 		E28619E62776756A002DFCD0 /* Logging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E205D3EA26D2C567004EE31D /* Logging.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		E28619E927767584002DFCD0 /* Color.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E276556D267E9104002D13CC /* Color.framework */; };
 		E28619EA2776758A002DFCD0 /* Model.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC102D267E9EB300CD98AF /* Model.framework */; };
@@ -168,7 +164,6 @@
 		E2901FA5264CAC8B003A2C01 /* Shake in Frameworks */ = {isa = PBXBuildFile; productRef = E2901FA4264CAC8B003A2C01 /* Shake */; };
 		E2901FA7264CD22E003A2C01 /* bitrise_configuration.plist in Resources */ = {isa = PBXBuildFile; fileRef = E2901FA6264CD22E003A2C01 /* bitrise_configuration.plist */; };
 		E2A07D9B26520BDD0075E271 /* Hue in Frameworks */ = {isa = PBXBuildFile; productRef = E2A07D9A26520BDD0075E271 /* Hue */; };
-		E2ABEDF5265322FA0001F0F9 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = E2ABEDF4265322FA0001F0F9 /* SnapKit */; };
 		E2B5EAA32688105D0092663F /* Money+Format.swift in Sources */ = {isa = PBXBuildFile; fileRef = E23B93E02652D38D00E039D9 /* Money+Format.swift */; };
 		E2B728EE27753079001CF022 /* ChecklistEditFeature.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2B728E627753078001CF022 /* ChecklistEditFeature.framework */; };
 		E2B728F527753079001CF022 /* ChecklistEditFeatureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2B728F427753079001CF022 /* ChecklistEditFeatureTests.swift */; };
@@ -583,7 +578,6 @@
 		E2118088277BBA2000268B3C /* ChecklistCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistCardTests.swift; sourceTree = "<group>"; };
 		E2123A61264713CC00A29222 /* StockCurrentQuote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCurrentQuote.swift; sourceTree = "<group>"; };
 		E2123A6A26472F9400A29222 /* StockCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCache.swift; sourceTree = "<group>"; };
-		E2136DD2269A13F90033AEB1 /* ValuationChartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValuationChartViewController.swift; sourceTree = "<group>"; };
 		E2136DD4269A16530033AEB1 /* SwiftUIValuationChartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIValuationChartViewController.swift; sourceTree = "<group>"; };
 		E2211E2426C81C5E00041F5F /* StockOverviewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOverviewDataSource.swift; sourceTree = "<group>"; };
 		E2211E2626C8280100041F5F /* Checklist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Checklist.swift; sourceTree = "<group>"; };
@@ -607,7 +601,6 @@
 		E25A1E92266D633C004D2B24 /* ScrollableCounter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollableCounter.swift; sourceTree = "<group>"; };
 		E25A1E93266D633C004D2B24 /* DigitScrollCounter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DigitScrollCounter.swift; sourceTree = "<group>"; };
 		E25A1E94266D633D004D2B24 /* NumberScrollCounter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NumberScrollCounter.swift; sourceTree = "<group>"; };
-		E25A1E99266D64F6004D2B24 /* UIViewController+ActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+ActivityIndicator.swift"; sourceTree = "<group>"; };
 		E25A1E9B266D7CAC004D2B24 /* StockStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockStatsView.swift; sourceTree = "<group>"; };
 		E25A1E9D266DA3EA004D2B24 /* StockCurrentQuoteNetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCurrentQuoteNetworkClient.swift; sourceTree = "<group>"; };
 		E25A1E9F266DA6F6004D2B24 /* StockOverview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOverview.swift; sourceTree = "<group>"; };
@@ -819,7 +812,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E2765597267E94C3002D13CC /* SnapKit in Frameworks */,
 				E2D7BD332700F85B00470AFD /* Hue in Frameworks */,
 				E2765595267E94B9002D13CC /* Color.framework in Frameworks */,
 			);
@@ -835,7 +827,6 @@
 				E28619EC27767599002DFCD0 /* Cache in Frameworks */,
 				E28619E927767584002DFCD0 /* Color.framework in Frameworks */,
 				E28619E62776756A002DFCD0 /* Logging.framework in Frameworks */,
-				E28619E527767562002DFCD0 /* SnapKit in Frameworks */,
 				E28619F12776760D002DFCD0 /* SwiftyJSON in Frameworks */,
 				E28619E327767557002DFCD0 /* Money in Frameworks */,
 			);
@@ -902,7 +893,6 @@
 				E2C9A1EA2766AE47000C07F0 /* Checklist.framework in Frameworks */,
 				E2FC1081267EE38D00CD98AF /* Networking.framework in Frameworks */,
 				E26C1C90277910D400E8C16A /* WaitlistTab.framework in Frameworks */,
-				E2ABEDF5265322FA0001F0F9 /* SnapKit in Frameworks */,
 				E2FC1034267E9EB300CD98AF /* Model.framework in Frameworks */,
 				E2C859B426438EE500F93321 /* Cache in Frameworks */,
 				E2B728F927753079001CF022 /* ChecklistEditFeature.framework in Frameworks */,
@@ -1048,7 +1038,6 @@
 		E2136DCF269A134D0033AEB1 /* Valuation */ = {
 			isa = PBXGroup;
 			children = (
-				E2136DD2269A13F90033AEB1 /* ValuationChartViewController.swift */,
 				E2136DD4269A16530033AEB1 /* SwiftUIValuationChartViewController.swift */,
 			);
 			path = Valuation;
@@ -1164,7 +1153,6 @@
 			isa = PBXGroup;
 			children = (
 				E2FC1071267EE03800CD98AF /* NumberScroll */,
-				E2FC1072267EE05A00CD98AF /* Loading */,
 				E2765588267E9470002D13CC /* UI.h */,
 				E2765589267E9470002D13CC /* Info.plist */,
 			);
@@ -1362,14 +1350,6 @@
 				E25A1E93266D633C004D2B24 /* DigitScrollCounter.swift */,
 			);
 			path = NumberScroll;
-			sourceTree = "<group>";
-		};
-		E2FC1072267EE05A00CD98AF /* Loading */ = {
-			isa = PBXGroup;
-			children = (
-				E25A1E99266D64F6004D2B24 /* UIViewController+ActivityIndicator.swift */,
-			);
-			path = Loading;
 			sourceTree = "<group>";
 		};
 		E2FC107B267EE38D00CD98AF /* Networking */ = {
@@ -1764,7 +1744,6 @@
 			);
 			name = UI;
 			packageProductDependencies = (
-				E2765596267E94C3002D13CC /* SnapKit */,
 				E2D7BD322700F85B00470AFD /* Hue */,
 			);
 			productName = UI;
@@ -1788,7 +1767,6 @@
 			name = StockCharts;
 			packageProductDependencies = (
 				E28619E227767557002DFCD0 /* Money */,
-				E28619E427767562002DFCD0 /* SnapKit */,
 				E28619EB27767599002DFCD0 /* Cache */,
 				E28619EE27767600002DFCD0 /* Alamofire */,
 				E28619F02776760D002DFCD0 /* SwiftyJSON */,
@@ -1955,7 +1933,6 @@
 				E2901FA4264CAC8B003A2C01 /* Shake */,
 				E2BDFCA626518CB90075E619 /* Money */,
 				E2A07D9A26520BDD0075E271 /* Hue */,
-				E2ABEDF4265322FA0001F0F9 /* SnapKit */,
 				E24D90AB27128095009EDE57 /* ComposableArchitecture */,
 			);
 			productName = Wait;
@@ -2112,7 +2089,6 @@
 				E2901FA3264CAC8B003A2C01 /* XCRemoteSwiftPackageReference "shake-ios" */,
 				E2BDFCA526518CB90075E619 /* XCRemoteSwiftPackageReference "Money" */,
 				E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */,
-				E2ABEDF3265322FA0001F0F9 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				E24D90AA27128095009EDE57 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 				E22CF919277D1D1E005D4EAB /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
 			);
@@ -2457,7 +2433,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E2765592267E9486002D13CC /* UIViewController+ActivityIndicator.swift in Sources */,
 				E2FC1070267EE02D00CD98AF /* ScrollableCounter.swift in Sources */,
 				E2FC106E267EE01100CD98AF /* DigitScrollCounter.swift in Sources */,
 				E2FC106F267EE02900CD98AF /* NumberScrollCounter.swift in Sources */,
@@ -2469,7 +2444,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E28619DF27767532002DFCD0 /* Charts+UIImage.swift in Sources */,
-				E20AFA502777BF4F00B0955F /* ValuationChartViewController.swift in Sources */,
 				E28619DD27767532002DFCD0 /* TimeSection.swift in Sources */,
 				E28619DB27767532002DFCD0 /* ChartViewDataSource.swift in Sources */,
 				E28619D827767532002DFCD0 /* ChartHighlightMarker.swift in Sources */,
@@ -4449,14 +4423,6 @@
 				minimumVersion = 5.0.1;
 			};
 		};
-		E2ABEDF3265322FA0001F0F9 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SnapKit/SnapKit";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.1;
-			};
-		};
 		E2BDFCA526518CB90075E619 /* XCRemoteSwiftPackageReference "Money" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Flight-School/Money";
@@ -4551,11 +4517,6 @@
 			package = E2BDFCA526518CB90075E619 /* XCRemoteSwiftPackageReference "Money" */;
 			productName = Money;
 		};
-		E2765596267E94C3002D13CC /* SnapKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2ABEDF3265322FA0001F0F9 /* XCRemoteSwiftPackageReference "SnapKit" */;
-			productName = SnapKit;
-		};
 		E279E66D27A5CD0D0078519E /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E2123A5E2647115400A29222 /* XCRemoteSwiftPackageReference "Alamofire" */;
@@ -4565,11 +4526,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2BDFCA526518CB90075E619 /* XCRemoteSwiftPackageReference "Money" */;
 			productName = Money;
-		};
-		E28619E427767562002DFCD0 /* SnapKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2ABEDF3265322FA0001F0F9 /* XCRemoteSwiftPackageReference "SnapKit" */;
-			productName = SnapKit;
 		};
 		E28619EB27767599002DFCD0 /* Cache */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -4600,11 +4556,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */;
 			productName = Hue;
-		};
-		E2ABEDF4265322FA0001F0F9 /* SnapKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2ABEDF3265322FA0001F0F9 /* XCRemoteSwiftPackageReference "SnapKit" */;
-			productName = SnapKit;
 		};
 		E2B72904277530F5001CF022 /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;
