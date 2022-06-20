@@ -4,15 +4,21 @@ import Foundation
 
 // MARK: - TimeSection
 
-public enum TimeSection: Int, CaseIterable, Codable {
+public enum TimeSection: Int, CaseIterable, Codable, Identifiable {
   case day
   case week
   case month
   case year
   case all
+
+  // MARK: Public
+
+  public var id: Int {
+    rawValue
+  }
 }
 
-extension TimeSection {
+public extension TimeSection {
   var timeSectionDescription: String {
     switch self {
       case .day:

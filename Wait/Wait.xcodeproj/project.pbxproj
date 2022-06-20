@@ -22,6 +22,7 @@
 
 /* Begin PBXBuildFile section */
 		47F93C13285F8A6100240CB4 /* ValuationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F93C12285F8A6100240CB4 /* ValuationData.swift */; };
+		47F93C15285FCA3100240CB4 /* StockChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F93C14285FCA3100240CB4 /* StockChartView.swift */; };
 		E204B304276BB5F500D2EB0D /* ChecklistListTCA.swift in Sources */ = {isa = PBXBuildFile; fileRef = E204B303276BB5F500D2EB0D /* ChecklistListTCA.swift */; };
 		E204B306276BB78800D2EB0D /* ChecklistListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E204B305276BB78800D2EB0D /* ChecklistListView.swift */; };
 		E204B307276BB8A600D2EB0D /* Checklist.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2211E2626C8280100041F5F /* Checklist.swift */; };
@@ -146,8 +147,6 @@
 		E28619D02776750D002DFCD0 /* StockCharts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E28619BD2776750D002DFCD0 /* StockCharts.framework */; };
 		E28619D12776750D002DFCD0 /* StockCharts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E28619BD2776750D002DFCD0 /* StockCharts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E28619D827767532002DFCD0 /* ChartHighlightMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E27C62E32653612000DD063C /* ChartHighlightMarker.swift */; };
-		E28619D927767532002DFCD0 /* ChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEDF1265322AE0001F0F9 /* ChartViewController.swift */; };
-		E28619DA27767532002DFCD0 /* SwiftUIChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEDEC26531F0A0001F0F9 /* SwiftUIChartViewController.swift */; };
 		E28619DB27767532002DFCD0 /* ChartViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEDF8265324690001F0F9 /* ChartViewDataSource.swift */; };
 		E28619DC27767532002DFCD0 /* ChartCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEE072653376D0001F0F9 /* ChartCache.swift */; };
 		E28619DD27767532002DFCD0 /* TimeSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEDF62653235A0001F0F9 /* TimeSection.swift */; };
@@ -156,7 +155,6 @@
 		E28619E327767557002DFCD0 /* Money in Frameworks */ = {isa = PBXBuildFile; productRef = E28619E227767557002DFCD0 /* Money */; };
 		E28619E527767562002DFCD0 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = E28619E427767562002DFCD0 /* SnapKit */; };
 		E28619E62776756A002DFCD0 /* Logging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E205D3EA26D2C567004EE31D /* Logging.framework */; settings = {ATTRIBUTES = (Required, ); }; };
-		E28619E82776757A002DFCD0 /* HMSegmentedControl in Frameworks */ = {isa = PBXBuildFile; productRef = E28619E72776757A002DFCD0 /* HMSegmentedControl */; };
 		E28619E927767584002DFCD0 /* Color.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E276556D267E9104002D13CC /* Color.framework */; };
 		E28619EA2776758A002DFCD0 /* Model.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC102D267E9EB300CD98AF /* Model.framework */; };
 		E28619EC27767599002DFCD0 /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = E28619EB27767599002DFCD0 /* Cache */; };
@@ -170,7 +168,6 @@
 		E2901FA5264CAC8B003A2C01 /* Shake in Frameworks */ = {isa = PBXBuildFile; productRef = E2901FA4264CAC8B003A2C01 /* Shake */; };
 		E2901FA7264CD22E003A2C01 /* bitrise_configuration.plist in Resources */ = {isa = PBXBuildFile; fileRef = E2901FA6264CD22E003A2C01 /* bitrise_configuration.plist */; };
 		E2A07D9B26520BDD0075E271 /* Hue in Frameworks */ = {isa = PBXBuildFile; productRef = E2A07D9A26520BDD0075E271 /* Hue */; };
-		E2ABEDF0265322670001F0F9 /* HMSegmentedControl in Frameworks */ = {isa = PBXBuildFile; productRef = E2ABEDEF265322670001F0F9 /* HMSegmentedControl */; };
 		E2ABEDF5265322FA0001F0F9 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = E2ABEDF4265322FA0001F0F9 /* SnapKit */; };
 		E2B5EAA32688105D0092663F /* Money+Format.swift in Sources */ = {isa = PBXBuildFile; fileRef = E23B93E02652D38D00E039D9 /* Money+Format.swift */; };
 		E2B728EE27753079001CF022 /* ChecklistEditFeature.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2B728E627753078001CF022 /* ChecklistEditFeature.framework */; };
@@ -555,6 +552,7 @@
 
 /* Begin PBXFileReference section */
 		47F93C12285F8A6100240CB4 /* ValuationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValuationData.swift; sourceTree = "<group>"; };
+		47F93C14285FCA3100240CB4 /* StockChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockChartView.swift; sourceTree = "<group>"; };
 		E204B303276BB5F500D2EB0D /* ChecklistListTCA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistListTCA.swift; sourceTree = "<group>"; };
 		E204B305276BB78800D2EB0D /* ChecklistListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistListView.swift; sourceTree = "<group>"; };
 		E205877E272475DB00D0052D /* Charts+UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Charts+UIImage.swift"; sourceTree = "<group>"; };
@@ -643,8 +641,6 @@
 		E2A07D952651BF270075E271 /* NetworkingURLBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingURLBuilder.swift; sourceTree = "<group>"; };
 		E2A07D972651C0A20075E271 /* URLDomain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLDomain.swift; sourceTree = "<group>"; };
 		E2A07D9D26520BF20075E271 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
-		E2ABEDEC26531F0A0001F0F9 /* SwiftUIChartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIChartViewController.swift; sourceTree = "<group>"; };
-		E2ABEDF1265322AE0001F0F9 /* ChartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartViewController.swift; sourceTree = "<group>"; };
 		E2ABEDF62653235A0001F0F9 /* TimeSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSection.swift; sourceTree = "<group>"; };
 		E2ABEDF8265324690001F0F9 /* ChartViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartViewDataSource.swift; sourceTree = "<group>"; };
 		E2ABEDFA265324D00001F0F9 /* PriceHistoryDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceHistoryDataSource.swift; sourceTree = "<group>"; };
@@ -840,7 +836,6 @@
 				E28619E927767584002DFCD0 /* Color.framework in Frameworks */,
 				E28619E62776756A002DFCD0 /* Logging.framework in Frameworks */,
 				E28619E527767562002DFCD0 /* SnapKit in Frameworks */,
-				E28619E82776757A002DFCD0 /* HMSegmentedControl in Frameworks */,
 				E28619F12776760D002DFCD0 /* SwiftyJSON in Frameworks */,
 				E28619E327767557002DFCD0 /* Money in Frameworks */,
 			);
@@ -920,7 +915,6 @@
 				E28619D02776750D002DFCD0 /* StockCharts.framework in Frameworks */,
 				E20AFA6A2777C9E600B0955F /* SettingsTab.framework in Frameworks */,
 				E2123A682647198000A29222 /* SwiftyJSON in Frameworks */,
-				E2ABEDF0265322670001F0F9 /* HMSegmentedControl in Frameworks */,
 				E276558D267E9470002D13CC /* UI.framework in Frameworks */,
 				E205D3F126D2C567004EE31D /* Logging.framework in Frameworks */,
 				E2A07D9B26520BDD0075E271 /* Hue in Frameworks */,
@@ -975,8 +969,6 @@
 			children = (
 				E2ABEE0B26533E1D0001F0F9 /* PriceHistoryNetworkClient.swift */,
 				E205877E272475DB00D0052D /* Charts+UIImage.swift */,
-				E2ABEDEC26531F0A0001F0F9 /* SwiftUIChartViewController.swift */,
-				E2ABEDF1265322AE0001F0F9 /* ChartViewController.swift */,
 				E2ABEDF62653235A0001F0F9 /* TimeSection.swift */,
 				E2ABEDF8265324690001F0F9 /* ChartViewDataSource.swift */,
 				E2ABEDFA265324D00001F0F9 /* PriceHistoryDataSource.swift */,
@@ -1068,6 +1060,7 @@
 				E2D2B5CF26518A9B001B5E32 /* StockDetailsView.swift */,
 				E2BE76572641FC3300645629 /* StockExpectedPriceInputView.swift */,
 				E25A1E9B266D7CAC004D2B24 /* StockStatsView.swift */,
+				47F93C14285FCA3100240CB4 /* StockChartView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1796,7 +1789,6 @@
 			packageProductDependencies = (
 				E28619E227767557002DFCD0 /* Money */,
 				E28619E427767562002DFCD0 /* SnapKit */,
-				E28619E72776757A002DFCD0 /* HMSegmentedControl */,
 				E28619EB27767599002DFCD0 /* Cache */,
 				E28619EE27767600002DFCD0 /* Alamofire */,
 				E28619F02776760D002DFCD0 /* SwiftyJSON */,
@@ -1963,7 +1955,6 @@
 				E2901FA4264CAC8B003A2C01 /* Shake */,
 				E2BDFCA626518CB90075E619 /* Money */,
 				E2A07D9A26520BDD0075E271 /* Hue */,
-				E2ABEDEF265322670001F0F9 /* HMSegmentedControl */,
 				E2ABEDF4265322FA0001F0F9 /* SnapKit */,
 				E24D90AB27128095009EDE57 /* ComposableArchitecture */,
 			);
@@ -2121,7 +2112,6 @@
 				E2901FA3264CAC8B003A2C01 /* XCRemoteSwiftPackageReference "shake-ios" */,
 				E2BDFCA526518CB90075E619 /* XCRemoteSwiftPackageReference "Money" */,
 				E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */,
-				E2ABEDEE265322670001F0F9 /* XCRemoteSwiftPackageReference "HMSegmentedControl" */,
 				E2ABEDF3265322FA0001F0F9 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				E24D90AA27128095009EDE57 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 				E22CF919277D1D1E005D4EAB /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
@@ -2382,6 +2372,7 @@
 				E20AFAA02777CEA000B0955F /* StockOverviewDataSource.swift in Sources */,
 				47F93C13285F8A6100240CB4 /* ValuationData.swift in Sources */,
 				E20AFAA72777CF0800B0955F /* StockExpectedPriceInputView.swift in Sources */,
+				47F93C15285FCA3100240CB4 /* StockChartView.swift in Sources */,
 				E20AFA992777CE4700B0955F /* StockDetailsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2483,10 +2474,8 @@
 				E28619DB27767532002DFCD0 /* ChartViewDataSource.swift in Sources */,
 				E28619D827767532002DFCD0 /* ChartHighlightMarker.swift in Sources */,
 				E20AFA512777BF5500B0955F /* SwiftUIValuationChartViewController.swift in Sources */,
-				E28619D927767532002DFCD0 /* ChartViewController.swift in Sources */,
 				E28619ED277675E2002DFCD0 /* PriceHistoryNetworkClient.swift in Sources */,
 				E28619DC27767532002DFCD0 /* ChartCache.swift in Sources */,
-				E28619DA27767532002DFCD0 /* SwiftUIChartViewController.swift in Sources */,
 				E28619DE27767532002DFCD0 /* PriceHistoryDataSource.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4460,14 +4449,6 @@
 				minimumVersion = 5.0.1;
 			};
 		};
-		E2ABEDEE265322670001F0F9 /* XCRemoteSwiftPackageReference "HMSegmentedControl" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/HeshamMegid/HMSegmentedControl";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
 		E2ABEDF3265322FA0001F0F9 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SnapKit/SnapKit";
@@ -4590,11 +4571,6 @@
 			package = E2ABEDF3265322FA0001F0F9 /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
 		};
-		E28619E72776757A002DFCD0 /* HMSegmentedControl */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2ABEDEE265322670001F0F9 /* XCRemoteSwiftPackageReference "HMSegmentedControl" */;
-			productName = HMSegmentedControl;
-		};
 		E28619EB27767599002DFCD0 /* Cache */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E2C859B226438EE500F93321 /* XCRemoteSwiftPackageReference "Cache" */;
@@ -4624,11 +4600,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */;
 			productName = Hue;
-		};
-		E2ABEDEF265322670001F0F9 /* HMSegmentedControl */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2ABEDEE265322670001F0F9 /* XCRemoteSwiftPackageReference "HMSegmentedControl" */;
-			productName = HMSegmentedControl;
 		};
 		E2ABEDF4265322FA0001F0F9 /* SnapKit */ = {
 			isa = XCSwiftPackageProductDependency;

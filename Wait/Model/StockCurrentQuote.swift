@@ -30,6 +30,10 @@ public struct StockCurrentQuoteBatch: Codable {
     quotes = tempQuotes
   }
 
+  public init(quotes: [String: StockCurrentQuote]) {
+    self.quotes = quotes
+  }
+
   // MARK: Public
 
   public let quotes: [String: StockCurrentQuote]

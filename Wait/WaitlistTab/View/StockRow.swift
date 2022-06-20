@@ -98,7 +98,7 @@ struct StockRow: View {
     }
     .padding(.vertical, Size.baseLayoutUnit8)
     .onAppear {
-      priceHistoryDataSource.fetchData(for: [.day])
+      // priceHistoryDataSource.fetchData(for: [.day])
     }
   }
 
