@@ -34,6 +34,17 @@ public final class StockCurrentQuoteNetworkClient {
       return Fail(error: URLError(.badURL))
         .eraseToAnyPublisher()
     }
+    
+    guard stocks.count > 1 else {
+      return URLSession.shared
+        .dataTaskPublisher(for: url)
+        .map(\.data)
+        .decode(type: StockCurrentQuote.self, decoder: decoder)
+        .map {
+          StockCurrentQuoteBatch(quotes: [$0.symbol: $0])
+        }
+        .eraseToAnyPublisher()
+    }
 
     return URLSession.shared
       .dataTaskPublisher(for: url)

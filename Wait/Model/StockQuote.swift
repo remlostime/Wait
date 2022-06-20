@@ -22,3 +22,9 @@ public struct StockQuote: Codable {
     case date = "datetime"
   }
 }
+
+extension StockQuote: Identifiable {
+  public var id: Date {
+    date
+  }
+}

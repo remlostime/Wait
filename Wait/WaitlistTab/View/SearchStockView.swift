@@ -15,7 +15,7 @@ struct SearchStockView: View {
   @Binding var isPresented: Bool
   @Binding var stock: Stock
 
-  @ObservedObject var dataSource = SearchStockDataSource()
+  @StateObject var dataSource = SearchStockDataSource()
 
   // TODO(Kai) - hard code it, since there's a bug in SwiftUI 16. Need to remove when it's fixed.
   var searchStocks = [

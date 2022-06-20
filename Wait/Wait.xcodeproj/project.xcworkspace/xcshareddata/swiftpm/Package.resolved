@@ -28,15 +28,6 @@
       }
     },
     {
-      "identity" : "hmsegmentedcontrol",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/HeshamMegid/HMSegmentedControl",
-      "state" : {
-        "branch" : "master",
-        "revision" : "a2852bd7fe75e0e40d832873ceb0f0a4ec1b8350"
-      }
-    },
-    {
       "identity" : "hue",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/zenangst/Hue",

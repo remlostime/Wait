@@ -5,6 +5,7 @@ import Foundation
 import Model
 import Money
 import UIKit
+import SwiftUI
 
 public final class PriceHistoryDataSource: ObservableObject, ChartViewDataSource {
   // MARK: Lifecycle
@@ -82,48 +83,17 @@ public final class PriceHistoryDataSource: ObservableObject, ChartViewDataSource
   private let chartCache: ChartCache<ChartModelType>
 
   private func buildChartData(quotes: [StockQuote]) -> ChartData {
-    /*
-     var entries: [ChartDataEntry] = []
-     var index = 0
-     for quote in quotes {
-       let y = quote.close.amountDoubleValue
-
-       let data = ChartDataEntry(x: Double(index), y: y, data: quote)
-
-       entries.append(data)
-
-       index += 1
-     }
-
-     let chartDataSet = LineChartDataSet(entries: entries)
-     chartDataSet.drawIconsEnabled = false
-     chartDataSet.lineWidth = 2.0
-     chartDataSet.drawCirclesEnabled = false
-     chartDataSet.drawValuesEnabled = false
-     chartDataSet.valueFont = .systemFont(ofSize: 9)
-     chartDataSet.drawVerticalHighlightIndicatorEnabled = true
-     chartDataSet.drawHorizontalHighlightIndicatorEnabled = false
-     chartDataSet.highlightLineWidth = 1.0
-     chartDataSet.highlightColor = .lightGray
-
-     let chartColor: UIColor
-     if
-       let firstPrice = quotes.first?.close,
-       let lastPrice = quotes.last?.close
-     {
-       chartColor = lastPrice >= firstPrice ? .stockGreen : .stockRed
-     } else {
-       chartColor = .stockGreen
-     }
-
-     chartDataSet.setColor(chartColor)
-     chartDataSet.fillColor = chartColor
-
-     let data = LineChartData(dataSet: chartDataSet)
-
-     return data
-      */
-    return ChartData()
+    let chartColor: Color
+    if
+      let firstPrice = quotes.first?.close,
+      let lastPrice = quotes.last?.close
+    {
+      chartColor = lastPrice >= firstPrice ? .stockGreen : .stockRed
+    } else {
+      chartColor = .stockGreen
+    }
+    
+    return ChartData(chartColor: chartColor, quotes: quotes)
   }
 
   private func updateChartData() {
