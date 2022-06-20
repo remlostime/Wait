@@ -13,7 +13,7 @@ struct StockChartView: View {
   // MARK: Internal
 
   @StateObject var dataSource: PriceHistoryDataSource
-  
+
   @State var currentX: CGFloat? = nil
 
   var body: some View {
@@ -21,7 +21,7 @@ struct StockChartView: View {
       if let chartData = chartData {
         Chart(chartData.points) { point in
           LineMark(x: .value("timestamp", point.x), y: .value("price", point.y))
-          
+
           if let currentX = currentX {
             RuleMark(x: .value("point", currentX))
               .foregroundStyle(.gray.opacity(0.1))
@@ -35,7 +35,7 @@ struct StockChartView: View {
               .gesture(DragGesture()
                 .onChanged { value in
                   let x = value.location.x - geoProxy[proxy.plotAreaFrame].origin.x
-                  
+
                   currentX = proxy.value(atX: x)
                 }
                 .onEnded { _ in currentX = nil }
