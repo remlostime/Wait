@@ -19,27 +19,41 @@ struct StockChartView: View {
   var body: some View {
     VStack {
       if let chartData = chartData {
-        Chart(chartData.points) { point in
-          LineMark(x: .value("timestamp", point.x), y: .value("price", point.y))
-
-          if let currentX = currentX {
-            RuleMark(x: .value("point", currentX))
-              .foregroundStyle(.gray.opacity(0.1))
-              .lineStyle(.init(lineWidth: 1.0))
-          }
-        }
-        .chartXAxis(.hidden)
-        .chartOverlay { proxy in
-          GeometryReader.init { geoProxy in
-            Rectangle().fill(.clear).contentShape(Rectangle())
-              .gesture(DragGesture()
-                .onChanged { value in
-                  let x = value.location.x - geoProxy[proxy.plotAreaFrame].origin.x
-
-                  currentX = proxy.value(atX: x)
+        VStack(alignment: .leading) {
+          // TODO - Map `currentX` to the chartData.points and show the currentY(price) value
+          Text(chartData.points.last?.y.formatted() ?? "$0")
+            .font(.title2)
+          
+          
+          
+          Chart(chartData.points) { point in
+            LineMark(x: .value("timestamp", point.x), y: .value("price", point.y))
+            
+            if let currentX = currentX {
+              RuleMark(x: .value("point", currentX))
+                .foregroundStyle(.gray.opacity(0.1))
+                .lineStyle(.init(lineWidth: 1.0))
+                .annotation(position: .top) {
+                  // TODO - Map `currentX` to chartData.points and show the currentX(date) value
+                  Text("\(currentX)")
+                    .font(.headline)
+                    .foregroundColor(.gray)
                 }
-                .onEnded { _ in currentX = nil }
-              )
+            }
+          }
+          .chartXAxis(.hidden)
+          .chartOverlay { proxy in
+            GeometryReader.init { geoProxy in
+              Rectangle().fill(.clear).contentShape(Rectangle())
+                .gesture(DragGesture()
+                  .onChanged { value in
+                    let x = value.location.x - geoProxy[proxy.plotAreaFrame].origin.x
+                    
+                    currentX = proxy.value(atX: x)
+                  }
+                  .onEnded { _ in currentX = nil }
+                )
+            }
           }
         }
       } else {
