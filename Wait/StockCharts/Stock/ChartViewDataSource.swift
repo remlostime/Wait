@@ -5,6 +5,11 @@ import Model
 import Money
 import SwiftUI
 
+public struct ChartPoint {
+  public let index: Int
+  public let quote: StockQuote
+}
+
 // MARK: - ChartData
 
 public struct ChartData {
@@ -14,9 +19,9 @@ public struct ChartData {
     self.chartColor = chartColor
 
     var index = 0
-    var points: [CGPoint] = []
+    var points: [ChartPoint] = []
     for quote in quotes {
-      points.append(CGPoint(x: Double(index), y: quote.close.amountDoubleValue))
+      points.append(ChartPoint(index: index, quote: quote))
       index += 1
     }
     self.points = points
@@ -25,7 +30,7 @@ public struct ChartData {
   // MARK: Public
 
   public let chartColor: Color
-  public let points: [CGPoint]
+  public let points: [ChartPoint]
 }
 
 // MARK: - CGFloat + Plottable
@@ -45,6 +50,12 @@ extension CGFloat: Plottable {
 }
 
 // MARK: - CGPoint + Identifiable
+
+extension ChartPoint: Identifiable {
+  public var id: Int {
+    index
+  }
+}
 
 extension CGPoint: Identifiable {
   public var id: Double {
