@@ -15,7 +15,7 @@ struct StockChartView: View {
   @StateObject var dataSource: PriceHistoryDataSource
 
   @State var currentIndex: Int? = nil
-  
+
   private var currentPrice: String {
     guard
       let currentIndex = currentIndex,
@@ -23,21 +23,21 @@ struct StockChartView: View {
     {
       return chartData?.points.last?.quote.close.amountDoubleValue.formatted() ?? "$0"
     }
-    
+
     return currentPrice.amountDoubleValue.formatted()
   }
-  
+
   var body: some View {
     VStack {
       if let chartData = chartData {
         VStack(alignment: .leading) {
           Text(currentPrice)
             .font(.title2)
-          
+
           // TODO - For different chart show different start and end price chart
           Chart(chartData.points) { point in
             LineMark(x: .value("timestamp", point.index), y: .value("price", point.quote.close.amountDoubleValue))
-            
+
             if let currentIndex = currentIndex {
               RuleMark(x: .value("point", currentIndex))
                 .foregroundStyle(.gray.opacity(0.1))
@@ -57,7 +57,7 @@ struct StockChartView: View {
                 .gesture(DragGesture()
                   .onChanged { value in
                     let x = value.location.x - geoProxy[proxy.plotAreaFrame].origin.x
-                    
+
                     currentIndex = proxy.value(atX: x)
                   }
                   .onEnded { _ in currentIndex = nil }
