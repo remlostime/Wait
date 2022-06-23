@@ -5,6 +5,8 @@ import Model
 import Money
 import SwiftUI
 
+// MARK: - ChartPoint
+
 public struct ChartPoint {
   public let index: Int
   public let quote: StockQuote
@@ -49,13 +51,15 @@ extension CGFloat: Plottable {
   }
 }
 
-// MARK: - CGPoint + Identifiable
+// MARK: - ChartPoint + Identifiable
 
 extension ChartPoint: Identifiable {
   public var id: Int {
     index
   }
 }
+
+// MARK: - CGPoint + Identifiable
 
 extension CGPoint: Identifiable {
   public var id: Double {

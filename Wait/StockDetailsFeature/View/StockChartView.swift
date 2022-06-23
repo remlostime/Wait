@@ -16,17 +16,6 @@ struct StockChartView: View {
 
   @State var currentIndex: Int? = nil
 
-  private var currentPrice: String {
-    guard
-      let currentIndex = currentIndex,
-      let currentPrice = chartData?.points[currentIndex].quote.close else
-    {
-      return chartData?.points.last?.quote.close.amountDoubleValue.formatted() ?? "$0"
-    }
-
-    return currentPrice.amountDoubleValue.formatted()
-  }
-
   var body: some View {
     VStack {
       if let chartData = chartData {
@@ -34,7 +23,7 @@ struct StockChartView: View {
           Text(currentPrice)
             .font(.title2)
 
-          // TODO - For different chart show different start and end price chart
+          // TODO: - For different chart show different start and end price chart
           Chart(chartData.points) { point in
             LineMark(x: .value("timestamp", point.index), y: .value("price", point.quote.close.amountDoubleValue))
 
@@ -87,6 +76,17 @@ struct StockChartView: View {
   // MARK: Private
 
   @State private var selectedTimeSection: TimeSection = .day
+
+  private var currentPrice: String {
+    guard
+      let currentIndex = currentIndex,
+      let currentPrice = chartData?.points[currentIndex].quote.close
+    else {
+      return chartData?.points.last?.quote.close.amountDoubleValue.formatted() ?? "$0"
+    }
+
+    return currentPrice.amountDoubleValue.formatted()
+  }
 
   private var chartData: ChartData? {
     allChartData[selectedTimeSection]
