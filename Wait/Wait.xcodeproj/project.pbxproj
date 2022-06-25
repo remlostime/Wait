@@ -22,6 +22,7 @@
 
 /* Begin PBXBuildFile section */
 		473F2FC72860F08900DCC2B2 /* CacheService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFAAD2777CF6200B0955F /* CacheService.framework */; };
+		475C4AD52867B0FF007BE74A /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475C4AD42867B0FF007BE74A /* UIColor+Hex.swift */; };
 		47F93C13285F8A6100240CB4 /* ValuationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F93C12285F8A6100240CB4 /* ValuationData.swift */; };
 		47F93C15285FCA3100240CB4 /* StockChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F93C14285FCA3100240CB4 /* StockChartView.swift */; };
 		E204B304276BB5F500D2EB0D /* ChecklistListTCA.swift in Sources */ = {isa = PBXBuildFile; fileRef = E204B303276BB5F500D2EB0D /* ChecklistListTCA.swift */; };
@@ -164,7 +165,6 @@
 		E28AEED1277AA65B00977C61 /* ChecklistDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28AEED0277AA65B00977C61 /* ChecklistDataManager.swift */; };
 		E2901FA5264CAC8B003A2C01 /* Shake in Frameworks */ = {isa = PBXBuildFile; productRef = E2901FA4264CAC8B003A2C01 /* Shake */; };
 		E2901FA7264CD22E003A2C01 /* bitrise_configuration.plist in Resources */ = {isa = PBXBuildFile; fileRef = E2901FA6264CD22E003A2C01 /* bitrise_configuration.plist */; };
-		E2A07D9B26520BDD0075E271 /* Hue in Frameworks */ = {isa = PBXBuildFile; productRef = E2A07D9A26520BDD0075E271 /* Hue */; };
 		E2B5EAA32688105D0092663F /* Money+Format.swift in Sources */ = {isa = PBXBuildFile; fileRef = E23B93E02652D38D00E039D9 /* Money+Format.swift */; };
 		E2B728EE27753079001CF022 /* ChecklistEditFeature.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2B728E627753078001CF022 /* ChecklistEditFeature.framework */; };
 		E2B728F527753079001CF022 /* ChecklistEditFeatureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2B728F427753079001CF022 /* ChecklistEditFeatureTests.swift */; };
@@ -199,8 +199,6 @@
 		E2C9A21F2766E81C000C07F0 /* Model.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC102D267E9EB300CD98AF /* Model.framework */; };
 		E2C9A2202766E862000C07F0 /* Size.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2BC418E267F9C4600A853D2 /* Size.framework */; };
 		E2C9A2222766EA67000C07F0 /* ChecklistRootTCA.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C9A2212766EA67000C07F0 /* ChecklistRootTCA.swift */; };
-		E2D7BD312700F81300470AFD /* Hue in Frameworks */ = {isa = PBXBuildFile; productRef = E2D7BD302700F81300470AFD /* Hue */; };
-		E2D7BD332700F85B00470AFD /* Hue in Frameworks */ = {isa = PBXBuildFile; productRef = E2D7BD322700F85B00470AFD /* Hue */; };
 		E2E637AD2641A5FB00F872A4 /* WaitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E637AC2641A5FB00F872A4 /* WaitApp.swift */; };
 		E2E637B12641A5FD00F872A4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E2E637B02641A5FD00F872A4 /* Assets.xcassets */; };
 		E2E637B42641A5FD00F872A4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E2E637B32641A5FD00F872A4 /* Preview Assets.xcassets */; };
@@ -547,6 +545,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		475C4AD42867B0FF007BE74A /* UIColor+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
 		47F93C12285F8A6100240CB4 /* ValuationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValuationData.swift; sourceTree = "<group>"; };
 		47F93C14285FCA3100240CB4 /* StockChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockChartView.swift; sourceTree = "<group>"; };
 		E204B303276BB5F500D2EB0D /* ChecklistListTCA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistListTCA.swift; sourceTree = "<group>"; };
@@ -806,7 +805,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E2D7BD312700F81300470AFD /* Hue in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -814,7 +812,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E2D7BD332700F85B00470AFD /* Hue in Frameworks */,
 				E2765595267E94B9002D13CC /* Color.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -909,7 +906,6 @@
 				E2123A682647198000A29222 /* SwiftyJSON in Frameworks */,
 				E276558D267E9470002D13CC /* UI.framework in Frameworks */,
 				E205D3F126D2C567004EE31D /* Logging.framework in Frameworks */,
-				E2A07D9B26520BDD0075E271 /* Hue in Frameworks */,
 				E2123A652647158800A29222 /* SwiftyBeaver in Frameworks */,
 				E2901FA5264CAC8B003A2C01 /* Shake in Frameworks */,
 				E20AFA912777CE2800B0955F /* StockDetailsFeature.framework in Frameworks */,
@@ -1132,6 +1128,7 @@
 			isa = PBXGroup;
 			children = (
 				E2A07D9D26520BF20075E271 /* Colors.swift */,
+				475C4AD42867B0FF007BE74A /* UIColor+Hex.swift */,
 				E2E2459426572D7300460D4A /* UIColor+CodeName.swift */,
 				E2E2459626572DBE00460D4A /* UIColor+Theme.swift */,
 				E276556F267E9104002D13CC /* Color.h */,
@@ -1725,7 +1722,6 @@
 			);
 			name = Color;
 			packageProductDependencies = (
-				E2D7BD302700F81300470AFD /* Hue */,
 			);
 			productName = Color;
 			productReference = E276556D267E9104002D13CC /* Color.framework */;
@@ -1746,7 +1742,6 @@
 			);
 			name = UI;
 			packageProductDependencies = (
-				E2D7BD322700F85B00470AFD /* Hue */,
 			);
 			productName = UI;
 			productReference = E2765586267E9470002D13CC /* UI.framework */;
@@ -1934,7 +1929,6 @@
 				E2123A672647198000A29222 /* SwiftyJSON */,
 				E2901FA4264CAC8B003A2C01 /* Shake */,
 				E2BDFCA626518CB90075E619 /* Money */,
-				E2A07D9A26520BDD0075E271 /* Hue */,
 				E24D90AB27128095009EDE57 /* ComposableArchitecture */,
 			);
 			productName = Wait;
@@ -2090,7 +2084,6 @@
 				E2123A662647198000A29222 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 				E2901FA3264CAC8B003A2C01 /* XCRemoteSwiftPackageReference "shake-ios" */,
 				E2BDFCA526518CB90075E619 /* XCRemoteSwiftPackageReference "Money" */,
-				E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */,
 				E24D90AA27128095009EDE57 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 				E22CF919277D1D1E005D4EAB /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
 			);
@@ -2426,6 +2419,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E2765579267E91C5002D13CC /* Colors.swift in Sources */,
+				475C4AD52867B0FF007BE74A /* UIColor+Hex.swift in Sources */,
 				E276557A267E91C5002D13CC /* UIColor+Theme.swift in Sources */,
 				E276557B267E91C5002D13CC /* UIColor+CodeName.swift in Sources */,
 			);
@@ -4417,14 +4411,6 @@
 				minimumVersion = 14.2.1;
 			};
 		};
-		E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/zenangst/Hue";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.1;
-			};
-		};
 		E2BDFCA526518CB90075E619 /* XCRemoteSwiftPackageReference "Money" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Flight-School/Money";
@@ -4554,11 +4540,6 @@
 			package = E2901FA3264CAC8B003A2C01 /* XCRemoteSwiftPackageReference "shake-ios" */;
 			productName = Shake;
 		};
-		E2A07D9A26520BDD0075E271 /* Hue */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */;
-			productName = Hue;
-		};
 		E2B72904277530F5001CF022 /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E24D90AA27128095009EDE57 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
@@ -4583,16 +4564,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E24D90AA27128095009EDE57 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
 			productName = ComposableArchitecture;
-		};
-		E2D7BD302700F81300470AFD /* Hue */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */;
-			productName = Hue;
-		};
-		E2D7BD322700F85B00470AFD /* Hue */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2A07D9926520BDD0075E271 /* XCRemoteSwiftPackageReference "Hue" */;
-			productName = Hue;
 		};
 		E2FC103F267E9EE400CD98AF /* Money */ = {
 			isa = XCSwiftPackageProductDependency;
