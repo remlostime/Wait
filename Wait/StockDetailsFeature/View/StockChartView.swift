@@ -4,9 +4,9 @@
 //
 
 import Charts
+import Size
 import StockCharts
 import SwiftUI
-import Size
 
 // MARK: - StockChartView
 
@@ -16,51 +16,6 @@ struct StockChartView: View {
   @StateObject var dataSource: PriceHistoryDataSource
 
   @State var currentIndex: Int? = nil
-  
-  private var timestamp: String {
-    guard let currentIndex = currentIndex, let chartData = chartData else {
-      return ""
-    }
-    
-    let date: Date.FormatStyle.DateStyle
-    let time: Date.FormatStyle.TimeStyle
-    
-    switch selectedTimeSection {
-      case .day:
-        date = .omitted
-        time = .shortened
-      case .week:
-        date = .abbreviated
-        time = .shortened
-      case .month:
-        date = .abbreviated
-        time = .omitted
-      case .year:
-        date = .abbreviated
-        time = .omitted
-      case .all:
-        date = .abbreviated
-        time = .omitted
-    }
-    
-    return chartData.points[currentIndex].quote.date.formatted(date: date, time: time)
-  }
-  
-  private var chartYScaleDomain: ClosedRange<Int> {
-    guard let chartData = chartData else {
-      return 0...100
-    }
-    
-    let minClose = chartData.points.reduce(Double(Int.max)) { closePrice, point in
-      min(point.quote.close.amountDoubleValue, closePrice)
-    }
-    
-    let maxClose = chartData.points.reduce(Double(Int.min)) { closePrice, point in
-      max(point.quote.close.amountDoubleValue, closePrice)
-    }
-    
-    return Int(ceil(minClose))...Int(ceil(maxClose))
-  }
 
   var body: some View {
     VStack {
@@ -122,6 +77,51 @@ struct StockChartView: View {
   // MARK: Private
 
   @State private var selectedTimeSection: TimeSection = .day
+
+  private var timestamp: String {
+    guard let currentIndex = currentIndex, let chartData = chartData else {
+      return ""
+    }
+
+    let date: Date.FormatStyle.DateStyle
+    let time: Date.FormatStyle.TimeStyle
+
+    switch selectedTimeSection {
+      case .day:
+        date = .omitted
+        time = .shortened
+      case .week:
+        date = .abbreviated
+        time = .shortened
+      case .month:
+        date = .abbreviated
+        time = .omitted
+      case .year:
+        date = .abbreviated
+        time = .omitted
+      case .all:
+        date = .abbreviated
+        time = .omitted
+    }
+
+    return chartData.points[currentIndex].quote.date.formatted(date: date, time: time)
+  }
+
+  private var chartYScaleDomain: ClosedRange<Int> {
+    guard let chartData = chartData else {
+      return 0 ... 100
+    }
+
+    let minClose = chartData.points.reduce(Double(Int.max)) { closePrice, point in
+      min(point.quote.close.amountDoubleValue, closePrice)
+    }
+
+    let maxClose = chartData.points.reduce(Double(Int.min)) { closePrice, point in
+      max(point.quote.close.amountDoubleValue, closePrice)
+    }
+
+    return Int(ceil(minClose)) ... Int(ceil(maxClose))
+  }
 
   private var currentPrice: String {
     guard
