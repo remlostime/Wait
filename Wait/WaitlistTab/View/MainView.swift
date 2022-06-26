@@ -88,7 +88,7 @@ public struct MainView: View {
       })
       .sheet(isPresented: $showingWaitStockView, content: {
         SearchStockView(isPresented: $showingWaitStockView, stock: $newStock)
-          .accentColor(Color(UIColor.mint))
+          .accentColor(.mint)
       })
     }
     .onChange(of: newStock, perform: { value in

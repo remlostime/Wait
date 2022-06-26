@@ -125,15 +125,11 @@ public extension Stock {
     return first == "-"
   }
 
-  var priceUIColor: UIColor {
+  var priceColor: Color {
     isChangePercentNegative ? .stockRed : .stockGreen
   }
 
-  var priceColor: Color {
-    Color(priceUIColor)
-  }
-
-  var actionUIColor: UIColor {
+  var actionColor: Color {
     switch tradeAction {
       case .buy:
         return .stockGreen
@@ -142,9 +138,5 @@ public extension Stock {
       case .almost:
         return .banana
     }
-  }
-
-  var actionColor: Color {
-    Color(actionUIColor)
   }
 }
