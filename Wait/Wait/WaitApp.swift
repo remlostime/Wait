@@ -33,7 +33,7 @@ struct WaitApp: App {
             Image(systemName: "gearshape")
           }
       }
-      .accentColor(.waitMint)
+      .accentColor(.mint)
     }
   }
 
