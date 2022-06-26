@@ -15,8 +15,6 @@ struct StockChartView: View {
 
   @StateObject var dataSource: PriceHistoryDataSource
 
-  @State private var currentIndex: Int? = nil
-
   var body: some View {
     VStack {
       if let chartData = chartData {
@@ -49,7 +47,7 @@ struct StockChartView: View {
                     let x = value.location.x - geoProxy[proxy.plotAreaFrame].origin.x
 
                     currentIndex = proxy.value(atX: x)
-                    
+
                     if let currentIndex = currentIndex {
                       self.currentIndex = min(chartData.points.count - 1, currentIndex)
                     }
@@ -79,6 +77,8 @@ struct StockChartView: View {
   }
 
   // MARK: Private
+
+  @State private var currentIndex: Int? = nil
 
   @State private var selectedTimeSection: TimeSection = .day
 
