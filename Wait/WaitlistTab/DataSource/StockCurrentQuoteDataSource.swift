@@ -46,37 +46,35 @@ final class StockCurrentQuoteDataSource: ObservableObject {
   }
 
   func fetchStocks() {
-    StockCache.shared.getStocks { stocks in
-      DispatchQueue.main.async {
-        self.stocks = stocks
-      }
-
-      self.networkClient.fetchDetails(stocks: stocks)
-        .sink { result in
-          let symbols = stocks.map { $0.symbol }
-          switch result {
-            case .finished:
-              Logger.shared.verbose("Successfully fetch stocks: \(symbols)")
-            case let .failure(error):
-              Logger.shared.error("Failed to fetch stock: \(symbols). Error: \(error.localizedDescription)")
-          }
-        } receiveValue: { stockQuoteBatch in
-          let newStocks: [Stock] = stocks.map {
-            if let quote = stockQuoteBatch.quotes[$0.symbol] {
-              return $0.with(currentQuote: quote)
-            } else {
-              return $0
-            }
-          }
-
-          DispatchQueue.main.async {
-            Logger.shared.verbose("Update all stocks quote")
-            self.stocks = newStocks
-            self.saveStocks()
+    let stocks = StockCache.shared.getStocks()
+    
+    self.stocks = stocks
+    
+    networkClient.fetchDetails(stocks: stocks)
+      .sink { result in
+        let symbols = stocks.map { $0.symbol }
+        switch result {
+          case .finished:
+            Logger.shared.verbose("Successfully fetch stocks: \(symbols)")
+          case let .failure(error):
+            Logger.shared.error("Failed to fetch stock: \(symbols). Error: \(error.localizedDescription)")
+        }
+      } receiveValue: { stockQuoteBatch in
+        let newStocks: [Stock] = stocks.map {
+          if let quote = stockQuoteBatch.quotes[$0.symbol] {
+            return $0.with(currentQuote: quote)
+          } else {
+            return $0
           }
         }
-        .store(in: &self.subscriptions)
-    }
+        
+        DispatchQueue.main.async {
+          Logger.shared.verbose("Update all stocks quote")
+          self.stocks = newStocks
+          self.saveStocks()
+        }
+      }
+      .store(in: &self.subscriptions)
   }
 
   // MARK: Private
