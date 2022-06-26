@@ -23,6 +23,9 @@
 /* Begin PBXBuildFile section */
 		473F2FC72860F08900DCC2B2 /* CacheService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFAAD2777CF6200B0955F /* CacheService.framework */; };
 		475C4AD52867B0FF007BE74A /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475C4AD42867B0FF007BE74A /* UIColor+Hex.swift */; };
+		475C4AD72868CC7B007BE74A /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475C4AD62868CC7B007BE74A /* Cache.swift */; };
+		475C4AD82868CFA6007BE74A /* CacheService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFAAD2777CF6200B0955F /* CacheService.framework */; };
+		475C4ADA2868D6C5007BE74A /* StockChartImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C3D362269B889000466CC3 /* StockChartImageCache.swift */; };
 		47F93C13285F8A6100240CB4 /* ValuationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F93C12285F8A6100240CB4 /* ValuationData.swift */; };
 		47F93C15285FCA3100240CB4 /* StockChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F93C14285FCA3100240CB4 /* StockChartView.swift */; };
 		E204B304276BB5F500D2EB0D /* ChecklistListTCA.swift in Sources */ = {isa = PBXBuildFile; fileRef = E204B303276BB5F500D2EB0D /* ChecklistListTCA.swift */; };
@@ -67,11 +70,9 @@
 		E20AFAA72777CF0800B0955F /* StockExpectedPriceInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BE76572641FC3300645629 /* StockExpectedPriceInputView.swift */; };
 		E20AFAB52777CF6200B0955F /* CacheService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFAAD2777CF6200B0955F /* CacheService.framework */; };
 		E20AFABC2777CF6300B0955F /* CacheServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20AFABB2777CF6300B0955F /* CacheServiceTests.swift */; };
-		E20AFABD2777CF6300B0955F /* CacheService.h in Headers */ = {isa = PBXBuildFile; fileRef = E20AFAAF2777CF6200B0955F /* CacheService.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E20AFAC02777CF6300B0955F /* CacheService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFAAD2777CF6200B0955F /* CacheService.framework */; };
 		E20AFAC12777CF6300B0955F /* CacheService.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFAAD2777CF6200B0955F /* CacheService.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E20AFAC82777CF6C00B0955F /* StockCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2123A6A26472F9400A29222 /* StockCache.swift */; };
-		E20AFACA2777CF8900B0955F /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = E20AFAC92777CF8900B0955F /* Cache */; };
 		E20AFACB2777CF8F00B0955F /* Logging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E205D3EA26D2C567004EE31D /* Logging.framework */; };
 		E20AFACC2777CF9300B0955F /* Model.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC102D267E9EB300CD98AF /* Model.framework */; };
 		E20AFACD2777CFCB00B0955F /* CacheService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFAAD2777CF6200B0955F /* CacheService.framework */; };
@@ -92,7 +93,6 @@
 		E22CF916277D1798005D4EAB /* StockStatsViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22CF915277D1798005D4EAB /* StockStatsViewSnapshotTests.swift */; };
 		E22CF91B277D1D1E005D4EAB /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = E22CF91A277D1D1E005D4EAB /* SnapshotTesting */; };
 		E2316FB9271B99C400103050 /* StockRowStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2316FB8271B99C400103050 /* StockRowStyle.swift */; };
-		E24BDEFB26D2C8C400595E4A /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = E24BDEFA26D2C8C400595E4A /* Cache */; };
 		E24BDF0826D2EF5600595E4A /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E24BDF0726D2EF5600595E4A /* Alamofire */; };
 		E24BDF0926D2EF5B00595E4A /* Networking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC107A267EE38D00CD98AF /* Networking.framework */; };
 		E24BDF0D26D2EFA100595E4A /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E24BDF0C26D2EFA100595E4A /* SwiftyJSON */; };
@@ -116,7 +116,6 @@
 		E26C1CB02779113500E8C16A /* StockDetailsFeature.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFA7E2777CE2800B0955F /* StockDetailsFeature.framework */; platformFilter = ios; };
 		E26C1CB42779115A00E8C16A /* StockRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E637BF2641A92A00F872A4 /* StockRow.swift */; };
 		E26C1CB72779117400E8C16A /* StockCharts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E28619BD2776750D002DFCD0 /* StockCharts.framework */; platformFilter = ios; };
-		E26C1CBB277911A100E8C16A /* StockChartImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C3D362269B889000466CC3 /* StockChartImageCache.swift */; };
 		E26C1CBC277911BC00E8C16A /* CacheService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFAAD2777CF6200B0955F /* CacheService.framework */; platformFilter = ios; };
 		E26C1CC1277911EF00E8C16A /* StockCurrentQuoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E272A6F226ED115400163FF3 /* StockCurrentQuoteDataSource.swift */; };
 		E26C1CC32779121D00E8C16A /* SearchStockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E275EDFE26483D6600752D8A /* SearchStockView.swift */; };
@@ -150,12 +149,10 @@
 		E28619DC27767532002DFCD0 /* ChartCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEE072653376D0001F0F9 /* ChartCache.swift */; };
 		E28619DD27767532002DFCD0 /* TimeSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEDF62653235A0001F0F9 /* TimeSection.swift */; };
 		E28619DE27767532002DFCD0 /* PriceHistoryDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEDFA265324D00001F0F9 /* PriceHistoryDataSource.swift */; };
-		E28619DF27767532002DFCD0 /* Charts+UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E205877E272475DB00D0052D /* Charts+UIImage.swift */; };
 		E28619E327767557002DFCD0 /* Money in Frameworks */ = {isa = PBXBuildFile; productRef = E28619E227767557002DFCD0 /* Money */; };
 		E28619E62776756A002DFCD0 /* Logging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E205D3EA26D2C567004EE31D /* Logging.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		E28619E927767584002DFCD0 /* Color.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E276556D267E9104002D13CC /* Color.framework */; };
 		E28619EA2776758A002DFCD0 /* Model.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC102D267E9EB300CD98AF /* Model.framework */; };
-		E28619EC27767599002DFCD0 /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = E28619EB27767599002DFCD0 /* Cache */; };
 		E28619ED277675E2002DFCD0 /* PriceHistoryNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2ABEE0B26533E1D0001F0F9 /* PriceHistoryNetworkClient.swift */; };
 		E28619EF27767600002DFCD0 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E28619EE27767600002DFCD0 /* Alamofire */; };
 		E28619F12776760D002DFCD0 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = E28619F02776760D002DFCD0 /* SwiftyJSON */; };
@@ -173,18 +170,15 @@
 		E2B728FA27753079001CF022 /* ChecklistEditFeature.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E2B728E627753078001CF022 /* ChecklistEditFeature.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E2B729012775309F001CF022 /* ChecklistEditTCA.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24D90BB271289C9009EDE57 /* ChecklistEditTCA.swift */; };
 		E2B729022775309F001CF022 /* ChecklistEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24D90BD27128A47009EDE57 /* ChecklistEditView.swift */; };
-		E2B729032775309F001CF022 /* ChecklistCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24D90BF2713487A009EDE57 /* ChecklistCache.swift */; };
 		E2B72905277530F5001CF022 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = E2B72904277530F5001CF022 /* ComposableArchitecture */; };
 		E2B7290627753103001CF022 /* Model.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC102D267E9EB300CD98AF /* Model.framework */; };
 		E2B729072775311A001CF022 /* Logging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E205D3EA26D2C567004EE31D /* Logging.framework */; };
-		E2B7290927753121001CF022 /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = E2B7290827753121001CF022 /* Cache */; };
 		E2BC4192267F9C4600A853D2 /* Size.h in Headers */ = {isa = PBXBuildFile; fileRef = E2BC4190267F9C4600A853D2 /* Size.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E2BC4195267F9C4600A853D2 /* Size.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2BC418E267F9C4600A853D2 /* Size.framework */; };
 		E2BC4196267F9C4600A853D2 /* Size.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E2BC418E267F9C4600A853D2 /* Size.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E2BC419B267F9C8B00A853D2 /* Size.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BC419A267F9C8B00A853D2 /* Size.swift */; };
 		E2BC419D267F9CB900A853D2 /* Size+Basic.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BC419C267F9CB900A853D2 /* Size+Basic.swift */; };
 		E2BDFCA726518CB90075E619 /* Money in Frameworks */ = {isa = PBXBuildFile; productRef = E2BDFCA626518CB90075E619 /* Money */; };
-		E2C859B426438EE500F93321 /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = E2C859B326438EE500F93321 /* Cache */; };
 		E2C9A1D92766AE47000C07F0 /* Checklist.docc in Sources */ = {isa = PBXBuildFile; fileRef = E2C9A1D82766AE47000C07F0 /* Checklist.docc */; };
 		E2C9A1DF2766AE47000C07F0 /* Checklist.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2C9A1D52766AE47000C07F0 /* Checklist.framework */; };
 		E2C9A1E62766AE47000C07F0 /* ChecklistTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C9A1E52766AE47000C07F0 /* ChecklistTests.swift */; };
@@ -546,11 +540,11 @@
 
 /* Begin PBXFileReference section */
 		475C4AD42867B0FF007BE74A /* UIColor+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
+		475C4AD62868CC7B007BE74A /* Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
 		47F93C12285F8A6100240CB4 /* ValuationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValuationData.swift; sourceTree = "<group>"; };
 		47F93C14285FCA3100240CB4 /* StockChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockChartView.swift; sourceTree = "<group>"; };
 		E204B303276BB5F500D2EB0D /* ChecklistListTCA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistListTCA.swift; sourceTree = "<group>"; };
 		E204B305276BB78800D2EB0D /* ChecklistListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistListView.swift; sourceTree = "<group>"; };
-		E205877E272475DB00D0052D /* Charts+UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Charts+UIImage.swift"; sourceTree = "<group>"; };
 		E205D3EA26D2C567004EE31D /* Logging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Logging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E205D3EC26D2C567004EE31D /* Logging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Logging.h; sourceTree = "<group>"; };
 		E205D3ED26D2C567004EE31D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -564,7 +558,6 @@
 		E20AFA802777CE2800B0955F /* StockDetailsFeature.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StockDetailsFeature.h; sourceTree = "<group>"; };
 		E20AFA852777CE2800B0955F /* StockDetailsFeatureTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StockDetailsFeatureTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E20AFAAD2777CF6200B0955F /* CacheService.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CacheService.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E20AFAAF2777CF6200B0955F /* CacheService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CacheService.h; sourceTree = "<group>"; };
 		E20AFAB42777CF6200B0955F /* CacheServiceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CacheServiceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E20AFABB2777CF6300B0955F /* CacheServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheServiceTests.swift; sourceTree = "<group>"; };
 		E210DEF826D2B50D0044DA4E /* WaitWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WaitWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -596,7 +589,6 @@
 		E24D90B32712810E009EDE57 /* WaitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitTests.swift; sourceTree = "<group>"; };
 		E24D90BB271289C9009EDE57 /* ChecklistEditTCA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistEditTCA.swift; sourceTree = "<group>"; };
 		E24D90BD27128A47009EDE57 /* ChecklistEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistEditView.swift; sourceTree = "<group>"; };
-		E24D90BF2713487A009EDE57 /* ChecklistCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistCache.swift; sourceTree = "<group>"; };
 		E25A1E81266BB862004D2B24 /* Exchange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exchange.swift; sourceTree = "<group>"; };
 		E25A1E92266D633C004D2B24 /* ScrollableCounter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollableCounter.swift; sourceTree = "<group>"; };
 		E25A1E93266D633C004D2B24 /* DigitScrollCounter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DigitScrollCounter.swift; sourceTree = "<group>"; };
@@ -740,7 +732,6 @@
 			files = (
 				E20AFACC2777CF9300B0955F /* Model.framework in Frameworks */,
 				E20AFACB2777CF8F00B0955F /* Logging.framework in Frameworks */,
-				E20AFACA2777CF8900B0955F /* Cache in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -763,7 +754,6 @@
 				E24BDF0826D2EF5600595E4A /* Alamofire in Frameworks */,
 				E24BDF0D26D2EFA100595E4A /* SwiftyJSON in Frameworks */,
 				E210DEFC26D2B50D0044DA4E /* SwiftUI.framework in Frameworks */,
-				E24BDEFB26D2C8C400595E4A /* Cache in Frameworks */,
 				E205D3E026D2C47D004EE31D /* Model.framework in Frameworks */,
 				E210DEFA26D2B50D0044DA4E /* WidgetKit.framework in Frameworks */,
 			);
@@ -820,10 +810,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				475C4AD82868CFA6007BE74A /* CacheService.framework in Frameworks */,
 				E28619F227767617002DFCD0 /* Networking.framework in Frameworks */,
 				E28619EF27767600002DFCD0 /* Alamofire in Frameworks */,
 				E28619EA2776758A002DFCD0 /* Model.framework in Frameworks */,
-				E28619EC27767599002DFCD0 /* Cache in Frameworks */,
 				E28619E927767584002DFCD0 /* Color.framework in Frameworks */,
 				E28619E62776756A002DFCD0 /* Logging.framework in Frameworks */,
 				E28619F12776760D002DFCD0 /* SwiftyJSON in Frameworks */,
@@ -844,7 +834,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E2B729072775311A001CF022 /* Logging.framework in Frameworks */,
-				E2B7290927753121001CF022 /* Cache in Frameworks */,
 				E2B7290627753103001CF022 /* Model.framework in Frameworks */,
 				E2B72905277530F5001CF022 /* ComposableArchitecture in Frameworks */,
 			);
@@ -893,7 +882,6 @@
 				E2FC1081267EE38D00CD98AF /* Networking.framework in Frameworks */,
 				E26C1C90277910D400E8C16A /* WaitlistTab.framework in Frameworks */,
 				E2FC1034267E9EB300CD98AF /* Model.framework in Frameworks */,
-				E2C859B426438EE500F93321 /* Cache in Frameworks */,
 				E2B728F927753079001CF022 /* ChecklistEditFeature.framework in Frameworks */,
 				E20AFAC02777CF6300B0955F /* CacheService.framework in Frameworks */,
 				E24D90AC27128095009EDE57 /* ComposableArchitecture in Frameworks */,
@@ -934,6 +922,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		475C4AD92868D6AD007BE74A /* Cache */ = {
+			isa = PBXGroup;
+			children = (
+				E2C3D362269B889000466CC3 /* StockChartImageCache.swift */,
+			);
+			path = Cache;
+			sourceTree = "<group>";
+		};
 		47F93C11285F8A4E00240CB4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -956,7 +952,6 @@
 			isa = PBXGroup;
 			children = (
 				E2ABEE0B26533E1D0001F0F9 /* PriceHistoryNetworkClient.swift */,
-				E205877E272475DB00D0052D /* Charts+UIImage.swift */,
 				E2ABEDF62653235A0001F0F9 /* TimeSection.swift */,
 				E2ABEDF8265324690001F0F9 /* ChartViewDataSource.swift */,
 				E2ABEDFA265324D00001F0F9 /* PriceHistoryDataSource.swift */,
@@ -1007,9 +1002,8 @@
 		E20AFAAE2777CF6200B0955F /* CacheService */ = {
 			isa = PBXGroup;
 			children = (
-				E2C3D362269B889000466CC3 /* StockChartImageCache.swift */,
 				E2123A6A26472F9400A29222 /* StockCache.swift */,
-				E20AFAAF2777CF6200B0955F /* CacheService.h */,
+				475C4AD62868CC7B007BE74A /* Cache.swift */,
 			);
 			path = CacheService;
 			sourceTree = "<group>";
@@ -1079,6 +1073,7 @@
 		E26C1C7E277910D300E8C16A /* WaitlistTab */ = {
 			isa = PBXGroup;
 			children = (
+				475C4AD92868D6AD007BE74A /* Cache */,
 				E26C1CC82779128000E8C16A /* View */,
 				E26C1CC92779128700E8C16A /* Network */,
 				E26C1CCA2779129300E8C16A /* DataSource */,
@@ -1182,7 +1177,6 @@
 				E28AEED0277AA65B00977C61 /* ChecklistDataManager.swift */,
 				E24D90BB271289C9009EDE57 /* ChecklistEditTCA.swift */,
 				E24D90BD27128A47009EDE57 /* ChecklistEditView.swift */,
-				E24D90BF2713487A009EDE57 /* ChecklistCache.swift */,
 				E2B728E827753078001CF022 /* ChecklistEditFeature.h */,
 			);
 			path = ChecklistEditFeature;
@@ -1394,7 +1388,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E20AFABD2777CF6300B0955F /* CacheService.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1592,7 +1585,6 @@
 			);
 			name = CacheService;
 			packageProductDependencies = (
-				E20AFAC92777CF8900B0955F /* Cache */,
 			);
 			productName = CacheService;
 			productReference = E20AFAAD2777CF6200B0955F /* CacheService.framework */;
@@ -1632,7 +1624,6 @@
 			);
 			name = WaitWidgetExtension;
 			packageProductDependencies = (
-				E24BDEFA26D2C8C400595E4A /* Cache */,
 				E24BDF0726D2EF5600595E4A /* Alamofire */,
 				E24BDF0C26D2EFA100595E4A /* SwiftyJSON */,
 			);
@@ -1764,7 +1755,6 @@
 			name = StockCharts;
 			packageProductDependencies = (
 				E28619E227767557002DFCD0 /* Money */,
-				E28619EB27767599002DFCD0 /* Cache */,
 				E28619EE27767600002DFCD0 /* Alamofire */,
 				E28619F02776760D002DFCD0 /* SwiftyJSON */,
 			);
@@ -1807,7 +1797,6 @@
 			name = ChecklistEditFeature;
 			packageProductDependencies = (
 				E2B72904277530F5001CF022 /* ComposableArchitecture */,
-				E2B7290827753121001CF022 /* Cache */,
 			);
 			productName = ChecklistEditFeature;
 			productReference = E2B728E627753078001CF022 /* ChecklistEditFeature.framework */;
@@ -1923,7 +1912,6 @@
 			);
 			name = Wait;
 			packageProductDependencies = (
-				E2C859B326438EE500F93321 /* Cache */,
 				E2123A5F2647115400A29222 /* Alamofire */,
 				E2123A642647158800A29222 /* SwiftyBeaver */,
 				E2123A672647198000A29222 /* SwiftyJSON */,
@@ -2078,7 +2066,6 @@
 			);
 			mainGroup = E2E637A02641A5FB00F872A4;
 			packageReferences = (
-				E2C859B226438EE500F93321 /* XCRemoteSwiftPackageReference "Cache" */,
 				E2123A5E2647115400A29222 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				E2123A632647158800A29222 /* XCRemoteSwiftPackageReference "SwiftyBeaver" */,
 				E2123A662647198000A29222 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
@@ -2361,7 +2348,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E26C1CBB277911A100E8C16A /* StockChartImageCache.swift in Sources */,
+				475C4AD72868CC7B007BE74A /* Cache.swift in Sources */,
 				E20AFAC82777CF6C00B0955F /* StockCache.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2401,6 +2388,7 @@
 				E26C1C98277910F100E8C16A /* MainView.swift in Sources */,
 				E26C1CB42779115A00E8C16A /* StockRow.swift in Sources */,
 				E26C1CC62779125C00E8C16A /* StockCard.swift in Sources */,
+				475C4ADA2868D6C5007BE74A /* StockChartImageCache.swift in Sources */,
 				E26C1CC52779124000E8C16A /* SearchStockNetworkClient.swift in Sources */,
 				E26C1CC32779121D00E8C16A /* SearchStockView.swift in Sources */,
 			);
@@ -2439,7 +2427,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E28619DF27767532002DFCD0 /* Charts+UIImage.swift in Sources */,
 				E28619DD27767532002DFCD0 /* TimeSection.swift in Sources */,
 				E28619DB27767532002DFCD0 /* ChartViewDataSource.swift in Sources */,
 				E28619D827767532002DFCD0 /* ChartHighlightMarker.swift in Sources */,
@@ -2465,7 +2452,6 @@
 				E28AEED1277AA65B00977C61 /* ChecklistDataManager.swift in Sources */,
 				E2B729012775309F001CF022 /* ChecklistEditTCA.swift in Sources */,
 				E2B729022775309F001CF022 /* ChecklistEditView.swift in Sources */,
-				E2B729032775309F001CF022 /* ChecklistCache.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3030,6 +3016,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -3063,6 +3050,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -4419,14 +4407,6 @@
 				minimumVersion = 1.3.0;
 			};
 		};
-		E2C859B226438EE500F93321 /* XCRemoteSwiftPackageReference "Cache" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/hyperoslo/Cache";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 6.0.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -4450,11 +4430,6 @@
 			package = E2123A5E2647115400A29222 /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
 		};
-		E20AFAC92777CF8900B0955F /* Cache */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2C859B226438EE500F93321 /* XCRemoteSwiftPackageReference "Cache" */;
-			productName = Cache;
-		};
 		E2123A5F2647115400A29222 /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E2123A5E2647115400A29222 /* XCRemoteSwiftPackageReference "Alamofire" */;
@@ -4474,11 +4449,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E22CF919277D1D1E005D4EAB /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
 			productName = SnapshotTesting;
-		};
-		E24BDEFA26D2C8C400595E4A /* Cache */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2C859B226438EE500F93321 /* XCRemoteSwiftPackageReference "Cache" */;
-			productName = Cache;
 		};
 		E24BDF0726D2EF5600595E4A /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -4515,11 +4485,6 @@
 			package = E2BDFCA526518CB90075E619 /* XCRemoteSwiftPackageReference "Money" */;
 			productName = Money;
 		};
-		E28619EB27767599002DFCD0 /* Cache */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2C859B226438EE500F93321 /* XCRemoteSwiftPackageReference "Cache" */;
-			productName = Cache;
-		};
 		E28619EE27767600002DFCD0 /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E2123A5E2647115400A29222 /* XCRemoteSwiftPackageReference "Alamofire" */;
@@ -4545,20 +4510,10 @@
 			package = E24D90AA27128095009EDE57 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
 			productName = ComposableArchitecture;
 		};
-		E2B7290827753121001CF022 /* Cache */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2C859B226438EE500F93321 /* XCRemoteSwiftPackageReference "Cache" */;
-			productName = Cache;
-		};
 		E2BDFCA626518CB90075E619 /* Money */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E2BDFCA526518CB90075E619 /* XCRemoteSwiftPackageReference "Money" */;
 			productName = Money;
-		};
-		E2C859B326438EE500F93321 /* Cache */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E2C859B226438EE500F93321 /* XCRemoteSwiftPackageReference "Cache" */;
-			productName = Cache;
 		};
 		E2C9A2192766BA4A000C07F0 /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;

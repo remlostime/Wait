@@ -1,6 +1,5 @@
 // Created by kai_chen on 5/8/21.
 
-import Cache
 import Foundation
 import Logging
 import Model
@@ -15,32 +14,21 @@ public class StockCache {
   public static let shared = StockCache()
 
   public func getStocks() -> [Stock] {
-    guard let stocks = try? storage?.object(forKey: key) else {
-      return []
+    if stocks.isEmpty {
+      getStocksFromDisk()
     }
 
     return stocks
   }
 
-  public func getStocks(completion: @escaping (([Stock]) -> Void)) {
-    storage?.async.object(forKey: key) { result in
-      switch result {
-        case let .value(stocks):
-          completion(stocks)
-        case let .error(error):
-          Logger.shared.error("Failed to fetch stocks: \(error.localizedDescription)")
-      }
-    }
-  }
-
   public func saveStocks(_ stocks: [Stock]) {
-    storage?.async.setObject(stocks, forKey: key) { result in
-      switch result {
-        case .value:
-          Logger.shared.verbose("Successfully store stocks")
-        case let .error(error):
-          Logger.shared.error("Failed to store stocks: \(error.localizedDescription)")
-      }
+    self.stocks = stocks
+
+    do {
+      let data = try encoder.encode(stocks)
+      try data.write(to: path)
+    } catch {
+      Logger.shared.error("Failed to encode stocks and save it. Error: \(error.localizedDescription)")
     }
   }
 
@@ -66,27 +54,21 @@ public class StockCache {
 
   // MARK: Private
 
+  private var stocks: [Stock] = []
+
   private let key = "stocks"
 
-  private lazy var storage: Storage<String, [Stock]>? = {
-//    let diskUrl = try? FileManager.default.url(
-//      for: .documentDirectory,
-//      in: .userDomainMask,
-//      appropriateFor: nil,
-//      create: true
-//    )
-    let diskUrl = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.chenkai.wait.contents")
+  private let decoder = JSONDecoder()
+  private let encoder = JSONEncoder()
 
-    let diskConfig = DiskConfig(name: "stocks", directory: diskUrl)
+  private let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appending(path: "stocks")
 
-    let memoryConfig = MemoryConfig()
-
-    let storage = try? Storage<String, [Stock]>(
-      diskConfig: diskConfig,
-      memoryConfig: memoryConfig,
-      transformer: TransformerFactory.forCodable(ofType: [Stock].self)
-    )
-
-    return storage
-  }()
+  private func getStocksFromDisk() {
+    do {
+      let data = try Data(contentsOf: path)
+      stocks = try decoder.decode([Stock].self, from: data)
+    } catch {
+      Logger.shared.error("Failed to encode stocks and save it. Error: \(error.localizedDescription)")
+    }
+  }
 }

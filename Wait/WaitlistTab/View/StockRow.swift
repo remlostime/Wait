@@ -1,6 +1,5 @@
 // Created by kai_chen on 5/4/21.
 
-import CacheService
 import Combine
 import Model
 import Size
@@ -57,17 +56,14 @@ struct StockRow: View {
 
       Spacer(minLength: Size.horizontalPadding24)
 
-      if let image = StockChartImageCache.shared.getImage(symbol: stock.symbol)?.image {
-        Image(uiImage: image)
-          .resizable()
-          .frame(width: 80.0, height: 32.0)
-          .scaledToFit()
-      }
-
+      // TODO(kai) - Build a chart snapshot image
       /*
-       else if let chartData = priceHistoryDataSource.chartData[.day],
-                 let image = chartData.buildChartImage()
-       {
+       if let image = StockChartImageCache.shared.getImage(symbol: stock.symbol)?.image {
+         Image(uiImage: image)
+           .resizable()
+           .frame(width: 80.0, height: 32.0)
+           .scaledToFit()
+       } else if let chartData = priceHistoryDataSource.chartData[.day] {
          Image(uiImage: image)
            .resizable()
            .frame(width: 80.0, height: 32.0)
