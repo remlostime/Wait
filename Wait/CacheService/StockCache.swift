@@ -5,17 +5,6 @@ import Logging
 import Model
 
 public class StockCache {
-  
-  private var stocks: [Stock] = []
-  
-  private let key = "stocks"
-  
-  private let decoder = JSONDecoder()
-  private let encoder = JSONEncoder()
-  
-  private let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appending(path: "stocks")
-
-  
   // MARK: Lifecycle
 
   private init() {}
@@ -23,27 +12,18 @@ public class StockCache {
   // MARK: Public
 
   public static let shared = StockCache()
-  
-  private func getStocksFromDisk() {
-    do {
-      let data = try Data(contentsOf: path)
-      self.stocks = try decoder.decode([Stock].self, from: data)
-    } catch {
-      Logger.shared.error("Failed to encode stocks and save it. Error: \(error.localizedDescription)")
-    }
-  }
 
   public func getStocks() -> [Stock] {
     if stocks.isEmpty {
       getStocksFromDisk()
     }
-    
+
     return stocks
   }
 
   public func saveStocks(_ stocks: [Stock]) {
     self.stocks = stocks
-    
+
     do {
       let data = try encoder.encode(stocks)
       try data.write(to: path)
@@ -70,5 +50,25 @@ public class StockCache {
     }
 
     saveStocks(stocks)
+  }
+
+  // MARK: Private
+
+  private var stocks: [Stock] = []
+
+  private let key = "stocks"
+
+  private let decoder = JSONDecoder()
+  private let encoder = JSONEncoder()
+
+  private let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appending(path: "stocks")
+
+  private func getStocksFromDisk() {
+    do {
+      let data = try Data(contentsOf: path)
+      stocks = try decoder.decode([Stock].self, from: data)
+    } catch {
+      Logger.shared.error("Failed to encode stocks and save it. Error: \(error.localizedDescription)")
+    }
   }
 }

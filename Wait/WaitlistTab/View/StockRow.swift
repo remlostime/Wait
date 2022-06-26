@@ -58,18 +58,18 @@ struct StockRow: View {
 
       // TODO(kai) - Build a chart snapshot image
       /*
-      if let image = StockChartImageCache.shared.getImage(symbol: stock.symbol)?.image {
-        Image(uiImage: image)
-          .resizable()
-          .frame(width: 80.0, height: 32.0)
-          .scaledToFit()
-      } else if let chartData = priceHistoryDataSource.chartData[.day] {
-        Image(uiImage: image)
-          .resizable()
-          .frame(width: 80.0, height: 32.0)
-          .scaledToFit()
-      }
-       */
+       if let image = StockChartImageCache.shared.getImage(symbol: stock.symbol)?.image {
+         Image(uiImage: image)
+           .resizable()
+           .frame(width: 80.0, height: 32.0)
+           .scaledToFit()
+       } else if let chartData = priceHistoryDataSource.chartData[.day] {
+         Image(uiImage: image)
+           .resizable()
+           .frame(width: 80.0, height: 32.0)
+           .scaledToFit()
+       }
+        */
 
       Spacer(minLength: Size.horizontalPadding24)
 

@@ -3,23 +3,25 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
+import CacheService
 import Foundation
 import Logging
 import Model
-import CacheService
 
 class StockChartImageCache {
-  // MARK: Public
-  
+  // MARK: Internal
+
   static let shared = StockChartImageCache()
-  
-  private let cache = Cache<String, PriceChartImage>()
-  
+
   func getImage(symbol: String) -> PriceChartImage? {
     cache.value(forKey: symbol)
   }
-  
+
   func saveImage(symbol: String, image: PriceChartImage) {
     cache.setValue(image, forKey: symbol)
   }
+
+  // MARK: Private
+
+  private let cache = Cache<String, PriceChartImage>()
 }

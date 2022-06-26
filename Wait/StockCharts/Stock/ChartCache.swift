@@ -6,13 +6,12 @@ import Logging
 
 // TODO(kai) - Update ChartCache
 class ChartCache<ChartData> {
-  
   // MARK: Lifecycle
 
   init(cacheName: String, symbol: String) {
     self.symbol = symbol
-    self.cache = Cache<String, ChartData>()
-    
+    cache = Cache<String, ChartData>()
+
 //    storage = try? Storage(
 //      diskConfig: diskConfig,
 //      memoryConfig: memoryConfig,

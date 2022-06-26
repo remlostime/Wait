@@ -47,9 +47,9 @@ final class StockCurrentQuoteDataSource: ObservableObject {
 
   func fetchStocks() {
     let stocks = StockCache.shared.getStocks()
-    
+
     self.stocks = stocks
-    
+
     networkClient.fetchDetails(stocks: stocks)
       .sink { result in
         let symbols = stocks.map { $0.symbol }
@@ -67,14 +67,14 @@ final class StockCurrentQuoteDataSource: ObservableObject {
             return $0
           }
         }
-        
+
         DispatchQueue.main.async {
           Logger.shared.verbose("Update all stocks quote")
           self.stocks = newStocks
           self.saveStocks()
         }
       }
-      .store(in: &self.subscriptions)
+      .store(in: &subscriptions)
   }
 
   // MARK: Private
