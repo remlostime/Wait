@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		47273FDB286A11BD00B874C4 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47273FDA286A11BD00B874C4 /* Storage.swift */; };
 		473F2FC72860F08900DCC2B2 /* CacheService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFAAD2777CF6200B0955F /* CacheService.framework */; };
 		475C4AD52867B0FF007BE74A /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475C4AD42867B0FF007BE74A /* UIColor+Hex.swift */; };
 		475C4AD72868CC7B007BE74A /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475C4AD62868CC7B007BE74A /* Cache.swift */; };
@@ -539,6 +540,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		47273FDA286A11BD00B874C4 /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 		475C4AD42867B0FF007BE74A /* UIColor+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
 		475C4AD62868CC7B007BE74A /* Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
 		47F93C12285F8A6100240CB4 /* ValuationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValuationData.swift; sourceTree = "<group>"; };
@@ -1004,6 +1006,7 @@
 			children = (
 				E2123A6A26472F9400A29222 /* StockCache.swift */,
 				475C4AD62868CC7B007BE74A /* Cache.swift */,
+				47273FDA286A11BD00B874C4 /* Storage.swift */,
 			);
 			path = CacheService;
 			sourceTree = "<group>";
@@ -2350,6 +2353,7 @@
 			files = (
 				475C4AD72868CC7B007BE74A /* Cache.swift in Sources */,
 				E20AFAC82777CF6C00B0955F /* StockCache.swift in Sources */,
+				47273FDB286A11BD00B874C4 /* Storage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
