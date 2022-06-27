@@ -190,18 +190,18 @@ public struct StockDetailsView: View {
           .font(.title)
 
         Spacer()
-        
+
         Button("history") {
           isChartHistoryButtonTapped.toggle()
         }
         .sheet(isPresented: $isChartHistoryButtonTapped) {
           // TODO(kai) - Add History Chart
           /*
-          Chart(stock.expectedPriceHistory) { price in
-            LineMark(x: stock.expectedPriceHistory.firstIndex(of: price)!, y: price.amountDoubleValue.formatted())
-          }
-          .frame(height: 100)
-           */
+           Chart(stock.expectedPriceHistory) { price in
+             LineMark(x: stock.expectedPriceHistory.firstIndex(of: price)!, y: price.amountDoubleValue.formatted())
+           }
+           .frame(height: 100)
+            */
         }
 
         Button("edit") {
@@ -268,7 +268,7 @@ public struct StockDetailsView: View {
       HStack {
         Text("Notes")
           .font(.title)
-        
+
         Spacer()
 
         Button("edit") {
@@ -286,7 +286,7 @@ public struct StockDetailsView: View {
           StockCache.shared.saveStock(stock)
         })
       }
-      
+
       Text(stock.memo)
     }
   }

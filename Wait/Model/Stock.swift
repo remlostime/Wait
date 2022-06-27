@@ -10,7 +10,7 @@ import UIKit
 
 public struct Stock: Codable {
   // MARK: Lifecycle
-  
+
   public init(
     symbol: String,
     name: String,
@@ -26,17 +26,18 @@ public struct Stock: Codable {
     self.currentQuote = currentQuote
     self.expectedPriceHistory = expectedPriceHistory
   }
-  
+
   // MARK: Public
-  
+
   public let symbol: String
   public let name: String
   public let expectedPrice: Money<USD>
   public let memo: String
   public let currentQuote: StockCurrentQuote
   public let expectedPriceHistory: [Money<USD>]
-  
 }
+
+// MARK: Equatable
 
 extension Stock: Equatable {
   public static func == (lhs: Stock, rhs: Stock) -> Bool {
@@ -44,11 +45,15 @@ extension Stock: Equatable {
   }
 }
 
+// MARK: Identifiable
+
 extension Stock: Identifiable {
   public var id: String {
     symbol
   }
 }
+
+// MARK: Hashable
 
 extension Stock: Hashable {
   public func hash(into hasher: inout Hasher) {
@@ -59,28 +64,6 @@ extension Stock: Hashable {
 // MARK: Extension
 
 public extension Stock {
-  func with(currentQuote: StockCurrentQuote) -> Stock {
-    Stock(
-      symbol: symbol,
-      name: name,
-      expectedPrice: expectedPrice,
-      memo: memo,
-      currentQuote: currentQuote,
-      expectedPriceHistory: expectedPriceHistory
-    )
-  }
-
-  func with(memo: String) -> Stock {
-    Stock(
-      symbol: symbol,
-      name: name,
-      expectedPrice: expectedPrice,
-      memo: memo,
-      currentQuote: currentQuote,
-      expectedPriceHistory: expectedPriceHistory
-    )
-  }
-  
   static var empty: Stock {
     Stock(
       symbol: "Empty",
@@ -145,5 +128,27 @@ public extension Stock {
       case .almost:
         return .banana
     }
+  }
+
+  func with(currentQuote: StockCurrentQuote) -> Stock {
+    Stock(
+      symbol: symbol,
+      name: name,
+      expectedPrice: expectedPrice,
+      memo: memo,
+      currentQuote: currentQuote,
+      expectedPriceHistory: expectedPriceHistory
+    )
+  }
+
+  func with(memo: String) -> Stock {
+    Stock(
+      symbol: symbol,
+      name: name,
+      expectedPrice: expectedPrice,
+      memo: memo,
+      currentQuote: currentQuote,
+      expectedPriceHistory: expectedPriceHistory
+    )
   }
 }
