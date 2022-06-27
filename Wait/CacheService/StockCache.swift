@@ -7,7 +7,9 @@ import Model
 public class StockCache {
   // MARK: Lifecycle
 
-  private init() {}
+  private init() {
+    storage = Storage<[Stock]>(name: key)
+  }
 
   // MARK: Public
 
@@ -25,8 +27,7 @@ public class StockCache {
     self.stocks = stocks
 
     do {
-      let data = try encoder.encode(stocks)
-      try data.write(to: path)
+      try storage.saveValue(stocks)
     } catch {
       Logger.shared.error("Failed to encode stocks and save it. Error: \(error.localizedDescription)")
     }
@@ -55,6 +56,7 @@ public class StockCache {
   // MARK: Private
 
   private var stocks: [Stock] = []
+  private let storage: Storage<[Stock]>
 
   private let key = "stocks"
 
@@ -65,8 +67,7 @@ public class StockCache {
 
   private func getStocksFromDisk() {
     do {
-      let data = try Data(contentsOf: path)
-      stocks = try decoder.decode([Stock].self, from: data)
+      stocks = try storage.value()
     } catch {
       Logger.shared.error("Failed to encode stocks and save it. Error: \(error.localizedDescription)")
     }
