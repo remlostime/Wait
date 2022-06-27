@@ -60,15 +60,13 @@ public struct ChecklistEditView: View {
 
 struct ChecklistEditView_Previews: PreviewProvider {
   static var previews: some View {
-    NavigationView {
-      ChecklistEditView(store: Store(
-        initialState: ChecklistEditState(items: [
-          ChecklistItem(name: "First", id: UUID()),
-          ChecklistItem(name: "Second", id: UUID()),
-        ]),
-        reducer: ChecklistEditReducerBuilder.build(),
-        environment: ChecklistEditEnvironment(checklistDataManager: DefaultChecklistDataManager(), uuid: { UUID() })
-      ))
-    }
+    ChecklistEditView(store: Store(
+      initialState: ChecklistEditState(items: [
+        ChecklistItem(name: "First", id: UUID()),
+        ChecklistItem(name: "Second", id: UUID()),
+      ]),
+      reducer: ChecklistEditReducerBuilder.build(),
+      environment: ChecklistEditEnvironment(checklistDataManager: DefaultChecklistDataManager(), uuid: { UUID() })
+    ))
   }
 }

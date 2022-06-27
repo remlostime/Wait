@@ -20,7 +20,7 @@ public struct MainView: View {
   // MARK: Public
 
   public var body: some View {
-    NavigationView {
+    NavigationStack {
       VStack {
         switch stockRowStyle {
           case .card:
@@ -42,32 +42,14 @@ public struct MainView: View {
               }
             }
           case .row:
-            List {
-              ForEach(stocks, id: \.symbol) { stock in
-                HStack {
-                  StockRow(stockRowDetailType: $stockRowDetailType, stock: stock)
-
-                  // This is used to remove '>' in the cell
-                  // https://stackoverflow.com/questions/58333499/swiftui-navigationlink-hide-arrow
-                  // https://stackoverflow.com/questions/56516333/swiftui-navigationbutton-without-the-disclosure-indicator
-                  NavigationLink(destination: StockDetailsView(stock: stock), tag: stock.symbol, selection: $selection) {
-                    EmptyView()
-                  }
-                  .frame(width: 0)
-                  .opacity(0)
-                }
+            List(stocks) { stock in
+              NavigationLink(value: stock) {
+                StockRow(stockRowDetailType: $stockRowDetailType, stock: stock)
               }
-              .onMove { source, dst in
-                dataSource.moveStock(fromOffset: source, toOffset: dst)
-              }
-              .onDelete(perform: { indexSet in
-                for index in indexSet {
-                  let stock = stocks[index]
-                  dataSource.removeStock(stock)
-                }
-              })
             }
-            .id(UUID())
+            .navigationDestination(for: Stock.self) { stock in
+              StockDetailsView(stock: stock)
+            }
         }
       }
       .onAppear {

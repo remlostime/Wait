@@ -17,13 +17,8 @@ struct SearchStockView: View {
 
   @StateObject var dataSource = SearchStockDataSource()
 
-  // TODO(Kai) - hard code it, since there's a bug in SwiftUI 16. Need to remove when it's fixed.
-  var searchStocks = [
-    SearchStockResult(symbol: "baba", name: "Baba", exchange: "ok", country: "ok", currency: "adsf"),
-  ]
-
   var body: some View {
-    NavigationView {
+    NavigationStack {
       List(dataSource.searchStocks, id: \.symbol) { searchStock in
         NavigationLink(destination: StockExpectedPriceInputView(searchStock: searchStock, stock: $stock, isPresented: $isPresented)) {
           SearchStockRow(stock: searchStock)

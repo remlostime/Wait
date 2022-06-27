@@ -22,6 +22,7 @@
 
 /* Begin PBXBuildFile section */
 		47273FDB286A11BD00B874C4 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47273FDA286A11BD00B874C4 /* Storage.swift */; };
+		47273FDD286A33D100B874C4 /* TradeAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47273FDC286A33D100B874C4 /* TradeAction.swift */; };
 		473F2FC72860F08900DCC2B2 /* CacheService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFAAD2777CF6200B0955F /* CacheService.framework */; };
 		475C4AD52867B0FF007BE74A /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475C4AD42867B0FF007BE74A /* UIColor+Hex.swift */; };
 		475C4AD72868CC7B007BE74A /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475C4AD62868CC7B007BE74A /* Cache.swift */; };
@@ -41,7 +42,6 @@
 		E205D3FA26D2C6B5004EE31D /* Logging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E205D3EA26D2C567004EE31D /* Logging.framework */; };
 		E20A8115267EE3C5001F31A6 /* URLDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A07D972651C0A20075E271 /* URLDomain.swift */; };
 		E20A8116267EE3C5001F31A6 /* NetworkingURLBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A07D952651BF270075E271 /* NetworkingURLBuilder.swift */; };
-		E20AFA512777BF5500B0955F /* SwiftUIValuationChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2136DD4269A16530033AEB1 /* SwiftUIValuationChartViewController.swift */; };
 		E20AFA5F2777C9E600B0955F /* SettingsTab.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFA572777C9E600B0955F /* SettingsTab.framework */; };
 		E20AFA662777C9E600B0955F /* SettingsTabTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20AFA652777C9E600B0955F /* SettingsTabTests.swift */; };
 		E20AFA672777C9E600B0955F /* SettingsTab.h in Headers */ = {isa = PBXBuildFile; fileRef = E20AFA592777C9E600B0955F /* SettingsTab.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -197,7 +197,6 @@
 		E2E637AD2641A5FB00F872A4 /* WaitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E637AC2641A5FB00F872A4 /* WaitApp.swift */; };
 		E2E637B12641A5FD00F872A4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E2E637B02641A5FD00F872A4 /* Assets.xcassets */; };
 		E2E637B42641A5FD00F872A4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E2E637B32641A5FD00F872A4 /* Preview Assets.xcassets */; };
-		E2F9CDD826D554870076F109 /* UpdatedHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F9CDD726D554870076F109 /* UpdatedHistory.swift */; };
 		E2FC1031267E9EB300CD98AF /* Model.h in Headers */ = {isa = PBXBuildFile; fileRef = E2FC102F267E9EB300CD98AF /* Model.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E2FC1034267E9EB300CD98AF /* Model.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC102D267E9EB300CD98AF /* Model.framework */; };
 		E2FC1035267E9EB300CD98AF /* Model.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E2FC102D267E9EB300CD98AF /* Model.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -541,6 +540,7 @@
 
 /* Begin PBXFileReference section */
 		47273FDA286A11BD00B874C4 /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
+		47273FDC286A33D100B874C4 /* TradeAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeAction.swift; sourceTree = "<group>"; };
 		475C4AD42867B0FF007BE74A /* UIColor+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
 		475C4AD62868CC7B007BE74A /* Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
 		47F93C12285F8A6100240CB4 /* ValuationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValuationData.swift; sourceTree = "<group>"; };
@@ -573,7 +573,6 @@
 		E2118088277BBA2000268B3C /* ChecklistCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistCardTests.swift; sourceTree = "<group>"; };
 		E2123A61264713CC00A29222 /* StockCurrentQuote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCurrentQuote.swift; sourceTree = "<group>"; };
 		E2123A6A26472F9400A29222 /* StockCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCache.swift; sourceTree = "<group>"; };
-		E2136DD4269A16530033AEB1 /* SwiftUIValuationChartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIValuationChartViewController.swift; sourceTree = "<group>"; };
 		E2211E2426C81C5E00041F5F /* StockOverviewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOverviewDataSource.swift; sourceTree = "<group>"; };
 		E2211E2626C8280100041F5F /* Checklist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Checklist.swift; sourceTree = "<group>"; };
 		E2211E2826C82A3300041F5F /* ChecklistItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistItem.swift; sourceTree = "<group>"; };
@@ -667,7 +666,6 @@
 		E2E637BF2641A92A00F872A4 /* StockRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockRow.swift; sourceTree = "<group>"; };
 		E2F8D19826A2531600020A97 /* Wait.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Wait.entitlements; sourceTree = "<group>"; };
 		E2F8D19926A2531900020A97 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
-		E2F9CDD726D554870076F109 /* UpdatedHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatedHistory.swift; sourceTree = "<group>"; };
 		E2FC102D267E9EB300CD98AF /* Model.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Model.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2FC102F267E9EB300CD98AF /* Model.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Model.h; sourceTree = "<group>"; };
 		E2FC1030267E9EB300CD98AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1030,14 +1028,6 @@
 			path = WaitWidget;
 			sourceTree = "<group>";
 		};
-		E2136DCF269A134D0033AEB1 /* Valuation */ = {
-			isa = PBXGroup;
-			children = (
-				E2136DD4269A16530033AEB1 /* SwiftUIValuationChartViewController.swift */,
-			);
-			path = Valuation;
-			sourceTree = "<group>";
-		};
 		E22CF909277D09A3005D4EAB /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -1159,7 +1149,6 @@
 		E28619BE2776750D002DFCD0 /* StockCharts */ = {
 			isa = PBXGroup;
 			children = (
-				E2136DCF269A134D0033AEB1 /* Valuation */,
 				E20AFA4F2777BF2500B0955F /* Stock */,
 				E28619BF2776750D002DFCD0 /* StockCharts.h */,
 			);
@@ -1331,9 +1320,9 @@
 				E25A1E81266BB862004D2B24 /* Exchange.swift */,
 				E25A1E9F266DA6F6004D2B24 /* StockOverview.swift */,
 				E2211E2826C82A3300041F5F /* ChecklistItem.swift */,
-				E2F9CDD726D554870076F109 /* UpdatedHistory.swift */,
 				E2316FB8271B99C400103050 /* StockRowStyle.swift */,
 				E20AFA772777CDC800B0955F /* PriceChartImage.swift */,
+				47273FDC286A33D100B874C4 /* TradeAction.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -2434,7 +2423,6 @@
 				E28619DD27767532002DFCD0 /* TimeSection.swift in Sources */,
 				E28619DB27767532002DFCD0 /* ChartViewDataSource.swift in Sources */,
 				E28619D827767532002DFCD0 /* ChartHighlightMarker.swift in Sources */,
-				E20AFA512777BF5500B0955F /* SwiftUIValuationChartViewController.swift in Sources */,
 				E28619ED277675E2002DFCD0 /* PriceHistoryNetworkClient.swift in Sources */,
 				E28619DC27767532002DFCD0 /* ChartCache.swift in Sources */,
 				E28619DE27767532002DFCD0 /* PriceHistoryDataSource.swift in Sources */,
@@ -2520,11 +2508,11 @@
 				E2211E2926C82A3300041F5F /* ChecklistItem.swift in Sources */,
 				E2FC1039267E9EBF00CD98AF /* Exchange.swift in Sources */,
 				E2316FB9271B99C400103050 /* StockRowStyle.swift in Sources */,
-				E2F9CDD826D554870076F109 /* UpdatedHistory.swift in Sources */,
 				E2FC103A267E9EBF00CD98AF /* StockOverview.swift in Sources */,
 				E2FC103B267E9EBF00CD98AF /* StockQuote.swift in Sources */,
 				E20AFA782777CDC800B0955F /* PriceChartImage.swift in Sources */,
 				E2FC103D267E9EBF00CD98AF /* Stock.swift in Sources */,
+				47273FDD286A33D100B874C4 /* TradeAction.swift in Sources */,
 				E2FC103E267E9EBF00CD98AF /* SearchStock.swift in Sources */,
 				E2FC103C267E9EBF00CD98AF /* StockCurrentQuote.swift in Sources */,
 			);

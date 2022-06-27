@@ -39,9 +39,6 @@ public struct StockDetailsView: View {
 
         memoView
           .padding()
-
-        versionView
-          .padding()
       }
       .multilineTextAlignment(.leading)
       .navigationTitle(stock.name)
@@ -74,6 +71,8 @@ public struct StockDetailsView: View {
   @State var stockIsFavorited: Bool = true
   @State var memo: String = ""
   @State var isEditingPrice = false
+  @State var isEditingNotes = false
+  @State var isChartHistoryButtonTapped = false
 
   @State var checklistItems = ChecklistItem.allItems
 
@@ -191,6 +190,19 @@ public struct StockDetailsView: View {
           .font(.title)
 
         Spacer()
+        
+        Button("history") {
+          isChartHistoryButtonTapped.toggle()
+        }
+        .sheet(isPresented: $isChartHistoryButtonTapped) {
+          // TODO(kai) - Add History Chart
+          /*
+          Chart(stock.expectedPriceHistory) { price in
+            LineMark(x: stock.expectedPriceHistory.firstIndex(of: price)!, y: price.amountDoubleValue.formatted())
+          }
+          .frame(height: 100)
+           */
+        }
 
         Button("edit") {
           isEditingPrice.toggle()
@@ -253,24 +265,29 @@ public struct StockDetailsView: View {
 
   private var memoView: some View {
     VStack(alignment: .leading, spacing: 12.0) {
-      Text("Memo")
-        .font(.title)
+      HStack {
+        Text("Notes")
+          .font(.title)
+        
+        Spacer()
 
-      TextField("Write some notes...", text: $memo, onCommit: {
-        stock = stock.with(memo: memo)
-        StockCache.shared.saveStock(stock)
-      })
-    }
-  }
-
-  private var versionView: some View {
-    VStack(alignment: .leading, spacing: 12.0) {
-      Text("Version")
-        .font(.title)
-
-      ForEach(stock.updatedHistory) { history in
-        Text(history.formattedHistory)
+        Button("edit") {
+          isEditingNotes.toggle()
+        }
+        .sheet(isPresented: $isEditingNotes, content: {
+          // TODO(kai) - Save memo only works on the first time
+          TextField("Write some notes...", text: $memo, onCommit: {
+            stock = stock.with(memo: memo)
+            StockCache.shared.saveStock(stock)
+            isEditingNotes.toggle()
+          })
+        })
+        .onChange(of: stock.memo, perform: { _ in
+          StockCache.shared.saveStock(stock)
+        })
       }
+      
+      Text(stock.memo)
     }
   }
 
