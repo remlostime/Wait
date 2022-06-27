@@ -13,21 +13,12 @@ class ChartCache<ChartData: Codable> {
   }
 
   // MARK: Internal
-  
-  private func getChartDataFromDisk() {
-    do {
-      let chartData = try storage.value()
-      self.chartData = chartData
-    } catch {
-      Logger.shared.error("Failed to get chartData from disk. Error: \(error.localizedDescription)")
-    }
-  }
 
   func getChartData() -> ChartData? {
     if chartData == nil {
       getChartDataFromDisk()
     }
-    
+
     return chartData
   }
 
@@ -45,4 +36,13 @@ class ChartCache<ChartData: Codable> {
   private var chartData: ChartData?
   private let storage: Storage<ChartData>
   private let symbol: String
+
+  private func getChartDataFromDisk() {
+    do {
+      let chartData = try storage.value()
+      self.chartData = chartData
+    } catch {
+      Logger.shared.error("Failed to get chartData from disk. Error: \(error.localizedDescription)")
+    }
+  }
 }

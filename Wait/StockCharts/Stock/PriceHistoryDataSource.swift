@@ -39,7 +39,7 @@ public final class PriceHistoryDataSource: ObservableObject, ChartViewDataSource
 
   public func fetchData(for timeSections: [TimeSection]) {
     models = [:]
-    
+
     if let chartData = chartCache.getChartData() {
       models = chartData
       updateChartData()
