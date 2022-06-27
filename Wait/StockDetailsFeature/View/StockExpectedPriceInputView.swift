@@ -51,15 +51,12 @@ public struct StockExpectedPriceInputView: View {
       Spacer()
 
       Button("Add") {
-        var updatedHistory = stock.updatedHistory
-        updatedHistory.append(UpdatedHistory(notes: ["Expected Price Updated"]))
-
         stock = Stock(
           symbol: searchStock.symbol,
           name: searchStock.name,
           expectedPrice: Money<USD>(floatLiteral: Double(expectedPriceModel.price) ?? 0.0),
           currentQuote: stock.currentQuote,
-          updatedHistory: updatedHistory
+          expectedPriceHistory: stock.expectedPriceHistory
         )
 
         isPresented.toggle()

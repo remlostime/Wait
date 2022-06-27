@@ -18,7 +18,7 @@ public struct SettingsView: View {
   // MARK: Public
 
   public var body: some View {
-    NavigationView {
+    NavigationStack {
       List {
         NavigationLink("Checklist") {
           ChecklistEditView(store: Store(
@@ -33,6 +33,7 @@ public struct SettingsView: View {
             Text(style.rawValue).tag(style)
           }
         }
+        .pickerStyle(MenuPickerStyle())
       }
       .navigationTitle("Settings")
     }

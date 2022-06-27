@@ -8,7 +8,7 @@ import UIKit
 
 // MARK: - Stock
 
-public struct Stock: Codable, Equatable {
+public struct Stock: Codable {
   // MARK: Lifecycle
 
   public init(
@@ -17,14 +17,14 @@ public struct Stock: Codable, Equatable {
     expectedPrice: Money<USD>,
     memo: String = "",
     currentQuote: StockCurrentQuote,
-    updatedHistory: [UpdatedHistory]
+    expectedPriceHistory: [Money<USD>]
   ) {
     self.symbol = symbol
     self.name = name
     self.expectedPrice = expectedPrice
     self.memo = memo
     self.currentQuote = currentQuote
-    self.updatedHistory = updatedHistory
+    self.expectedPriceHistory = expectedPriceHistory
   }
 
   // MARK: Public
@@ -33,42 +33,32 @@ public struct Stock: Codable, Equatable {
   public let name: String
   public let expectedPrice: Money<USD>
   public let memo: String
-  public private(set) var currentQuote: StockCurrentQuote
-  public let updatedHistory: [UpdatedHistory]
+  public let currentQuote: StockCurrentQuote
+  public let expectedPriceHistory: [Money<USD>]
+}
 
+// MARK: Equatable
+
+extension Stock: Equatable {
   public static func == (lhs: Stock, rhs: Stock) -> Bool {
     lhs.symbol == rhs.symbol
   }
+}
 
-  public func with(currentQuote: StockCurrentQuote) -> Stock {
-    Stock(
-      symbol: symbol,
-      name: name,
-      expectedPrice: expectedPrice,
-      memo: memo,
-      currentQuote: currentQuote,
-      updatedHistory: updatedHistory
-    )
-  }
+// MARK: Identifiable
 
-  public func with(memo: String) -> Stock {
-    Stock(
-      symbol: symbol,
-      name: name,
-      expectedPrice: expectedPrice,
-      memo: memo,
-      currentQuote: currentQuote,
-      updatedHistory: updatedHistory
-    )
+extension Stock: Identifiable {
+  public var id: String {
+    symbol
   }
 }
 
-// MARK: - TradeAction
+// MARK: Hashable
 
-public enum TradeAction: String, CaseIterable {
-  case buy = "Buy"
-  case wait = "Wait"
-  case almost = "Almost"
+extension Stock: Hashable {
+  public func hash(into hasher: inout Hasher) {
+    hasher.combine(symbol)
+  }
 }
 
 // MARK: Extension
@@ -81,7 +71,7 @@ public extension Stock {
       expectedPrice: 0.0,
       memo: "Empty",
       currentQuote: .empty,
-      updatedHistory: []
+      expectedPriceHistory: []
     )
   }
 
@@ -138,5 +128,27 @@ public extension Stock {
       case .almost:
         return .banana
     }
+  }
+
+  func with(currentQuote: StockCurrentQuote) -> Stock {
+    Stock(
+      symbol: symbol,
+      name: name,
+      expectedPrice: expectedPrice,
+      memo: memo,
+      currentQuote: currentQuote,
+      expectedPriceHistory: expectedPriceHistory
+    )
+  }
+
+  func with(memo: String) -> Stock {
+    Stock(
+      symbol: symbol,
+      name: name,
+      expectedPrice: expectedPrice,
+      memo: memo,
+      currentQuote: currentQuote,
+      expectedPriceHistory: expectedPriceHistory
+    )
   }
 }

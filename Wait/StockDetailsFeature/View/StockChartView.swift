@@ -16,7 +16,7 @@ struct StockChartView: View {
   @StateObject var dataSource: PriceHistoryDataSource
 
   var body: some View {
-    VStack {
+    VStack(spacing: Size.verticalPadding24) {
       if let chartData = chartData {
         VStack(alignment: .leading, spacing: Size.verticalPadding24) {
           Text(currentPrice)
