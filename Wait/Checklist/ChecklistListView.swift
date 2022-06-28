@@ -10,22 +10,43 @@ import SwiftUI
 
 // MARK: - ChecklistListView
 
-struct ChecklistListView: View {
-  let store: Store<ChecklistListState, ChecklistListAction>
+public struct ChecklistListView: View {
+  // MARK: Lifecycle
 
-  var body: some View {
+  public init(store: Store<ChecklistListState, ChecklistListAction>) {
+    self.store = store
+  }
+
+  // MARK: Public
+
+  public var body: some View {
     WithViewStore(store) { viewStore in
-      List {
-        ForEach(0 ..< viewStore.checklistItems.count) { index in
-          Checklist(item: viewStore.checklistItems[index]) { item in
-            if item.isChecked {
-              viewStore.send(.uncheck(index: index))
-            } else {
-              viewStore.send(.check(index: index))
-            }
+      List(viewStore.checklistItems) { item in
+        Checklist(item: item) { item in
+          if item.isChecked {
+            viewStore.send(.uncheck(index: viewStore.checklistItems.firstIndex(of: item)!))
+          } else {
+            viewStore.send(.check(index: viewStore.checklistItems.firstIndex(of: item)!))
           }
         }
       }
+      .navigationTitle(navigationTitle(with: viewStore.checklistItems))
+    }
+  }
+
+  // MARK: Private
+
+  private let store: Store<ChecklistListState, ChecklistListAction>
+
+  private func navigationTitle(with checklistItems: [ChecklistItem]) -> String {
+    let itemCheckedCount = checklistItems.reduce(into: 0) { count, item in
+      count += item.isChecked ? 1 : 0
+    }
+
+    if itemCheckedCount == checklistItems.count {
+      return "All Done"
+    } else {
+      return "\(itemCheckedCount) / \(checklistItems.count)"
     }
   }
 }
