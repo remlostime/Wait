@@ -34,21 +34,21 @@ public struct ChecklistListView: View {
     }
   }
 
-  // MARK: Internal
-  
+  // MARK: Private
+
+  private let store: Store<ChecklistListState, ChecklistListAction>
+
   private func navigationTitle(with checklistItems: [ChecklistItem]) -> String {
     let itemCheckedCount = checklistItems.reduce(into: 0) { count, item in
       count += item.isChecked ? 1 : 0
     }
-    
+
     if itemCheckedCount == checklistItems.count {
       return "All Done"
     } else {
       return "\(itemCheckedCount) / \(checklistItems.count)"
     }
   }
-
-  private let store: Store<ChecklistListState, ChecklistListAction>
 }
 
 // MARK: - ChecklistListView_Previews
