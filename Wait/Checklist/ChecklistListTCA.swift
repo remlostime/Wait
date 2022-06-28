@@ -17,11 +17,15 @@ public enum ChecklistListAction {
 // MARK: - ChecklistListState
 
 public struct ChecklistListState: Equatable {
-  var checklistItems: [ChecklistItem]
-  
+  // MARK: Lifecycle
+
   public init(checklistItems: [ChecklistItem]) {
     self.checklistItems = checklistItems
   }
+
+  // MARK: Internal
+
+  var checklistItems: [ChecklistItem]
 }
 
 // MARK: - ChecklistListEnvironment

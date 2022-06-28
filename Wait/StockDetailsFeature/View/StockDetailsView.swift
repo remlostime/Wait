@@ -246,7 +246,8 @@ public struct StockDetailsView: View {
           ChecklistListView(store: Store<ChecklistListState, ChecklistListAction>.init(
             initialState: ChecklistListState(checklistItems: checklistItems),
             reducer: ChecklistListReducerBuilder.build(),
-            environment: ChecklistListEnvironment()))
+            environment: ChecklistListEnvironment()
+          ))
         }
       }
     }
