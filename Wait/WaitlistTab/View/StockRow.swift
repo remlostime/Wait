@@ -30,7 +30,7 @@ struct StockRow: View {
   init(stockRowDetailType: Binding<StockRowDetailType>, stock: Stock) {
     _stock = State<Stock>(initialValue: stock)
     _stockRowDetailType = stockRowDetailType
-    priceHistoryDataSource = PriceHistoryDataSource(symbol: stock.symbol)
+    _priceHistoryDataSource = StateObject(wrappedValue: PriceHistoryDataSource(symbol: stock.symbol))
   }
 
   // MARK: Internal
@@ -40,7 +40,7 @@ struct StockRow: View {
 
   @State var stock: Stock
 
-  @ObservedObject var priceHistoryDataSource: PriceHistoryDataSource
+  @StateObject var priceHistoryDataSource: PriceHistoryDataSource
 
   var body: some View {
     HStack {
@@ -56,20 +56,10 @@ struct StockRow: View {
 
       Spacer(minLength: Size.horizontalPadding24)
 
-      // TODO(kai) - Build a chart snapshot image
-      /*
-       if let image = StockChartImageCache.shared.getImage(symbol: stock.symbol)?.image {
-         Image(uiImage: image)
-           .resizable()
-           .frame(width: 80.0, height: 32.0)
-           .scaledToFit()
-       } else if let chartData = priceHistoryDataSource.chartData[.day] {
-         Image(uiImage: image)
-           .resizable()
-           .frame(width: 80.0, height: 32.0)
-           .scaledToFit()
-       }
-        */
+      if let chartData = priceHistoryDataSource.chartData[.day] {
+        StockChartSnapshotView(chartData: chartData)
+          .frame(width: 80.0, height: 32.0)
+      }
 
       Spacer(minLength: Size.horizontalPadding24)
 
@@ -94,7 +84,7 @@ struct StockRow: View {
     }
     .padding(.vertical, Size.baseLayoutUnit8)
     .onAppear {
-      // priceHistoryDataSource.fetchData(for: [.day])
+      priceHistoryDataSource.fetchData(for: [.day])
     }
   }
 

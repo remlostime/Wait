@@ -195,13 +195,8 @@ public struct StockDetailsView: View {
           isChartHistoryButtonTapped.toggle()
         }
         .sheet(isPresented: $isChartHistoryButtonTapped) {
-          // TODO(kai) - Add History Chart
-          /*
-           Chart(stock.expectedPriceHistory) { price in
-             LineMark(x: stock.expectedPriceHistory.firstIndex(of: price)!, y: price.amountDoubleValue.formatted())
-           }
-           .frame(height: 100)
-            */
+          ExpectedStockPriceChart(priceHistory: stock.expectedPriceHistory)
+            .frame(height: 100)
         }
 
         Button("edit") {
