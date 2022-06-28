@@ -18,18 +18,24 @@ public enum ChecklistListAction {
 
 public struct ChecklistListState: Equatable {
   var checklistItems: [ChecklistItem]
+  
+  public init(checklistItems: [ChecklistItem]) {
+    self.checklistItems = checklistItems
+  }
 }
 
 // MARK: - ChecklistListEnvironment
 
-public struct ChecklistListEnvironment {}
+public struct ChecklistListEnvironment {
+  public init() {}
+}
 
 public typealias ChecklistListReducer = Reducer<ChecklistListState, ChecklistListAction, ChecklistListEnvironment>
 
 // MARK: - ChecklistListReducerBuilder
 
 public enum ChecklistListReducerBuilder {
-  static func build() -> ChecklistListReducer {
+  public static func build() -> ChecklistListReducer {
     let reducer = ChecklistListReducer { state, action, _ in
       switch action {
         case let .check(index):

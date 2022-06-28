@@ -124,7 +124,7 @@ struct StockChartView: View {
       max(point.quote.close.amountDoubleValue, closePrice)
     }
 
-    return Int(ceil(minClose)) ... Int(ceil(maxClose))
+    return Int(floor(minClose)) ... Int(ceil(maxClose))
   }
 
   private var currentPrice: String {
