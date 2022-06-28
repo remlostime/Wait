@@ -6,6 +6,22 @@ import Money
 import SwiftUI
 import UIKit
 
+// MARK: - PriceHistory
+
+public struct PriceHistory: Codable {
+  // MARK: Lifecycle
+
+  public init(date: Date, price: Money<USD>) {
+    self.date = date
+    self.price = price
+  }
+
+  // MARK: Public
+
+  public let date: Date
+  public let price: Money<USD>
+}
+
 // MARK: - Stock
 
 public struct Stock: Codable {
@@ -17,7 +33,7 @@ public struct Stock: Codable {
     expectedPrice: Money<USD>,
     memo: String = "",
     currentQuote: StockCurrentQuote,
-    expectedPriceHistory: [Money<USD>]
+    expectedPriceHistory: [PriceHistory]
   ) {
     self.symbol = symbol
     self.name = name
@@ -34,7 +50,7 @@ public struct Stock: Codable {
   public let expectedPrice: Money<USD>
   public let memo: String
   public let currentQuote: StockCurrentQuote
-  public let expectedPriceHistory: [Money<USD>]
+  public let expectedPriceHistory: [PriceHistory]
 }
 
 // MARK: Equatable

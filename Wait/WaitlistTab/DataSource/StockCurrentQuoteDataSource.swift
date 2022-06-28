@@ -38,9 +38,11 @@ final class StockCurrentQuoteDataSource: ObservableObject {
             Logger.shared.error("Failed to fetch stock: \(stock.symbol). Error: \(error.localizedDescription)")
         }
       } receiveValue: { stockQuote in
-        let newStock = stock.with(currentQuote: stockQuote)
-        self.stocks.append(newStock)
-        self.saveStocks()
+        DispatchQueue.main.async {
+          let newStock = stock.with(currentQuote: stockQuote)
+          self.stocks.append(newStock)
+          self.saveStocks()
+        }
       }
       .store(in: &subscriptions)
   }

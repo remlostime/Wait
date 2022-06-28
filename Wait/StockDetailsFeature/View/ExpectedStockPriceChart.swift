@@ -4,6 +4,7 @@
 //
 
 import Charts
+import Model
 import Money
 import SwiftUI
 
@@ -11,7 +12,7 @@ import SwiftUI
 
 private struct ChartPoint: Identifiable {
   let index: Int
-  let price: Double
+  let priceHistory: PriceHistory
 
   var id: Int {
     index
@@ -23,11 +24,11 @@ private struct ChartPoint: Identifiable {
 struct ExpectedStockPriceChart: View {
   // MARK: Internal
 
-  let priceHistory: [Money<USD>]
+  let priceHistory: [PriceHistory]
 
   var body: some View {
     Chart(chartPoints) { point in
-      LineMark(x: .value("timestamp", point.index), y: .value("price", point.price))
+      LineMark(x: .value("timestamp", point.index), y: .value("price", point.priceHistory.price.amountDoubleValue))
     }
     .chartXAxis(.hidden)
     .chartYScale(domain: chartYScaleDomain)
@@ -36,18 +37,21 @@ struct ExpectedStockPriceChart: View {
   // MARK: Private
 
   private var chartPoints: [ChartPoint] {
-    priceHistory.map { price in
-      ChartPoint(index: priceHistory.firstIndex(of: price)!, price: price.amountDoubleValue)
+    var chartPoints = [ChartPoint]()
+    for (index, val) in priceHistory.enumerated() {
+      chartPoints.append(ChartPoint(index: index, priceHistory: val))
     }
+
+    return chartPoints
   }
 
   private var chartYScaleDomain: ClosedRange<Int> {
     let minClose = chartPoints.reduce(Double(Int.max)) { closePrice, point in
-      min(point.price, closePrice)
+      min(point.priceHistory.price.amountDoubleValue, closePrice)
     }
 
     let maxClose = chartPoints.reduce(Double(Int.min)) { closePrice, point in
-      max(point.price, closePrice)
+      max(point.priceHistory.price.amountDoubleValue, closePrice)
     }
 
     return Int(ceil(minClose)) ... Int(ceil(maxClose))
@@ -59,8 +63,8 @@ struct ExpectedStockPriceChart: View {
 struct ExpectedStockPriceChart_Previews: PreviewProvider {
   static var previews: some View {
     ExpectedStockPriceChart(priceHistory: [
-      Money<USD>.init(1.0),
-      Money<USD>.init(2.0),
+      PriceHistory(date: Date(), price: Money<USD>.init(1.0)),
+      PriceHistory(date: Date(), price: Money<USD>.init(2.0)),
     ])
   }
 }
