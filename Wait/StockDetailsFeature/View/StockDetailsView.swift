@@ -196,7 +196,7 @@ public struct StockDetailsView: View {
         }
         .sheet(isPresented: $isChartHistoryButtonTapped) {
           ExpectedStockPriceChart(priceHistory: stock.expectedPriceHistory)
-            .frame(height: 100)
+            .frame(height: 320)
         }
 
         Button("edit") {
