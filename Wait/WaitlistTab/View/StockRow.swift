@@ -53,9 +53,9 @@ struct StockRow: View {
           .foregroundColor(.secondary)
       }
       .frame(alignment: .leading)
-      
+
       Spacer(minLength: Size.horizontalPadding24)
-      
+
       if let chartData = priceHistoryDataSource.chartData[.day] {
         StockChartSnapshotView(chartData: chartData)
           .frame(width: 80.0, height: 32.0)
@@ -84,7 +84,7 @@ struct StockRow: View {
     }
     .padding(.vertical, Size.baseLayoutUnit8)
     .onAppear {
-       priceHistoryDataSource.fetchData(for: [.day])
+      priceHistoryDataSource.fetchData(for: [.day])
     }
   }
 

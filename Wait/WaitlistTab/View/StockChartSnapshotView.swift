@@ -3,16 +3,28 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import Foundation
-import SwiftUI
-import Model
 import Charts
+import Foundation
+import Model
 import StockCharts
+import SwiftUI
 
 struct StockChartSnapshotView: View {
-  
+  // MARK: Internal
+
   let chartData: ChartData
-  
+
+  var body: some View {
+    Chart(chartData.points) { point in
+      LineMark(x: .value("timestamp", point.index), y: .value("price", point.quote.close.amountDoubleValue))
+    }
+    .chartXAxis(.hidden)
+    .chartYAxis(.hidden)
+    .chartYScale(domain: chartYScaleDomain)
+  }
+
+  // MARK: Private
+
   private var chartYScaleDomain: ClosedRange<Int> {
     let minClose = chartData.points.reduce(Double(Int.max)) { closePrice, point in
       min(point.quote.close.amountDoubleValue, closePrice)
@@ -23,14 +35,5 @@ struct StockChartSnapshotView: View {
     }
 
     return Int(ceil(minClose)) ... Int(ceil(maxClose))
-  }
-  
-  var body: some View {
-    Chart(chartData.points) { point in
-      LineMark(x: .value("timestamp", point.index), y: .value("price", point.quote.close.amountDoubleValue))
-    }
-    .chartXAxis(.hidden)
-    .chartYAxis(.hidden)
-    .chartYScale(domain: chartYScaleDomain)
   }
 }
