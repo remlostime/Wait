@@ -4,9 +4,9 @@
 //
 
 import Charts
+import Model
 import Money
 import SwiftUI
-import Model
 
 // MARK: - ChartPoint
 
@@ -64,7 +64,7 @@ struct ExpectedStockPriceChart_Previews: PreviewProvider {
   static var previews: some View {
     ExpectedStockPriceChart(priceHistory: [
       PriceHistory(date: Date(), price: Money<USD>.init(1.0)),
-      PriceHistory(date: Date(), price: Money<USD>.init(2.0))
+      PriceHistory(date: Date(), price: Money<USD>.init(2.0)),
     ])
   }
 }

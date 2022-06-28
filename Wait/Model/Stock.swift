@@ -6,20 +6,25 @@ import Money
 import SwiftUI
 import UIKit
 
+// MARK: - PriceHistory
+
 public struct PriceHistory: Codable {
-  public let date: Date
-  public let price: Money<USD>
-  
+  // MARK: Lifecycle
+
   public init(date: Date, price: Money<USD>) {
     self.date = date
     self.price = price
   }
+
+  // MARK: Public
+
+  public let date: Date
+  public let price: Money<USD>
 }
 
 // MARK: - Stock
 
 public struct Stock: Codable {
-  
   // MARK: Lifecycle
 
   public init(

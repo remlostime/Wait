@@ -52,10 +52,10 @@ public struct StockExpectedPriceInputView: View {
 
       Button("Add") {
         let expectedPrice = Money<USD>(floatLiteral: Double(expectedPriceModel.price) ?? 0.0)
-                                       
+
         var expectedPriceHistory = stock.expectedPriceHistory
         expectedPriceHistory.append(PriceHistory(date: .init(), price: expectedPrice))
-        
+
         stock = Stock(
           symbol: searchStock.symbol,
           name: searchStock.name,
