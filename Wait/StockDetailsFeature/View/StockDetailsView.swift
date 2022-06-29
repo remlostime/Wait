@@ -78,8 +78,6 @@ public struct StockDetailsView: View {
   @State var isChartHistoryButtonTapped = false
 
   @State var checklistItems: [ChecklistItem]
-  
-  private let checklistStorage: ChecklistStorage
 
   var checkedItemCounts: Int {
     var counts = 0
@@ -101,6 +99,8 @@ public struct StockDetailsView: View {
   }
 
   // MARK: Private
+
+  private let checklistStorage: ChecklistStorage
 
   private var chartView: some View {
     let dataSource = PriceHistoryDataSource(symbol: stock.symbol)
