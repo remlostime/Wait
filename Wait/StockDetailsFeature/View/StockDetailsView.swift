@@ -16,6 +16,8 @@ public struct StockDetailsView: View {
 
   public init(stock: Stock) {
     _stock = State(initialValue: stock)
+    checklistStorage = ChecklistStorage(name: "checklist-\(stock.symbol)")
+    _checklistItems = State(initialValue: checklistStorage.checklistItems())
   }
 
   // MARK: Public
@@ -56,6 +58,7 @@ public struct StockDetailsView: View {
     .onAppear {
       stockOverviewDatSource.fetchStockOverview(stock: stock)
       memo = stock.memo
+      checklistItems = checklistStorage.checklistItems()
     }
     .onChange(of: stockIsFavorited, perform: { value in
       stockFavoriteAction(value)
@@ -74,7 +77,9 @@ public struct StockDetailsView: View {
   @State var isEditingNotes = false
   @State var isChartHistoryButtonTapped = false
 
-  @State var checklistItems = ChecklistItem.allItems
+  @State var checklistItems: [ChecklistItem]
+  
+  private let checklistStorage: ChecklistStorage
 
   var checkedItemCounts: Int {
     var counts = 0
@@ -246,7 +251,7 @@ public struct StockDetailsView: View {
           ChecklistListView(store: Store<ChecklistListState, ChecklistListAction>.init(
             initialState: ChecklistListState(checklistItems: checklistItems),
             reducer: ChecklistListReducerBuilder.build(),
-            environment: ChecklistListEnvironment()
+            environment: ChecklistListEnvironment(checklistStorage: checklistStorage)
           ))
         }
       }
