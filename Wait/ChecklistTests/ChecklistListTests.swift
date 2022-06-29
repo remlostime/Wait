@@ -18,7 +18,7 @@ class ChecklistListTests: XCTestCase {
     let store = TestStore(
       initialState: state,
       reducer: ChecklistListReducerBuilder.build(),
-      environment: ChecklistListEnvironment()
+      environment: ChecklistListEnvironment(checklistStorage: ChecklistStorage(name: "test"))
     )
 
     for index in 0 ..< state.checklistItems.count {

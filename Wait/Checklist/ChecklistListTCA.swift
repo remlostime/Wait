@@ -31,7 +31,15 @@ public struct ChecklistListState: Equatable {
 // MARK: - ChecklistListEnvironment
 
 public struct ChecklistListEnvironment {
-  public init() {}
+  // MARK: Lifecycle
+
+  public init(checklistStorage: ChecklistStorage) {
+    self.checklistStorage = checklistStorage
+  }
+
+  // MARK: Public
+
+  public let checklistStorage: ChecklistStorage
 }
 
 public typealias ChecklistListReducer = Reducer<ChecklistListState, ChecklistListAction, ChecklistListEnvironment>
@@ -40,13 +48,17 @@ public typealias ChecklistListReducer = Reducer<ChecklistListState, ChecklistLis
 
 public enum ChecklistListReducerBuilder {
   public static func build() -> ChecklistListReducer {
-    let reducer = ChecklistListReducer { state, action, _ in
+    let reducer = ChecklistListReducer { state, action, environment in
       switch action {
         case let .check(index):
           state.checklistItems[index].isChecked = true
+          environment.checklistStorage.save(checklistItems: state.checklistItems)
+
           return .none
         case let .uncheck(index):
           state.checklistItems[index].isChecked = false
+          environment.checklistStorage.save(checklistItems: state.checklistItems)
+
           return .none
       }
     }

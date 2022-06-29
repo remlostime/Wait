@@ -30,6 +30,8 @@
 		475C4AD72868CC7B007BE74A /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475C4AD62868CC7B007BE74A /* Cache.swift */; };
 		475C4AD82868CFA6007BE74A /* CacheService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFAAD2777CF6200B0955F /* CacheService.framework */; };
 		475C4ADA2868D6C5007BE74A /* StockChartImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C3D362269B889000466CC3 /* StockChartImageCache.swift */; };
+		475E3B90286BE27E00E7506E /* ChecklistStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475E3B8F286BE27E00E7506E /* ChecklistStorage.swift */; };
+		476DFEC1286CB11C00F47918 /* CacheService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFAAD2777CF6200B0955F /* CacheService.framework */; platformFilter = ios; };
 		47F93C13285F8A6100240CB4 /* ValuationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F93C12285F8A6100240CB4 /* ValuationData.swift */; };
 		47F93C15285FCA3100240CB4 /* StockChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F93C14285FCA3100240CB4 /* StockChartView.swift */; };
 		E204B304276BB5F500D2EB0D /* ChecklistListTCA.swift in Sources */ = {isa = PBXBuildFile; fileRef = E204B303276BB5F500D2EB0D /* ChecklistListTCA.swift */; };
@@ -539,6 +541,7 @@
 		472B8183286A7C46003CE57D /* ExpectedStockPriceChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpectedStockPriceChart.swift; sourceTree = "<group>"; };
 		475C4AD42867B0FF007BE74A /* UIColor+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
 		475C4AD62868CC7B007BE74A /* Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
+		475E3B8F286BE27E00E7506E /* ChecklistStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistStorage.swift; sourceTree = "<group>"; };
 		47F93C12285F8A6100240CB4 /* ValuationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValuationData.swift; sourceTree = "<group>"; };
 		47F93C14285FCA3100240CB4 /* StockChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockChartView.swift; sourceTree = "<group>"; };
 		E204B303276BB5F500D2EB0D /* ChecklistListTCA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistListTCA.swift; sourceTree = "<group>"; };
@@ -848,6 +851,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				476DFEC1286CB11C00F47918 /* CacheService.framework in Frameworks */,
 				E2C9A2202766E862000C07F0 /* Size.framework in Frameworks */,
 				E2C9A21F2766E81C000C07F0 /* Model.framework in Frameworks */,
 				E2C9A21A2766BA4A000C07F0 /* ComposableArchitecture in Frameworks */,
@@ -1187,6 +1191,7 @@
 		E2C9A1D62766AE47000C07F0 /* Checklist */ = {
 			isa = PBXGroup;
 			children = (
+				475E3B8F286BE27E00E7506E /* ChecklistStorage.swift */,
 				E2211E2626C8280100041F5F /* Checklist.swift */,
 				E204B303276BB5F500D2EB0D /* ChecklistListTCA.swift */,
 				E204B305276BB78800D2EB0D /* ChecklistListView.swift */,
@@ -2456,6 +2461,7 @@
 				E204B307276BB8A600D2EB0D /* Checklist.swift in Sources */,
 				E2C9A1D92766AE47000C07F0 /* Checklist.docc in Sources */,
 				E204B306276BB78800D2EB0D /* ChecklistListView.swift in Sources */,
+				475E3B90286BE27E00E7506E /* ChecklistStorage.swift in Sources */,
 				E204B304276BB5F500D2EB0D /* ChecklistListTCA.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2735,7 +2741,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.Logging;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2766,7 +2774,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.Logging;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -2798,7 +2808,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.SettingsTab;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2831,7 +2843,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.SettingsTab;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2902,7 +2916,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.StockDetailsFeature;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2935,7 +2951,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.StockDetailsFeature;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3005,7 +3023,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.CacheService;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3039,7 +3059,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.CacheService;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3201,7 +3223,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.WaitlistTab;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3234,7 +3258,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.WaitlistTab;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3302,7 +3328,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.Color;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -3331,7 +3359,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.Color;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -3360,7 +3390,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.UI;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -3389,7 +3421,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.UI;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -3421,7 +3455,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.StockCharts;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_VERSION = 5.0;
@@ -3455,7 +3491,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.StockCharts;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_VERSION = 5.0;
@@ -3527,7 +3565,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.ChecklistEditFeature;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3560,7 +3600,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.ChecklistEditFeature;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3627,7 +3669,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.Size;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3658,7 +3702,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.Size;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -3705,6 +3751,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.Checklist;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3736,6 +3785,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.Checklist;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3935,8 +3987,11 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.chenkai.wait;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -3967,8 +4022,11 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.chenkai.wait;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -3993,7 +4051,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.Model;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -4022,7 +4082,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.Model;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -4051,7 +4113,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.Networking;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -4080,7 +4144,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ck.Networking;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";

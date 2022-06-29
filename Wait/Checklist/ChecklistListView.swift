@@ -63,7 +63,7 @@ struct ChecklistListView_Previews: PreviewProvider {
           ChecklistItem(name: "Third", id: UUID()),
         ]),
       reducer: ChecklistListReducerBuilder.build(),
-      environment: ChecklistListEnvironment()
+      environment: ChecklistListEnvironment(checklistStorage: ChecklistStorage(name: "checklist-test"))
     ))
   }
 }
