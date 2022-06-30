@@ -29,7 +29,7 @@ public struct MainView: View {
         }
         .pickerStyle(SegmentedPickerStyle())
         .padding([.leading, .trailing], Size.horizontalPadding24)
-        
+
         switch stockRowStyle {
           case .card:
             ScrollView {

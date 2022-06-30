@@ -12,7 +12,7 @@ struct Checklist: View {
   var item: ChecklistItem
   @State var showFullText: Bool = false
   var isTapped: (ChecklistItem) -> Void
-  
+
   var body: some View {
     HStack {
       Button {
@@ -20,11 +20,11 @@ struct Checklist: View {
       } label: {
         Image(systemName: item.isChecked ? "checkmark.square" : "square")
       }
-      
+
       Text(item.name)
         .strikethrough(item.isChecked)
         .lineLimit(item.isChecked ? 1 : nil)
-      
+
       Spacer()
     }
   }

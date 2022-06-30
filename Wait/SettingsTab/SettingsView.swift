@@ -20,7 +20,6 @@ public struct SettingsView: View {
   public var body: some View {
     Text("haha")
   }
-
 }
 
 // MARK: - SettingsView_Previews
