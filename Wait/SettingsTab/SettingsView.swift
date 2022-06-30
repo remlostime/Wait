@@ -18,30 +18,8 @@ public struct SettingsView: View {
   // MARK: Public
 
   public var body: some View {
-    NavigationStack {
-      List {
-        NavigationLink("Checklist") {
-          ChecklistEditView(store: Store(
-            initialState: ChecklistEditState(items: []),
-            reducer: ChecklistEditReducerBuilder.build(),
-            environment: ChecklistEditEnvironment(checklistDataManager: DefaultChecklistDataManager(), uuid: { UUID() })
-          ))
-        }
-
-        Picker("Stock Row Style", selection: $stockRowStyle) {
-          ForEach(StockRowStyle.allCases) { style in
-            Text(style.rawValue).tag(style)
-          }
-        }
-        .pickerStyle(MenuPickerStyle())
-      }
-      .navigationTitle("Settings")
-    }
+    Text("haha")
   }
-
-  // MARK: Internal
-
-  @AppStorage("stockRowStyle") var stockRowStyle: StockRowStyle = .card
 }
 
 // MARK: - SettingsView_Previews
