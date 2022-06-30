@@ -22,6 +22,14 @@ public struct MainView: View {
   public var body: some View {
     NavigationStack {
       VStack {
+        Picker("Stock Row Style", selection: $stockRowStyle) {
+          ForEach(StockRowStyle.allCases) { style in
+            Text(style.rawValue).tag(style)
+          }
+        }
+        .pickerStyle(SegmentedPickerStyle())
+        .padding([.leading, .trailing], Size.horizontalPadding24)
+        
         switch stockRowStyle {
           case .card:
             ScrollView {

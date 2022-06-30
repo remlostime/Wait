@@ -70,6 +70,7 @@ struct StockChartView: View {
         }
       }
       .pickerStyle(SegmentedPickerStyle())
+      .padding()
     }
     .onAppear {
       dataSource.fetchData(for: TimeSection.allCases)
