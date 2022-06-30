@@ -265,13 +265,6 @@
 			remoteGlobalIDString = E210DEF726D2B50D0044DA4E;
 			remoteInfo = WaitWidgetExtension;
 		};
-		E24D90B52712810E009EDE57 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E2E637A12641A5FB00F872A4 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = E2E637A82641A5FB00F872A4;
-			remoteInfo = Wait;
-		};
 		E26C1C8E277910D400E8C16A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E2E637A12641A5FB00F872A4 /* Project object */;
@@ -512,7 +505,6 @@
 		E24BDEFC26D2CFCC00595E4A /* WaitRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WaitRelease.entitlements; sourceTree = "<group>"; };
 		E24BDEFD26D2D61700595E4A /* WaitWidgetExtensionRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WaitWidgetExtensionRelease.entitlements; sourceTree = "<group>"; };
 		E24BDF1226D3051100595E4A /* WidgetStockRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetStockRow.swift; sourceTree = "<group>"; };
-		E24D90B12712810E009EDE57 /* WaitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WaitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E24D90BB271289C9009EDE57 /* ChecklistEditTCA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistEditTCA.swift; sourceTree = "<group>"; };
 		E24D90BD27128A47009EDE57 /* ChecklistEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistEditView.swift; sourceTree = "<group>"; };
 		E25A1E81266BB862004D2B24 /* Exchange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exchange.swift; sourceTree = "<group>"; };
@@ -655,13 +647,6 @@
 				E210DEFC26D2B50D0044DA4E /* SwiftUI.framework in Frameworks */,
 				E205D3E026D2C47D004EE31D /* Model.framework in Frameworks */,
 				E210DEFA26D2B50D0044DA4E /* WidgetKit.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E24D90AE2712810E009EDE57 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1139,7 +1124,6 @@
 				E2BC418E267F9C4600A853D2 /* Size.framework */,
 				E210DEF826D2B50D0044DA4E /* WaitWidgetExtension.appex */,
 				E205D3EA26D2C567004EE31D /* Logging.framework */,
-				E24D90B12712810E009EDE57 /* WaitTests.xctest */,
 				E2C9A1D52766AE47000C07F0 /* Checklist.framework */,
 				E2C9A1DE2766AE47000C07F0 /* ChecklistTests.xctest */,
 				E2B728E627753078001CF022 /* ChecklistEditFeature.framework */,
@@ -1454,24 +1438,6 @@
 			productReference = E210DEF826D2B50D0044DA4E /* WaitWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		E24D90B02712810E009EDE57 /* WaitTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = E24D90B72712810E009EDE57 /* Build configuration list for PBXNativeTarget "WaitTests" */;
-			buildPhases = (
-				E24D90AD2712810E009EDE57 /* Sources */,
-				E24D90AE2712810E009EDE57 /* Frameworks */,
-				E24D90AF2712810E009EDE57 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				E24D90B62712810E009EDE57 /* PBXTargetDependency */,
-			);
-			name = WaitTests;
-			productName = WaitTests;
-			productReference = E24D90B12712810E009EDE57 /* WaitTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 		E26C1C7C277910D300E8C16A /* WaitlistTab */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = E26C1C96277910D400E8C16A /* Build configuration list for PBXNativeTarget "WaitlistTab" */;
@@ -1779,10 +1745,6 @@
 					E210DEF726D2B50D0044DA4E = {
 						CreatedOnToolsVersion = 12.5.1;
 					};
-					E24D90B02712810E009EDE57 = {
-						CreatedOnToolsVersion = 13.0;
-						TestTargetID = E2E637A82641A5FB00F872A4;
-					};
 					E26C1C7C277910D300E8C16A = {
 						CreatedOnToolsVersion = 13.2.1;
 					};
@@ -1856,7 +1818,6 @@
 				E205D3E926D2C567004EE31D /* Logging */,
 				E2BC41AA267FFCBB00A853D2 /* Unused Code */,
 				E210DEF726D2B50D0044DA4E /* WaitWidgetExtension */,
-				E24D90B02712810E009EDE57 /* WaitTests */,
 				E2C9A1D42766AE47000C07F0 /* Checklist */,
 				E2C9A1DD2766AE47000C07F0 /* ChecklistTests */,
 				E2B728E527753078001CF022 /* ChecklistEditFeature */,
@@ -1912,13 +1873,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E210DF0126D2B50F0044DA4E /* Assets.xcassets in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E24D90AF2712810E009EDE57 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2089,13 +2043,6 @@
 			files = (
 				E210DEFF26D2B50D0044DA4E /* WaitWidget.swift in Sources */,
 				E24BDF1326D3051100595E4A /* WidgetStockRow.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E24D90AD2712810E009EDE57 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2281,11 +2228,6 @@
 			isa = PBXTargetDependency;
 			target = E210DEF726D2B50D0044DA4E /* WaitWidgetExtension */;
 			targetProxy = E210DF0326D2B50F0044DA4E /* PBXContainerItemProxy */;
-		};
-		E24D90B62712810E009EDE57 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = E2E637A82641A5FB00F872A4 /* Wait */;
-			targetProxy = E24D90B52712810E009EDE57 /* PBXContainerItemProxy */;
 		};
 		E26C1C8F277910D400E8C16A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -2758,52 +2700,6 @@
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
-		E24D90B82712810E009EDE57 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ck.WaitTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wait.app/Wait";
-			};
-			name = Debug;
-		};
-		E24D90B92712810E009EDE57 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ck.WaitTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wait.app/Wait";
 			};
 			name = Release;
 		};
@@ -3739,15 +3635,6 @@
 			buildConfigurations = (
 				E210DF0726D2B50F0044DA4E /* Debug */,
 				E210DF0826D2B50F0044DA4E /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		E24D90B72712810E009EDE57 /* Build configuration list for PBXNativeTarget "WaitTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				E24D90B82712810E009EDE57 /* Debug */,
-				E24D90B92712810E009EDE57 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
