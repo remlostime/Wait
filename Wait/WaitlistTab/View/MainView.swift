@@ -28,7 +28,7 @@ public struct MainView: View {
           }
         }
         .pickerStyle(SegmentedPickerStyle())
-        .padding([.leading, .trailing], Size.horizontalPadding24)
+        .padding()
 
         switch stockRowStyle {
           case .card:

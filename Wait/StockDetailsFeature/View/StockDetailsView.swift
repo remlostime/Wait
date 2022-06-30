@@ -18,6 +18,7 @@ public struct StockDetailsView: View {
     _stock = State(initialValue: stock)
     checklistStorage = ChecklistStorage(name: "checklist-\(stock.symbol)")
     _checklistItems = State(initialValue: checklistStorage.checklistItems())
+    _memo = State(initialValue: stock.memo)
   }
 
   // MARK: Public
@@ -57,7 +58,6 @@ public struct StockDetailsView: View {
     }
     .onAppear {
       stockOverviewDatSource.fetchStockOverview(stock: stock)
-      memo = stock.memo
       checklistItems = checklistStorage.checklistItems()
     }
     .onChange(of: stockIsFavorited, perform: { value in
@@ -270,15 +270,12 @@ public struct StockDetailsView: View {
           isEditingNotes.toggle()
         }
         .sheet(isPresented: $isEditingNotes, content: {
-          // TODO(kai) - Save memo only works on the first time
           TextField("Write some notes...", text: $memo, onCommit: {
             stock = stock.with(memo: memo)
             StockCache.shared.saveStock(stock)
             isEditingNotes.toggle()
           })
-        })
-        .onChange(of: stock.memo, perform: { _ in
-          StockCache.shared.saveStock(stock)
+          .padding()
         })
       }
 

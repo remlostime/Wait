@@ -8,7 +8,7 @@ import UIKit
 
 // MARK: - PriceHistory
 
-public struct PriceHistory: Codable {
+public struct PriceHistory: Codable, Equatable {
   // MARK: Lifecycle
 
   public init(date: Date, price: Money<USD>) {
@@ -57,7 +57,25 @@ public struct Stock: Codable {
 
 extension Stock: Equatable {
   public static func == (lhs: Stock, rhs: Stock) -> Bool {
-    lhs.symbol == rhs.symbol
+    lhs.symbol == rhs.symbol &&
+    lhs.name == rhs.name &&
+    lhs.expectedPrice == rhs.expectedPrice &&
+    lhs.memo == rhs.memo &&
+    isPriceHistoryEqual(lhs.expectedPriceHistory, rhs.expectedPriceHistory)
+  }
+  
+  static func isPriceHistoryEqual(_ history1: [PriceHistory], _ history2: [PriceHistory]) -> Bool {
+    guard history1.count == history2.count else {
+      return false
+    }
+    
+    for i in 0..<history1.count {
+      if history1[i] != history2[i] {
+        return false
+      }
+    }
+    
+    return true
   }
 }
 
