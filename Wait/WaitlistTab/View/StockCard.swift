@@ -4,8 +4,8 @@
 //
 
 import Model
-import SwiftUI
 import Size
+import SwiftUI
 
 // MARK: - StockCard
 
@@ -20,7 +20,7 @@ struct StockCard: View {
         .cornerRadius(5.0)
         .font(.subheadline)
         .foregroundColor(.white)
-      
+
       Text(stock.symbol)
         .font(.title3)
         .foregroundColor(.primary)
@@ -28,9 +28,9 @@ struct StockCard: View {
         .font(.subheadline)
         .foregroundColor(.secondary)
         .multilineTextAlignment(.leading)
-      
+
       Spacer(minLength: Size.verticalPadding32)
-      
+
       Text(stock.currentPrice.formattedCurrency)
         .foregroundColor(stock.priceColor)
         .font(.subheadline)

@@ -18,7 +18,7 @@ public struct MainView: View {
   public init() {}
 
   // MARK: Public
-  
+
   public var body: some View {
     NavigationStack {
       VStack {
