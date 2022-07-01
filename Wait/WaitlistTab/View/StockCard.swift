@@ -4,6 +4,7 @@
 //
 
 import Model
+import Size
 import SwiftUI
 
 // MARK: - StockCard
@@ -13,6 +14,13 @@ struct StockCard: View {
 
   var body: some View {
     VStack(alignment: .leading) {
+      Text(stock.tradeAction.rawValue)
+        .padding(EdgeInsets(top: Size.verticalPadding4, leading: Size.horizontalPadding8, bottom: Size.verticalPadding4, trailing: Size.horizontalPadding8))
+        .background(stock.actionColor)
+        .cornerRadius(5.0)
+        .font(.subheadline)
+        .foregroundColor(.white)
+
       Text(stock.symbol)
         .font(.title3)
         .foregroundColor(.primary)
@@ -20,9 +28,15 @@ struct StockCard: View {
         .font(.subheadline)
         .foregroundColor(.secondary)
         .multilineTextAlignment(.leading)
-      Spacer()
+
+      Spacer(minLength: Size.verticalPadding32)
+
+      Text(stock.currentPrice.formattedCurrency)
+        .foregroundColor(stock.priceColor)
+        .font(.subheadline)
       Text(stock.formattedChangePercent)
         .foregroundColor(stock.priceColor)
+        .font(.caption)
     }
     .padding()
     .frame(width: 140, height: 180, alignment: .leading)

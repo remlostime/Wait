@@ -22,42 +22,22 @@ public struct MainView: View {
   public var body: some View {
     NavigationStack {
       VStack {
-        Picker("Stock Row Style", selection: $stockRowStyle) {
-          ForEach(StockRowStyle.allCases) { style in
-            Text(style.rawValue).tag(style)
+        ScrollView {
+          LazyVGrid(
+            columns: [
+              GridItem(.adaptive(minimum: 150, maximum: 400)),
+              GridItem(.adaptive(minimum: 150, maximum: 400)),
+            ],
+            spacing: 16
+          ) {
+            ForEach(stocks, id: \.symbol) { stock in
+              NavigationLink {
+                StockDetailsView(stock: stock)
+              } label: {
+                StockCard(stock: stock)
+              }
+            }
           }
-        }
-        .pickerStyle(SegmentedPickerStyle())
-        .padding()
-
-        switch stockRowStyle {
-          case .card:
-            ScrollView {
-              LazyVGrid(
-                columns: [
-                  GridItem(.adaptive(minimum: 150, maximum: 170)),
-                  GridItem(.adaptive(minimum: 150, maximum: 170)),
-                ],
-                spacing: 16
-              ) {
-                ForEach(stocks, id: \.symbol) { stock in
-                  NavigationLink {
-                    StockDetailsView(stock: stock)
-                  } label: {
-                    StockCard(stock: stock)
-                  }
-                }
-              }
-            }
-          case .row:
-            List(stocks) { stock in
-              NavigationLink(value: stock) {
-                StockRow(stockRowDetailType: $stockRowDetailType, stock: stock)
-              }
-            }
-            .navigationDestination(for: Stock.self) { stock in
-              StockDetailsView(stock: stock)
-            }
         }
       }
       .onAppear {
@@ -89,10 +69,7 @@ public struct MainView: View {
 
   // MARK: Internal
 
-  @State var stockRowDetailType: StockRowDetailType = .actionStatus
   @State var selection: String? = nil
-
-  @AppStorage("stockRowStyle") var stockRowStyle: StockRowStyle = .card
 
   var stocks: [Stock] {
     dataSource.stocks
