@@ -200,8 +200,11 @@ public struct StockDetailsView: View {
           isChartHistoryButtonTapped.toggle()
         }
         .sheet(isPresented: $isChartHistoryButtonTapped) {
-          ExpectedStockPriceChart(priceHistory: stock.expectedPriceHistory)
-            .frame(height: 320)
+          NavigationStack {
+            ExpectedStockPriceChart(priceHistory: stock.expectedPriceHistory)
+              .frame(height: 320)
+              .navigationTitle("Expected Price History")
+          }
         }
 
         Button("edit") {
@@ -213,6 +216,7 @@ public struct StockDetailsView: View {
             stock: $stock,
             isPresented: $isEditingPrice
           )
+          .presentationDetents([.medium])
         })
         .onChange(of: stock.expectedPrice, perform: { _ in
           StockCache.shared.saveStock(stock)
