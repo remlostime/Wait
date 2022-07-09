@@ -32,6 +32,10 @@
 		475C4ADA2868D6C5007BE74A /* StockChartImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C3D362269B889000466CC3 /* StockChartImageCache.swift */; };
 		475E3B90286BE27E00E7506E /* ChecklistStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475E3B8F286BE27E00E7506E /* ChecklistStorage.swift */; };
 		476DFEC1286CB11C00F47918 /* CacheService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E20AFAAD2777CF6200B0955F /* CacheService.framework */; platformFilter = ios; };
+		47E63C37287A240E00114026 /* WaitWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E63C36287A240E00114026 /* WaitWatchApp.swift */; };
+		47E63C39287A240E00114026 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E63C38287A240E00114026 /* ContentView.swift */; };
+		47E63C3B287A240F00114026 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 47E63C3A287A240F00114026 /* Assets.xcassets */; };
+		47E63C3E287A240F00114026 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 47E63C3D287A240F00114026 /* Preview Assets.xcassets */; };
 		47F93C13285F8A6100240CB4 /* ValuationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F93C12285F8A6100240CB4 /* ValuationData.swift */; };
 		47F93C15285FCA3100240CB4 /* StockChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F93C14285FCA3100240CB4 /* StockChartView.swift */; };
 		E204B304276BB5F500D2EB0D /* ChecklistListTCA.swift in Sources */ = {isa = PBXBuildFile; fileRef = E204B303276BB5F500D2EB0D /* ChecklistListTCA.swift */; };
@@ -469,6 +473,11 @@
 		475C4AD42867B0FF007BE74A /* UIColor+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
 		475C4AD62868CC7B007BE74A /* Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
 		475E3B8F286BE27E00E7506E /* ChecklistStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistStorage.swift; sourceTree = "<group>"; };
+		47E63C34287A240E00114026 /* WaitWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WaitWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		47E63C36287A240E00114026 /* WaitWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitWatchApp.swift; sourceTree = "<group>"; };
+		47E63C38287A240E00114026 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		47E63C3A287A240F00114026 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		47E63C3D287A240F00114026 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		47F93C12285F8A6100240CB4 /* ValuationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValuationData.swift; sourceTree = "<group>"; };
 		47F93C14285FCA3100240CB4 /* StockChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockChartView.swift; sourceTree = "<group>"; };
 		E204B303276BB5F500D2EB0D /* ChecklistListTCA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistListTCA.swift; sourceTree = "<group>"; };
@@ -582,6 +591,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		47E63C31287A240E00114026 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E205D3E726D2C567004EE31D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -797,6 +813,25 @@
 				E2C3D362269B889000466CC3 /* StockChartImageCache.swift */,
 			);
 			path = Cache;
+			sourceTree = "<group>";
+		};
+		47E63C35287A240E00114026 /* WaitWatch Watch App */ = {
+			isa = PBXGroup;
+			children = (
+				47E63C36287A240E00114026 /* WaitWatchApp.swift */,
+				47E63C38287A240E00114026 /* ContentView.swift */,
+				47E63C3A287A240F00114026 /* Assets.xcassets */,
+				47E63C3C287A240F00114026 /* Preview Content */,
+			);
+			path = "WaitWatch Watch App";
+			sourceTree = "<group>";
+		};
+		47E63C3C287A240F00114026 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				47E63C3D287A240F00114026 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		47F93C11285F8A4E00240CB4 /* Models */ = {
@@ -1108,6 +1143,7 @@
 				E20AFABA2777CF6300B0955F /* CacheServiceTests */,
 				E26C1C7E277910D300E8C16A /* WaitlistTab */,
 				E26C1C8A277910D400E8C16A /* WaitlistTabTests */,
+				47E63C35287A240E00114026 /* WaitWatch Watch App */,
 				E2E637AA2641A5FB00F872A4 /* Products */,
 				E276557E267E93FB002D13CC /* Frameworks */,
 			);
@@ -1134,6 +1170,7 @@
 				E20AFA852777CE2800B0955F /* StockDetailsFeatureTests.xctest */,
 				E20AFAAD2777CF6200B0955F /* CacheService.framework */,
 				E26C1C7D277910D300E8C16A /* WaitlistTab.framework */,
+				47E63C34287A240E00114026 /* WaitWatch Watch App.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1310,6 +1347,23 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		47E63C33287A240E00114026 /* WaitWatch Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 47E63C41287A240F00114026 /* Build configuration list for PBXNativeTarget "WaitWatch Watch App" */;
+			buildPhases = (
+				47E63C30287A240E00114026 /* Sources */,
+				47E63C31287A240E00114026 /* Frameworks */,
+				47E63C32287A240E00114026 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "WaitWatch Watch App";
+			productName = "WaitWatch Watch App";
+			productReference = 47E63C34287A240E00114026 /* WaitWatch Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
 		E205D3E926D2C567004EE31D /* Logging */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = E205D3F326D2C567004EE31D /* Build configuration list for PBXNativeTarget "Logging" */;
@@ -1723,9 +1777,12 @@
 		E2E637A12641A5FB00F872A4 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1320;
+				LastSwiftUpdateCheck = 1400;
 				LastUpgradeCheck = 1250;
 				TargetAttributes = {
+					47E63C33287A240E00114026 = {
+						CreatedOnToolsVersion = 14.0;
+					};
 					E205D3E926D2C567004EE31D = {
 						CreatedOnToolsVersion = 12.5.1;
 						LastSwiftMigration = 1250;
@@ -1828,11 +1885,21 @@
 				E20AFA842777CE2800B0955F /* StockDetailsFeatureTests */,
 				E20AFAAC2777CF6200B0955F /* CacheService */,
 				E26C1C7C277910D300E8C16A /* WaitlistTab */,
+				47E63C33287A240E00114026 /* WaitWatch Watch App */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		47E63C32287A240E00114026 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47E63C3E287A240F00114026 /* Preview Assets.xcassets in Resources */,
+				47E63C3B287A240F00114026 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E205D3E826D2C567004EE31D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1988,6 +2055,15 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		47E63C30287A240E00114026 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47E63C39287A240E00114026 /* ContentView.swift in Sources */,
+				47E63C37287A240E00114026 /* WaitWatchApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E205D3E626D2C567004EE31D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2345,6 +2421,68 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		47E63C3F287A240F00114026 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"WaitWatch Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = 5WDN96EM72;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = WaitWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = .watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Debug;
+		};
+		47E63C40287A240F00114026 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"WaitWatch Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = 5WDN96EM72;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = WaitWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = .watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Release;
+		};
 		E205D3F426D2C567004EE31D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -3585,6 +3723,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		47E63C41287A240F00114026 /* Build configuration list for PBXNativeTarget "WaitWatch Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				47E63C3F287A240F00114026 /* Debug */,
+				47E63C40287A240F00114026 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		E205D3F326D2C567004EE31D /* Build configuration list for PBXNativeTarget "Logging" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
