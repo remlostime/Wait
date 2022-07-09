@@ -7,11 +7,11 @@ import SwiftUI
 
 @main
 struct WaitWatch_Watch_AppApp: App {
-    var body: some Scene {
-        WindowGroup {
-            NavigationStack {
-                ContentView()
-            }
-        }
+  var body: some Scene {
+    WindowGroup {
+      NavigationStack {
+        ContentView()
+      }
     }
+  }
 }
