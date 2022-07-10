@@ -1,12 +1,10 @@
 // Created by kai_chen on 5/4/21.
 
 import Combine
-import Model
-import Size
-import StockCharts
 import SwiftUI
 
 // MARK: - StockRowDetailType
+/*
 
 enum StockRowDetailType: String, CaseIterable {
   case price = "Price"
@@ -54,14 +52,7 @@ struct StockRow: View {
       }
       .frame(alignment: .leading)
 
-      Spacer(minLength: Size.horizontalPadding24)
-
-      if let chartData = priceHistoryDataSource.chartData[.day] {
-        StockChartSnapshotView(chartData: chartData)
-          .frame(width: 80.0, height: 32.0)
-      }
-
-      Spacer(minLength: Size.horizontalPadding24)
+      Spacer()
 
       Button(buttonText) {
         showDisplaySheet = true
@@ -113,3 +104,4 @@ struct StockRow_Previews: PreviewProvider {
     StockRow(stockRowDetailType: .constant(.price), stock: stock)
   }
 }
+*/

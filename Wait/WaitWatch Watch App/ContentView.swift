@@ -8,12 +8,15 @@ import SwiftUI
 // MARK: - ContentView
 
 struct ContentView: View {
+  @State var stockRowDetailType: StockRowDetailType = .price
+  
   var body: some View {
-    VStack {
-      Image(systemName: "globe")
-        .imageScale(.large)
-        .foregroundColor(.accentColor)
-      Text("Hello, Kai!")
+    List.init(1..<10) { item in
+      if item == 1 {
+        StockTypeSwitchRow(stockRowDetailType: $stockRowDetailType)
+      } else {
+        StockRow(stockRowDetailType: $stockRowDetailType)
+      }
     }
   }
 }
