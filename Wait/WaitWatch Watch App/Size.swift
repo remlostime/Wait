@@ -1,11 +1,11 @@
 //
-// Created by: kai_chen on 6/20/21.
+// Created by: Kai Chen on 7/10/22.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
 import UIKit
 
-public extension Size {
+public enum Size {
   // MARK: - Base
 
   static let baseLayoutUnit4: CGFloat = 4
