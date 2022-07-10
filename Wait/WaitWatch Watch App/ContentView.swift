@@ -9,9 +9,9 @@ import SwiftUI
 
 struct ContentView: View {
   @State var stockRowDetailType: StockRowDetailType = .price
-  
+
   var body: some View {
-    List.init(1..<10) { item in
+    List(1 ..< 10) { item in
       if item == 1 {
         StockTypeSwitchRow(stockRowDetailType: $stockRowDetailType)
       } else {

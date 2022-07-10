@@ -9,11 +9,12 @@ import SwiftUI
 // MARK: - StockRow
 
 struct StockRow: View {
-  
+  // MARK: Lifecycle
+
   init(stockRowDetailType: Binding<StockRowDetailType>) {
     _stockRowDetailType = stockRowDetailType
   }
-  
+
   // MARK: Internal
 
   @Binding var stockRowDetailType: StockRowDetailType
@@ -32,7 +33,7 @@ struct StockRow: View {
       .frame(alignment: .leading)
 
       Spacer()
-      
+
       Text(buttonText)
     }
     .padding(.vertical, Size.baseLayoutUnit8)

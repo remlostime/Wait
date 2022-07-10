@@ -58,4 +58,3 @@ public enum Size {
 
   static let size72 = baseLayoutUnit72
 }
-

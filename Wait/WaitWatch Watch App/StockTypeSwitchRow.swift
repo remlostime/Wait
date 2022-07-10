@@ -21,15 +21,20 @@ extension StockRowDetailType: Identifiable {
   }
 }
 
+// MARK: - StockTypeSwitchRow
+
 struct StockTypeSwitchRow: View {
-  
-  @Binding var stockRowDetailType: StockRowDetailType
-  @State var showDisplaySheet: Bool = false
-  
+  // MARK: Lifecycle
+
   init(stockRowDetailType: Binding<StockRowDetailType>) {
     _stockRowDetailType = stockRowDetailType
   }
-  
+
+  // MARK: Internal
+
+  @Binding var stockRowDetailType: StockRowDetailType
+  @State var showDisplaySheet: Bool = false
+
   var body: some View {
     VStack(alignment: .leading) {
       Text("Viewing")
@@ -54,6 +59,8 @@ struct StockTypeSwitchRow: View {
     })
   }
 }
+
+// MARK: - StockTypeSwitchRow_Previews
 
 struct StockTypeSwitchRow_Previews: PreviewProvider {
   static var previews: some View {

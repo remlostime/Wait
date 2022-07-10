@@ -5,6 +5,8 @@
 
 import UIKit
 
+// MARK: - Size
+
 public enum Size {}
 
 public extension Size {
