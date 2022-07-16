@@ -274,12 +274,28 @@ public struct StockDetailsView: View {
           isEditingNotes.toggle()
         }
         .sheet(isPresented: $isEditingNotes, content: {
-          TextField("Write some notes...", text: $memo, onCommit: {
-            stock = stock.with(memo: memo)
-            StockCache.shared.saveStock(stock)
-            isEditingNotes.toggle()
-          })
-          .padding()
+          NavigationStack {
+            TextField("Write some notes...", text: $memo, axis: .vertical)
+              .lineLimit(1...)
+              .textFieldStyle(.roundedBorder)
+              .padding()
+              .toolbar {
+                HStack {
+                  Button("Cancel") {
+                    isEditingNotes.toggle()
+                  }
+
+                  Spacer(minLength: Size.horizontalPadding16)
+
+                  Button("Save") {
+                    stock = stock.with(memo: memo)
+                    StockCache.shared.saveStock(stock)
+                    isEditingNotes.toggle()
+                  }
+                }
+              }
+              .accentColor(.mint)
+          }
         })
       }
 
