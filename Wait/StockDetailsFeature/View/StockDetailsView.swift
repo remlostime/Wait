@@ -267,9 +267,9 @@ public struct StockDetailsView: View {
       HStack {
         Text("Notes")
           .font(.title)
-        
+
         Spacer()
-        
+
         Button("edit") {
           isEditingNotes.toggle()
         }
@@ -284,9 +284,9 @@ public struct StockDetailsView: View {
                   Button("Cancel") {
                     isEditingNotes.toggle()
                   }
-                  
+
                   Spacer(minLength: Size.horizontalPadding16)
-                  
+
                   Button("Save") {
                     stock = stock.with(memo: memo)
                     StockCache.shared.saveStock(stock)
@@ -297,7 +297,6 @@ public struct StockDetailsView: View {
               .accentColor(.mint)
           }
         })
-
       }
 
       Text(stock.memo)
