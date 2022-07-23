@@ -1,21 +1,74 @@
-// Created by kai_chen on 5/17/21.
+//
+// Created by: Kai Chen on 7/23/22.
+// Copyright © 2021 Wait. All rights reserved.
+//
 
-import Color
 import Foundation
-import Model
 import Money
 import SwiftUI
 import UIKit
 
-public final class PriceHistoryDataSource: ObservableObject {
+// MARK: - StockQuote
+
+public struct StockQuote: Codable {
+  // MARK: Public
+
+  public let open: Money<USD>
+  public let high: Money<USD>
+  public let low: Money<USD>
+  public let close: Money<USD>
+  public let date: Date
+
+  // MARK: Internal
+
+  enum CodingKeys: String, CodingKey {
+    case open
+    case high
+    case low
+    case close
+    case date = "datetime"
+  }
+}
+
+// MARK: Identifiable
+
+extension StockQuote: Identifiable {
+  public var id: Date {
+    date
+  }
+}
+
+public struct ChartPoint {
+  public let index: Int
+  public let quote: StockQuote
+}
+
+struct ChartData {
+  // MARK: Lifecycle
+
+  public init(chartColor: Color, quotes: [StockQuote]) {
+    self.chartColor = chartColor
+
+    var index = 0
+    var points: [ChartPoint] = []
+    for quote in quotes {
+      points.append(ChartPoint(index: index, quote: quote))
+      index += 1
+    }
+    self.points = points
+  }
+
+  // MARK: Public
+
+  public let chartColor: Color
+  public let points: [ChartPoint]
+}
+
+final class PriceHistoryDataSource: ObservableObject {
   // MARK: Lifecycle
 
   public init(symbol: String) {
     self.symbol = symbol
-    chartCache = ChartCache<ChartModelType>(
-      cacheName: "price-history",
-      symbol: symbol
-    )
     chartData = [:]
   }
 
@@ -34,11 +87,6 @@ public final class PriceHistoryDataSource: ObservableObject {
   public func fetchData(for timeSections: [TimeSection]) {
     models = [:]
 
-    if let chartData = chartCache.getChartData() {
-      models = chartData
-      updateChartData()
-    }
-
     let group = DispatchGroup()
 
     for timeSection in timeSections {
@@ -55,7 +103,6 @@ public final class PriceHistoryDataSource: ObservableObject {
         return
       }
       self.updateChartData()
-      self.chartCache.setChartData(self.models)
     }
   }
 
@@ -70,7 +117,6 @@ public final class PriceHistoryDataSource: ObservableObject {
   private let priceNetworkClient = PriceHistoryNetworkClient()
   private var models: ChartModelType = [:]
   private var priceHistories: [TimeSection: ChartData] = [:]
-  private let chartCache: ChartCache<ChartModelType>
 
   private func buildChartData(quotes: [StockQuote]) -> ChartData {
     let chartColor: Color
@@ -78,9 +124,9 @@ public final class PriceHistoryDataSource: ObservableObject {
       let firstPrice = quotes.first?.close,
       let lastPrice = quotes.last?.close
     {
-      chartColor = lastPrice >= firstPrice ? .stockGreen : .stockRed
+      chartColor = lastPrice >= firstPrice ? .green : .red
     } else {
-      chartColor = .stockGreen
+      chartColor = .green
     }
 
     return ChartData(chartColor: chartColor, quotes: quotes)
@@ -96,3 +142,4 @@ public final class PriceHistoryDataSource: ObservableObject {
     }
   }
 }
+

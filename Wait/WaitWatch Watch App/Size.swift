@@ -5,7 +5,7 @@
 
 import UIKit
 
-public enum Size {
+enum Size {
   // MARK: - Base
 
   static let baseLayoutUnit4: CGFloat = 4

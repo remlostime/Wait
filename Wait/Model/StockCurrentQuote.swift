@@ -1,6 +1,5 @@
 // Created by kai_chen on 5/8/21.
 
-import CloudKit
 import Foundation
 import Money
 
@@ -67,22 +66,6 @@ public struct StockCurrentQuoteBatch: Codable {
 
 public struct StockCurrentQuote: Codable {
   // MARK: Lifecycle
-
-  public init(from record: CKRecord) {
-    symbol = (record["symbol"] as? String) ?? ""
-    name = (record["name"] as? String) ?? ""
-    let openStr = (record["open"] as? String) ?? "0"
-    open = Money<USD>(stringLiteral: openStr)
-    let highStr = (record["high"] as? String) ?? "0"
-    high = Money<USD>(stringLiteral: highStr)
-    let lowStr = (record["low"] as? String) ?? "0"
-    low = Money<USD>(stringLiteral: lowStr)
-    let closeStr = (record["close"] as? String) ?? "0"
-    close = Money<USD>(stringLiteral: closeStr)
-    volume = (record["volume"] as? String) ?? ""
-    datetime = (record["datetime"] as? Date) ?? Date()
-    percentChange = (record["percentChange"] as? String) ?? ""
-  }
 
   public init(
     symbol: String,

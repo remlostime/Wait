@@ -19,11 +19,12 @@ struct StockRow: View {
 
   @Binding var stockRowDetailType: StockRowDetailType
   @State var showDisplaySheet: Bool = false
+  private let priceHistoryDataSource = PriceHistoryDataSource(symbol: "baba")
 
   var body: some View {
     HStack {
       VStack(alignment: .leading) {
-        Text("Symbol")
+        Text(priceHistoryDataSource.symbol)
           .font(.title3)
         Text("name")
           .font(.subheadline)
@@ -35,10 +36,12 @@ struct StockRow: View {
       Spacer()
 
       Text(buttonText)
+        .foregroundColor(stockRowDetailType == .actionStatus ? Color.green : Color.red)
+      
     }
     .padding(.vertical, Size.baseLayoutUnit8)
     .onAppear {
-//      priceHistoryDataSource.fetchData(for: [.day])
+      priceHistoryDataSource.fetchData(for: [.day])
     }
   }
 

@@ -21,6 +21,15 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		470FA063288C6C37001FC871 /* Stock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470FA062288C6C37001FC871 /* Stock.swift */; };
+		470FA065288C6CC3001FC871 /* StockCurrentQuote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470FA064288C6CC3001FC871 /* StockCurrentQuote.swift */; };
+		470FA067288C6CEA001FC871 /* Money in Frameworks */ = {isa = PBXBuildFile; productRef = 470FA066288C6CEA001FC871 /* Money */; };
+		470FA069288C6D80001FC871 /* TradeAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470FA068288C6D80001FC871 /* TradeAction.swift */; };
+		470FA06B288C6EC5001FC871 /* PriceHistoryDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470FA06A288C6EC5001FC871 /* PriceHistoryDataSource.swift */; };
+		470FA06D288C6F43001FC871 /* TimeSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470FA06C288C6F43001FC871 /* TimeSection.swift */; };
+		470FA06F288C7023001FC871 /* PriceHistoryNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470FA06E288C7023001FC871 /* PriceHistoryNetworkClient.swift */; };
+		470FA071288C70D9001FC871 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 470FA070288C70D9001FC871 /* SwiftyJSON */; };
+		470FA073288C70DF001FC871 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 470FA072288C70DF001FC871 /* Alamofire */; };
 		47273FDB286A11BD00B874C4 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47273FDA286A11BD00B874C4 /* Storage.swift */; };
 		47273FDD286A33D100B874C4 /* TradeAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47273FDC286A33D100B874C4 /* TradeAction.swift */; };
 		472B8182286A7B91003CE57D /* StockChartSnapshotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 472B8181286A7B91003CE57D /* StockChartSnapshotView.swift */; };
@@ -468,6 +477,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		470FA062288C6C37001FC871 /* Stock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stock.swift; sourceTree = "<group>"; };
+		470FA064288C6CC3001FC871 /* StockCurrentQuote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCurrentQuote.swift; sourceTree = "<group>"; };
+		470FA068288C6D80001FC871 /* TradeAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeAction.swift; sourceTree = "<group>"; };
+		470FA06A288C6EC5001FC871 /* PriceHistoryDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceHistoryDataSource.swift; sourceTree = "<group>"; };
+		470FA06C288C6F43001FC871 /* TimeSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSection.swift; sourceTree = "<group>"; };
+		470FA06E288C7023001FC871 /* PriceHistoryNetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceHistoryNetworkClient.swift; sourceTree = "<group>"; };
 		47273FDA286A11BD00B874C4 /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 		47273FDC286A33D100B874C4 /* TradeAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeAction.swift; sourceTree = "<group>"; };
 		472B8181286A7B91003CE57D /* StockChartSnapshotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockChartSnapshotView.swift; sourceTree = "<group>"; };
@@ -599,6 +614,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				470FA073288C70DF001FC871 /* Alamofire in Frameworks */,
+				470FA071288C70D9001FC871 /* SwiftyJSON in Frameworks */,
+				470FA067288C6CEA001FC871 /* Money in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -830,6 +848,12 @@
 				47E63C5F287B506700114026 /* StockTypeSwitchRow.swift */,
 				47E63C3A287A240F00114026 /* Assets.xcassets */,
 				47E63C3C287A240F00114026 /* Preview Content */,
+				470FA062288C6C37001FC871 /* Stock.swift */,
+				470FA064288C6CC3001FC871 /* StockCurrentQuote.swift */,
+				470FA068288C6D80001FC871 /* TradeAction.swift */,
+				470FA06A288C6EC5001FC871 /* PriceHistoryDataSource.swift */,
+				470FA06C288C6F43001FC871 /* TimeSection.swift */,
+				470FA06E288C7023001FC871 /* PriceHistoryNetworkClient.swift */,
 			);
 			path = "WaitWatch Watch App";
 			sourceTree = "<group>";
@@ -1366,6 +1390,11 @@
 			dependencies = (
 			);
 			name = "WaitWatch Watch App";
+			packageProductDependencies = (
+				470FA066288C6CEA001FC871 /* Money */,
+				470FA070288C70D9001FC871 /* SwiftyJSON */,
+				470FA072288C70DF001FC871 /* Alamofire */,
+			);
 			productName = "WaitWatch Watch App";
 			productReference = 47E63C34287A240E00114026 /* WaitWatch Watch App.app */;
 			productType = "com.apple.product-type.application";
@@ -2068,9 +2097,15 @@
 				47E63C57287B350E00114026 /* Size.swift in Sources */,
 				47E63C55287B34A500114026 /* StockRow+.swift in Sources */,
 				47E63C39287A240E00114026 /* ContentView.swift in Sources */,
+				470FA06B288C6EC5001FC871 /* PriceHistoryDataSource.swift in Sources */,
+				470FA063288C6C37001FC871 /* Stock.swift in Sources */,
 				47E63C37287A240E00114026 /* WaitWatchApp.swift in Sources */,
+				470FA06D288C6F43001FC871 /* TimeSection.swift in Sources */,
+				470FA069288C6D80001FC871 /* TradeAction.swift in Sources */,
+				470FA06F288C7023001FC871 /* PriceHistoryNetworkClient.swift in Sources */,
 				47E63C5E287B4DCA00114026 /* StockRow.swift in Sources */,
 				47E63C60287B506700114026 /* StockTypeSwitchRow.swift in Sources */,
+				470FA065288C6CC3001FC871 /* StockCurrentQuote.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3982,6 +4017,21 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		470FA066288C6CEA001FC871 /* Money */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E2BDFCA526518CB90075E619 /* XCRemoteSwiftPackageReference "Money" */;
+			productName = Money;
+		};
+		470FA070288C70D9001FC871 /* SwiftyJSON */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E2123A662647198000A29222 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
+			productName = SwiftyJSON;
+		};
+		470FA072288C70DF001FC871 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E2123A5E2647115400A29222 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
 		E205D3F826D2C5DF004EE31D /* SwiftyBeaver */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E2123A632647158800A29222 /* XCRemoteSwiftPackageReference "SwiftyBeaver" */;

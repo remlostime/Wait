@@ -66,25 +66,3 @@ extension CGPoint: Identifiable {
     x
   }
 }
-
-// MARK: - ChartViewDataSource
-
-public protocol ChartViewDataSource {
-  var chartData: [TimeSection: ChartData] { get }
-
-  /// The price label value
-  var currentPrice: Money<USD> { get }
-
-  var delegate: ChartViewDataSourceDelegate? { get }
-  func setDelegate(delegate: ChartViewDataSourceDelegate)
-
-  /// Fetch chart data for `timeSections`
-  func fetchData(for timeSections: [TimeSection])
-}
-
-// MARK: - ChartViewDataSourceDelegate
-
-public protocol ChartViewDataSourceDelegate: AnyObject {
-  func dataDidUpdate(_ data: [TimeSection: ChartData])
-  func currentPriceDidUpdate(_ currentPrice: Money<USD>)
-}
