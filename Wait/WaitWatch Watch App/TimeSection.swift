@@ -17,7 +17,9 @@ enum TimeSection: Int, CaseIterable, Codable, Identifiable {
   public var id: Int {
     rawValue
   }
-  
+
+  // MARK: Internal
+
   var dataSize: Int {
     switch self {
       case .day:
@@ -32,7 +34,7 @@ enum TimeSection: Int, CaseIterable, Codable, Identifiable {
         return 365
     }
   }
-  
+
   var dataInterval: String {
     switch self {
       case .day:
@@ -47,7 +49,7 @@ enum TimeSection: Int, CaseIterable, Codable, Identifiable {
         return "1week"
     }
   }
-  
+
   var dateFormatter: DateFormatter {
     // Date format - http://www.sdfonlinetester.info
     let dateFormatter = DateFormatter()

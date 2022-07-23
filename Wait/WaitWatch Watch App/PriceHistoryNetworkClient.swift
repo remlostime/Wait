@@ -3,9 +3,11 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
+import Alamofire
 import Foundation
 import SwiftyJSON
-import Alamofire
+
+// MARK: - PriceHistoryNetworkClient
 
 class PriceHistoryNetworkClient {
   // MARK: Internal
@@ -59,6 +61,8 @@ class PriceHistoryNetworkClient {
   }
 }
 
+// MARK: - NetworkingURLBuilder
+
 public enum NetworkingURLBuilder {
   public static func buildURL(
     domain: URLDomain = .twelveData,
@@ -86,6 +90,8 @@ public enum NetworkingURLBuilder {
     return urlComponents?.url
   }
 }
+
+// MARK: - URLDomain
 
 public enum URLDomain: String {
   case alphaVantage = "https://www.alphavantage.co"

@@ -38,10 +38,14 @@ extension StockQuote: Identifiable {
   }
 }
 
+// MARK: - ChartPoint
+
 public struct ChartPoint {
   public let index: Int
   public let quote: StockQuote
 }
+
+// MARK: - ChartData
 
 struct ChartData {
   // MARK: Lifecycle
@@ -63,6 +67,8 @@ struct ChartData {
   public let chartColor: Color
   public let points: [ChartPoint]
 }
+
+// MARK: - PriceHistoryDataSource
 
 final class PriceHistoryDataSource: ObservableObject {
   // MARK: Lifecycle
@@ -142,4 +148,3 @@ final class PriceHistoryDataSource: ObservableObject {
     }
   }
 }
-
