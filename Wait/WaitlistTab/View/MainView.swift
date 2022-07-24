@@ -79,8 +79,6 @@ public struct MainView: View {
 
   @ObservedObject private var dataSource = StockCurrentQuoteDataSource()
 
-  private let stockCurrentQuoteNetworkClient = StockCurrentQuoteNetworkClient()
-
   @State private var showingWaitStockView = false
   @State private var newStock = Stock.empty
 }

@@ -11,14 +11,25 @@ struct ContentView: View {
   @State var stockRowDetailType: StockRowDetailType = .price
 
   var body: some View {
+    List(dataSource.stocks) { stock in
+      StockRow(stockRowDetailType: $stockRowDetailType, stock: stock)
+    }
+    .onAppear {
+      dataSource.fetchStocks()
+    }
+    
+    /*
     List(1 ..< 10) { item in
       if item == 1 {
         StockTypeSwitchRow(stockRowDetailType: $stockRowDetailType)
       } else {
-        StockRow(stockRowDetailType: $stockRowDetailType)
+        
       }
     }
+     */
   }
+  
+  @ObservedObject private var dataSource = StockCurrentQuoteDataSource()
 }
 
 // MARK: - ContentView_Previews

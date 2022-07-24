@@ -11,8 +11,9 @@ import SwiftUI
 struct StockRow: View {
   // MARK: Lifecycle
 
-  init(stockRowDetailType: Binding<StockRowDetailType>) {
+  init(stockRowDetailType: Binding<StockRowDetailType>, stock: Stock) {
     _stockRowDetailType = stockRowDetailType
+    self.stock = stock
   }
 
   // MARK: Internal
@@ -23,9 +24,9 @@ struct StockRow: View {
   var body: some View {
     HStack {
       VStack(alignment: .leading) {
-        Text(priceHistoryDataSource.symbol)
+        Text(stock.symbol)
           .font(.title3)
-        Text("name")
+        Text(stock.name)
           .font(.subheadline)
           .lineLimit(1)
           .foregroundColor(.secondary)
@@ -38,24 +39,21 @@ struct StockRow: View {
         .foregroundColor(stockRowDetailType == .actionStatus ? Color.green : Color.red)
     }
     .padding(.vertical, Size.baseLayoutUnit8)
-    .onAppear {
-      priceHistoryDataSource.fetchData(for: [.day])
-    }
   }
+  
+  private let stock: Stock
 
   // MARK: Private
-
-  private let priceHistoryDataSource = PriceHistoryDataSource(symbol: "baba")
 
   private var buttonText: String {
     let buttonText: String
     switch stockRowDetailType {
       case .price:
-        buttonText = "Price"
+        buttonText = "\(stock.currentPrice.amountDoubleValue)"
       case .priceChange:
-        buttonText = "Price Change"
+        buttonText = stock.changePercent
       case .actionStatus:
-        buttonText = "Action"
+        buttonText = stock.tradeAction.rawValue
     }
 
     return buttonText
@@ -66,6 +64,6 @@ struct StockRow: View {
 
 struct StockRow_Previews: PreviewProvider {
   static var previews: some View {
-    StockRow(stockRowDetailType: .constant(.price))
+    StockRow(stockRowDetailType: .constant(.price), stock: .init(symbol: "faf", name: "adf", expectedPrice: .init(100), currentQuote: .init(symbol: "adfs", name: "df", open: .init(10), high: .init(10), low: .init(10), close: .init(10), volume: "ff", datetime: .now, percentChange: "dsf"), expectedPriceHistory: []))
   }
 }
