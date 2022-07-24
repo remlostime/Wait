@@ -37,7 +37,7 @@ final class StockCurrentQuoteDataSource: ObservableObject {
   }
 
   func fetchStocks() {
-    let stocks = [Stock.init(symbol: "baba", name: "", expectedPrice: .init(100), currentQuote: .init(symbol: "baba", name: "BABA", open: .init(100), high: .init(100), low: .init(100), close: .init(100), volume: "2343", datetime: .now, percentChange: "21"), expectedPriceHistory: [])]
+    let stocks = [Stock(symbol: "baba", name: "", expectedPrice: .init(100), currentQuote: .init(symbol: "baba", name: "BABA", open: .init(100), high: .init(100), low: .init(100), close: .init(100), volume: "2343", datetime: .now, percentChange: "21"), expectedPriceHistory: [])]
 
     self.stocks = stocks
 
@@ -66,7 +66,5 @@ final class StockCurrentQuoteDataSource: ObservableObject {
 
   private var subscriptions: Set<AnyCancellable> = []
 
-  private func saveStocks() {
-    
-  }
+  private func saveStocks() {}
 }

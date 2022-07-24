@@ -8,6 +8,8 @@ import SwiftUI
 // MARK: - ContentView
 
 struct ContentView: View {
+  // MARK: Internal
+
   @State var stockRowDetailType: StockRowDetailType = .price
 
   var body: some View {
@@ -17,18 +19,20 @@ struct ContentView: View {
     .onAppear {
       dataSource.fetchStocks()
     }
-    
+
     /*
-    List(1 ..< 10) { item in
-      if item == 1 {
-        StockTypeSwitchRow(stockRowDetailType: $stockRowDetailType)
-      } else {
-        
-      }
-    }
-     */
+     List(1 ..< 10) { item in
+       if item == 1 {
+         StockTypeSwitchRow(stockRowDetailType: $stockRowDetailType)
+       } else {
+
+       }
+     }
+      */
   }
-  
+
+  // MARK: Private
+
   @ObservedObject private var dataSource = StockCurrentQuoteDataSource()
 }
 

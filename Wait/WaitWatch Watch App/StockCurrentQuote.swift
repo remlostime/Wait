@@ -36,7 +36,7 @@ struct StockCurrentQuoteBatch: Codable {
     self.quotes = quotes
   }
 
-  // MARK: Public
+  // MARK: Internal
 
   let quotes: [String: StockCurrentQuote]
 
@@ -64,6 +64,8 @@ struct StockCurrentQuoteBatch: Codable {
     var intValue: Int?
   }
 }
+
+// MARK: - StockCurrentQuote
 
 struct StockCurrentQuote: Codable {
   // MARK: Lifecycle

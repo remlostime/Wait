@@ -8,8 +8,7 @@ import Combine
 import Foundation
 
 final class StockCurrentQuoteNetworkClient {
-
-  // MARK: Public
+  // MARK: Internal
 
   func fetchDetails(stock: Stock) -> AnyPublisher<StockCurrentQuote, Error> {
     guard let url = buildStockQuoteURL(stock: stock) else {

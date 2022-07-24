@@ -40,10 +40,10 @@ struct StockRow: View {
     }
     .padding(.vertical, Size.baseLayoutUnit8)
   }
-  
-  private let stock: Stock
 
   // MARK: Private
+
+  private let stock: Stock
 
   private var buttonText: String {
     let buttonText: String
