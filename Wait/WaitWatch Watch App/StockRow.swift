@@ -43,7 +43,7 @@ struct StockRow: View {
 
   // MARK: Private
 
-  private let stock: Stock
+  private var stock: Stock
 
   private var buttonText: String {
     let buttonText: String

@@ -67,7 +67,7 @@ struct StockCurrentQuoteBatch: Codable {
 
 // MARK: - StockCurrentQuote
 
-struct StockCurrentQuote: Codable {
+struct StockCurrentQuote: Codable, Equatable {
   // MARK: Lifecycle
 
   init(

@@ -65,6 +65,7 @@ extension Stock: Equatable {
       lhs.name == rhs.name &&
       lhs.expectedPrice == rhs.expectedPrice &&
       lhs.memo == rhs.memo &&
+      lhs.currentQuote == rhs.currentQuote &&
       isPriceHistoryEqual(lhs.expectedPriceHistory, rhs.expectedPriceHistory)
   }
 
