@@ -104,3 +104,19 @@ struct StockCurrentQuote: Codable, Equatable {
   public let datetime: Date
   public let percentChange: String
 }
+
+extension StockCurrentQuote {
+  static var empty: Self {
+    StockCurrentQuote(
+      symbol: "empty",
+      name: "Empty",
+      open: 0,
+      high: 0,
+      low: 0,
+      close: 0,
+      volume: "0",
+      datetime: Date(),
+      percentChange: "0"
+    )
+  }
+}

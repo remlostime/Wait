@@ -64,6 +64,6 @@ struct StockRow: View {
 
 struct StockRow_Previews: PreviewProvider {
   static var previews: some View {
-    StockRow(stockRowDetailType: .constant(.price), stock: .init(symbol: "faf", name: "adf", expectedPrice: .init(100), currentQuote: .init(symbol: "adfs", name: "df", open: .init(10), high: .init(10), low: .init(10), close: .init(10), volume: "ff", datetime: .now, percentChange: "dsf"), expectedPriceHistory: []))
+    StockRow(stockRowDetailType: .constant(.price), stock: .init(symbol: "faf", name: "adf", expectedPrice: .init(100), currentQuote: .empty, expectedPriceHistory: []))
   }
 }
