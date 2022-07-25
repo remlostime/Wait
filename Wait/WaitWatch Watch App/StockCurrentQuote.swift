@@ -1,14 +1,17 @@
-// Created by kai_chen on 5/8/21.
+//
+// Created by: Kai Chen on 7/23/22.
+// Copyright © 2021 Wait. All rights reserved.
+//
 
 import Foundation
 import Money
 
 // MARK: - StockCurrentQuoteBatch
 
-public struct StockCurrentQuoteBatch: Codable {
+struct StockCurrentQuoteBatch: Codable {
   // MARK: Lifecycle
 
-  public init(from decoder: Decoder) throws {
+  init(from decoder: Decoder) throws {
     // 1
     // Create a decoding container using DynamicCodingKeys
     // The container will contain all the JSON first level key
@@ -29,13 +32,13 @@ public struct StockCurrentQuoteBatch: Codable {
     quotes = tempQuotes
   }
 
-  public init(quotes: [String: StockCurrentQuote]) {
+  init(quotes: [String: StockCurrentQuote]) {
     self.quotes = quotes
   }
 
-  // MARK: Public
+  // MARK: Internal
 
-  public let quotes: [String: StockCurrentQuote]
+  let quotes: [String: StockCurrentQuote]
 
   // MARK: Private
 
@@ -64,10 +67,10 @@ public struct StockCurrentQuoteBatch: Codable {
 
 // MARK: - StockCurrentQuote
 
-public struct StockCurrentQuote: Codable {
+struct StockCurrentQuote: Codable, Equatable {
   // MARK: Lifecycle
 
-  public init(
+  init(
     symbol: String,
     name: String,
     open: Money<USD>,
@@ -102,7 +105,7 @@ public struct StockCurrentQuote: Codable {
   public let percentChange: String
 }
 
-public extension StockCurrentQuote {
+extension StockCurrentQuote {
   static var empty: Self {
     StockCurrentQuote(
       symbol: "empty",

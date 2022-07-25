@@ -8,17 +8,32 @@ import SwiftUI
 // MARK: - ContentView
 
 struct ContentView: View {
+  // MARK: Internal
+
   @State var stockRowDetailType: StockRowDetailType = .price
 
   var body: some View {
-    List(1 ..< 10) { item in
-      if item == 1 {
-        StockTypeSwitchRow(stockRowDetailType: $stockRowDetailType)
-      } else {
-        StockRow(stockRowDetailType: $stockRowDetailType)
-      }
+    List(dataSource.stocks) { stock in
+      StockRow(stockRowDetailType: $stockRowDetailType, stock: stock)
     }
+    .onAppear {
+      dataSource.fetchStocks()
+    }
+
+    /*
+     List(1 ..< 10) { item in
+       if item == 1 {
+         StockTypeSwitchRow(stockRowDetailType: $stockRowDetailType)
+       } else {
+
+       }
+     }
+      */
   }
+
+  // MARK: Private
+
+  @ObservedObject private var dataSource = StockCurrentQuoteDataSource()
 }
 
 // MARK: - ContentView_Previews
