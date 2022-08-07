@@ -42,6 +42,7 @@ public struct MainView: View {
       }
       .onAppear {
         dataSource.fetchStocks()
+        connectivity.send(stockSymbols: self.stockSymbols)
       }
       .navigationTitle("Wait")
       .listStyle(InsetListStyle())
@@ -70,11 +71,18 @@ public struct MainView: View {
   // MARK: Internal
 
   @State var selection: String? = nil
+  @ObservedObject var connectivity: Connectivity = Connectivity.shared
 
   var stocks: [Stock] {
     dataSource.stocks
   }
-
+  
+  var stockSymbols: [String] {
+    stocks.map { stock in
+      stock.symbol
+    }
+  }
+  
   // MARK: Private
 
   @ObservedObject private var dataSource = StockCurrentQuoteDataSource()

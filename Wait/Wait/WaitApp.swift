@@ -5,7 +5,6 @@ import Logging
 import SettingsTab
 import Shake
 import SwiftUI
-import WaitlistTab
 
 // MARK: - WaitApp
 
