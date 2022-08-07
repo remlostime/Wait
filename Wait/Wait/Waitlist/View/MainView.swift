@@ -71,18 +71,18 @@ public struct MainView: View {
   // MARK: Internal
 
   @State var selection: String? = nil
-  @ObservedObject var connectivity: Connectivity = Connectivity.shared
+  @ObservedObject var connectivity: Connectivity = .shared
 
   var stocks: [Stock] {
     dataSource.stocks
   }
-  
+
   var stockSymbols: [String] {
     stocks.map { stock in
       stock.symbol
     }
   }
-  
+
   // MARK: Private
 
   @ObservedObject private var dataSource = StockCurrentQuoteDataSource()
