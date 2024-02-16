@@ -58,9 +58,7 @@ struct StockChartView: View {
           }
         }
       } else {
-        Chart {
-          EmptyChartContent()
-        }
+          Text("Something went wrong.")
       }
 
       Picker("StockChart", selection: $selectedTimeSection) {
