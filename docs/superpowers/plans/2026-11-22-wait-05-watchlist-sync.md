@@ -3574,7 +3574,7 @@ MSG
 
 Logging uses plan 02's `Log.sync`, a `LogChannel` with `error(_ message: String)`. Messages are plain strings, with no `privacy:` arguments, because `LogChannel` logs everything as public.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test** (two edits to the listing: `broken` is now a `let` copy, because a `var` captured by the `@Sendable` handler is a Swift 6 error; `Gate.wait` uses a multi-line `guard`, for SwiftLint)
 
 Create `Wait/Packages/WaitKit/Tests/SyncClientTests/SyncEngineTests.swift`:
 ```swift
@@ -3600,7 +3600,9 @@ actor Gate {
   // MARK: Internal
 
   func wait() async {
-    if isOpen { return }
+    guard !isOpen else {
+      return
+    }
     await withCheckedContinuation { continuation = $0 }
   }
 
@@ -3731,8 +3733,9 @@ struct SyncEngineTests {
 
   @Test
   func skipsUnreadableRowsButStillAdvancesTheCursor() async throws {
-    var broken = SyncMapping.itemDTO(from: SyncMapping.changeDTO(.upsert(makeItem("BAD", updatedAt: stamp(3))), now: .distantFuture), version: 3)
-    broken.ladder = LadderDTO(buyLow: "20", buyHigh: "10")
+    var unreadable = SyncMapping.itemDTO(from: SyncMapping.changeDTO(.upsert(makeItem("BAD", updatedAt: stamp(3))), now: .distantFuture), version: 3)
+    unreadable.ladder = LadderDTO(buyLow: "20", buyHigh: "10")
+    let broken = unreadable
     let good = SyncMapping.itemDTO(from: SyncMapping.changeDTO(.upsert(makeItem("NVDA", updatedAt: stamp(3))), now: .distantFuture), version: 3)
     let (engine, items, state) = makeEngine { _ in SyncResponseDTO(changes: [broken, good], cursor: "3:NVDA", hasMore: false) }
 
@@ -3849,12 +3852,12 @@ struct SyncEngineTests {
 ```
 `Shared(value:)` makes an unpersisted reference, so these tests don't touch file storage. `LockIsolated` comes from ConcurrencyExtras, which `Dependencies` re-exports.
 
-- [ ] **Step 2: Run the test and confirm it fails**
+- [ ] **Step 2: Run the test and confirm it fails — NOT RUN through Xcode (code-only; the /tmp harness failed with `cannot find type 'SyncEngine' in scope`)**
 
 Run, with `-only-testing:SyncClientTests/SyncEngineTests`, the package command from the chunk header.
 Expected: `** TEST BUILD FAILED **` with `cannot find 'SyncEngine' in scope`.
 
-- [ ] **Step 3: Write the engine**
+- [x] **Step 3: Write the engine**
 
 Create `Wait/Packages/WaitKit/Sources/SyncClient/SyncEngine.swift`:
 ```swift
@@ -3958,7 +3961,9 @@ public actor SyncEngine {
         startGeneration = generation
       }
     } while rerunRequested
-    guard !lastPassDiscarded else { return total }
+    guard !lastPassDiscarded else {
+      return total
+    }
     let finishedAt = now().truncatedToMilliseconds
     state.withLock { $0.lastSyncedAt = finishedAt }
     return total
@@ -4000,7 +4005,7 @@ public actor SyncEngine {
 }
 ```
 
-- [ ] **Step 4: Write the dependency**
+- [x] **Step 4: Write the dependency** (typechecked in a /tmp harness against the real Sharing/Dependencies modules, with the `@DependencyClient` macro replaced by a hand-written init: the macro plugin can't run in the sandbox)
 
 Create `Wait/Packages/WaitKit/Sources/SyncClient/SyncClient.swift`:
 ```swift
@@ -4052,12 +4057,12 @@ extension DependencyValues {
 ```
 `liveValue` is a `static let`, so the app has exactly one engine. That's what makes single-flight work across every caller.
 
-- [ ] **Step 5: Run the tests and confirm they pass**
+- [ ] **Step 5: Run the tests and confirm they pass — NOT RUN through Xcode (code-only; real `SyncEngineTests` ran in a /tmp macOS harness with stand-ins for `Shared`, `IdentifiedArray` and `APIClient`: 11 of 11 passed, stable over 20 runs)**
 
 Run, with `-only-testing:SyncClientTests`, the package command from the chunk header.
 Expected: `** TEST SUCCEEDED **`. That's 5 SyncStamp, 7 planner, 13 merger, 7 mapping and 11 engine tests.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
