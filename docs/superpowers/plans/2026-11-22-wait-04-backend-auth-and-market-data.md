@@ -2298,7 +2298,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/domain/marketCalendar.ts`, `server/src/domain/ttl.ts`
 - Test: `server/test/domain/marketCalendar.test.ts`, `server/test/domain/ttl.test.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `server/test/domain/marketCalendar.test.ts`:
 ```ts
@@ -2373,12 +2373,12 @@ describe("server cache TTLs (overview §6.3 item 3)", () => {
 })
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `npx vitest run test/domain`
 Expected: FAIL with `Failed to load url ../../src/domain/marketCalendar.js`.
 
-- [ ] **Step 3: Implement the calendar**
+- [x] **Step 3: Implement the calendar**
 
 Create `server/src/domain/marketCalendar.ts`:
 ```ts
@@ -2493,7 +2493,7 @@ export function lastSessionOpen(atOrBefore: Date): Date {
 }
 ```
 
-- [ ] **Step 4: Implement the TTLs**
+- [x] **Step 4: Implement the TTLs**
 
 Create `server/src/domain/ttl.ts`:
 ```ts
@@ -2529,12 +2529,12 @@ export function expiresAt(kind: CacheKind, fetchedAt: Date): Date {
 }
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `npx vitest run test/domain && npm run typecheck`
 Expected: `10 passed` (6 calendar, 4 ttl). Typecheck exits 0.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
