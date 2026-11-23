@@ -6642,7 +6642,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `Packages/WaitKit/Tests/StockDetailsFeatureTests/StockDetailsFeatureTests.swift` (plan 02's `makeStore` and its task test)
 - Test: `Packages/WaitKit/Tests/StockDetailsFeatureTests/StockDetailsProfileTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `Packages/WaitKit/Tests/StockDetailsFeatureTests/StockDetailsProfileTests.swift`. It reuses `detailsItem()` and `detailsNow` from plan 02's `StockDetailsFeatureTests.swift`.
 ```swift
@@ -6700,12 +6700,12 @@ struct StockDetailsProfileTests {
 }
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [ ] **Step 2: Run the tests to verify they fail** — NOT RUN (code-only; TCA tests cannot run in the /tmp harness)
 
 Run: `scripts/test-waitkit.sh StockDetailsFeatureTests/StockDetailsProfileTests`
 Expected: the build fails with `value of type 'StockDetailsFeature.State' has no member 'profile'` and `no member 'profileLoaded'`.
 
-- [ ] **Step 3: Extend the reducer**
+- [x] **Step 3: Extend the reducer**
 
 In `Packages/WaitKit/Sources/StockDetailsFeature/StockDetailsFeature.swift`:
 1. In `State`, add after `public var quote: Quote?`:
@@ -6749,7 +6749,7 @@ In `Packages/WaitKit/Sources/StockDetailsFeature/StockDetailsFeature.swift`:
           return .none
 ```
 
-- [ ] **Step 4: Keep plan 02's task test exhaustive**
+- [x] **Step 4: Keep plan 02's task test exhaustive**
 
 In `Packages/WaitKit/Tests/StockDetailsFeatureTests/StockDetailsFeatureTests.swift`:
 1. Inside `makeStore`'s `withDependencies` closure, add `$0.marketData.profile = { _ in throw MarketDataError.notFound }` after `$0.date.now = detailsNow`.
@@ -6757,7 +6757,7 @@ In `Packages/WaitKit/Tests/StockDetailsFeatureTests/StockDetailsFeatureTests.swi
    - In `taskLoadsTheQuoteAndDerivesTheStatus`, add `await store.receive(\.profileFailed)` after the `receive(\.quoteLoaded)` line.
    - In `failedRefreshKeepsTheCachedQuote`, add `await store.receive(\.profileFailed)` after the `receive(\.quoteFailed)` line.
 
-- [ ] **Step 5: Show the fundamentals**
+- [x] **Step 5: Show the fundamentals**
 
 Replace `Packages/WaitKit/Sources/StockDetailsFeature/StatsSection.swift` with:
 ```swift
@@ -6844,12 +6844,12 @@ struct StatsSection: View {
 ```
 In `StockDetailsView.swift`, change `card { StatsSection(quote: store.quote) }` to `card { StatsSection(quote: store.quote, profile: store.profile) }`.
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [ ] **Step 6: Run the tests to verify they pass** — NOT RUN (code-only; `StatsSection.swift` typechecked with swiftc for iOS 17 / Swift 6, new and changed files pass swiftlint)
 
 Run: `scripts/test-waitkit.sh StockDetailsFeatureTests && scripts/build-app.sh`
 Expected: `** TEST SUCCEEDED **` (including plan 02's suites), then `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
