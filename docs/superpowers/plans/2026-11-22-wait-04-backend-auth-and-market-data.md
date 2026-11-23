@@ -3508,7 +3508,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/providers/alpaca.ts`, `server/test/support/fixtures/alpaca-bars-aapl-5min.json`
 - Test: `server/test/providers/alpaca.test.ts`
 
-- [ ] **Step 1: Add the fixture**
+- [x] **Step 1: Add the fixture**
 
 Create `server/test/support/fixtures/alpaca-bars-aapl-5min.json`:
 ```json
@@ -3522,7 +3522,7 @@ Create `server/test/support/fixtures/alpaca-bars-aapl-5min.json`:
 }
 ```
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `server/test/providers/alpaca.test.ts`:
 ```ts
@@ -3573,12 +3573,12 @@ describe("AlpacaProvider", () => {
 })
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run: `npx vitest run test/providers/alpaca.test.ts`
 Expected: FAIL with `Failed to load url ../../src/providers/alpaca.js`.
 
-- [ ] **Step 4: Implement the adapter**
+- [x] **Step 4: Implement the adapter**
 
 Create `server/src/providers/alpaca.ts`:
 ```ts
@@ -3632,12 +3632,12 @@ export class AlpacaProvider implements IntradayBarsProvider {
 }
 ```
 
-- [ ] **Step 5: Run the test to verify it passes**
+- [x] **Step 5: Run the test to verify it passes**
 
 Run: `npx vitest run test/providers && npm run typecheck`
 Expected: every provider test passes (`14 passed` across http, finnhub, tiingo, alpaca). Typecheck exits 0.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
