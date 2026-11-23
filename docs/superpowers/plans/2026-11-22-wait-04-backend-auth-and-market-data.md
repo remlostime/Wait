@@ -5896,7 +5896,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Packages/WaitKit/Tests/APIClientTests/Fixtures/quotes.json`, `history-1d.json`, `search.json`, `profile.json`
 - Test: `Packages/WaitKit/Tests/APIClientTests/APIClientTests.swift`
 
-- [ ] **Step 1: Add the fixtures (the exact server wire shapes from Chunk 7)**
+- [x] **Step 1: Add the fixtures (the exact server wire shapes from Chunk 7)**
 
 In `Package.swift`, change the `APIClientTests` target to:
 ```swift
@@ -5923,7 +5923,7 @@ Create `Packages/WaitKit/Tests/APIClientTests/Fixtures/profile.json`:
 {"symbol":"AAPL","name":"Apple Inc","exchange":"NASDAQ NMS - GLOBAL MARKET","industry":"Technology","logoUrl":"https://example.com/aapl.png","marketCap":"2650000500000","peRatio":28.4,"pbRatio":45.2,"dividendYield":0.55,"roe":147.25,"roa":27.5,"profitMargin":25.31,"fiftyTwoWeekHigh":"199.62","fiftyTwoWeekLow":"164.08","beta":1.29,"asOf":"2026-11-20T15:00:00.000Z"}
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `Packages/WaitKit/Tests/APIClientTests/APIClientTests.swift`:
 ```swift
@@ -6008,12 +6008,12 @@ struct APIClientTests {
 }
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [ ] **Step 3: Run the tests to verify they fail** — NOT RUN (code-only; red confirmed in a /tmp harness)
 
 Run: `scripts/test-waitkit.sh APIClientTests/APIClientTests`
 Expected: the build fails with `cannot find 'APIClient' in scope` (as a type) and `cannot find type 'QuotesResponseDTO'`.
 
-- [ ] **Step 4: Implement the DTOs and the client**
+- [x] **Step 4: Implement the DTOs and the client**
 
 Create `Packages/WaitKit/Sources/APIClient/DTOs/MarketDTOs.swift`:
 ```swift
@@ -6157,7 +6157,9 @@ extension APIClient {
 
   /// `WaitAPIBaseURL` comes from `WAIT_API_BASE_URL` in `Config/*.xcconfig` (overview §8.2).
   public static func baseURL(infoValue: String?) -> URL? {
-    guard let infoValue, !infoValue.isEmpty else { return nil }
+    guard let infoValue, !infoValue.isEmpty else {
+      return nil
+    }
     return URL(string: infoValue)
   }
 
@@ -6176,7 +6178,9 @@ extension APIClient: DependencyKey {
   /// One shared session per process, so the in-memory JWT is reused by every caller.
   public static let liveValue: APIClient = {
     let info = Bundle.main.object(forInfoDictionaryKey: "WaitAPIBaseURL") as? String
-    guard let baseURL = baseURL(infoValue: info) else { return .misconfigured }
+    guard let baseURL = baseURL(infoValue: info) else {
+      return .misconfigured
+    }
     let identity = IdentityClient.liveValue
     return .live(session: HTTPSession(baseURL: baseURL, anonymousID: { try identity.anonymousID() }))
   }()
@@ -6192,12 +6196,12 @@ extension DependencyValues {
 }
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [ ] **Step 5: Run the tests to verify they pass** — NOT RUN (code-only; 19/19 pass in a /tmp harness)
 
 Run: `scripts/test-waitkit.sh APIClientTests`
 Expected: `** TEST SUCCEEDED **`, with 19 tests passing.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
