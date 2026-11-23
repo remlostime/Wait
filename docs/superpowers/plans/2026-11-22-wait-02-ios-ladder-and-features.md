@@ -950,7 +950,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `Wait/Packages/WaitKit/Sources/Domain/LadderStatus.swift`
 - Create: `Wait/Packages/WaitKit/Tests/DomainTests/PriceLadderStatusTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/DomainTests/PriceLadderStatusTests.swift`:
 ```swift
@@ -996,12 +996,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests/PriceLadderStatusTests`
 Expected FAIL: `error: value of type 'LadderStatus' has no member 'rank'`.
 
-- [ ] **Step 3: Replace `LadderStatus.swift`**
+- [x] **Step 3: Replace `LadderStatus.swift`**
 
 `Wait/Packages/WaitKit/Sources/Domain/LadderStatus.swift`:
 ```swift
@@ -1057,12 +1057,12 @@ public enum LadderStatus: String, Codable, CaseIterable, Sendable {
 }
 ```
 
-- [ ] **Step 4: Run the tests and confirm they pass**
+- [ ] **Step 4: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests`
 Expected PASS: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/Domain/LadderStatus.swift Wait/Packages/WaitKit/Tests/DomainTests/PriceLadderStatusTests.swift
 git commit -m "feat(domain): ladder status rank, titles and distance to buy
