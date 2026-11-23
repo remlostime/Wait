@@ -1,5 +1,70 @@
 # Watchlist Sync Implementation Plan (Plan 05)
 
+## Execution log
+
+**Executed:** 2026-11-23 on `ck/sever` with subagents. The server chunks ran in parallel with plan 04's iOS chunks, and each lane committed only its own paths.
+
+**Server (Tasks 1–7): fully verified.**
+- Real TDD on vitest with PGlite.
+- `server/src/domain/ladder.ts` passes all 38 shared-vector cases.
+- At the end of plan 05, `npm run typecheck` was clean and `npm test` passed 396/396. That count includes plan 06's server work.
+- An extra test, `watchlistAccountDeletion.test.ts`, checks that `DELETE /api/auth/account` removes the user's rows, tombstones included.
+
+**iOS (Tasks 8–15): code-only.** Nothing has been built or tested in Xcode. What was checked instead:
+- **Harnesses:** the real SyncClient tests for stamp, planner, merger, mapping and engine ran in a `/tmp` Swift Testing harness, with stand-ins for `@DependencyClient`. Result: 62/62 after the review fixes.
+- **Live server round-trip:** a request encoded in Swift was posted to the real `buildTestApp`.
+- **Typechecks:** `SyncClient` and `Persistence` were typechecked against real Sharing and Dependencies modules built for the iOS simulator.
+- **Code read against sources:** TCA code was checked against the TCA 1.26.2 sources.
+- **Lint:** swiftlint reports 0 errors.
+
+| Task | Commit |
+|---|---|
+| 1 Server ladder domain | `6faf8b7` |
+| 2 Migration 003 | `475f0ab` |
+| 3 Types, cursor, decimals | `7a83196` |
+| 4 WatchlistRepository (SQL) | `3238e52` |
+| 5 Mock repository | `7b94ff2` |
+| 6 WatchlistSyncService | `f4802d4` |
+| 7 Routes and wiring | `c465792` |
+| 8 SyncState and tombstones | `8ea649a` |
+| 9 SyncClient, SyncStamp | `82cfc75` |
+| 10 SyncPlanner | `c855fa8` |
+| 11 SyncMerger | `60eab66` |
+| 12 DTOs, `syncWatchlist`, mapping | `1a17e5d` |
+| 13 SyncEngine | `06f551c` |
+| 14 AppFeature triggers | `ca7c91d` |
+| 15 Settings Sync section | `be3d528` |
+| 16 End-to-end check | SKIPPED (manual) |
+| 17 Docs | `6d174d6` |
+
+**Deviations made while executing** (in addition to the box below):
+- Task 8 uses `@Shared<SyncState>(.syncState)` with an explicit generic.
+- Task 12 also strips NUL from outgoing text. It treats items with an anchor that rounds to 0 (or exceeds the schema) as unsyncable.
+- Task 14 uses the effect-returning `onChange`.
+
+**Review fixes**
+- `0f5c31e` (server):
+  - Impossible timestamps and NUL text now return 400, not 500.
+  - `GET /api/watchlist` pages past 5,000 rows.
+- `3c1bb9a` (iOS):
+  - The echo of our own push keeps local content and only adopts the server stamp. Before, it overwrote long memos with the clamped wire copy.
+  - Items are saved before the cursor.
+  - One millisecond rule (truncation) everywhere.
+  - `sortIndex` and history dates are clamped.
+- `e18f0b5` (iOS):
+  - The background flush also saves `sync-state.json`.
+  - The debounce has its own cancel ID, so `.syncFinished` is never dropped.
+  - Pulled rows get their quotes loaded.
+  - Delete Account resets identity before sync state and forgets the cached JWT.
+
+**User follow-ups**
+1. Run the real Xcode tests: `scripts/test-waitkit.sh SyncClientTests PersistenceTests AppFeatureTests SettingsFeatureTests`.
+2. Apply migration 003 in production (`npm run migrate`).
+3. Task 16: the two-simulator end-to-end check against the deployed backend.
+4. Known limits:
+   - Memo text past 10,000 UTF-16 units is never synced.
+   - A remote row the client can't decode is skipped and logged.
+
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Sync each user's watchlist (ladder, memo, favorite, order, per-stock checklist, ladder history) between the iOS app and the backend. Sync is offline-first, last-write-wins per item, and keeps tombstones for deletes.
