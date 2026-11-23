@@ -4241,7 +4241,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `server/src/services/MarketDataService.ts`
 - Test: `server/test/services/MarketDataService.searchProfile.test.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `server/test/services/MarketDataService.searchProfile.test.ts`:
 ```ts
@@ -4313,12 +4313,12 @@ describe("MarketDataService.getProfile", () => {
 })
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `npx vitest run test/services/MarketDataService.searchProfile.test.ts`
 Expected: FAIL with `service.search is not a function`.
 
-- [ ] **Step 3: Implement `search` and `getProfile`**
+- [x] **Step 3: Implement `search` and `getProfile`**
 
 In `server/src/services/MarketDataService.ts`, extend the `../db/MarketCacheRepository.js` type import to `import type { CacheEntry, HistorySeries, MarketCacheRepository, ProfilePayload } from "../db/MarketCacheRepository.js"`. Remove the separate `HistorySeries` import line added in Task 17. Then add `type SymbolMatch` to the `../providers/types.js` import list.
 
@@ -4427,12 +4427,12 @@ Add these methods inside `MarketDataService`, after `getHistory`:
   }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `npx vitest run test/services && npm run typecheck`
 Expected: every service test passes, including `5 passed` in the search/profile file. Typecheck exits 0.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait

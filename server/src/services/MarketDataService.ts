@@ -1,4 +1,4 @@
-import type { CacheEntry, MarketCacheRepository } from "../db/MarketCacheRepository.js"
+import type { CacheEntry, HistorySeries, MarketCacheRepository, ProfilePayload } from "../db/MarketCacheRepository.js"
 import { expiresAt } from "../domain/ttl.js"
 import type { Clock } from "../lib/clock.js"
 import { mapLimit } from "../lib/concurrency.js"
@@ -10,10 +10,10 @@ import {
   type ProfileProvider,
   type ProviderQuote,
   type QuoteProvider,
+  type SymbolMatch,
   type SymbolSearchProvider,
 } from "../providers/types.js"
 import { PROVIDER_BUCKETS, type BucketPolicy, type RateLimiter } from "./RateLimiter.js"
-import type { HistorySeries } from "../db/MarketCacheRepository.js"
 import { etDateString, isRegularSessionTime, lastSessionOpen } from "../domain/marketCalendar.js"
 import type { CacheKind } from "../domain/ttl.js"
 import type { Bar } from "../providers/types.js"
@@ -129,6 +129,51 @@ export function deriveDailyRange(bars: Bar[], range: "1M" | "1Y" | "5Y"): Bar[] 
   return [...byWeek.values()]
 }
 
+/** Wire shape of GET /api/market/profile (overview §8.4). Ratios are Finnhub's percentages. */
+export interface ProfileDTO {
+  symbol: string
+  name: string | null
+  exchange: string | null
+  industry: string | null
+  logoUrl: string | null
+  marketCap: string | null
+  peRatio: number | null
+  pbRatio: number | null
+  dividendYield: number | null
+  roe: number | null
+  roa: number | null
+  profitMargin: number | null
+  fiftyTwoWeekHigh: string | null
+  fiftyTwoWeekLow: string | null
+  beta: number | null
+  asOf: string
+}
+
+const PROFILE_REFRESH_MS = 7 * 86_400_000
+
+function toProfileDTO(symbol: string, entry: CacheEntry<ProfilePayload>): ProfileDTO {
+  const p = entry.payload.profile
+  const m = entry.payload.metrics
+  return {
+    symbol,
+    name: p?.name ?? null,
+    exchange: p?.exchange ?? null,
+    industry: p?.industry ?? null,
+    logoUrl: p?.logoUrl ?? null,
+    marketCap: p?.marketCap ?? null,
+    peRatio: m?.peRatio ?? null,
+    pbRatio: m?.pbRatio ?? null,
+    dividendYield: m?.dividendYield ?? null,
+    roe: m?.roe ?? null,
+    roa: m?.roa ?? null,
+    profitMargin: m?.profitMargin ?? null,
+    fiftyTwoWeekHigh: m?.fiftyTwoWeekHigh ?? null,
+    fiftyTwoWeekLow: m?.fiftyTwoWeekLow ?? null,
+    beta: m?.beta ?? null,
+    asOf: entry.fetchedAt.toISOString(),
+  }
+}
+
 export class MarketDataService {
   private readonly inflight = new Map<string, Promise<unknown>>()
 
@@ -233,6 +278,60 @@ export class MarketDataService {
       stale,
       delayedMinutes: null,
     }
+  }
+
+  async search(query: string): Promise<SymbolMatch[]> {
+    const key = query.trim().toLowerCase()
+    const now = this.deps.clock.now()
+    const cached = await this.deps.cache.getSearch(key)
+    if (cached && cached.expiresAt.getTime() > now.getTime()) return cached.payload
+    const outcome = await this.coalesce(`search:${key}`, () =>
+      this.callProvider([PROVIDER_BUCKETS.finnhub], () => this.deps.providers.search.search(key)),
+    )
+    if (outcome.ok) {
+      await this.deps.cache.putSearch(key, { payload: outcome.value, provider: "finnhub", fetchedAt: now, expiresAt: expiresAt("search", now) })
+      return outcome.value
+    }
+    if (cached) return cached.payload
+    if (outcome.reason === "not_found") return []
+    if (outcome.reason === "rate_limited") throw rateLimitedError(outcome.retryAfterSec)
+    throw unavailableError()
+  }
+
+  getProfile(symbol: string): Promise<ProfileDTO> {
+    return this.coalesce(`profile:${symbol}`, () => this.loadProfile(symbol))
+  }
+
+  private async loadProfile(symbol: string): Promise<ProfileDTO> {
+    const now = this.deps.clock.now()
+    const cached = await this.deps.cache.getProfile(symbol)
+    if (cached && cached.expiresAt.getTime() > now.getTime()) return toProfileDTO(symbol, cached)
+
+    const cachedProfile = cached?.payload.profile ?? null
+    const profileIsFresh = cachedProfile !== null && now.getTime() - Date.parse(cached?.payload.profileFetchedAt ?? "") < PROFILE_REFRESH_MS
+    const finnhub = [PROVIDER_BUCKETS.finnhub]
+    const metrics = await this.callProvider(finnhub, () => this.deps.providers.profile.getMetrics(symbol))
+    const profile = profileIsFresh ? null : await this.callProvider(finnhub, () => this.deps.providers.profile.getProfile(symbol))
+
+    const profileFailed = profile !== null && !profile.ok
+    if (!metrics.ok && (profileIsFresh || profileFailed)) {
+      if (cached) return toProfileDTO(symbol, cached)
+      const reasons = [metrics, profile].flatMap((o) => (o && !o.ok ? [o] : []))
+      const limited = reasons.find((o) => o.reason === "rate_limited")
+      if (limited) throw rateLimitedError(limited.retryAfterSec)
+      if (reasons.every((o) => o.reason === "not_found")) throw new AppError("NOT_FOUND", `No profile for ${symbol}`, 404)
+      throw unavailableError()
+    }
+
+    const payload: ProfilePayload = {
+      profile: profile?.ok ? profile.value : cachedProfile,
+      metrics: metrics.ok ? metrics.value : (cached?.payload.metrics ?? null),
+      profileFetchedAt: profile?.ok ? now.toISOString() : (cached?.payload.profileFetchedAt ?? now.toISOString()),
+    }
+    if (payload.profile === null && payload.metrics === null) throw new AppError("NOT_FOUND", `No profile for ${symbol}`, 404)
+    const entry: CacheEntry<ProfilePayload> = { payload, provider: "finnhub", fetchedAt: now, expiresAt: expiresAt("metrics", now) }
+    await this.deps.cache.putProfile(symbol, entry)
+    return toProfileDTO(symbol, entry)
   }
 
   /**
