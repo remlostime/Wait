@@ -2267,7 +2267,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/apns/payload.ts`
 - Test: `server/test/apns/payload.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/apns/payload.test.ts`:
 ```ts
@@ -2319,12 +2319,12 @@ describe("buildPayload", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/apns/payload.test.ts`
 Expected: FAIL with `Failed to load url ../../src/apns/payload.js`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 Create `server/src/apns/payload.ts`:
 ```ts
@@ -2386,12 +2386,12 @@ export function buildPayload(input: AlertPayloadInput): ApnsPayload {
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `npx vitest run test/apns/payload.test.ts && npm run typecheck`
 Expected: PASS (`Tests  6 passed (6)`).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add server/src/apns/payload.ts server/test/apns/payload.test.ts
