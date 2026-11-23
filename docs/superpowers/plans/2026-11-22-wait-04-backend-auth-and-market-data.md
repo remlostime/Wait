@@ -148,7 +148,7 @@ All server commands run from `/Users/ckai/code/Wait/server` unless a step says o
 - Create: `server/src/config.ts`
 - Test: `server/test/config.test.ts`
 
-- [ ] **Step 1: Create the package skeleton**
+- [x] **Step 1: Create the package skeleton**
 
 ```bash
 mkdir -p /Users/ckai/code/Wait/server/{src,test,migrations,scripts}
@@ -253,12 +253,12 @@ dist/
 coverage/
 ```
 
-- [ ] **Step 2: Install dependencies**
+- [x] **Step 2: Install dependencies**
 
 Run: `cd /Users/ckai/code/Wait/server && npm install`
 Expected: `added N packages` with no `ERR!` lines, and `package-lock.json` is created. If `@electric-sql/pglite@^0.3.0` doesn't resolve, run `npm view @electric-sql/pglite version` and pin `^<major.minor>.0` of the version it prints.
 
-- [ ] **Step 3: Write the failing config test**
+- [x] **Step 3: Write the failing config test**
 
 Create `server/test/config.test.ts`:
 ```ts
@@ -317,12 +317,12 @@ describe("loadConfig", () => {
 })
 ```
 
-- [ ] **Step 4: Run the test to verify it fails**
+- [x] **Step 4: Run the test to verify it fails**
 
 Run: `npx vitest run test/config.test.ts`
 Expected: FAIL with `Failed to load url ../src/config.js` (or `Cannot find module`).
 
-- [ ] **Step 5: Implement `loadConfig`**
+- [x] **Step 5: Implement `loadConfig`**
 
 Create `server/src/config.ts`:
 ```ts
@@ -380,12 +380,12 @@ export function loadConfig(env: Record<string, string | undefined>): Config {
 }
 ```
 
-- [ ] **Step 6: Run the test to verify it passes**
+- [x] **Step 6: Run the test to verify it passes**
 
 Run: `npx vitest run test/config.test.ts && npm run typecheck`
 Expected: `5 passed`, and `tsc` prints nothing (exit 0).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
