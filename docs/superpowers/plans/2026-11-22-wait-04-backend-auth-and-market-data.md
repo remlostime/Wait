@@ -4827,7 +4827,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 **Files:**
 - Create: `server/README.md`
 
-- [ ] **Step 1: Write the README**
+- [x] **Step 1: Write the README**
 
 Create `server/README.md`:
 ````markdown
@@ -4891,7 +4891,7 @@ When a provider is rate-limited, the API serves the cached value with `stale: tr
 Finnhub, Tiingo and Alpaca free tiers are **personal use only**. This server is for the owner and a few friends. Before any public release, move to a plan that allows external display. Only the adapters in `src/providers/` would change.
 ````
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -4907,11 +4907,11 @@ The executor stops at each `(manual: user)` step, prints the instructions and wa
 
 **Files:** none (dashboard and CLI only)
 
-- [ ] **Step 1: Create the provider keys `(manual: user)`**
+- [ ] **Step 1: Create the provider keys `(manual: user)`** — SKIPPED (manual)
 
 Create the Finnhub key, the Tiingo token, and the Alpaca **paper** Key ID and Secret (Prerequisites §3). Keep them in a password manager. Never paste them into the repo.
 
-- [ ] **Step 2: Create the Vercel project `(manual: user)`**
+- [ ] **Step 2: Create the Vercel project `(manual: user)`** — SKIPPED (manual)
 
 In the Vercel dashboard:
 1. **Add New → Project →** import the `Wait` GitHub repo.
@@ -4921,11 +4921,11 @@ In the Vercel dashboard:
 
 The legacy `builds` key in `vercel.json` makes Vercel ignore the dashboard build settings. The warning it shows about this is expected.
 
-- [ ] **Step 3: Attach Neon `(manual: user)`**
+- [ ] **Step 3: Attach Neon `(manual: user)`** — SKIPPED (manual)
 
 In the project, go to **Storage → Connect Database → Neon**. Create the database and connect it to all environments. This adds `DATABASE_URL`, `DATABASE_URL_UNPOOLED` and the `PG*` variables.
 
-- [ ] **Step 4: Add the env vars `(manual: user)`**
+- [ ] **Step 4: Add the env vars `(manual: user)`** — SKIPPED (manual)
 
 ```bash
 cd /Users/ckai/code/Wait/server
@@ -4941,17 +4941,17 @@ npx vercel@latest env pull .env.local --environment=production   # gitignored
 ```
 Expected: each `env add` prints `Added Environment Variable … to Project`. For `preview`, answer the git-branch prompt with an empty value, meaning all preview branches. `.env.local` now contains the names above; never print its values.
 
-- [ ] **Step 5: Run the migrations against Neon**
+- [ ] **Step 5: Run the migrations against Neon** — SKIPPED (manual)
 
 Run: `cd /Users/ckai/code/Wait/server && npm run migrate`
 Expected: `migrating <your-neon-host>`, then `migrations applied: [1, 2] skipped: []`. Run it again and expect `migrations applied: [] skipped: [1, 2]`.
 
-- [ ] **Step 6: Deploy**
+- [ ] **Step 6: Deploy** — SKIPPED (manual)
 
 Run: `npx vercel@latest --prod`
 Expected: the output ends with `Production: https://<project>.vercel.app`. Write the URL down; Task 26 Step 7 (Chunk 11) turns it into `WAIT_API_BASE_URL`.
 
-- [ ] **Step 7: Smoke test with curl**
+- [ ] **Step 7: Smoke test with curl** — SKIPPED (manual)
 
 ```bash
 export WAIT_API_BASE_URL=https://<project>.vercel.app
@@ -4978,7 +4978,7 @@ If a market call returns 502 `UPSTREAM_UNAVAILABLE`:
 1. Open the Vercel runtime logs and find the `market.provider_error` warning. It names the provider, the error kind and the HTTP status.
 2. Recheck the matching key with `npx vercel env ls`.
 
-- [ ] **Step 8: Record the deploy**
+- [ ] **Step 8: Record the deploy** — SKIPPED (manual)
 
 There is nothing to commit. Note the production URL in the PR description for this plan.
 
