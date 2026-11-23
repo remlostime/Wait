@@ -3663,7 +3663,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/test/support/market.ts`
 - Test: `server/test/services/MarketDataService.quotes.test.ts`
 
-- [ ] **Step 1: Write the test helpers**
+- [x] **Step 1: Write the test helpers**
 
 Create `server/test/support/market.ts`:
 ```ts
@@ -3706,7 +3706,7 @@ export function makeService(options: { providers?: Partial<MarketProviders>; now
 }
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `server/test/services/MarketDataService.quotes.test.ts`:
 ```ts
@@ -3792,12 +3792,12 @@ describe("MarketDataService.getQuotes", () => {
 })
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [x] **Step 3: Run the tests to verify they fail**
 
 Run: `npx vitest run test/services/MarketDataService.quotes.test.ts`
 Expected: FAIL with `Failed to load url ../../src/services/MarketDataService.js`.
 
-- [ ] **Step 4: Implement the service core and `getQuotes`**
+- [x] **Step 4: Implement the service core and `getQuotes`**
 
 Create `server/src/services/MarketDataService.ts`:
 ```ts
@@ -3978,12 +3978,12 @@ export class MarketDataService {
 }
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `npx vitest run test/services/MarketDataService.quotes.test.ts && npm run typecheck`
 Expected: `9 passed`, and typecheck exits 0.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
