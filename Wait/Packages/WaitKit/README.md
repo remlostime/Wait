@@ -72,12 +72,12 @@ Or `scripts/test-waitkit.sh [Target[/Suite]]` from the repo root.
 
 | File | Role |
 |---|---|
-| `SyncStamp.swift` | Millisecond comparison and a deterministic `yyyy-MM-ddTHH:mm:ss.SSSZ` formatter and parser |
+| `SyncStamp.swift` | Millisecond comparison (the `Domain` truncation rule that stamps `updatedAt`) and a deterministic `yyyy-MM-ddTHH:mm:ss.SSSZ` formatter and parser |
 | `SyncChange.swift` | `SyncChange` (upsert or tombstone), `RemoteWatchlistItem`, `SyncReport` |
 | `SyncPlanner.swift` | Pure: which items and tombstones the server hasn't acknowledged |
-| `SyncMerger.swift` | Pure: acknowledge sent changes; apply remote rows (newer wins, ties go to the server, tombstones, resurrection) |
-| `SyncMapping.swift` | Domain ↔ `APIClient` DTOs; clamps outgoing values to the server limits (UTF-16 lengths, 6-decimal anchors) |
-| `SyncEngine.swift` | A single-flight actor; at most 10 rounds per run and 50 changes per request |
+| `SyncMerger.swift` | Pure: acknowledge sent changes; apply remote rows (newer wins, ties go to the server unless the row is our own clamped echo, tombstones, resurrection) |
+| `SyncMapping.swift` | Domain ↔ `APIClient` DTOs; clamps outgoing values to the server limits (UTF-16 lengths, 6-decimal anchors, `sortIndex` range, history dates); compares items on the wire to recognise echoes |
+| `SyncEngine.swift` | A single-flight actor; at most 10 rounds per run and 50 changes per request. Merged items are saved before the cursor moves. `lastSyncedAt` is set only when a run settled |
 | `SyncClient.swift` | `@DependencyClient` (`sync`, `reset`); `\.syncClient` |
 
 Tests: `xcodebuild test -scheme WaitKit-Package … -only-testing:SyncClientTests`.

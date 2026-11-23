@@ -103,8 +103,47 @@ struct SyncEngineTests {
   }
 
   @Test
+  func doesNotMarkTheSyncCompleteWhenItRanOutOfRounds() async throws {
+    let (engine, _, state) = makeEngine(maxRounds: 2) { _ in SyncResponseDTO(changes: [], cursor: "1:A", hasMore: true) }
+
+    _ = try await engine.sync()
+
+    #expect(state.wrappedValue.cursor == "1:A")
+    #expect(state.wrappedValue.lastSyncedAt == nil)
+  }
+
+  @Test
+  func marksTheSyncCompleteWhenTheLastAllowedRoundSettlesEverything() async throws {
+    let calls = LockIsolated(0)
+    let (engine, _, state) = makeEngine(maxRounds: 2) { _ in
+      let count = calls.withValue { $0 += 1; return $0 }
+      return SyncResponseDTO(changes: [], cursor: "\(count):A", hasMore: count == 1)
+    }
+
+    _ = try await engine.sync()
+
+    #expect(calls.value == 2)
+    #expect(SyncStamp.same(state.wrappedValue.lastSyncedAt, Self.now))
+  }
+
+  @Test
+  func keepsTheFullLocalMemoWhenTheServerEchoesTheClampedCopy() async throws {
+    let longMemo = String(repeating: "m", count: 12_000)
+    let (engine, items, state) = makeEngine(items: [makeItem("AAPL", memo: longMemo, updatedAt: stamp(1))]) { request in
+      #expect(request.changes.first?.memo.utf16.count == 10_000)
+      return Self.echo(request, version: 1)
+    }
+
+    let report = try await engine.sync()
+
+    #expect(items.wrappedValue[id: "AAPL"]?.memo == longMemo)
+    #expect(report.applied == 0)
+    #expect(SyncPlanner.pendingChanges(items: items.wrappedValue, state: state.wrappedValue).isEmpty)
+  }
+
+  @Test
   func anEditMadeDuringARequestIsPushedInTheNextRound() async throws {
-    let items = Shared(value: IdentifiedArrayOf<WatchlistItem>([makeItem("AAPL", memo: "v1", updatedAt: stamp(1))]))
+    let items = Shared(value: IdentifiedArrayOf<WatchlistItem>(uniqueElements: [makeItem("AAPL", memo: "v1", updatedAt: stamp(1))]))
     let state = Shared(value: SyncState.initial)
     let requests = LockIsolated<[SyncRequestDTO]>([])
     var api = APIClient()

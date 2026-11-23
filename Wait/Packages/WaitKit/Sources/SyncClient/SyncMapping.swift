@@ -28,6 +28,11 @@ enum SyncMapping {
   static let maxChecklistItems = 100
   static let maxLadderHistory = 200
   static let anchorFractionDigits = 6
+  /// The server accepts `sortIndex` in ±1,000,000 (`server/src/schemas/watchlist.ts`).
+  static let maxSortIndex = 1_000_000
+  /// The server's `IsoTimestamp` covers 1970-01-01T00:00:00.000Z through 9999-12-31T23:59:59.999Z.
+  static let minWireMilliseconds: Int64 = 0
+  static let maxWireMilliseconds: Int64 = 253_402_300_799_999
   /// The server's decimal pattern allows 12 integer digits and 6 fraction digits (`^(0|[1-9][0-9]{0,11})(\.[0-9]{1,6})?$`).
   static let maxAnchor = Decimal(string: "999999999999.999999", locale: Locale(identifier: "en_US_POSIX"))!
 
@@ -46,13 +51,26 @@ enum SyncMapping {
     }
   }
 
+  /// Whether `date` fits the wire's four-digit-year range. History revisions outside it are dropped, because one
+  /// unparseable timestamp makes the server reject the whole batch.
+  static func isRepresentable(_ date: Date) -> Bool {
+    (minWireMilliseconds ... maxWireMilliseconds).contains(SyncStamp.milliseconds(date))
+  }
+
+  /// Whether two items are the same on the wire, ignoring the stamp. The wire form is lossy (clamped text and counts,
+  /// 6-decimal anchors, `sortIndex` range, dropped history), so a row the server echoes back after we sent `local`
+  /// differs from `local` in Domain terms, yet maps to the same DTO. `SyncMerger` uses this to recognise its own echoes.
+  static func hasSameWireContent(_ lhs: WatchlistItem, _ rhs: WatchlistItem) -> Bool {
+    wireContent(lhs) == wireContent(rhs)
+  }
+
   /// Matches the server's clamp (overview §8.5, server step 2).
   static let maxClockSkew: TimeInterval = 5 * 60
 
   /// `now` is the device clock. A stamp more than 5 minutes ahead of it (left over from a clock that has since been
   /// corrected) goes out clamped, and `SyncMerger` then adopts the clamped stamp the server echoes back.
   static func changeDTO(_ change: SyncChange, now: Date) -> WatchlistChangeDTO {
-    let wireStamp = SyncStamp.string(from: min(change.stamp, now.addingTimeInterval(maxClockSkew)))
+    let wireStamp = SyncStamp.string(from: clampedStamp(change.stamp, now: now))
     guard let item = change.item else {
       return WatchlistChangeDTO(
         symbol: change.symbol, name: change.symbol, ladder: LadderDTO(), memo: "", isFavorite: false, sortIndex: 0,
@@ -65,11 +83,11 @@ enum SyncMapping {
       ladder: ladderDTO(item.ladder),
       memo: sanitize(item.memo, toUTF16: maxMemoUTF16),
       isFavorite: item.isFavorite,
-      sortIndex: item.sortIndex,
+      sortIndex: min(max(item.sortIndex, -maxSortIndex), maxSortIndex),
       checklist: item.checklist.prefix(maxChecklistItems).map {
         ChecklistItemDTO(id: $0.id.uuidString, name: sanitize($0.name, toUTF16: maxNameUTF16), isChecked: $0.isChecked)
       },
-      ladderHistory: item.ladderHistory.filter { isRepresentable($0.ladder) }.suffix(maxLadderHistory).map {
+      ladderHistory: item.ladderHistory.filter { isRepresentable($0.ladder) && isRepresentable($0.date) }.suffix(maxLadderHistory).map {
         LadderRevisionDTO(date: SyncStamp.string(from: $0.date), ladder: ladderDTO($0.ladder))
       },
       clientUpdatedAt: wireStamp,
@@ -124,6 +142,17 @@ enum SyncMapping {
   // MARK: Private
 
   private static let posix = Locale(identifier: "en_US_POSIX")
+
+  /// Never before the epoch (an unparseable year) and never more than `maxClockSkew` ahead of `now`.
+  private static func clampedStamp(_ stamp: Date, now: Date) -> Date {
+    max(min(stamp, now.addingTimeInterval(maxClockSkew)), SyncStamp.date(milliseconds: minWireMilliseconds))
+  }
+
+  private static func wireContent(_ item: WatchlistItem) -> WatchlistChangeDTO {
+    var dto = changeDTO(.upsert(item), now: .distantFuture)
+    dto.clientUpdatedAt = ""
+    return dto
+  }
 
   private static func ladderDTO(_ ladder: PriceLadder) -> LadderDTO {
     LadderDTO(

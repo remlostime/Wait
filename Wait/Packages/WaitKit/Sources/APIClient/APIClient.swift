@@ -43,6 +43,7 @@ extension APIClient {
       },
       deleteAccount: {
         try await session.delete("/api/auth/account")
+        await session.forgetToken()
       },
       syncWatchlist: { request in
         try await session.post("/api/watchlist/sync", body: request)

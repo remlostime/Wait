@@ -67,6 +67,12 @@ public actor HTTPSession {
     try await sendWithStatus(request).data
   }
 
+  /// Drops the cached JWT, so the next authenticated call registers again with whatever the anonymous ID is by then.
+  /// Called after the account is deleted: the token belongs to an account that no longer exists.
+  public func forgetToken() {
+    token = nil
+  }
+
   // MARK: Private
 
   private let baseURL: URL

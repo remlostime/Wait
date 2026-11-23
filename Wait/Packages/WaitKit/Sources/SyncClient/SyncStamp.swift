@@ -3,18 +3,20 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
+import Domain
 import Foundation
 
 // MARK: - SyncStamp
 
 /// Whole-millisecond timestamps for sync (overview D21; plan 05 deviation 4).
-/// Two dates are "the same stamp" when they round to the same Unix millisecond. The wire format is always
+/// Two dates are "the same stamp" when they fall in the same Unix millisecond. The rule is the one that stamps `updatedAt`
+/// (`Date.millisecondsSince1970`, truncation; the single source of truth in `Domain`). The wire format is always
 /// `yyyy-MM-ddTHH:mm:ss.SSSZ`, built by hand, so Double noise and formatter truncation can't create perpetual pending changes.
 public enum SyncStamp {
   // MARK: Public
 
   public static func milliseconds(_ date: Date) -> Int64 {
-    Int64((date.timeIntervalSince1970 * 1000).rounded())
+    date.millisecondsSince1970
   }
 
   public static func date(milliseconds: Int64) -> Date {
@@ -45,7 +47,7 @@ public enum SyncStamp {
       + ".\(pad(fraction, 3))Z"
   }
 
-  /// Parses `yyyy-MM-ddTHH:mm:ss[.f…]Z` (UTC only). Fractions are rounded to whole milliseconds.
+  /// Parses `yyyy-MM-ddTHH:mm:ss[.f…]Z` (UTC only). Fractions are truncated to whole milliseconds, like `milliseconds(_:)`.
   public static func date(from text: String) -> Date? {
     guard text.hasSuffix("Z") else {
       return nil
@@ -75,10 +77,11 @@ public enum SyncStamp {
     var fractionMilliseconds: Int64 = 0
     if timeAndFraction.count == 2 {
       let digits = timeAndFraction[1]
-      guard !digits.isEmpty, digits.allSatisfy(\.isNumber), let value = Double("0.\(digits)") else {
+      guard !digits.isEmpty, digits.allSatisfy({ $0.isASCII && $0.isNumber }) else {
         return nil
       }
-      fractionMilliseconds = Int64((value * 1000).rounded())
+      // Exact decimal truncation to three digits (no Double): "5" is 500 ms, "1239" is 123 ms.
+      fractionMilliseconds = Int64(String(digits.prefix(3)) + String(repeating: "0", count: max(0, 3 - digits.count))) ?? 0
     }
 
     let components = DateComponents(year: year, month: month, day: day, hour: hour, minute: minute, second: second)

@@ -66,6 +66,16 @@ struct HTTPSessionTests {
   }
 
   @Test
+  func registersAgainAfterTheTokenIsForgotten() async throws {
+    let (session, _, registers) = makeSession(tokens: ["t1", "t2"]) { $0 == "t1" || $0 == "t2" }
+    let _: OK = try await session.get("/api/x")
+    #expect(registers.value == 1)
+    await session.forgetToken()
+    let _: OK = try await session.get("/api/x")
+    #expect(registers.value == 2)
+  }
+
+  @Test
   func surfacesASecond401() async {
     let (session, _, registers) = makeSession(tokens: ["a", "b"]) { _ in false }
     await #expect(throws: APIError(status: 401, code: "UNAUTHORIZED", message: "Invalid or expired token")) {

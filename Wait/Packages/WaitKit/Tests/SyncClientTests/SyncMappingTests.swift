@@ -115,6 +115,57 @@ struct SyncMappingTests {
   }
 
   @Test
+  func clampsSortIndexToTheServerRange() {
+    #expect(SyncMapping.changeDTO(.upsert(makeItem("AAPL", sortIndex: 5_000_000)), now: .distantFuture).sortIndex == 1_000_000)
+    #expect(SyncMapping.changeDTO(.upsert(makeItem("AAPL", sortIndex: -5_000_000)), now: .distantFuture).sortIndex == -1_000_000)
+    #expect(SyncMapping.changeDTO(.upsert(makeItem("AAPL", sortIndex: Int.max)), now: .distantFuture).sortIndex == 1_000_000)
+    #expect(SyncMapping.changeDTO(.upsert(makeItem("AAPL", sortIndex: -42)), now: .distantFuture).sortIndex == -42)
+  }
+
+  @Test
+  func dropsHistoryRevisionsDatedOutsideTheWireYearRange() throws {
+    var item = makeItem("AAPL")
+    let ladder = try PriceLadder(buyHigh: 16)
+    item.ladderHistory = [
+      LadderRevision(date: Date(timeIntervalSince1970: -1), ladder: ladder), // 1969-12-31
+      LadderRevision(date: Date(timeIntervalSince1970: 0), ladder: ladder), // 1970-01-01T00:00:00.000Z, the first valid instant
+      LadderRevision(date: stamp(2), ladder: ladder),
+      LadderRevision(date: SyncStamp.date(milliseconds: 253_402_300_799_999), ladder: ladder), // 9999-12-31T23:59:59.999Z
+      LadderRevision(date: SyncStamp.date(milliseconds: 253_402_300_800_000), ladder: ladder), // 10000-01-01
+    ]
+    let dates = SyncMapping.changeDTO(.upsert(item), now: .distantFuture).ladderHistory.map(\.date)
+    #expect(dates == ["1970-01-01T00:00:00.000Z", SyncStamp.string(from: stamp(2)), "9999-12-31T23:59:59.999Z"])
+  }
+
+  @Test
+  func neverSendsAStampBeforeTheEpoch() {
+    let dto = SyncMapping.changeDTO(.upsert(makeItem("AAPL", updatedAt: Date(timeIntervalSince1970: -86_400))), now: stamp())
+    #expect(dto.clientUpdatedAt == "1970-01-01T00:00:00.000Z")
+  }
+
+  @Test
+  func comparesItemsByTheirWireFormIgnoringTheStamp() throws {
+    var local = makeItem("AAPL", memo: String(repeating: "m", count: 12_000), sortIndex: 5_000_000, updatedAt: stamp(9))
+    local.ladder = try PriceLadder(buyHigh: Decimal(string: "1.23456789")!)
+    local.ladderHistory = [LadderRevision(date: Date(timeIntervalSince1970: -5), ladder: .empty)]
+    let wire = SyncMapping.changeDTO(.upsert(local), now: .distantFuture)
+    let echoed = try SyncMapping.remote(SyncMapping.itemDTO(from: wire, version: 1)).item
+
+    #expect(echoed != local)
+    #expect(SyncMapping.hasSameWireContent(local, echoed))
+    var edited = echoed
+    edited.memo = "!" + edited.memo.dropFirst()
+    #expect(!SyncMapping.hasSameWireContent(local, edited))
+    // An edit past the 10,000th unit never reaches the wire, so it can't tell the two apart either.
+    var tail = local
+    tail.memo += "!"
+    #expect(SyncMapping.hasSameWireContent(local, tail))
+    var restamped = echoed
+    restamped.updatedAt = stamp(1)
+    #expect(SyncMapping.hasSameWireContent(local, restamped))
+  }
+
+  @Test
   func mapsAServerRowBackToDomain() throws {
     let dto = WatchlistItemDTO(
       symbol: "AAPL", name: "Apple Inc.", ladder: LadderDTO(buyLow: "12", buyHigh: "16", fair: "23"), memo: "Wait",

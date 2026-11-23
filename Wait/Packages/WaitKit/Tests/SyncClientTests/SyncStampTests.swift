@@ -3,6 +3,7 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
+import Domain
 import Foundation
 @testable import SyncClient
 import Testing
@@ -22,6 +23,25 @@ struct SyncStampTests {
     #expect(SyncStamp.date(from: "2026-11-20T15:00:00Z").map(SyncStamp.milliseconds) == 1_795_186_800_000)
     #expect(SyncStamp.date(from: "2026-11-20T15:00:00.1234567Z").map(SyncStamp.milliseconds) == 1_795_186_800_123)
     #expect(SyncStamp.date(from: "2026-11-20T15:00:00.5Z").map(SyncStamp.milliseconds) == 1_795_186_800_500)
+  }
+
+  @Test
+  func usesTheSameMillisecondRuleAsDomainTimestamps() throws {
+    let raw = Date(timeIntervalSince1970: 1_795_186_800.123_9)
+    #expect(SyncStamp.milliseconds(raw) == raw.millisecondsSince1970)
+    #expect(SyncStamp.milliseconds(raw) == 1_795_186_800_123)
+    #expect(SyncStamp.string(from: raw) == "2026-11-20T15:00:00.123Z")
+    // An item stamped through `Domain` compares equal to its own wire round trip, and so does the raw clock reading.
+    let item = WatchlistItem(symbol: "AAPL", name: "Apple", createdAt: raw, updatedAt: raw)
+    #expect(SyncStamp.same(item.updatedAt, raw))
+    #expect(SyncStamp.same(item.updatedAt, try #require(SyncStamp.date(from: SyncStamp.string(from: raw)))))
+  }
+
+  @Test
+  func truncatesLongFractionsInsteadOfRounding() {
+    #expect(SyncStamp.date(from: "2026-11-20T15:00:00.1239Z").map(SyncStamp.milliseconds) == 1_795_186_800_123)
+    #expect(SyncStamp.date(from: "2026-11-20T15:00:00.9999999Z").map(SyncStamp.milliseconds) == 1_795_186_800_999)
+    #expect(SyncStamp.date(from: "2026-11-20T15:00:00.07Z").map(SyncStamp.milliseconds) == 1_795_186_800_070)
   }
 
   @Test

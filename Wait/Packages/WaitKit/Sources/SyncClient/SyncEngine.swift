@@ -71,6 +71,8 @@ public actor SyncEngine {
   private var inFlight: Task<SyncReport, any Error>?
   private var rerunRequested = false
   private var generation = 0
+  /// The unsyncable symbols last logged, so an unchanged set isn't logged again on every sync.
+  private var lastLoggedUnsyncable: [String] = []
 
   private static func readableRow(_ dto: WatchlistItemDTO) -> RemoteWatchlistItem? {
     do {
@@ -87,10 +89,13 @@ public actor SyncEngine {
     defer { inFlight = nil }
     var startGeneration = generation
     var lastPassDiscarded = false
+    var lastPassSettled = false
     var total = SyncReport.empty
     repeat {
       rerunRequested = false
-      total += try await runRounds()
+      let pass = try await runRounds()
+      total += pass.report
+      lastPassSettled = pass.isSettled
       lastPassDiscarded = generation != startGeneration
       if lastPassDiscarded {
         // A reset landed mid-pass, so that pass's merge was discarded. Adopt the new generation, and keep looping
@@ -98,7 +103,9 @@ public actor SyncEngine {
         startGeneration = generation
       }
     } while rerunRequested
-    guard !lastPassDiscarded else {
+    // `lastSyncedAt` means "everything was exchanged", so a run that stopped at `maxRounds` with changes or pages left
+    // doesn't set it.
+    guard !lastPassDiscarded, lastPassSettled else {
       return total
     }
     let finishedAt = now().truncatedToMilliseconds
@@ -106,11 +113,20 @@ public actor SyncEngine {
     return total
   }
 
-  private func runRounds() async throws -> SyncReport {
+  private func logUnsyncableSymbols() {
     let skipped = SyncPlanner.unsyncableSymbols(items: items.wrappedValue, state: state.wrappedValue)
-    if !skipped.isEmpty {
-      Log.sync.error("Keeping \(skipped.joined(separator: ", ")) local-only: symbol not accepted by the sync endpoint")
+    guard skipped != lastLoggedUnsyncable else {
+      return
     }
+    lastLoggedUnsyncable = skipped
+    if !skipped.isEmpty {
+      Log.sync.error("Keeping \(skipped.joined(separator: ", ")) local-only: symbol or ladder not accepted by the sync endpoint")
+    }
+  }
+
+  /// `isSettled`: the last request left nothing to pull and nothing pending (as opposed to running out of rounds).
+  private func runRounds() async throws -> (report: SyncReport, isSettled: Bool) {
+    logUnsyncableSymbols()
     var report = SyncReport.empty
     while report.rounds < maxRounds {
       let pending = SyncPlanner.pendingChanges(items: items.wrappedValue, state: state.wrappedValue)
@@ -123,20 +139,40 @@ public actor SyncEngine {
       guard generation == requestGeneration else { break }
 
       let remote = response.changes.compactMap(Self.readableRow)
-      let applied = items.withLock { items in
-        state.withLock { state in
+      // `items.withLock` is the inner lock, so the merged items are the first to be handed to storage. The cursor stays
+      // out of this lock: it must only move once the items are on disk (see `persist`).
+      let applied = state.withLock { state in
+        items.withLock { items in
           let merged = SyncMerger.apply(remote, to: items, state: SyncMerger.acknowledge(batch, in: state))
           items = merged.items
           state = merged.state
-          state.cursor = response.cursor
           return merged.applied
         }
       }
+      // The cursor is the one piece of bookkeeping that can't heal: a pulled row is never sent again once the cursor has
+      // moved past it. So the merged items are saved first, and only a successful save lets the cursor advance. If the
+      // process dies in between, the next sync re-pulls the page and the merge is idempotent. A failed save aborts this
+      // sync with the old cursor, for the same reason.
+      try await items.save()
+      guard generation == requestGeneration else { break }
+      state.withLock { $0.cursor = response.cursor }
+      await persistState()
       report += SyncReport(pushed: batch.count, pulled: response.changes.count, applied: applied, rounds: 1)
 
       let stillPending = !SyncPlanner.pendingChanges(items: items.wrappedValue, state: state.wrappedValue).isEmpty
-      if !response.hasMore, !stillPending { break }
+      if !response.hasMore, !stillPending {
+        return (report, true)
+      }
     }
-    return report
+    return (report, false)
+  }
+
+  /// A failed save of the bookkeeping is harmless: the file keeps the older cursor and the next sync pulls again.
+  private func persistState() async {
+    do {
+      try await state.save()
+    } catch {
+      Log.sync.error("Saving the sync state failed: \(error)")
+    }
   }
 }

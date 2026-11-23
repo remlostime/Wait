@@ -32,8 +32,8 @@ public enum SyncMerger {
   }
 
   /// Step 3. A remote row is applied when there's no local copy, or when its stamp is ≥ the newest local stamp
-  /// (the item's `updatedAt` or the tombstone). On a tie the server wins (plan 05 deviation 2). An older row only
-  /// matters when it is a clamped echo of our own content (see `adoptClampedEcho`).
+  /// (the item's `updatedAt` or the tombstone). On a tie the server wins (plan 05 deviation 2), unless the row is the echo
+  /// of what this device sent (see `adoptEcho`). An older row only matters when it is a clamped echo of our own tombstone.
   public static func apply(
     _ remote: [RemoteWatchlistItem],
     to items: IdentifiedArrayOf<WatchlistItem>,
@@ -49,8 +49,13 @@ public enum SyncMerger {
       let localStamp = [local?.updatedAt, tombstone].compactMap { $0 }.map(SyncStamp.milliseconds).max()
       let remoteStamp = SyncStamp.milliseconds(row.stamp)
 
+      // The server stores the clamped wire copy of what we sent. Keep our full local content, whatever the stamp says.
+      if !row.isDeleted, let local, SyncMapping.hasSameWireContent(local, row.item) {
+        adoptEcho(row, local: local, tombstone: tombstone, items: &items, state: &state)
+        continue
+      }
       if let localStamp, remoteStamp < localStamp {
-        adoptClampedEcho(row, local: local, tombstone: tombstone, items: &items, state: &state)
+        adoptClampedTombstoneEcho(row, local: local, tombstone: tombstone, state: &state)
         continue
       }
       let isNewer = localStamp.map { remoteStamp > $0 } ?? true
@@ -77,36 +82,40 @@ public enum SyncMerger {
 
   // MARK: Private
 
-  /// The server clamps client stamps to now + 5 min (overview §8.5), and the client clamps outgoing stamps the same way
-  /// (`SyncMapping.changeDTO`). When a row echoes our own content with an earlier stamp, the local copy takes the server's
-  /// stamp, so later last-write-wins comparisons agree with the server. Any other older row is ignored.
-  private static func adoptClampedEcho(
+  /// The row carries the same content as the local item once both are put on the wire, so it is (almost certainly) the echo
+  /// of our own upload. The wire copy is lossy (a memo over 10,000 UTF-16 units is cut, anchors are rounded to 6 decimals,
+  /// history entries are dropped), so applying it would silently shorten local data. The local content stays; only the stamp
+  /// moves to the server's. The server clamps client stamps to now + 5 min (overview §8.5) and the client clamps the same
+  /// way (`SyncMapping.changeDTO`), so the echo can carry an earlier stamp, and later last-write-wins comparisons must agree
+  /// with the server. Overview §8.5 and plan 05 deviation 7.
+  private static func adoptEcho(
     _ row: RemoteWatchlistItem,
-    local: WatchlistItem?,
+    local: WatchlistItem,
     tombstone: Date?,
     items: inout IdentifiedArrayOf<WatchlistItem>,
     state: inout SyncState
   ) {
-    if row.isDeleted {
-      guard local == nil, tombstone != nil else {
-        return
-      }
-      state.tombstones[row.symbol] = row.stamp
-    } else {
-      guard let local, hasSameContent(local, row.item) else {
-        return
-      }
-      var adopted = local
-      adopted.updatedAt = row.stamp
-      items[id: row.symbol] = adopted
+    var adopted = local
+    adopted.updatedAt = row.stamp
+    items[id: row.symbol] = adopted
+    if let tombstone, SyncStamp.milliseconds(tombstone) <= SyncStamp.milliseconds(row.stamp) {
+      state.tombstones[row.symbol] = nil
     }
     state.acknowledged[row.symbol] = row.stamp
   }
 
-  private static func hasSameContent(_ local: WatchlistItem, _ remote: WatchlistItem) -> Bool {
-    var comparable = remote
-    comparable.createdAt = local.createdAt
-    comparable.updatedAt = local.updatedAt
-    return comparable == local
+  /// A deleted row older than our tombstone is the clamped echo of that tombstone: the tombstone takes the server's stamp.
+  /// Any other older row is ignored.
+  private static func adoptClampedTombstoneEcho(
+    _ row: RemoteWatchlistItem,
+    local: WatchlistItem?,
+    tombstone: Date?,
+    state: inout SyncState
+  ) {
+    guard row.isDeleted, local == nil, tombstone != nil else {
+      return
+    }
+    state.tombstones[row.symbol] = row.stamp
+    state.acknowledged[row.symbol] = row.stamp
   }
 }

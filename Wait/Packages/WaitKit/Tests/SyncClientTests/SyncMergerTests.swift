@@ -3,6 +3,7 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
+import APIClient
 import Domain
 import Foundation
 import IdentifiedCollections
@@ -121,5 +122,71 @@ struct SyncMergerTests {
     let result = SyncMerger.apply([remote(makeItem("AAPL", updatedAt: stamp(3)))], to: [], state: state)
     #expect(result.items.isEmpty)
     #expect(result.state.tombstones["AAPL"] == stamp(5))
+  }
+
+  /// What the server stores and sends back for `local`, uploaded when the device clock read `sentAt`.
+  private func serverEcho(of local: WatchlistItem, sentAt: Date, version: Int = 1) throws -> RemoteWatchlistItem {
+    let wire = SyncMapping.changeDTO(.upsert(local), now: sentAt)
+    return try SyncMapping.remote(SyncMapping.itemDTO(from: wire, version: version))
+  }
+
+  @Test
+  func anEchoOfALongMemoKeepsTheFullLocalMemoAndAcknowledgesIt() throws {
+    let longMemo = String(repeating: "m", count: 12_000)
+    let local = makeItem("AAPL", memo: longMemo, updatedAt: stamp(3))
+    let echo = try serverEcho(of: local, sentAt: stamp(3))
+    #expect(echo.item.memo.utf16.count == 10_000)
+
+    // Same stamp (a tie) and the clamped copy: the local content still wins, because it is our own echo.
+    let result = SyncMerger.apply([echo], to: [local], state: SyncState(acknowledged: ["AAPL": stamp(3)]))
+
+    #expect(result.items[id: "AAPL"]?.memo == longMemo)
+    #expect(result.items[id: "AAPL"]?.updatedAt == stamp(3))
+    #expect(result.state.acknowledged["AAPL"] == stamp(3))
+    #expect(result.applied == 0)
+    #expect(SyncPlanner.pendingChanges(items: result.items, state: result.state).isEmpty)
+  }
+
+  @Test
+  func anEchoWithAClampedStampAndRoundedAnchorsStillAdoptsTheServerStamp() throws {
+    var local = makeItem("AAPL", memo: String(repeating: "m", count: 12_000), updatedAt: stamp(9_000_000))
+    local.ladder = try PriceLadder(buyLow: Decimal(string: "1.23456789")!, buyHigh: 5)
+    // The device clock is at stamp(0), so the stamp goes out as stamp(300_000), and the anchor is rounded to 1.234568.
+    let echo = try serverEcho(of: local, sentAt: stamp(0))
+    #expect(echo.stamp == stamp(300_000))
+    #expect(echo.item.ladder != local.ladder)
+
+    let result = SyncMerger.apply([echo], to: [local], state: SyncState(acknowledged: ["AAPL": stamp(9_000_000)]))
+
+    #expect(result.items[id: "AAPL"]?.updatedAt == stamp(300_000))
+    #expect(result.items[id: "AAPL"]?.memo.utf16.count == 12_000)
+    #expect(result.items[id: "AAPL"]?.ladder == local.ladder)
+    #expect(result.state.acknowledged["AAPL"] == stamp(300_000))
+    #expect(result.applied == 0)
+    #expect(SyncPlanner.pendingChanges(items: result.items, state: result.state).isEmpty)
+  }
+
+  @Test
+  func anEchoOfAnItemWithOutOfRangeSortIndexAndHistoryKeepsTheLocalValues() throws {
+    var local = makeItem("AAPL", sortIndex: 5_000_000, updatedAt: stamp(3))
+    local.ladderHistory = [LadderRevision(date: Date(timeIntervalSince1970: -5), ladder: .empty)]
+    let result = SyncMerger.apply([try serverEcho(of: local, sentAt: stamp(3))], to: [local], state: .initial)
+    #expect(result.items == [local])
+    #expect(result.applied == 0)
+  }
+
+  @Test
+  func aTieWithDifferentContentStillAppliesTheServerRowEvenWhenTheLocalMemoIsLong() {
+    let local = makeItem("AAPL", memo: String(repeating: "m", count: 12_000), updatedAt: stamp(3))
+    let result = SyncMerger.apply([remote(makeItem("AAPL", memo: "from B", updatedAt: stamp(3)))], to: [local], state: .initial)
+    #expect(result.items[id: "AAPL"]?.memo == "from B")
+  }
+
+  @Test
+  func anEchoNewerThanALocalTombstoneClearsIt() {
+    let local = makeItem("AAPL", memo: "same", updatedAt: stamp(5))
+    let state = SyncState(tombstones: ["AAPL": stamp(2)])
+    let result = SyncMerger.apply([remote(local)], to: [local], state: state)
+    #expect(result.state.tombstones["AAPL"] == nil)
   }
 }
