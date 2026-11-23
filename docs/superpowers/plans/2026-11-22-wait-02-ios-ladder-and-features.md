@@ -7565,7 +7565,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/StockDetailsFeature/StockDetailsFeature.swift`, `StockDetailsView.swift`, `StatsSection.swift`, `LadderHistoryView.swift`
 - Create: `Wait/Packages/WaitKit/Tests/StockDetailsFeatureTests/StockDetailsFeatureTests.swift`
 
-- [ ] **Step 1: Write the failing tests.** Two of them are regressions for legacy bugs. The legacy price editor rebuilt `Stock` without `memo`, so saving a price erased the note. The legacy star called `StockCache.removeStock`, so un-starring deleted the stock.
+- [x] **Step 1: Write the failing tests.** Two of them are regressions for legacy bugs. The legacy price editor rebuilt `Stock` without `memo`, so saving a price erased the note. The legacy star called `StockCache.removeStock`, so un-starring deleted the stock.
 
 `Wait/Packages/WaitKit/Tests/StockDetailsFeatureTests/StockDetailsFeatureTests.swift`:
 ```swift
@@ -7580,6 +7580,8 @@ import Foundation
 import MarketDataClient
 import StockDetailsFeature
 import Testing
+
+// swiftlint:disable force_try
 
 let detailsNow = Date(timeIntervalSince1970: 1_795_186_800)
 
@@ -7649,7 +7651,9 @@ func detailsItem() -> WatchlistItem {
   @Test func failedRefreshKeepsTheCachedQuote() async {
     let cached = Quote(symbol: "AAPL", price: 140, asOf: detailsNow, isStale: true)
     let store = makeStore { _, policy in
-      if policy == .cacheOnly { return [cached] }
+      if policy == .cacheOnly {
+        return [cached]
+      }
       throw MarketDataError.network("offline")
     }
     await store.send(.task)
@@ -7705,7 +7709,9 @@ func detailsItem() -> WatchlistItem {
   @Test func taskLoadsTheQuoteAndDerivesTheStatus() async {
     let quote = Quote(symbol: "AAPL", price: 140, asOf: detailsNow)
     let store = makeStore { _, policy in
-      if policy == .cacheOnly { throw MarketDataError.notCached }
+      if policy == .cacheOnly {
+        throw MarketDataError.notCached
+      }
       return [quote]
     }
     await store.send(.task)
@@ -7722,12 +7728,12 @@ func detailsItem() -> WatchlistItem {
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh StockDetailsFeatureTests/StockDetailsFeatureTests`
 Expected FAIL: `error: cannot find 'StockDetailsFeature' in scope`.
 
-- [ ] **Step 3: Implement the reducer**
+- [x] **Step 3: Implement the reducer**
 
 `Wait/Packages/WaitKit/Sources/StockDetailsFeature/StockDetailsFeature.swift`:
 ```swift
@@ -7820,7 +7826,7 @@ public struct StockDetailsFeature {
 
   public var body: some ReducerOf<Self> {
     BindingReducer()
-    Scope(state: \.chart, action: \.chart) {
+    Scope(\.chart, action: \.chart) {
       StockChartFeature()
     }
     Reduce { state, action in
@@ -7927,12 +7933,12 @@ public extension AlertState where Action == StockDetailsFeature.Action.Alert {
 }
 ```
 
-- [ ] **Step 4: Run the tests and confirm they pass**
+- [ ] **Step 4: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh StockDetailsFeatureTests`
 Expected PASS: 17 tests pass, counting the editor tests.
 
-- [ ] **Step 5: Add the views** (`swiftui-expert:swiftui-expert-skill`)
+- [x] **Step 5: Add the views** (`swiftui-expert:swiftui-expert-skill`)
 
 `Wait/Packages/WaitKit/Sources/StockDetailsFeature/StatsSection.swift`. Plan 04 adds a `profile` parameter for fundamentals.
 ```swift
@@ -8074,6 +8080,7 @@ struct LadderHistoryView: View {
 import ComposableArchitecture
 import DesignSystem
 import Domain
+import MarketDataClient
 import StockChartFeature
 import SwiftUI
 
@@ -8092,7 +8099,7 @@ public struct StockDetailsView: View {
     ScrollView {
       VStack(alignment: .leading, spacing: Spacing.l) {
         header
-        card { StockChartView(store: store.scope(state: \.chart, action: \.chart), ladder: store.item.ladder) }
+        card { StockChartView(store: store.scope(\.chart, action: \.chart), ladder: store.item.ladder) }
         card { ladderCard }
         card { StatsSection(quote: store.quote) }
         card { checklistRow }
@@ -8125,17 +8132,17 @@ public struct StockDetailsView: View {
       }
     }
     .task { await store.send(.task).finish() }
-    .sheet(item: $store.scope(state: \.destination?.ladderEditor, action: \.destination.ladderEditor)) { editor in
+    .sheet(item: $store.scope(\.$destination, action: \.destination).ladderEditor) { editor in
       NavigationStack { LadderEditorView(store: editor) }
         .presentationDetents([.medium, .large])
     }
-    .sheet(item: $store.scope(state: \.destination?.notesEditor, action: \.destination.notesEditor)) { notes in
+    .sheet(item: $store.scope(\.$destination, action: \.destination).notesEditor) { notes in
       NavigationStack { NotesEditorView(store: notes) }
     }
     .sheet(isPresented: $store.isShowingLadderHistory) {
       NavigationStack { LadderHistoryView(history: store.item.ladderHistory) }
     }
-    .alert($store.scope(state: \.alert, action: \.alert))
+    .alert($store.scope(\.alert, action: \.alert))
   }
 
   // MARK: Private
@@ -8276,7 +8283,7 @@ struct ThermometerBar: View {
 }
 ```
 
-- [ ] **Step 6: Compile and check the preview.** Run the tests (which also compiles the views), then open the preview.
+- [ ] **Step 6: Compile and check the preview.** — NOT RUN (code-only) Run the tests (which also compiles the views), then open the preview.
 
 Run: `scripts/test-waitkit.sh StockDetailsFeatureTests`
 Expected PASS: `** TEST SUCCEEDED **`.
@@ -8287,7 +8294,7 @@ The preview should show:
 - A ladder card with a thermometer and four rungs, each with its % distance.
 - Stats, a "0 / 17" checklist row, and multi-line notes.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/StockDetailsFeature Wait/Packages/WaitKit/Tests/StockDetailsFeatureTests
 git commit -m "feat(details): StockDetailsFeature with ladder card, stats, history; memo/star regressions fixed
