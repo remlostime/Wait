@@ -2170,7 +2170,7 @@ MSG
 - Create: `Wait/Packages/WaitKit/Sources/SyncClient/SyncChange.swift`
 - Test: `Wait/Packages/WaitKit/Tests/SyncClientTests/SyncStampTests.swift`
 
-- [ ] **Step 1: Add the targets**
+- [x] **Step 1: Add the targets**
 
 In `Wait/Packages/WaitKit/Package.swift`, add these to `targets:`, next to the `APIClient` target. The test target lists every module its files import: `Domain`, `Persistence`, `APIClient`, `Dependencies` (for `LockIsolated`), `Sharing` (`Shared(value:)`) and `IdentifiedCollections`. They use plan 02's `Target.Dependency` statics (`.dependencies`, `.dependenciesMacros`, `.dependenciesTestSupport`, `.sharing`, `.identifiedCollections`):
 ```swift
@@ -2184,7 +2184,7 @@ In `Wait/Packages/WaitKit/Package.swift`, add these to `targets:`, next to the `
     ),
 ```
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `Wait/Packages/WaitKit/Tests/SyncClientTests/SyncStampTests.swift`:
 ```swift
@@ -2241,12 +2241,12 @@ struct SyncStampTests {
 }
 ```
 
-- [ ] **Step 3: Run the test and confirm it fails**
+- [ ] **Step 3: Run the test and confirm it fails — NOT RUN (code-only; the /tmp harness failed to build without the sources)**
 
 Run, with `-only-testing:SyncClientTests/SyncStampTests`, the package command from the chunk header.
 Expected: `** TEST BUILD FAILED **`. The `SyncClient` target has no sources yet, so you get `no such module 'SyncClient'` or `cannot find 'SyncStamp' in scope`.
 
-- [ ] **Step 4: Write `SyncStamp`**
+- [x] **Step 4: Write `SyncStamp`**
 
 Create `Wait/Packages/WaitKit/Sources/SyncClient/SyncStamp.swift`:
 ```swift
@@ -2343,7 +2343,7 @@ public enum SyncStamp {
 }
 ```
 
-- [ ] **Step 5: Write the sync value types**
+- [x] **Step 5: Write the sync value types**
 
 Create `Wait/Packages/WaitKit/Sources/SyncClient/SyncChange.swift`:
 ```swift
@@ -2446,12 +2446,12 @@ public struct SyncReport: Equatable, Sendable {
 }
 ```
 
-- [ ] **Step 6: Run the test and confirm it passes**
+- [ ] **Step 6: Run the test and confirm it passes — NOT RUN through Xcode (code-only; the real `SyncStampTests` ran in a /tmp macOS harness: 5 of 5 passed)**
 
 Run, with `-only-testing:SyncClientTests/SyncStampTests`, the package command from the chunk header.
 Expected: `** TEST SUCCEEDED **`, with 5 tests passing.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
