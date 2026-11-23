@@ -3607,7 +3607,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/MarketDataClient/MarketDataClient.swift`, `MarketDataError.swift`, `CachePolicy.swift`
 - Create: `Wait/Packages/WaitKit/Tests/MarketDataClientTests/MarketDataErrorTests.swift`, `Wait/Packages/WaitKit/Tests/MarketDataClientTests/TestSupport.swift`
 
-- [ ] **Step 1: Update `Package.swift`**
+- [x] **Step 1: Update `Package.swift`**
   - Append to `products:`: `.library(name: "MarketDataClient", targets: ["MarketDataClient"]),`
   - Append to `targets:`:
     ```swift
@@ -3632,7 +3632,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
     ```
   - Create `Wait/Packages/WaitKit/Sources/MarketDataClient/MarketDataClient.swift` containing only the file header, so the package loads. Step 6 fills it in.
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/MarketDataClientTests/TestSupport.swift`:
 ```swift
@@ -3799,12 +3799,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 3: Run the tests and confirm they fail**
+- [ ] **Step 3: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests`
 Expected FAIL: `error: cannot find type 'MarketDataClient' in scope` and `cannot find 'MarketDataError' in scope`.
 
-- [ ] **Step 4: Implement `CachePolicy.swift`**
+- [x] **Step 4: Implement `CachePolicy.swift`**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -3826,7 +3826,7 @@ public enum CachePolicy: Equatable, Sendable {
 }
 ```
 
-- [ ] **Step 5: Implement `MarketDataError.swift`**
+- [x] **Step 5: Implement `MarketDataError.swift`**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -3897,7 +3897,7 @@ public enum MarketDataError: Error, Equatable, Sendable {
 }
 ```
 
-- [ ] **Step 6: Replace the contents of `MarketDataClient.swift` with the implementation.** Task 17 adds `liveValue`. Until then the client is a `TestDependencyKey`, and no app code uses it.
+- [x] **Step 6: Replace the contents of `MarketDataClient.swift` with the implementation.** Task 17 adds `liveValue`. Until then the client is a `TestDependencyKey`, and no app code uses it.
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -3949,12 +3949,12 @@ public extension DependencyValues {
 }
 ```
 
-- [ ] **Step 7: Run the tests and confirm they pass**
+- [ ] **Step 7: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests`
 Expected PASS: 4 tests pass.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/MarketDataClient Wait/Packages/WaitKit/Tests/MarketDataClientTests
 git commit -m "feat(marketdata): MarketDataClient dependency, errors and cache policies

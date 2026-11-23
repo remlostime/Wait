@@ -33,6 +33,7 @@ let package = Package(
     .library(name: "LegacyStockDetails", targets: ["LegacyStockDetails"]),
     .library(name: "SettingsTab", targets: ["SettingsTab"]),
     .library(name: "Persistence", targets: ["Persistence"]),
+    .library(name: "MarketDataClient", targets: ["MarketDataClient"]),
   ],
   dependencies: [
     .package(
@@ -83,6 +84,15 @@ let package = Package(
         .product(name: "DependenciesMacros", package: "swift-dependencies"),
       ]
     ),
+    .target(
+      name: "MarketDataClient",
+      dependencies: [
+        "Domain",
+        "Logging",
+        .product(name: "Dependencies", package: "swift-dependencies"),
+        .product(name: "DependenciesMacros", package: "swift-dependencies"),
+      ]
+    ),
     .testTarget(name: "DomainTests", dependencies: ["Domain"], resources: [.copy("Fixtures")]),
     .testTarget(name: "LoggingTests", dependencies: ["Logging"]),
     .testTarget(
@@ -92,6 +102,15 @@ let package = Package(
         "Domain",
         .product(name: "Sharing", package: "swift-sharing"),
         .product(name: "IdentifiedCollections", package: "swift-identified-collections"),
+        .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
+      ]
+    ),
+    .testTarget(
+      name: "MarketDataClientTests",
+      dependencies: [
+        "MarketDataClient",
+        "Domain",
+        .product(name: "Dependencies", package: "swift-dependencies"),
         .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
       ]
     ),
