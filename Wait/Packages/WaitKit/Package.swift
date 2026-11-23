@@ -21,6 +21,7 @@ let package = Package(
   defaultLocalization: "en",
   platforms: [.iOS(.v17), .watchOS(.v10)],
   products: [
+    .library(name: "Domain", targets: ["Domain"]),
     .library(name: "DesignSystem", targets: ["DesignSystem"]),
     .library(name: "Logging", targets: ["Logging"]),
     .library(name: "Model", targets: ["Model"]),
@@ -44,6 +45,7 @@ let package = Package(
     .package(url: "https://github.com/SwiftyJSON/SwiftyJSON", exact: "5.0.1"),
   ],
   targets: [
+    .target(name: "Domain"),
     .target(name: "DesignSystem", swiftSettings: legacySettings),
     .target(name: "Logging"),
     .target(name: "Model", dependencies: ["DesignSystem", .money], swiftSettings: legacySettings),
@@ -66,6 +68,7 @@ let package = Package(
       swiftSettings: legacySettings
     ),
     .target(name: "SettingsTab", dependencies: ["ChecklistEditFeature", "Model", .tca], swiftSettings: legacySettings),
+    .testTarget(name: "DomainTests", dependencies: ["Domain"]),
     .testTarget(name: "ChecklistTests", dependencies: ["Checklist", "Model", .tca], swiftSettings: legacySettings),
     .testTarget(name: "ChecklistEditFeatureTests", dependencies: ["ChecklistEditFeature", "Model", .tca], swiftSettings: legacySettings),
   ],

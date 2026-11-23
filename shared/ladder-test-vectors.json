@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "ladders": {
+    "PINS":  { "buyLow": "12", "buyHigh": "16", "fair": "23", "trim": "33" },
+    "MIDEA": { "buyLow": "55", "buyHigh": "60", "fair": "85", "sell": "98" },
+    "NOW":   { "buyLow": "80", "buyHigh": "90" },
+    "FULL":  { "buyLow": "12", "buyHigh": "16", "fair": "23", "trim": "33", "sell": "40" },
+    "EQ":    { "buyLow": "50", "buyHigh": "50" },
+    "EMPTY": {}
+  },
+  "validation": [
+    { "ladder": "FULL", "valid": true },
+    { "ladder": { "buyLow": "18", "buyHigh": "23", "sell": "40" }, "valid": true },
+    { "ladder": { "buyLow": "12", "buyHigh": "16", "fair": "10" }, "valid": false, "error": { "kind": "outOfOrder", "lower": "buyHigh", "upper": "fair" } },
+    { "ladder": { "buyLow": "0" }, "valid": false, "error": { "kind": "nonPositive", "rung": "buyLow" } },
+    { "ladder": "EMPTY", "valid": true }
+  ],
+  "knots": [
+    { "ladder": "FULL", "knots": [[6, 0], [12, 10], [16, 30], [23, 50], [33, 80], [40, 95], [60, 100]] },
+    { "ladder": "PINS", "knots": [[6, 0], [12, 10], [16, 30], [23, 50], [33, 80], [49.5, 100]] },
+    { "ladder": "NOW", "derivedFair": 128.571, "knots": [[40, 0], [80, 10], [90, 30], [128.571, 50], [192.857, 100]] },
+    { "ladder": "EQ", "derivedFair": 71.429, "knots": [[25, 0], [50, 10], [50, 30], [71.429, 50], [107.143, 100]] },
+    { "ladder": "EMPTY", "knots": [] }
+  ],
+  "evaluations": [
+    { "ladder": "PINS",  "price": "14.20", "temperature": 21.0,   "band": "cold",     "status": "BUY_ZONE" },
+    { "ladder": "PINS",  "price": "23.00", "temperature": 50.0,   "band": "neutral",  "status": "AT_OR_ABOVE_FAIR" },
+    { "ladder": "PINS",  "price": "31.00", "temperature": 74.0,   "band": "warm",     "status": "AT_OR_ABOVE_FAIR" },
+    { "ladder": "PINS",  "price": "40.00", "temperature": 88.485, "band": "hot",      "status": "TRIM" },
+    { "ladder": "PINS",  "price": "12.00", "temperature": 10.0,   "band": "freezing", "status": "DEEP_BUY" },
+    { "ladder": "PINS",  "price": "0.01",  "temperature": 0.0,    "band": "freezing", "status": "DEEP_BUY" },
+    { "ladder": "PINS",  "price": "10000", "temperature": 100.0,  "band": "hot",      "status": "TRIM" },
+    { "ladder": "MIDEA", "price": "72.00", "temperature": 39.6,   "band": "cold",     "status": "WATCH" },
+    { "ladder": "MIDEA", "price": "92.00", "temperature": 74.231, "band": "warm",     "status": "AT_OR_ABOVE_FAIR" },
+    { "ladder": "MIDEA", "price": "98.00", "temperature": 95.0,   "band": "hot",      "status": "SELL" },
+    { "ladder": "NOW",   "price": "110.00", "temperature": 40.37, "band": "neutral",  "status": "WATCH" },
+    { "ladder": "NOW",   "price": "150.00", "temperature": 66.667, "band": "warm",    "status": "AT_OR_ABOVE_FAIR" },
+    { "ladder": "NOW",   "price": "250.00", "temperature": 100.0, "band": "hot",      "status": "AT_OR_ABOVE_FAIR" },
+    { "ladder": "EQ",    "price": "50",    "temperature": 10.0,   "band": "freezing", "status": "DEEP_BUY" },
+    { "ladder": "EMPTY", "price": "512.30", "temperature": null,  "band": null,       "status": "NO_ANCHORS" },
+    { "ladder": "FULL",  "price": "5",     "temperature": 0.0,    "band": "freezing", "status": "DEEP_BUY" },
+    { "ladder": "FULL",  "price": "12.5",  "temperature": 12.5,   "band": "freezing", "status": "BUY_ZONE" },
+    { "ladder": "FULL",  "price": "16",    "temperature": 30.0,   "band": "cold",     "status": "BUY_ZONE" },
+    { "ladder": "FULL",  "price": "20",    "temperature": 41.429, "band": "neutral",  "status": "WATCH" },
+    { "ladder": "FULL",  "price": "32.9",  "temperature": 79.7,   "band": "warm",     "status": "AT_OR_ABOVE_FAIR" },
+    { "ladder": "FULL",  "price": "33",    "temperature": 80.0,   "band": "hot",      "status": "TRIM" },
+    { "ladder": "FULL",  "price": "39.9",  "temperature": 94.786, "band": "hot",      "status": "TRIM" },
+    { "ladder": "FULL",  "price": "40",    "temperature": 95.0,   "band": "hot",      "status": "SELL" }
+  ],
+  "alerts": [
+    { "previous": null,               "next": "BUY_ZONE",         "alert": false },
+    { "previous": "WATCH",            "next": "BUY_ZONE",         "alert": true },
+    { "previous": "DEEP_BUY",         "next": "BUY_ZONE",         "alert": false },
+    { "previous": "AT_OR_ABOVE_FAIR", "next": "DEEP_BUY",         "alert": true },
+    { "previous": "BUY_ZONE",         "next": "DEEP_BUY",         "alert": true },
+    { "previous": "TRIM",             "next": "SELL",             "alert": true },
+    { "previous": "WATCH",            "next": "TRIM",             "alert": true },
+    { "previous": "SELL",             "next": "TRIM",             "alert": false },
+    { "previous": "WATCH",            "next": "AT_OR_ABOVE_FAIR", "alert": false },
+    { "previous": "BUY_ZONE",         "next": "BUY_ZONE",         "alert": false },
+    { "previous": "TRIM",             "next": "WATCH",            "alert": false }
+  ]
+}

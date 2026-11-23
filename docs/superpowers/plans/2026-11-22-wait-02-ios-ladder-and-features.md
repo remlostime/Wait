@@ -111,7 +111,7 @@ All paths are relative to `Wait/` unless they start with `scripts/` or `shared/`
 - Create: `Wait/Packages/WaitKit/Tests/DomainTests/LadderVectors.swift`, `Wait/Packages/WaitKit/Tests/DomainTests/PriceLadderValidationTests.swift`, `Wait/Packages/WaitKit/Tests/DomainTests/TestSupport.swift`
 - Modify: `Wait/Packages/WaitKit/Package.swift` (add the `Domain` product, target and test target)
 
-- [ ] **Step 1: Create the helper scripts.** If plan 01 already created files with these names, overwrite them.
+- [x] **Step 1: Create the helper scripts.** If plan 01 already created files with these names, overwrite them. — scripts created and `bash -n` checked; the `scripts/build-app.sh` baseline run is NOT RUN (code-only)
 
 `scripts/test-waitkit.sh`:
 ```bash
@@ -150,7 +150,7 @@ exit "${PIPESTATUS[0]}"
 Run: `chmod +x scripts/test-waitkit.sh scripts/build-app.sh && scripts/build-app.sh`
 Expected: `** BUILD SUCCEEDED **`. This is the plan 01 baseline.
 
-- [ ] **Step 2: Create `shared/ladder-test-vectors.json` from overview §7.4.** Extract the file directly from the overview, so it is byte-identical, then check it with `diff`:
+- [x] **Step 2: Create `shared/ladder-test-vectors.json` from overview §7.4.** Extract the file directly from the overview, so it is byte-identical, then check it with `diff`:
 
 Run:
 ```sh
@@ -180,7 +180,7 @@ PY
 ```
 Expected: `vectors match overview`. If §7.4 changes later, re-create the file with the block above, then rerun this check. The Swift and TS suites must both pass in the same commit (overview risk 32).
 
-- [ ] **Step 3: Register the `Domain` target in `Package.swift`.** Make three additions and change nothing else:
+- [x] **Step 3: Register the `Domain` target in `Package.swift`.** Make three additions and change nothing else:
   - Add `.library(name: "Domain", targets: ["Domain"]),` to the `products:` array.
   - Add `.target(name: "Domain"),` to the `targets:` array.
   - Add `.testTarget(name: "DomainTests", dependencies: ["Domain"]),` to the `targets:` array.
@@ -188,7 +188,7 @@ Expected: `vectors match overview`. If §7.4 changes later, re-create the file w
   `Domain` has no `swiftSettings`, so it compiles in the package default Swift 6 mode.
   - SwiftPM refuses to load a package with a source-less target. Create `Wait/Packages/WaitKit/Sources/Domain/PriceLadder.swift` containing only the file header (see Conventions). Step 7 fills it in.
 
-- [ ] **Step 4: Write the failing tests**
+- [x] **Step 4: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/DomainTests/TestSupport.swift`:
 ```swift
@@ -357,10 +357,10 @@ import Testing
   }
 
   @Test func encodesDecimalStringsAndOmitsMissingRungs() throws {
-    let ladder = try PriceLadder(buyHigh: dec("175.5"), trim: dec("0.0075"))
+    let ladder = try PriceLadder(buyHigh: dec("0.0075"), trim: dec("175.5"))
     let json = try String(decoding: JSONEncoder().encode(ladder), as: UTF8.self)
-    #expect(json.contains(#""buyHigh":"175.5""#))
-    #expect(json.contains(#""trim":"0.0075""#))
+    #expect(json.contains(#""buyHigh":"0.0075""#))
+    #expect(json.contains(#""trim":"175.5""#))
     #expect(!json.contains("buyLow"))
   }
 
@@ -381,12 +381,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 5: Run the tests and confirm they fail**
+- [ ] **Step 5: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests`
 Expected FAIL: `error: cannot find type 'PriceLadder' in scope` (and `DecimalCoding`), then `** TEST FAILED **`.
 
-- [ ] **Step 6: Implement `DecimalCoding.swift`**
+- [x] **Step 6: Implement `DecimalCoding.swift`**
 
 `Wait/Packages/WaitKit/Sources/Domain/DecimalCoding.swift`:
 ```swift
@@ -472,7 +472,7 @@ public extension KeyedEncodingContainer {
 }
 ```
 
-- [ ] **Step 7: Replace the contents of `PriceLadder.swift` with the implementation**
+- [x] **Step 7: Replace the contents of `PriceLadder.swift` with the implementation**
 
 `Wait/Packages/WaitKit/Sources/Domain/PriceLadder.swift`:
 ```swift
@@ -626,12 +626,12 @@ extension PriceLadder: Codable {
 }
 ```
 
-- [ ] **Step 8: Run the tests and confirm they pass**
+- [ ] **Step 8: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests`
 Expected PASS: `** TEST SUCCEEDED **`. Swift Testing reports 7 tests passed.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 ```bash
 git add scripts/test-waitkit.sh scripts/build-app.sh shared/ladder-test-vectors.json Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/Domain Wait/Packages/WaitKit/Tests/DomainTests
 git commit -m "feat(domain): add PriceLadder with validation and shared ladder vectors
