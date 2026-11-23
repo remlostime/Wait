@@ -1,4 +1,4 @@
-import type { DeviceRegistration, DeviceToken, DeviceTokenRepository } from "./DeviceTokenRepository.js"
+import type { ApnsEnvironment, DeviceRegistration, DeviceToken, DeviceTokenRepository, PruneRejection } from "./DeviceTokenRepository.js"
 
 function compare(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0
@@ -40,8 +40,17 @@ export class MockDeviceTokenRepository implements DeviceTokenRepository {
       .sort((a, b) => compare(a.userId, b.userId) || a.createdAt.getTime() - b.createdAt.getTime() || compare(a.token, b.token))
   }
 
-  async prune(token: string): Promise<void> {
+  async prune(token: string, rejection: PruneRejection): Promise<boolean> {
+    const device = this.devices.get(token)
+    if (device === undefined || device.environment !== rejection.environment) return false
+    if (rejection.unregisteredAt !== undefined && device.updatedAt.getTime() >= rejection.unregisteredAt.getTime()) return false
     this.devices.delete(token)
+    return true
+  }
+
+  async setEnvironment(token: string, userId: string, environment: ApnsEnvironment): Promise<void> {
+    const device = this.devices.get(token)
+    if (device?.userId === userId) this.devices.set(token, { ...device, environment })
   }
 
   async markSuccess(token: string, now: Date): Promise<void> {

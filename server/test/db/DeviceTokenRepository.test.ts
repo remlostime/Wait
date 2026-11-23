@@ -75,9 +75,41 @@ describe.each(harnesses)("%s", (_name, makeHarness) => {
     expect(await harness.repo.listByUsers(["user-1"])).toEqual([])
   })
 
-  it("prunes a token regardless of owner", async () => {
+  it("prunes a token that the host it is registered for rejected", async () => {
     await harness.repo.upsert({ token: TOKEN_A, userId: "user-1", environment: "sandbox", bundleId: BUNDLE }, T0)
-    await harness.repo.prune(TOKEN_A)
+    expect(await harness.repo.prune(TOKEN_A, { environment: "sandbox" })).toBe(true)
+    expect(await harness.repo.listByUsers(["user-1"])).toEqual([])
+    expect(await harness.repo.prune(TOKEN_A, { environment: "sandbox" })).toBe(false)
+  })
+
+  it("keeps a token whose stored environment is not the one that rejected it", async () => {
+    await harness.repo.upsert({ token: TOKEN_A, userId: "user-1", environment: "production", bundleId: BUNDLE }, T0)
+    expect(await harness.repo.prune(TOKEN_A, { environment: "sandbox" })).toBe(false)
+    expect(await harness.repo.listByUsers(["user-1"])).toHaveLength(1)
+  })
+
+  it("honors the APNs 410 timestamp: only a token last registered before it is deleted", async () => {
+    await harness.repo.upsert({ token: TOKEN_A, userId: "user-1", environment: "sandbox", bundleId: BUNDLE }, T1)
+    // The app re-registered the token (T1) after APNs invalidated it (T0): it is alive again.
+    expect(await harness.repo.prune(TOKEN_A, { environment: "sandbox", unregisteredAt: T0 })).toBe(false)
+    expect(await harness.repo.prune(TOKEN_A, { environment: "sandbox", unregisteredAt: T1 })).toBe(false)
+    expect(await harness.repo.listByUsers(["user-1"])).toHaveLength(1)
+    expect(await harness.repo.prune(TOKEN_A, { environment: "sandbox", unregisteredAt: new Date(T1.getTime() + 1) })).toBe(true)
+    expect(await harness.repo.listByUsers(["user-1"])).toEqual([])
+  })
+
+  it("repairs only the environment of the token's own user, leaving owner and registration time alone", async () => {
+    await harness.repo.upsert({ token: TOKEN_A, userId: "user-1", environment: "sandbox", bundleId: BUNDLE }, T0)
+    await harness.repo.setEnvironment(TOKEN_A, "user-2", "production")
+    expect((await harness.repo.listByUsers(["user-1"]))[0]?.environment).toBe("sandbox")
+    await harness.repo.setEnvironment(TOKEN_A, "user-1", "production")
+    expect(await harness.repo.listByUsers(["user-1"])).toEqual([
+      { token: TOKEN_A, userId: "user-1", environment: "production", bundleId: BUNDLE, createdAt: T0, updatedAt: T0, lastSuccessAt: null },
+    ])
+  })
+
+  it("does not recreate a token that was removed while the repair was in flight", async () => {
+    await harness.repo.setEnvironment(TOKEN_A, "user-1", "production")
     expect(await harness.repo.listByUsers(["user-1"])).toEqual([])
   })
 

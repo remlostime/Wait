@@ -3,6 +3,7 @@ import { ApnsSender } from "../../src/apns/ApnsSender.js"
 import { MockApnsTransport } from "../../src/apns/MockApnsTransport.js"
 import type { DeviceToken } from "../../src/db/DeviceTokenRepository.js"
 import { MockDeviceTokenRepository } from "../../src/db/MockDeviceTokenRepository.js"
+import { nextOpen } from "../../src/domain/marketCalendar.js"
 import { RecordingLogger } from "../support/alertFakes.js"
 
 const NOW = new Date("2026-11-20T22:00:00.000Z")
@@ -69,10 +70,17 @@ describe("ApnsSender", () => {
           "apns-push-type": "alert",
           "apns-priority": "10",
           "apns-collapse-id": "AAPL-2026-11-20",
+          "apns-expiration": String(Math.floor(nextOpen(NOW).getTime() / 1000)),
         },
       },
     ])
     expect(devices.all()[0]?.lastSuccessAt).toEqual(NOW)
+  })
+
+  it("expires the push at the next market open so a stale signal is not delivered days later", async () => {
+    await sender.send(DEVICE, PAYLOAD)
+    // NOW is Friday 5pm ET; the next open is Monday 2026-11-23 09:30 ET = 14:30 UTC.
+    expect(transport.calls[0]?.headers["apns-expiration"]).toBe(String(Date.parse("2026-11-23T14:30:00.000Z") / 1000))
   })
 
   it("prunes a token APNs reports as unregistered (410)", async () => {
@@ -90,6 +98,30 @@ describe("ApnsSender", () => {
 
   it("prunes when both hosts reject the token", async () => {
     transport.script({ status: 400, reason: "BadDeviceToken" }, { status: 400, reason: "BadDeviceToken" })
+    expect(await sender.send(DEVICE, PAYLOAD)).toBe("pruned")
+    expect(devices.all()).toEqual([])
+  })
+
+  it("repairs the environment without touching the owner when the token was re-registered by someone else", async () => {
+    devices.seed([{ ...DEVICE, userId: "user-2" }])
+    transport.script({ status: 400, reason: "BadDeviceToken" }, { status: 200 })
+    expect(await sender.send(DEVICE, PAYLOAD)).toBe("sent")
+    expect(devices.all()).toEqual([{ ...DEVICE, userId: "user-2", lastSuccessAt: NOW }])
+  })
+
+  it("does not prune a token that was moved to another environment while the send was in flight", async () => {
+    devices.seed([{ ...DEVICE, environment: "production" }])
+    transport.script({ status: 410, reason: "Unregistered" })
+    expect(await sender.send(DEVICE, PAYLOAD)).toBe("failed")
+    expect(devices.all()).toHaveLength(1)
+  })
+
+  it("keeps a token that registered again after the 410 timestamp, and prunes one that did not", async () => {
+    transport.script({ status: 410, reason: "Unregistered", timestamp: NOW.getTime() - 3_600_000 })
+    expect(await sender.send(DEVICE, PAYLOAD)).toBe("failed")
+    expect(devices.all()).toHaveLength(1)
+
+    transport.script({ status: 410, reason: "Unregistered", timestamp: NOW.getTime() + 3_600_000 })
     expect(await sender.send(DEVICE, PAYLOAD)).toBe("pruned")
     expect(devices.all()).toEqual([])
   })

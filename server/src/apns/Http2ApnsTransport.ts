@@ -6,17 +6,28 @@ export const APNS_HOSTS: Record<ApnsEnvironment, string> = {
   sandbox: "https://api.sandbox.push.apple.com",
 }
 
-export type Http2ApnsTransportOptions = { hosts?: Record<ApnsEnvironment, string>; timeoutMs?: number }
+/** A healthy APNs round trip takes tens of milliseconds; a hung one must not eat the cron function's time budget. */
+export const DEFAULT_APNS_TIMEOUT_MS = 3_000
+const DEFAULT_CLOSE_GRACE_MS = 1_000
 
-/** One HTTP/2 session per APNs host, opened lazily and reused across sends. */
+export type Http2ApnsTransportOptions = {
+  hosts?: Record<ApnsEnvironment, string>
+  timeoutMs?: number
+  /** How long `close()` waits for a session to finish gracefully before destroying it. */
+  closeGraceMs?: number
+}
+
+/** One HTTP/2 session per APNs host, opened lazily and reused across sends. Call `close()` when a run is done (a frozen warm instance would keep a dead socket). */
 export class Http2ApnsTransport implements ApnsTransport {
   private readonly hosts: Record<ApnsEnvironment, string>
   private readonly timeoutMs: number
+  private readonly closeGraceMs: number
   private readonly sessions = new Map<ApnsEnvironment, ClientHttp2Session>()
 
   constructor(options: Http2ApnsTransportOptions = {}) {
     this.hosts = options.hosts ?? APNS_HOSTS
-    this.timeoutMs = options.timeoutMs ?? 10_000
+    this.timeoutMs = options.timeoutMs ?? DEFAULT_APNS_TIMEOUT_MS
+    this.closeGraceMs = options.closeGraceMs ?? DEFAULT_CLOSE_GRACE_MS
   }
 
   send(request: ApnsRequest): Promise<ApnsResponse> {
@@ -31,6 +42,7 @@ export class Http2ApnsTransport implements ApnsTransport {
       let status = 0
       let apnsId: string | undefined
       let data = ""
+      let responded = false
       stream.setEncoding("utf8")
       stream.setTimeout(this.timeoutMs, () => {
         stream.close(constants.NGHTTP2_CANCEL)
@@ -40,6 +52,7 @@ export class Http2ApnsTransport implements ApnsTransport {
         reject(new Error(`APNs request timed out after ${this.timeoutMs} ms`))
       })
       stream.on("response", (headers) => {
+        responded = true
         status = Number(headers[":status"] ?? 0)
         const id = headers["apns-id"]
         apnsId = typeof id === "string" ? id : undefined
@@ -47,8 +60,13 @@ export class Http2ApnsTransport implements ApnsTransport {
       stream.on("data", (chunk: string) => {
         data += chunk
       })
-      stream.on("end", () => resolve({ status, apnsId, reason: parseReason(data) }))
+      stream.on("end", () => {
+        if (!responded) return reject(new Error("APNs stream ended without a response"))
+        resolve({ status, apnsId, ...parseBody(data) })
+      })
       stream.on("error", reject)
+      // A stream reset or closed before it ended (a dead connection, a GOAWAY) emits neither "end" nor always "error": fail now, not at the timeout.
+      stream.on("close", () => reject(new Error(`APNs stream closed before a response (rstCode ${stream.rstCode})`)))
       stream.end(request.body)
     })
   }
@@ -56,7 +74,22 @@ export class Http2ApnsTransport implements ApnsTransport {
   async close(): Promise<void> {
     const open = [...this.sessions.values()]
     this.sessions.clear()
-    await Promise.all(open.map((session) => new Promise<void>((resolve) => session.close(() => resolve()))))
+    await Promise.all(
+      open.map(
+        (session) =>
+          new Promise<void>((resolve) => {
+            // Graceful close waits for in-flight streams; a frozen/dead connection never finishes, so destroy it after a grace period.
+            const timer = setTimeout(() => {
+              session.destroy()
+              resolve()
+            }, this.closeGraceMs)
+            session.close(() => {
+              clearTimeout(timer)
+              resolve()
+            })
+          }),
+      ),
+    )
   }
 
   private session(environment: ApnsEnvironment): ClientHttp2Session {
@@ -73,12 +106,13 @@ export class Http2ApnsTransport implements ApnsTransport {
   }
 }
 
-function parseReason(body: string): string | undefined {
-  if (body === "") return undefined
+function parseBody(body: string): { reason?: string | undefined; timestamp?: number | undefined } {
+  if (body === "") return { reason: undefined }
   try {
-    const parsed = JSON.parse(body) as { reason?: unknown }
-    return typeof parsed.reason === "string" ? parsed.reason : undefined
+    const parsed = JSON.parse(body) as { reason?: unknown; timestamp?: unknown }
+    const reason = typeof parsed.reason === "string" ? parsed.reason : undefined
+    return typeof parsed.timestamp === "number" ? { reason, timestamp: parsed.timestamp } : { reason }
   } catch {
-    return undefined
+    return { reason: undefined }
   }
 }

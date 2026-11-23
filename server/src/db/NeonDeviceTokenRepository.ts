@@ -1,5 +1,5 @@
 import { asDate, asNullableDate } from "../lib/time.js"
-import type { ApnsEnvironment, DeviceRegistration, DeviceToken, DeviceTokenRepository } from "./DeviceTokenRepository.js"
+import type { ApnsEnvironment, DeviceRegistration, DeviceToken, DeviceTokenRepository, PruneRejection } from "./DeviceTokenRepository.js"
 import type { Sql } from "./sql.js"
 
 type DeviceTokenRow = {
@@ -61,8 +61,18 @@ export class NeonDeviceTokenRepository implements DeviceTokenRepository {
     return rows.map((row) => mapRow(row as DeviceTokenRow))
   }
 
-  async prune(token: string): Promise<void> {
-    await this.sql`DELETE FROM device_tokens WHERE token = ${token}`
+  async prune(token: string, rejection: PruneRejection): Promise<boolean> {
+    const unregisteredAt = rejection.unregisteredAt?.toISOString() ?? null
+    const rows = await this.sql`
+      DELETE FROM device_tokens
+      WHERE token = ${token} AND environment = ${rejection.environment}
+        AND (${unregisteredAt}::timestamptz IS NULL OR updated_at < ${unregisteredAt}::timestamptz)
+      RETURNING token`
+    return rows.length > 0
+  }
+
+  async setEnvironment(token: string, userId: string, environment: ApnsEnvironment): Promise<void> {
+    await this.sql`UPDATE device_tokens SET environment = ${environment} WHERE token = ${token} AND user_id = ${userId}`
   }
 
   async markSuccess(token: string, now: Date): Promise<void> {

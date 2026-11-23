@@ -1,4 +1,5 @@
 import type { ApnsEnvironment, DeviceToken, DeviceTokenRepository } from "../db/DeviceTokenRepository.js"
+import { nextOpen } from "../domain/marketCalendar.js"
 import type { Clock } from "../lib/clock.js"
 import { silentLog, type LogSink } from "../lib/logSink.js"
 import type { ApnsPayload } from "./payload.js"
@@ -14,13 +15,13 @@ export type ApnsSenderDependencies = {
   transport: ApnsTransport
   tokens: { token(): string; invalidate(): void }
   topic: string
-  devices: Pick<DeviceTokenRepository, "upsert" | "prune" | "markSuccess">
+  devices: Pick<DeviceTokenRepository, "setEnvironment" | "prune" | "markSuccess">
   clock: Clock
   sleep?: (ms: number) => Promise<void>
 }
 
 type Kind = "ok" | "unregistered" | "badToken" | "wrongTopic" | "expiredToken" | "transient" | "rejected"
-type Attempt = { kind: Kind; environment: ApnsEnvironment; status?: number; reason?: string }
+type Attempt = { kind: Kind; environment: ApnsEnvironment; status?: number; reason?: string; timestamp?: number }
 
 const RETRY_DELAY_MS = 1_000
 
@@ -49,9 +50,7 @@ export class ApnsSender implements AlertSender {
         await this.deps.devices.markSuccess(device.token, this.deps.clock.now())
         return "sent"
       case "unregistered":
-        await this.deps.devices.prune(device.token)
-        log.info(describe(result), "apns.pruned")
-        return "pruned"
+        return this.prune(device, result, log)
       case "badToken":
         return this.retryOnOtherEnvironment(device, payload, log)
       case "wrongTopic":
@@ -69,19 +68,29 @@ export class ApnsSender implements AlertSender {
     const other: ApnsEnvironment = device.environment === "sandbox" ? "production" : "sandbox"
     const result = await this.attempt(other, device.token, payload)
     if (result.kind === "ok") {
-      const now = this.deps.clock.now()
-      await this.deps.devices.upsert({ token: device.token, userId: device.userId, environment: other, bundleId: device.bundleId }, now)
-      await this.deps.devices.markSuccess(device.token, now)
+      await this.deps.devices.setEnvironment(device.token, device.userId, other)
+      await this.deps.devices.markSuccess(device.token, this.deps.clock.now())
       log.info({ from: device.environment, to: other }, "apns.environment_repaired")
       return "sent"
     }
     if (result.kind === "badToken" || result.kind === "unregistered") {
-      await this.deps.devices.prune(device.token)
-      log.info(describe(result), "apns.pruned")
-      return "pruned"
+      // Both hosts rejected it; the stored environment is the first host we asked, so that is the one to match.
+      return this.prune(device, { ...result, environment: device.environment }, log)
     }
     log.warn(describe(result), "apns.failed")
     return "failed"
+  }
+
+  /** Deletes the token only if it is still registered for the host that rejected it and was not registered again after APNs' 410 timestamp. */
+  private async prune(device: DeviceToken, rejection: Attempt, log: LogSink): Promise<SendOutcome> {
+    const unregisteredAt = rejection.timestamp === undefined ? undefined : new Date(rejection.timestamp)
+    const deleted = await this.deps.devices.prune(device.token, { environment: rejection.environment, unregisteredAt })
+    if (!deleted) {
+      log.info(describe(rejection), "apns.prune_skipped")
+      return "failed"
+    }
+    log.info(describe(rejection), "apns.pruned")
+    return "pruned"
   }
 
   private async attempt(environment: ApnsEnvironment, deviceToken: string, payload: ApnsPayload): Promise<Attempt> {
@@ -96,9 +105,11 @@ export class ApnsSender implements AlertSender {
           "apns-push-type": "alert",
           "apns-priority": "10",
           "apns-collapse-id": payload.collapseId,
+          // A buy/sell signal is about the close; once the next session opens it is stale, so APNs should drop it rather than deliver it days later.
+          "apns-expiration": String(Math.floor(nextOpen(this.deps.clock.now()).getTime() / 1000)),
         },
       })
-      return { kind: classify(response), environment, status: response.status, reason: response.reason }
+      return { kind: classify(response), environment, status: response.status, reason: response.reason, timestamp: response.timestamp }
     } catch (error) {
       return { kind: "transient", environment, reason: error instanceof Error ? error.message : String(error) }
     }

@@ -1,7 +1,7 @@
-import { createServer, type Http2Server, type IncomingHttpHeaders } from "node:http2"
+import { constants, createServer, type Http2Server, type IncomingHttpHeaders } from "node:http2"
 import type { AddressInfo } from "node:net"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
-import { Http2ApnsTransport } from "../../src/apns/Http2ApnsTransport.js"
+import { DEFAULT_APNS_TIMEOUT_MS, Http2ApnsTransport } from "../../src/apns/Http2ApnsTransport.js"
 import { MockApnsTransport } from "../../src/apns/MockApnsTransport.js"
 
 describe("Http2ApnsTransport", () => {
@@ -73,6 +73,62 @@ describe("Http2ApnsTransport", () => {
 
     expect(after.status).toBe(200)
     expect(sessions - before).toBe(2)
+  })
+})
+
+describe("Http2ApnsTransport failure modes", () => {
+  let server: Http2Server
+  let baseUrl = ""
+
+  beforeAll(async () => {
+    server = createServer()
+    server.on("stream", (stream, headers) => {
+      stream.resume()
+      stream.on("end", () => {
+        if (headers[":path"] === "/3/device/hangup-token") {
+          stream.close(constants.NGHTTP2_NO_ERROR) // closes the stream with no response at all
+        } else if (headers[":path"] === "/3/device/gone-token") {
+          stream.respond({ ":status": 410, "content-type": "application/json" })
+          stream.end(JSON.stringify({ reason: "Unregistered", timestamp: 1_763_700_000_000 }))
+        } else {
+          stream.respond({ ":status": 200 })
+          stream.end()
+        }
+      })
+    })
+    await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve))
+    baseUrl = `http://127.0.0.1:${(server.address() as AddressInfo).port}`
+  })
+
+  afterAll(async () => {
+    await new Promise<void>((resolve) => server.close(() => resolve()))
+  })
+
+  it("defaults the per-request timeout to 3 s so a dead connection cannot eat the function's budget", () => {
+    expect(DEFAULT_APNS_TIMEOUT_MS).toBe(3_000)
+  })
+
+  it("surfaces the 410 timestamp as epoch milliseconds", async () => {
+    const transport = new Http2ApnsTransport({ hosts: { sandbox: baseUrl, production: baseUrl } })
+    const response = await transport.send({ environment: "sandbox", deviceToken: "gone-token", headers: {}, body: "{}" })
+    await transport.close()
+    expect(response).toEqual({ status: 410, apnsId: undefined, reason: "Unregistered", timestamp: 1_763_700_000_000 })
+  })
+
+  it("rejects promptly when a stream closes without a response instead of waiting for the timeout", async () => {
+    const transport = new Http2ApnsTransport({ hosts: { sandbox: baseUrl, production: baseUrl }, timeoutMs: 60_000 })
+    const started = Date.now()
+    await expect(transport.send({ environment: "sandbox", deviceToken: "hangup-token", headers: {}, body: "{}" })).rejects.toThrow(/without a response|before a response/)
+    expect(Date.now() - started).toBeLessThan(2_000)
+    await transport.close()
+  })
+
+  it("close() releases a session that never finishes closing gracefully", async () => {
+    const transport = new Http2ApnsTransport({ hosts: { sandbox: baseUrl, production: baseUrl }, closeGraceMs: 50 })
+    await transport.send({ environment: "sandbox", deviceToken: "good-token", headers: {}, body: "{}" })
+    const started = Date.now()
+    await transport.close()
+    expect(Date.now() - started).toBeLessThan(2_000)
   })
 })
 
