@@ -1,0 +1,38 @@
+[
+  {
+    "symbol": "AAPL",
+    "name": "Apple Inc",
+    "expectedPrice": { "amount": 150.12000000000001, "currencyCode": "USD" },
+    "memo": "Long term\nhold",
+    "currentQuote": {
+      "symbol": "AAPL", "name": "Apple Inc",
+      "open": { "amount": 189.1, "currencyCode": "USD" }, "high": { "amount": 190, "currencyCode": "USD" },
+      "low": { "amount": 188, "currencyCode": "USD" }, "close": { "amount": 189.5, "currencyCode": "USD" },
+      "volume": "1000", "datetime": 690000000, "percentChange": "1.2"
+    },
+    "expectedPriceHistory": [
+      { "date": 690000000.1234567, "price": { "amount": 160, "currencyCode": "USD" } },
+      { "date": 700000000, "price": { "amount": 150.12000000000001, "currencyCode": "USD" } }
+    ]
+  },
+  {
+    "symbol": "Empty", "name": "Empty", "expectedPrice": { "amount": 0, "currencyCode": "USD" }, "memo": "Empty",
+    "currentQuote": { "symbol": "empty", "name": "Empty", "open": { "amount": 0, "currencyCode": "USD" }, "high": { "amount": 0, "currencyCode": "USD" },
+      "low": { "amount": 0, "currencyCode": "USD" }, "close": { "amount": 0, "currencyCode": "USD" }, "volume": "0", "datetime": 690000000, "percentChange": "0" },
+    "expectedPriceHistory": []
+  },
+  {
+    "symbol": "AAPL", "name": "Apple duplicate", "expectedPrice": { "amount": 1, "currencyCode": "USD" }, "memo": "dup",
+    "expectedPriceHistory": []
+  },
+  {
+    "symbol": " baba ", "name": "Alibaba", "expectedPrice": { "amount": "80.5", "currencyCode": "USD" }, "memo": "",
+    "expectedPriceHistory": []
+  },
+  {
+    "symbol": "BABA", "name": "Alibaba duplicate", "expectedPrice": { "amount": "1", "currencyCode": "USD" }, "memo": "dup"
+  },
+  {
+    "symbol": "ZERO", "name": "Zero target", "expectedPrice": { "amount": 0, "currencyCode": "USD" }
+  }
+]

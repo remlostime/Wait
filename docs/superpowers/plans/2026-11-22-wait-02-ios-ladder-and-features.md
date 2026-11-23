@@ -2274,12 +2274,12 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Tests/DomainTests/LegacyStockTests.swift`
 - Modify: `Wait/Packages/WaitKit/Package.swift` (`DomainTests` gains a resource)
 
-- [ ] **Step 1: Add the fixture resource.** In `Package.swift`, change the `DomainTests` test target to:
+- [x] **Step 1: Add the fixture resource.** In `Package.swift`, change the `DomainTests` test target to:
 ```swift
 .testTarget(name: "DomainTests", dependencies: ["Domain"], resources: [.copy("Fixtures")]),
 ```
 
-- [ ] **Step 2: Create the fixture.** It uses the exact legacy on-disk shape: the Money keyed container `{amount, currencyCode}`, `Double` dates measured from the 2001 reference date (`JSONEncoder` default), a duplicate `AAPL`, the `"Empty"` placeholder, a lower-case symbol, a string amount, and a zero target.
+- [x] **Step 2: Create the fixture.** It uses the exact legacy on-disk shape: the Money keyed container `{amount, currencyCode}`, `Double` dates measured from the 2001 reference date (`JSONEncoder` default), a duplicate `AAPL`, the `"Empty"` placeholder, a lower-case symbol, a string amount, and a zero target.
 
 `Wait/Packages/WaitKit/Tests/DomainTests/Fixtures/legacy-stocks.json`:
 ```json
@@ -2323,7 +2323,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ]
 ```
 
-- [ ] **Step 3: Write the failing tests**
+- [x] **Step 3: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/DomainTests/LegacyStockTests.swift`:
 ```swift
@@ -2393,12 +2393,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 4: Run the tests and confirm they fail**
+- [ ] **Step 4: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests/LegacyStockTests`
 Expected FAIL: `error: cannot find type 'LegacyStock' in scope`.
 
-- [ ] **Step 5: Implement**
+- [x] **Step 5: Implement**
 
 `Wait/Packages/WaitKit/Sources/Domain/Legacy/LegacyStock.swift`:
 ```swift
@@ -2511,7 +2511,7 @@ public extension WatchlistItem {
       sortIndex: index,
       checklist: checklist,
       ladderHistory: Array(history.suffix(LadderRevision.maxCount)),
-      createdAt: history.first?.date ?? stamp,
+      createdAt: legacy.expectedPriceHistory?.first?.date ?? stamp,
       updatedAt: stamp
     )
   }
@@ -2551,12 +2551,12 @@ public enum LegacyStockMapper {
 }
 ```
 
-- [ ] **Step 6: Run the tests and confirm they pass**
+- [ ] **Step 6: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests`
 Expected PASS: `** TEST SUCCEEDED **`. All Domain suites pass.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/Domain/Legacy Wait/Packages/WaitKit/Tests/DomainTests
 git commit -m "feat(domain): decode legacy Money-based stocks and map to WatchlistItem
