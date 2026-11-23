@@ -7,6 +7,9 @@ import jwtPlugin from "./plugins/jwt.js"
 import authRoutes from "./routes/api/auth.js"
 import healthRoutes from "./routes/health.js"
 
+/** Codes from the overview §8.4 table for framework/plugin 4xx errors; anything else is INVALID_INPUT. */
+const CLIENT_ERROR_CODES: Record<number, string> = { 401: "UNAUTHORIZED", 404: "NOT_FOUND", 429: "RATE_LIMITED" }
+
 export interface BuildAppOptions {
   config: Config
   container: Container
@@ -32,7 +35,7 @@ export async function buildApp({ config, container }: BuildAppOptions) {
     if (error instanceof AppError) return sendAppError(reply, error)
     if (error.validation) return sendError(reply, 400, "VALIDATION_ERROR", error.message)
     if (typeof error.statusCode === "number" && error.statusCode >= 400 && error.statusCode < 500) {
-      return sendError(reply, error.statusCode, "INVALID_INPUT", error.message)
+      return sendError(reply, error.statusCode, CLIENT_ERROR_CODES[error.statusCode] ?? "INVALID_INPUT", error.message)
     }
     request.log.error({ err: error }, "unhandled_error")
     return sendError(reply, 500, "INTERNAL_ERROR", "An unexpected error occurred")

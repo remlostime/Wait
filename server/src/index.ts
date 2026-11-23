@@ -1,7 +1,7 @@
 import dotenv from "dotenv"
 
-dotenv.config({ path: ".env.development.local" })
-dotenv.config({ path: ".env.local", override: true })
+// Shell variables win over both files; `.env.local` wins over `.env.development.local` (same as scripts/migrate.ts).
+dotenv.config({ path: [".env.local", ".env.development.local"] })
 
 const { app } = await import("./server.js")
 const port = Number(process.env.PORT) || 3000

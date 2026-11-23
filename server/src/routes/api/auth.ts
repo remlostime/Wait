@@ -16,6 +16,8 @@ const authRoutes: FastifyPluginAsync<RouteOptions> = async (server, { container 
       response: { 200: RegisterResponseSchema, 400: ErrorResponseSchema, 429: ErrorResponseSchema, 500: ErrorResponseSchema },
     },
   }, async (request) => {
+    // Trusts x-real-ip because Vercel's edge overwrites it with the real client address. Behind any other
+    // proxy (or in local dev) a client can set it itself, so revisit this before deploying elsewhere.
     const clientIp = (request.headers["x-real-ip"] as string | undefined) ?? request.ip
     const user = await container.auth.register(request.body.anonymousId, clientIp)
     return { token: server.jwt.sign({ userId: user.id }), user: { id: user.id } }

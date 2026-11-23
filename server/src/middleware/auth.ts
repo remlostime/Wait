@@ -15,12 +15,13 @@ declare module "fastify" {
  */
 export function buildAuthMiddleware(users: UserRepository) {
   const authenticate = async (request: FastifyRequest, reply: FastifyReply) => {
-    let userId: string
+    let userId: unknown
     try {
-      userId = (await request.jwtVerify<{ userId: string }>()).userId
+      userId = (await request.jwtVerify<{ userId?: unknown }>()).userId
     } catch {
       return sendError(reply, 401, "UNAUTHORIZED", "Invalid or expired token")
     }
+    if (typeof userId !== "string" || userId.length === 0) return sendError(reply, 401, "UNAUTHORIZED", "Invalid or expired token")
     // Database errors propagate to the global handler (500), unlike Resignal, which reported them as 401.
     const user = await users.getById(userId)
     if (!user) return sendError(reply, 401, "USER_NOT_FOUND", "User associated with token no longer exists")

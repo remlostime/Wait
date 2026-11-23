@@ -48,6 +48,10 @@ export async function createTestDb(): Promise<TestDb> {
   if (process.env.TEST_DB === "neon") {
     const url = process.env.TEST_DATABASE_URL
     if (!url) throw new Error("TEST_DB=neon requires TEST_DATABASE_URL (a disposable Neon branch)")
+    // This path truncates every table: refuse anything that could be the real database.
+    if (url === process.env.DATABASE_URL || url === process.env.DATABASE_URL_UNPOOLED) {
+      throw new Error("TEST_DATABASE_URL must not equal DATABASE_URL; point it at a disposable Neon branch")
+    }
     const pool = new Pool({ connectionString: url })
     const client = await pool.connect()
     try {

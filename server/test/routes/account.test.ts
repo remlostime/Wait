@@ -33,6 +33,14 @@ describe("DELETE /api/auth/account", () => {
     expect(response.json().error.code).toBe("UNAUTHORIZED")
   })
 
+  it("rejects a correctly signed token without a userId", async () => {
+    const { app } = await setup()
+    const token = app.jwt.sign({ sub: "x" } as unknown as { userId: string })
+    const response = await app.inject({ method: "DELETE", url: "/api/auth/account", headers: { authorization: `Bearer ${token}` } })
+    expect(response.statusCode).toBe(401)
+    expect(response.json().error.code).toBe("UNAUTHORIZED")
+  })
+
   it("deletes the user, then the same token reports USER_NOT_FOUND", async () => {
     const { app, users, user, headers } = await setup()
     const deleted = await app.inject({ method: "DELETE", url: "/api/auth/account", headers })

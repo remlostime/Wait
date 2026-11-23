@@ -52,7 +52,7 @@ describe("POST /api/auth/register", () => {
     rateLimiter.denied.add("register:ip:1.2.3.4")
     const limited = await app.inject({ method: "POST", url: "/api/auth/register", headers: { "x-real-ip": "1.2.3.4" }, payload: { anonymousId: ANON } })
     expect(limited.statusCode).toBe(429)
-    expect(limited.headers["retry-after"]).toBe("60")
+    expect(limited.headers["retry-after"]).toBe("3") // one token of REGISTER_IP_POLICY (20 per minute)
     expect(limited.json().error.code).toBe("RATE_LIMITED")
   })
 })

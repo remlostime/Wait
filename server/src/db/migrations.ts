@@ -15,7 +15,10 @@ export interface MigrationFile {
   sql: string
 }
 
-const FILE_PATTERN = /^(\d{3})_([a-z0-9_]+)\.sql$/
+/** Arbitrary constant key for `pg_advisory_xact_lock`, shared by every migration runner. */
+const MIGRATION_LOCK_KEY = 7_340_201
+
+const FILE_PATTERN =/^(\d{3})_([a-z0-9_]+)\.sql$/
 
 export async function readMigrationFiles(dir: string): Promise<MigrationFile[]> {
   const entries = (await readdir(dir)).filter((entry) => entry.endsWith(".sql")).sort()
@@ -45,11 +48,17 @@ export async function applyMigrations(
       skipped.push(file.version)
       continue
     }
-    await executor.transaction(async (tx) => {
+    const didApply = await executor.transaction(async (tx) => {
+      // Serialize concurrent runners (e.g. a manual run overlapping CI), then re-check under the lock.
+      await tx.query("SELECT pg_advisory_xact_lock($1)", [MIGRATION_LOCK_KEY])
+      const existing = await tx.query("SELECT 1 FROM schema_migrations WHERE version = $1", [file.version])
+      if (existing.length > 0) return false
       await tx.exec(file.sql)
       await tx.query("INSERT INTO schema_migrations (version, name) VALUES ($1, $2)", [file.version, file.name])
+      return true
     })
-    applied.push(file.version)
+    if (didApply) applied.push(file.version)
+    else skipped.push(file.version)
   }
   return { applied, skipped }
 }
@@ -72,7 +81,8 @@ export function poolExecutor(client: PoolClientLike): MigrationExecutor {
         await client.query("COMMIT")
         return result
       } catch (error) {
-        await client.query("ROLLBACK")
+        // A failed ROLLBACK (e.g. dropped connection) must not mask the migration's own error.
+        await client.query("ROLLBACK").catch(() => {})
         throw error
       }
     },

@@ -55,6 +55,19 @@ describe("PostgresRateLimiter", () => {
     expect(await limiter.tryTake("k", TWO_PER_SECOND)).toBe(true)
   })
 
+  it("never shortens an active block with a later, shorter one", async () => {
+    await limiter.block("k", 60)
+    await limiter.block("k", 5)
+    clock.advance(10_000)
+    expect(await limiter.tryTake("k", TWO_PER_SECOND)).toBe(false)
+    expect(await limiter.retryAfterSec("k")).toBe(50)
+  })
+
+  it("rejects a cost outside 1...capacity", async () => {
+    await expect(limiter.tryTake("k", TWO_PER_SECOND, 3)).rejects.toThrow(RangeError)
+    await expect(limiter.tryTake("k", TWO_PER_SECOND, 0)).rejects.toThrow(RangeError)
+  })
+
   it("reports the remaining block as Retry-After seconds", async () => {
     expect(await limiter.retryAfterSec("k")).toBeNull()
     await limiter.block("k", 30)

@@ -84,7 +84,10 @@ describe("buildApp", () => {
     const logger = createLogger("info", { write: (line: string) => { lines.push(line) } })
     app = (await buildTestApp({ logger })).app
     app.get("/probe", async (request) => {
-      request.log.info({ headers: { authorization: "Bearer secret-123" }, device: { token: "abc-token" } }, "probe")
+      request.log.info(
+        { token: "top-token", headers: { authorization: "Bearer secret-123" }, device: { token: "abc-token" }, a: { b: { token: "deep-token" } } },
+        "probe",
+      )
       return { ok: true }
     })
     await app.inject({ method: "GET", url: "/probe" })
@@ -92,5 +95,7 @@ describe("buildApp", () => {
     expect(probe).toContain("[redacted]")
     expect(probe).not.toContain("secret-123")
     expect(probe).not.toContain("abc-token")
+    expect(probe).not.toContain("top-token")
+    expect(probe).not.toContain("deep-token")
   })
 })

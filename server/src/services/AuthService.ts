@@ -2,9 +2,12 @@ import type { User } from "../db/types.js"
 import type { UserRepository } from "../db/UserRepository.js"
 import type { Clock } from "../lib/clock.js"
 import { AppError } from "../lib/errors.js"
-import { REGISTER_ANON_POLICY, REGISTER_IP_POLICY, type RateLimiter } from "./RateLimiter.js"
+import { REGISTER_ANON_POLICY, REGISTER_IP_POLICY, type BucketPolicy, type RateLimiter } from "./RateLimiter.js"
 
 export const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+/** Retry-After for an empty bucket: the time until one token refills. */
+const secondsPerToken = (policy: BucketPolicy) => Math.ceil(1 / policy.refillPerSec)
 
 export class AuthService {
   constructor(
@@ -18,10 +21,10 @@ export class AuthService {
     if (!UUID_REGEX.test(anonymousId)) throw new AppError("INVALID_INPUT", "anonymousId must be a valid UUID", 400)
     const normalized = anonymousId.toLowerCase()
     if (!(await this.limiter.tryTake(`register:ip:${clientIp}`, REGISTER_IP_POLICY))) {
-      throw new AppError("RATE_LIMITED", "Too many registration attempts, try again later", 429, 60)
+      throw new AppError("RATE_LIMITED", "Too many registration attempts, try again later", 429, secondsPerToken(REGISTER_IP_POLICY))
     }
     if (!(await this.limiter.tryTake(`register:anon:${normalized}`, REGISTER_ANON_POLICY))) {
-      throw new AppError("RATE_LIMITED", "Too many registration attempts, try again later", 429, 60)
+      throw new AppError("RATE_LIMITED", "Too many registration attempts, try again later", 429, secondsPerToken(REGISTER_ANON_POLICY))
     }
     return this.users.findOrCreateByAnonymousId(normalized, this.clock.now())
   }

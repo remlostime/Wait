@@ -40,6 +40,8 @@ describe("row helpers", () => {
     expect(asDate(new Date(0)).getTime()).toBe(0)
     expect(asNumber("42")).toBe(42)
     expect(asNumber(42n)).toBe(42)
+    expect(() => asDate("not a date")).toThrow(TypeError)
+    expect(() => asNumber("abc")).toThrow(TypeError)
     expect(asNullableString(null)).toBeNull()
     expect(asNullableString(12.5)).toBe("12.5")
   })

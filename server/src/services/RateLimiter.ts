@@ -34,18 +34,22 @@ export class PostgresRateLimiter implements RateLimiter {
   ) {}
 
   async tryTake(key: string, policy: BucketPolicy, cost = 1): Promise<boolean> {
+    if (!Number.isInteger(cost) || cost < 1 || cost > policy.capacity) {
+      throw new RangeError(`tryTake cost must be an integer in 1...${policy.capacity}, got ${cost}`)
+    }
     const now = this.clock.now()
+    // GREATEST(0, …): another instance with a later clock may have written updated_at; never refill negatively.
     const rows = await this.sql`
       INSERT INTO rate_buckets AS b (key, tokens, updated_at)
       VALUES (${key}, ${policy.capacity}::float8 - ${cost}::float8, ${now}::timestamptz)
       ON CONFLICT (key) DO UPDATE SET
         tokens = LEAST(${policy.capacity}::float8,
-                       b.tokens + EXTRACT(EPOCH FROM (${now}::timestamptz - b.updated_at))::float8 * ${policy.refillPerSec}::float8)
+                       b.tokens + GREATEST(0, EXTRACT(EPOCH FROM (${now}::timestamptz - b.updated_at))::float8) * ${policy.refillPerSec}::float8)
                  - ${cost}::float8,
-        updated_at = ${now}::timestamptz
+        updated_at = GREATEST(b.updated_at, ${now}::timestamptz)
       WHERE (b.blocked_until IS NULL OR b.blocked_until <= ${now}::timestamptz)
         AND LEAST(${policy.capacity}::float8,
-                  b.tokens + EXTRACT(EPOCH FROM (${now}::timestamptz - b.updated_at))::float8 * ${policy.refillPerSec}::float8)
+                  b.tokens + GREATEST(0, EXTRACT(EPOCH FROM (${now}::timestamptz - b.updated_at))::float8) * ${policy.refillPerSec}::float8)
             >= ${cost}::float8
       RETURNING tokens`
     return rows.length > 0
@@ -54,10 +58,14 @@ export class PostgresRateLimiter implements RateLimiter {
   async block(key: string, seconds: number): Promise<void> {
     const until = new Date(this.clock.now().getTime() + seconds * 1000)
     // updated_at = until: the refill clock starts when the block ends, so no tokens accrue during it.
+    // GREATEST: a shorter, later 429 (e.g. from a concurrent request) never shortens an active block.
     await this.sql`
-      INSERT INTO rate_buckets (key, tokens, updated_at, blocked_until)
+      INSERT INTO rate_buckets AS b (key, tokens, updated_at, blocked_until)
       VALUES (${key}, 0, ${until}::timestamptz, ${until}::timestamptz)
-      ON CONFLICT (key) DO UPDATE SET tokens = 0, updated_at = EXCLUDED.updated_at, blocked_until = EXCLUDED.blocked_until`
+      ON CONFLICT (key) DO UPDATE SET
+        tokens = 0,
+        updated_at = GREATEST(b.updated_at, EXCLUDED.updated_at),
+        blocked_until = GREATEST(b.blocked_until, EXCLUDED.blocked_until)`
   }
 
   async retryAfterSec(key: string): Promise<number | null> {

@@ -25,10 +25,10 @@ const EnvSchema = z.object({
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"]).default("info"),
   DATABASE_URL: z.string().url(),
   JWT_SECRET: z.string().min(32),
-  FINNHUB_API_KEY: z.string().min(1),
-  TIINGO_API_KEY: z.string().min(1),
-  ALPACA_KEY_ID: z.string().min(1),
-  ALPACA_SECRET_KEY: z.string().min(1),
+  FINNHUB_API_KEY: z.string().trim().min(1),
+  TIINGO_API_KEY: z.string().trim().min(1),
+  ALPACA_KEY_ID: z.string().trim().min(1),
+  ALPACA_SECRET_KEY: z.string().trim().min(1),
 })
 
 /** Pure: validates `env` and returns a typed config. Throws `ConfigError` naming (never echoing) bad variables. */

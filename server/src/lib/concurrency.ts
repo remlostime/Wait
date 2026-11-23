@@ -1,5 +1,6 @@
 /** Runs `fn` over `items` with at most `limit` in flight; results keep input order. */
 export async function mapLimit<T, R>(items: readonly T[], limit: number, fn: (item: T, index: number) => Promise<R>): Promise<R[]> {
+  if (!Number.isInteger(limit) || limit < 1) throw new RangeError(`mapLimit limit must be a positive integer, got ${limit}`)
   const results = new Array<R>(items.length)
   let next = 0
   const worker = async () => {

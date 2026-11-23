@@ -33,7 +33,11 @@ export class NeonUserRepository implements UserRepository {
   }
 
   async deleteById(id: string): Promise<boolean> {
-    const rows = await this.sql`DELETE FROM users WHERE id = ${id} RETURNING id`
+    // Also drop the per-anonymous-id register bucket, so nothing keyed by the deleted identity remains.
+    const rows = await this.sql`
+      WITH deleted AS (DELETE FROM users WHERE id = ${id} RETURNING id, anonymous_id),
+           bucket AS (DELETE FROM rate_buckets WHERE key = (SELECT 'register:anon:' || anonymous_id FROM deleted))
+      SELECT id FROM deleted`
     return rows.length > 0
   }
 }
