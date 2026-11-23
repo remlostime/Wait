@@ -22,16 +22,6 @@ settings:
 packages:
   WaitKit:
     path: Packages/WaitKit
-  # Remote packages used only by the watch app until plan 03 rewrites it on top of WaitKit.
-  Alamofire:
-    url: https://github.com/Alamofire/Alamofire
-    from: 5.4.3
-  Money:
-    url: https://github.com/Flight-School/Money
-    from: 1.3.0
-  SwiftyJSON:
-    url: https://github.com/SwiftyJSON/SwiftyJSON
-    from: 5.0.1
 targets:
   Wait:
     type: application
@@ -94,29 +84,37 @@ targets:
   WaitWatch:
     type: application
     platform: watchOS
+    deploymentTarget: "10.0"
     sources:
-      - path: "WaitWatch Watch App"
+      - path: WaitWatch
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.chenkai.wait.watchkitapp
-        INFOPLIST_FILE: "WaitWatch Watch App/Info.plist"
-        GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_CFBundleDisplayName: WaitWatch
-        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown
-        INFOPLIST_KEY_WKApplication: YES
+        PRODUCT_NAME: WaitWatch
+        DEVELOPMENT_TEAM: 5WDN96EM72
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: "YES"
+        INFOPLIST_KEY_CFBundleDisplayName: Wait
+        INFOPLIST_KEY_WKApplication: "YES"
         INFOPLIST_KEY_WKCompanionAppBundleIdentifier: com.chenkai.wait
-        INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp: NO
+        INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp: "NO"
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
-        DEVELOPMENT_ASSET_PATHS: '"WaitWatch Watch App/Preview Content"'
-        ENABLE_PREVIEWS: YES
-        SKIP_INSTALL: YES
+        DEVELOPMENT_ASSET_PATHS: "\"WaitWatch/Preview Content\""
+        ENABLE_PREVIEWS: "YES"
+        SKIP_INSTALL: "YES"
+        SWIFT_VERSION: "6.0"
         TARGETED_DEVICE_FAMILY: "4"
-        LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/Frameworks"
+        CURRENT_PROJECT_VERSION: "1"
+        MARKETING_VERSION: "1.0"
     dependencies:
-      - package: Money
-      - package: SwiftyJSON
-      - package: Alamofire
+      - package: WaitKit
+        product: Domain
+      - package: WaitKit
+        product: DesignSystem
+      - package: WaitKit
+        product: Connectivity
 schemes:
   Wait:
     build:

@@ -1731,7 +1731,7 @@ EOF
 - Create: `Wait/WaitWatch/{WatchlistListView,WatchlistRowView,WatchStockDetailView,WatchFormat}.swift`
 - Modify: `Wait/project.yml` (the `WaitWatch` target and `packages:`)
 
-- [ ] **Step 1: Move the folder and delete the drifted copies**
+- [x] **Step 1: Move the folder and delete the drifted copies**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -1745,7 +1745,7 @@ ls Wait/WaitWatch
 ```
 Expected: the last command lists exactly `Assets.xcassets`, `Preview Content` and `WaitWatchApp.swift`.
 
-- [ ] **Step 2: Point the watch target at WaitKit**
+- [x] **Step 2: Point the watch target at WaitKit**
 
 First find the watch target key. Plan 01 names it `WaitWatch`, but handle the older spelling too:
 
@@ -1819,7 +1819,7 @@ Expected:
 - The first command prints nothing.
 - The second prints exactly three lines: the target key `  WaitWatch:` under `targets:`, the `      - target: WaitWatch` line under the `Wait` target, and the scheme key `  WaitWatch:` under `schemes:`.
 
-- [ ] **Step 3: Write the formatting helpers**
+- [x] **Step 3: Write the formatting helpers**
 
 Create `Wait/WaitWatch/WatchFormat.swift`:
 
@@ -1910,7 +1910,7 @@ enum WatchFormat {
 #endif
 ```
 
-- [ ] **Step 4: Write the row view**
+- [x] **Step 4: Write the row view**
 
 Create `Wait/WaitWatch/WatchlistRowView.swift`:
 
@@ -1956,7 +1956,7 @@ struct WatchlistRowView: View {
 }
 ```
 
-- [ ] **Step 5: Write the list view**
+- [x] **Step 5: Write the list view**
 
 Create `Wait/WaitWatch/WatchlistListView.swift`:
 
@@ -2053,7 +2053,7 @@ struct WatchlistListView: View {
 #endif
 ```
 
-- [ ] **Step 6: Write the detail view**
+- [x] **Step 6: Write the detail view**
 
 Create `Wait/WaitWatch/WatchStockDetailView.swift`:
 
@@ -2149,7 +2149,7 @@ struct WatchStockDetailView: View {
 #endif
 ```
 
-- [ ] **Step 7: Replace the app entry point**
+- [x] **Step 7: Replace the app entry point**
 
 Replace the whole contents of `Wait/WaitWatch/WaitWatchApp.swift` with:
 
@@ -2185,7 +2185,7 @@ struct WaitWatchApp: App {
 }
 ```
 
-- [ ] **Step 8: Regenerate, resolve packages and build both schemes**
+- [ ] **Step 8: Regenerate, resolve packages and build both schemes** — NOT RUN (code-only; xcodegen generate done, builds skipped)
 
 Run:
 ```bash
@@ -2212,7 +2212,7 @@ Expected:
 - `"WKRunsIndependentlyOfCompanionApp" => false` (or `0`)
 - the `ls` prints `WaitWatch.app`, which shows the phone app embeds the watch app.
 
-- [ ] **Step 9: Prove the watch has no network code, keys or dropped packages**
+- [ ] **Step 9: Prove the watch has no network code, keys or dropped packages** — PARTIAL (source grep clean; Package.resolved still lists the three packages until a real resolve, NOT RUN)
 
 Run:
 ```bash
@@ -2221,7 +2221,7 @@ grep -ciE '"identity" : "(money|alamofire|swiftyjson)"' Wait.xcodeproj/project.x
 ```
 Expected: the first command prints nothing, and the second prints `0`.
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait

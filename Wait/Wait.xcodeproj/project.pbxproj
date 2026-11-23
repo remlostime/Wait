@@ -7,35 +7,27 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0D644AE42B9D4318B9EDB31E /* StockCurrentQuoteNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D26CD41523F0B9F6D8B0811 /* StockCurrentQuoteNetworkClient.swift */; };
-		1578A275E0EE4C559364385B /* PriceHistoryDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBAF5ADE019A7B57FA021A99 /* PriceHistoryDataSource.swift */; };
-		28D7449E4F3A212BF732DD18 /* Money in Frameworks */ = {isa = PBXBuildFile; productRef = DC545A725082129FF2399D0F /* Money */; };
-		30471EC91141DB4E1F410BF9 /* Stock.swift in Sources */ = {isa = PBXBuildFile; fileRef = B426B64091352264298D6C7C /* Stock.swift */; };
+		09286EB2E80828FF7C503E13 /* WatchStockDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CB070BDBB1F69FEFF01573 /* WatchStockDetailView.swift */; };
+		28D7449E4F3A212BF732DD18 /* Domain in Frameworks */ = {isa = PBXBuildFile; productRef = E1068C219D73BB6F28478361 /* Domain */; };
 		334F3F89D2E59EA0A88AB2EE /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 4AC47668988F6798D9CF6531 /* DesignSystem */; };
 		390A3F85646E3724602129D4 /* WidgetRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5236369514DF6571E3BA305 /* WidgetRowView.swift */; };
-		541BD4FD9194A643DD45F5BC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 810F87B0672039811A44D0BC /* ContentView.swift */; };
+		4E31E9CE2AC151E2B9699AFD /* WaitWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2722E2445749B93DFB26C30D /* WaitWatchApp.swift */; };
 		5822B35D8C374709EE7DB4C7 /* WaitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA020FBB341E2CAB0E4DF41 /* WaitApp.swift */; };
-		5823E933825370304615B336 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = A853FD6412B87C6CAB59E176 /* SwiftyJSON */; };
+		5823E933825370304615B336 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = FF6857912F383EEA89B995AE /* DesignSystem */; };
+		5F35D6391D68FAF303E0DC97 /* WatchFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BCA453BDC02FA9BE0FDBE9B /* WatchFormat.swift */; };
 		6A3D5F2EFB80A3AFB4C351B6 /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 9B00CBC5A571C467101E5FFD /* AppFeature */; };
-		762DF6E2E25F5ADA611EBBA9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8EDC53D595167F3F43483AAF /* Assets.xcassets */; };
-		7636D4E7FC5422B74C563749 /* TradeAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A361D2F41410099492A2DF35 /* TradeAction.swift */; };
 		7AE3A33744C0DF7A3DFA9AA0 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4883E77163278A92AEE2B9F2 /* WidgetKit.framework */; };
-		7F80CA9AD4A788B5AA35337E /* StockCurrentQuote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF5A7973A635E10F39B5718 /* StockCurrentQuote.swift */; };
-		81EF7A752C7D255C2939D5F1 /* Size.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E11F4E5A762BE1A09315B /* Size.swift */; };
-		8F38D1DD8F9C3A8B7D44A62C /* PriceHistoryNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BCCA8665E69189E130742DA /* PriceHistoryNetworkClient.swift */; };
-		A8B9E89A272DC96134E58CE8 /* StockRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FB4ADCFCB65D9754289663 /* StockRow.swift */; };
+		81826181F3799E50BC4DC63A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5FA76778700C12293ED15611 /* Preview Assets.xcassets */; };
+		953D95825426EFE4ADFE2BCA /* WatchlistRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010057CF28494C301DA700B0 /* WatchlistRowView.swift */; };
+		97D91D6255DEF930DDE89619 /* WatchlistListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9867F483DFCB14BA00C5714B /* WatchlistListView.swift */; };
 		A8DBDABF6CC11040F60FA1FF /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6A9021E06C9965E2793EA1B3 /* Launch Screen.storyboard */; };
 		ADE09A58096BD731D26305BA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D9628FA6879CD47DF60CA81 /* Assets.xcassets */; };
-		B1D4B4FFF75F90F8D62CF9F8 /* TimeSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C259450DBA91BF16EFC34576 /* TimeSection.swift */; };
 		B4104D5C9AAABEE9BE071230 /* WaitWatch.app in Embed Dependencies */ = {isa = PBXBuildFile; fileRef = 70CCE5DFE766601D708818B5 /* WaitWatch.app */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B937BC4420BD1A1CA6D4DB29 /* WaitWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DD0A9E00FFE87438B0ED30C /* WaitWidget.swift */; };
+		BC35807465C4139328B82E95 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9888572E68CF0973E6B8B4A /* Assets.xcassets */; };
 		C7BC106A6DE61946D5AC9CE4 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24BFFA34B10555750DDD4AC0 /* SwiftUI.framework */; };
-		CD949450B5533FD54B36E0F3 /* StockCurrentQuoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FB18C9E1548EED3CE49B8A3 /* StockCurrentQuoteDataSource.swift */; };
 		CDF7785702A53C66F2393E29 /* WaitWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 00AC94E61052A432C8AA5E61 /* WaitWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		CF229B56887A3BF8A48034FB /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 04C8B8D2FA706AD26EA12D2A /* Alamofire */; };
-		D9A4BACA33269934474E51FA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB54621695C0F304B424D2BB /* Preview Assets.xcassets */; };
-		E6F65BA80C4773808330ECAD /* StockTypeSwitchRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71EC8110FA66F40A471D3E05 /* StockTypeSwitchRow.swift */; };
-		EC572AFECD0DBF929A26153A /* WaitWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C34DB7B30ACE23427504F9E0 /* WaitWatchApp.swift */; };
+		CF229B56887A3BF8A48034FB /* Connectivity in Frameworks */ = {isa = PBXBuildFile; productRef = 9479B20447E764D437F346C2 /* Connectivity */; };
 		F6556D944D65436DDE8C87AA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5D5536D9E34658D6A2B375FF /* Preview Assets.xcassets */; };
 		F6ED00E7B6D83F00922EA963 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF6FE02474D2F7C248F6AFB0 /* Assets.xcassets */; };
 		FA195D356152DBC3482F2252 /* Persistence in Frameworks */ = {isa = PBXBuildFile; productRef = A1C8F406703BC250391A3E08 /* Persistence */; };
@@ -86,39 +78,30 @@
 
 /* Begin PBXFileReference section */
 		00AC94E61052A432C8AA5E61 /* WaitWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = WaitWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		010057CF28494C301DA700B0 /* WatchlistRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchlistRowView.swift; sourceTree = "<group>"; };
 		0281310D9D8A85B6B32A3FB1 /* WaitWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WaitWidget.entitlements; sourceTree = "<group>"; };
 		1DD0A9E00FFE87438B0ED30C /* WaitWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitWidget.swift; sourceTree = "<group>"; };
 		24BFFA34B10555750DDD4AC0 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		35FB4ADCFCB65D9754289663 /* StockRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockRow.swift; sourceTree = "<group>"; };
-		3BCCA8665E69189E130742DA /* PriceHistoryNetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceHistoryNetworkClient.swift; sourceTree = "<group>"; };
+		2722E2445749B93DFB26C30D /* WaitWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitWatchApp.swift; sourceTree = "<group>"; };
 		3D9628FA6879CD47DF60CA81 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		40DE50350588AE7AC756FC42 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		422892C535E6868F029BACC6 /* Wait.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Wait.entitlements; sourceTree = "<group>"; };
 		4883E77163278A92AEE2B9F2 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		5D5536D9E34658D6A2B375FF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		5FA76778700C12293ED15611 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		6737893A6D7EE7DBB6F4C6D7 /* Wait.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Wait.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A9021E06C9965E2793EA1B3 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
-		6FB18C9E1548EED3CE49B8A3 /* StockCurrentQuoteDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCurrentQuoteDataSource.swift; sourceTree = "<group>"; };
 		70CCE5DFE766601D708818B5 /* WaitWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WaitWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		71EC8110FA66F40A471D3E05 /* StockTypeSwitchRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockTypeSwitchRow.swift; sourceTree = "<group>"; };
 		7BA020FBB341E2CAB0E4DF41 /* WaitApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitApp.swift; sourceTree = "<group>"; };
-		7BF5A7973A635E10F39B5718 /* StockCurrentQuote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCurrentQuote.swift; sourceTree = "<group>"; };
 		7EE3F485BF0627E751A6EEC8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		810F87B0672039811A44D0BC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		846E11F4E5A762BE1A09315B /* Size.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Size.swift; sourceTree = "<group>"; };
+		84CB070BDBB1F69FEFF01573 /* WatchStockDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchStockDetailView.swift; sourceTree = "<group>"; };
 		862AC2DBFCA357E015DF11D4 /* WaitRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WaitRelease.entitlements; sourceTree = "<group>"; };
 		8665D69FF7017BB3D9B786B3 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
-		8D26CD41523F0B9F6D8B0811 /* StockCurrentQuoteNetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCurrentQuoteNetworkClient.swift; sourceTree = "<group>"; };
-		8EDC53D595167F3F43483AAF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		912CA7A7F2B8791855544F1A /* WaitKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WaitKit; path = Packages/WaitKit; sourceTree = SOURCE_ROOT; };
-		A361D2F41410099492A2DF35 /* TradeAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeAction.swift; sourceTree = "<group>"; };
+		9867F483DFCB14BA00C5714B /* WatchlistListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchlistListView.swift; sourceTree = "<group>"; };
+		9BCA453BDC02FA9BE0FDBE9B /* WatchFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchFormat.swift; sourceTree = "<group>"; };
 		A5236369514DF6571E3BA305 /* WidgetRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetRowView.swift; sourceTree = "<group>"; };
-		AB54621695C0F304B424D2BB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		B426B64091352264298D6C7C /* Stock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stock.swift; sourceTree = "<group>"; };
-		BCAF24F842C1E8D9CA8952AB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		C259450DBA91BF16EFC34576 /* TimeSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSection.swift; sourceTree = "<group>"; };
-		C34DB7B30ACE23427504F9E0 /* WaitWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitWatchApp.swift; sourceTree = "<group>"; };
-		CBAF5ADE019A7B57FA021A99 /* PriceHistoryDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceHistoryDataSource.swift; sourceTree = "<group>"; };
+		A9888572E68CF0973E6B8B4A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FF6FE02474D2F7C248F6AFB0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -139,9 +122,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				28D7449E4F3A212BF732DD18 /* Money in Frameworks */,
-				5823E933825370304615B336 /* SwiftyJSON in Frameworks */,
-				CF229B56887A3BF8A48034FB /* Alamofire in Frameworks */,
+				28D7449E4F3A212BF732DD18 /* Domain in Frameworks */,
+				5823E933825370304615B336 /* DesignSystem in Frameworks */,
+				CF229B56887A3BF8A48034FB /* Connectivity in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -162,7 +145,7 @@
 				C0C4A62D25C7D13D08D4B986 /* Config */,
 				8E340A7A6D80BF31C60FFAF6 /* Packages */,
 				9B2192203F839070C1439FB2 /* Wait */,
-				9F2598622909EE3FE8424285 /* WaitWatch Watch App */,
+				B74D4A0DD4C40B9F655FC3F5 /* WaitWatch */,
 				4C2E8507E3BB934D5DAC400A /* WaitWidget */,
 				52986F02BE5E6B9E725B9104 /* Frameworks */,
 				51A25CF712FE3575A7071C9C /* Products */,
@@ -200,14 +183,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		58AD4A145D802A3974949D93 /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				AB54621695C0F304B424D2BB /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
-			sourceTree = "<group>";
-		};
 		65B68FAB7E8317E3572140C3 /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
@@ -224,6 +199,14 @@
 			path = Packages;
 			sourceTree = "<group>";
 		};
+		8F9294CA9FDD3B0D60F34CBC /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				5FA76778700C12293ED15611 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
 		9B2192203F839070C1439FB2 /* Wait */ = {
 			isa = PBXGroup;
 			children = (
@@ -238,27 +221,18 @@
 			path = Wait;
 			sourceTree = "<group>";
 		};
-		9F2598622909EE3FE8424285 /* WaitWatch Watch App */ = {
+		B74D4A0DD4C40B9F655FC3F5 /* WaitWatch */ = {
 			isa = PBXGroup;
 			children = (
-				8EDC53D595167F3F43483AAF /* Assets.xcassets */,
-				810F87B0672039811A44D0BC /* ContentView.swift */,
-				BCAF24F842C1E8D9CA8952AB /* Info.plist */,
-				CBAF5ADE019A7B57FA021A99 /* PriceHistoryDataSource.swift */,
-				3BCCA8665E69189E130742DA /* PriceHistoryNetworkClient.swift */,
-				846E11F4E5A762BE1A09315B /* Size.swift */,
-				B426B64091352264298D6C7C /* Stock.swift */,
-				7BF5A7973A635E10F39B5718 /* StockCurrentQuote.swift */,
-				6FB18C9E1548EED3CE49B8A3 /* StockCurrentQuoteDataSource.swift */,
-				8D26CD41523F0B9F6D8B0811 /* StockCurrentQuoteNetworkClient.swift */,
-				35FB4ADCFCB65D9754289663 /* StockRow.swift */,
-				71EC8110FA66F40A471D3E05 /* StockTypeSwitchRow.swift */,
-				C259450DBA91BF16EFC34576 /* TimeSection.swift */,
-				A361D2F41410099492A2DF35 /* TradeAction.swift */,
-				C34DB7B30ACE23427504F9E0 /* WaitWatchApp.swift */,
-				58AD4A145D802A3974949D93 /* Preview Content */,
+				A9888572E68CF0973E6B8B4A /* Assets.xcassets */,
+				2722E2445749B93DFB26C30D /* WaitWatchApp.swift */,
+				9BCA453BDC02FA9BE0FDBE9B /* WatchFormat.swift */,
+				9867F483DFCB14BA00C5714B /* WatchlistListView.swift */,
+				010057CF28494C301DA700B0 /* WatchlistRowView.swift */,
+				84CB070BDBB1F69FEFF01573 /* WatchStockDetailView.swift */,
+				8F9294CA9FDD3B0D60F34CBC /* Preview Content */,
 			);
-			path = "WaitWatch Watch App";
+			path = WaitWatch;
 			sourceTree = "<group>";
 		};
 		C0C4A62D25C7D13D08D4B986 /* Config */ = {
@@ -332,9 +306,9 @@
 			);
 			name = WaitWatch;
 			packageProductDependencies = (
-				DC545A725082129FF2399D0F /* Money */,
-				A853FD6412B87C6CAB59E176 /* SwiftyJSON */,
-				04C8B8D2FA706AD26EA12D2A /* Alamofire */,
+				E1068C219D73BB6F28478361 /* Domain */,
+				FF6857912F383EEA89B995AE /* DesignSystem */,
+				9479B20447E764D437F346C2 /* Connectivity */,
 			);
 			productName = WaitWatch;
 			productReference = 70CCE5DFE766601D708818B5 /* WaitWatch.app */;
@@ -373,9 +347,6 @@
 			mainGroup = 06BB70B4EA6BF2086BB2B316;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				9C8630E639A787A6109612A5 /* XCRemoteSwiftPackageReference "Alamofire" */,
-				9CEBA144D45CC6FC84C93E68 /* XCRemoteSwiftPackageReference "Money" */,
-				966ECDB2B0D90D5BE24AC2F2 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 				22BB5C17FA17C0F6A97B532A /* XCLocalSwiftPackageReference "Packages/WaitKit" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -413,8 +384,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				762DF6E2E25F5ADA611EBBA9 /* Assets.xcassets in Resources */,
-				D9A4BACA33269934474E51FA /* Preview Assets.xcassets in Resources */,
+				BC35807465C4139328B82E95 /* Assets.xcassets in Resources */,
+				81826181F3799E50BC4DC63A /* Preview Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -425,19 +396,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				541BD4FD9194A643DD45F5BC /* ContentView.swift in Sources */,
-				1578A275E0EE4C559364385B /* PriceHistoryDataSource.swift in Sources */,
-				8F38D1DD8F9C3A8B7D44A62C /* PriceHistoryNetworkClient.swift in Sources */,
-				81EF7A752C7D255C2939D5F1 /* Size.swift in Sources */,
-				30471EC91141DB4E1F410BF9 /* Stock.swift in Sources */,
-				7F80CA9AD4A788B5AA35337E /* StockCurrentQuote.swift in Sources */,
-				CD949450B5533FD54B36E0F3 /* StockCurrentQuoteDataSource.swift in Sources */,
-				0D644AE42B9D4318B9EDB31E /* StockCurrentQuoteNetworkClient.swift in Sources */,
-				A8B9E89A272DC96134E58CE8 /* StockRow.swift in Sources */,
-				E6F65BA80C4773808330ECAD /* StockTypeSwitchRow.swift in Sources */,
-				B1D4B4FFF75F90F8D62CF9F8 /* TimeSection.swift in Sources */,
-				7636D4E7FC5422B74C563749 /* TradeAction.swift in Sources */,
-				EC572AFECD0DBF929A26153A /* WaitWatchApp.swift in Sources */,
+				4E31E9CE2AC151E2B9699AFD /* WaitWatchApp.swift in Sources */,
+				5F35D6391D68FAF303E0DC97 /* WatchFormat.swift in Sources */,
+				09286EB2E80828FF7C503E13 /* WatchStockDetailView.swift in Sources */,
+				97D91D6255DEF930DDE89619 /* WatchlistListView.swift in Sources */,
+				953D95825426EFE4ADFE2BCA /* WatchlistRowView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -584,20 +547,25 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				DEVELOPMENT_ASSET_PATHS = "\"WaitWatch Watch App/Preview Content\"";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"WaitWatch/Preview Content\"";
+				DEVELOPMENT_TEAM = 5WDN96EM72;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "WaitWatch Watch App/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = WaitWatch;
+				INFOPLIST_KEY_CFBundleDisplayName = Wait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKApplication = YES;
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.chenkai.wait;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = NO;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.chenkai.wait.watchkitapp;
+				PRODUCT_NAME = WaitWatch;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Debug;
 		};
@@ -606,20 +574,25 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				DEVELOPMENT_ASSET_PATHS = "\"WaitWatch Watch App/Preview Content\"";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"WaitWatch/Preview Content\"";
+				DEVELOPMENT_TEAM = 5WDN96EM72;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "WaitWatch Watch App/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = WaitWatch;
+				INFOPLIST_KEY_CFBundleDisplayName = Wait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKApplication = YES;
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.chenkai.wait;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = NO;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.chenkai.wait.watchkitapp;
+				PRODUCT_NAME = WaitWatch;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Release;
 		};
@@ -783,39 +756,7 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		966ECDB2B0D90D5BE24AC2F2 /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SwiftyJSON/SwiftyJSON";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.1;
-			};
-		};
-		9C8630E639A787A6109612A5 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Alamofire/Alamofire";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.4.3;
-			};
-		};
-		9CEBA144D45CC6FC84C93E68 /* XCRemoteSwiftPackageReference "Money" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Flight-School/Money";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.3.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
 /* Begin XCSwiftPackageProductDependency section */
-		04C8B8D2FA706AD26EA12D2A /* Alamofire */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 9C8630E639A787A6109612A5 /* XCRemoteSwiftPackageReference "Alamofire" */;
-			productName = Alamofire;
-		};
 		35F477C55EE36B2F16C05F04 /* Domain */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Domain;
@@ -823,6 +764,10 @@
 		4AC47668988F6798D9CF6531 /* DesignSystem */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = DesignSystem;
+		};
+		9479B20447E764D437F346C2 /* Connectivity */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Connectivity;
 		};
 		9B00CBC5A571C467101E5FFD /* AppFeature */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -832,15 +777,13 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = Persistence;
 		};
-		A853FD6412B87C6CAB59E176 /* SwiftyJSON */ = {
+		E1068C219D73BB6F28478361 /* Domain */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 966ECDB2B0D90D5BE24AC2F2 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
-			productName = SwiftyJSON;
+			productName = Domain;
 		};
-		DC545A725082129FF2399D0F /* Money */ = {
+		FF6857912F383EEA89B995AE /* DesignSystem */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 9CEBA144D45CC6FC84C93E68 /* XCRemoteSwiftPackageReference "Money" */;
-			productName = Money;
+			productName = DesignSystem;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
