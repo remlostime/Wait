@@ -4788,7 +4788,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 This adapter exists only until plan 04 replaces it with `.backend`. It runs under the free-tier limits: 8 credits per minute, one credit per symbol, and errors reported per symbol.
 
-- [ ] **Step 1: Add the fixture resource.** In `Package.swift`, change the `MarketDataClientTests` target to:
+- [x] **Step 1: Add the fixture resource.** In `Package.swift`, change the `MarketDataClientTests` target to:
 ```swift
 .testTarget(
   name: "MarketDataClientTests",
@@ -4797,7 +4797,7 @@ This adapter exists only until plan 04 replaces it with `.backend`. It runs unde
 ),
 ```
 
-- [ ] **Step 2: Create the fixtures.** All of them are in `Wait/Packages/WaitKit/Tests/MarketDataClientTests/Fixtures/`.
+- [x] **Step 2: Create the fixtures.** All of them are in `Wait/Packages/WaitKit/Tests/MarketDataClientTests/Fixtures/`.
 
 `twelvedata-quote-batch.json` (`XXXX` is an error for one symbol, and `BAD` is garbage that must not fail the batch):
 ```json
@@ -4869,7 +4869,7 @@ This adapter exists only until plan 04 replaces it with `.backend`. It runs unde
 }
 ```
 
-- [ ] **Step 3: Write the failing tests**
+- [x] **Step 3: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/MarketDataClientTests/TwelveDataMarketDataTests.swift`:
 ```swift
@@ -5015,12 +5015,12 @@ func query(_ url: URL) -> [String: String] {
 }
 ```
 
-- [ ] **Step 4: Run the tests and confirm they fail**
+- [ ] **Step 4: Run the tests and confirm they fail** — NOT RUN (code-only; checked in an out-of-repo harness instead)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests/TwelveDataMarketDataTests`
 Expected FAIL: `error: type 'MarketDataClient' has no member 'twelveData'`.
 
-- [ ] **Step 5: Implement `TwelveDataDTOs.swift`**
+- [x] **Step 5: Implement `TwelveDataDTOs.swift`**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -5194,7 +5194,7 @@ enum TwelveDataDecoding {
 }
 ```
 
-- [ ] **Step 6: Implement `TwelveDataMarketData.swift`**
+- [x] **Step 6: Implement `TwelveDataMarketData.swift`**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -5324,7 +5324,7 @@ struct TwelveDataAPI: Sendable {
 }
 ```
 
-- [ ] **Step 7: Add `liveValue`.** Append to `Wait/Packages/WaitKit/Sources/MarketDataClient/MarketDataClient.swift`. In plan 04 this is the one line to change, to `.cached(.backend(…))`.
+- [x] **Step 7: Add `liveValue`.** Append to `Wait/Packages/WaitKit/Sources/MarketDataClient/MarketDataClient.swift`. In plan 04 this is the one line to change, to `.cached(.backend(…))`.
 ```swift
 // MARK: DependencyKey
 
@@ -5338,12 +5338,12 @@ extension MarketDataClient: DependencyKey {
 }
 ```
 
-- [ ] **Step 8: Run the tests and confirm they pass**
+- [ ] **Step 8: Run the tests and confirm they pass** — NOT RUN (code-only; checked in an out-of-repo harness instead)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests`
 Expected PASS: `** TEST SUCCEEDED **`. Every suite passes, including the 10 Twelve Data tests.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/MarketDataClient Wait/Packages/WaitKit/Tests/MarketDataClientTests
 git commit -m "feat(marketdata): Twelve Data stopgap adapter (chunked, UTC, 429-in-body) and liveValue

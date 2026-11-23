@@ -1,0 +1,9 @@
+{
+  "data": [
+    { "symbol": "AAPL", "instrument_name": "Apple Inc", "exchange": "NASDAQ", "mic_code": "XNGS", "instrument_type": "Common Stock", "country": "United States", "currency": "USD" },
+    { "symbol": "AAPL", "instrument_name": "Apple Inc", "exchange": "BMV", "mic_code": "XMEX", "instrument_type": "Common Stock", "country": "Mexico", "currency": "MXN" },
+    { "symbol": "APLE", "instrument_name": "Apple Hospitality REIT Inc", "exchange": "NYSE", "mic_code": "XNYS", "instrument_type": "REIT", "country": "United States", "currency": "USD" },
+    { "symbol": "AAPU", "instrument_name": "Direxion Daily AAPL Bull 2X Shares", "exchange": "NASDAQ", "mic_code": "XNMS", "instrument_type": "ETF", "country": "United States", "currency": "USD" }
+  ],
+  "status": "ok"
+}

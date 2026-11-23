@@ -46,3 +46,14 @@ public extension DependencyValues {
     set { self[MarketDataClient.self] = newValue }
   }
 }
+
+// MARK: DependencyKey
+
+extension MarketDataClient: DependencyKey {
+  /// Plan 02: Twelve Data stopgap. The key comes from Info.plist `TwelveDataAPIKey`, which is `$(TWELVE_DATA_API_KEY)` from `Secrets.xcconfig`.
+  public static let liveValue = MarketDataClient.cached(
+    .twelveData(apiKey: Bundle.main.object(forInfoDictionaryKey: "TwelveDataAPIKey") as? String ?? ""),
+    disk: .live,
+    now: { Date() }
+  )
+}
