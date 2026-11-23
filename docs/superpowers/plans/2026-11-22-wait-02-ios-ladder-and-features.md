@@ -3968,7 +3968,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/MarketDataClient/CacheTTL.swift`
 - Create: `Wait/Packages/WaitKit/Tests/MarketDataClientTests/CacheTTLTests.swift`
 
-- [ ] **Step 1: Write the failing tests.** The instants are from overview §6.3 and were cross-checked in Python.
+- [x] **Step 1: Write the failing tests.** The instants are from overview §6.3 and were cross-checked in Python.
 
 `Wait/Packages/WaitKit/Tests/MarketDataClientTests/CacheTTLTests.swift`:
 ```swift
@@ -4023,12 +4023,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests/CacheTTLTests`
 Expected FAIL: `error: cannot find 'CacheTTL' in scope`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `Wait/Packages/WaitKit/Sources/MarketDataClient/CacheTTL.swift`:
 ```swift
@@ -4082,12 +4082,12 @@ public enum CacheTTL: Sendable {
 }
 ```
 
-- [ ] **Step 4: Run the tests and confirm they pass**
+- [ ] **Step 4: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests/CacheTTLTests`
 Expected PASS: 5 tests pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/MarketDataClient/CacheTTL.swift Wait/Packages/WaitKit/Tests/MarketDataClientTests/CacheTTLTests.swift
 git commit -m "feat(marketdata): market-hours aware cache TTLs
