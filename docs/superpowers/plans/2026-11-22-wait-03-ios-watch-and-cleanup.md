@@ -2626,7 +2626,7 @@ No code changes unless a check fails. A failing check means stop and fix it befo
 
 **Files:** none
 
-- [ ] **Step 1: Run all package tests**
+- [ ] **Step 1: Run all package tests** — NOT RUN (code-only)
 
 Run:
 ```bash
@@ -2635,7 +2635,7 @@ cd /Users/ckai/code/Wait/Wait/Packages/WaitKit && xcodebuild test -scheme WaitKi
 ```
 Expected: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 2: Build the app and the watch**
+- [ ] **Step 2: Build the app and the watch** — NOT RUN (code-only)
 
 Run:
 ```bash
@@ -2647,17 +2647,17 @@ xcodebuild -project Wait.xcodeproj -scheme WaitWatch \
 ```
 Expected: `** BUILD SUCCEEDED **` twice.
 
-- [ ] **Step 3: Confirm the project regenerates cleanly**
+- [x] **Step 3: Confirm the project regenerates cleanly**
 
 Run: `cd /Users/ckai/code/Wait/Wait && xcodegen generate && git status --short Wait.xcodeproj project.yml`
 Expected: no output. The committed project matches `project.yml`.
 
-- [ ] **Step 4: Run the secret scan**
+- [x] **Step 4: Run the secret scan**
 
 Run: `cd /Users/ckai/code/Wait && ./scripts/check-secrets.sh; echo "exit=$?"`
 Expected: the last line is `exit=0`.
 
-- [ ] **Step 5: Run the leftover guards**
+- [x] **Step 5: Run the leftover guards**
 
 Run:
 ```bash
@@ -2667,6 +2667,23 @@ git grep -n "Connectivity.shared" -- '*.swift' | wc -l
 grep -nE "Money|Alamofire|SwiftyJSON|Shake|SwiftyBeaver" Wait/project.yml Wait/Packages/WaitKit/Package.swift | wc -l
 ```
 Expected: `0`, `0`, `0`.
+
+> **Results (2026-11-23, code-only mode).**
+> - **Step 3:** `xcodegen generate` ran and left `Wait.xcodeproj` and `project.yml` with no diff.
+> - **Step 4:** `scripts/check-secrets.sh` printed `check-secrets: OK`, exit 0.
+> - **Step 5:** the three guards print `0`, `0`, `0`.
+> - **Extra static checks:**
+>   - `swiftlint lint --quiet` in `Wait/` reports 0 errors and 1 warning (an `empty_string` in `PriceInputTests.swift`).
+>   - Overview §4.1 greps:
+>     - `grep -ri "twelvedata\|apikey" Wait/WaitWatch` and a grep for `URLSession`, `Alamofire` and `http(s)://` in `Wait/WaitWatch` find nothing.
+>     - `git grep -n "apikey=\|clientId:\|clientSecret:" -- . ':!docs' ':!scripts/check-secrets.sh'` finds nothing.
+>     - `Package.swift` has no Money, Alamofire, SwiftyJSON or legacy targets.
+> - **Connectivity harness** (`/tmp/wait-harness-03/build2.sh`: real `Domain`, `Connectivity` sources and `ConnectivityTests` files compiled with stand-ins for the macro and WatchConnectivity files): `Test run with 30 tests in 4 suites passed`. The suites are `ConnectivityEngineTests` (18), `SnapshotCodingTests` (5), `WatchSnapshotStoreTests` (5) and `ConnectivityClientTests` (2).
+> - **NOT RUN (code-only), user follow-up:**
+>   - Steps 1 and 2 (`WaitKit-Package` tests, `Wait` and `WaitWatch` builds).
+>   - The TCA `AppFeatureTests`, including `AppFeatureConnectivityTests`.
+>   - Task 8's paired-simulator check.
+> - **Open follow-up:** `Wait.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved` is stale. It still pins Alamofire, Money, Shake, SwiftyBeaver, SwiftyJSON and TCA 0.31 until `xcodebuild -resolvePackageDependencies` runs locally.
 
 ---
 
