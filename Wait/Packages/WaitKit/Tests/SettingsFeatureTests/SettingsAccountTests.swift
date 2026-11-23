@@ -31,14 +31,21 @@ struct SettingsAccountTests {
   func deletingAsksForConfirmationThenDeletesAndResetsTheIdentity() async {
     let deleted = LockIsolated(false)
     let resets = LockIsolated(0)
+    let order = LockIsolated<[String]>([])
     var state = SettingsFeature.State(appVersion: "1.0 (1)")
     state.account.anonymousID = "OLD"
     let store = TestStore(initialState: state) {
       SettingsFeature()
     } withDependencies: {
-      $0.apiClient.deleteAccount = { deleted.setValue(true) }
-      $0.identity.reset = { resets.withValue { $0 += 1 } }
-      $0.syncClient.reset = {}
+      $0.apiClient.deleteAccount = {
+        deleted.setValue(true)
+        order.withValue { $0.append("deleteAccount") }
+      }
+      $0.identity.reset = {
+        resets.withValue { $0 += 1 }
+        order.withValue { $0.append("identity.reset") }
+      }
+      $0.syncClient.reset = { order.withValue { $0.append("syncClient.reset") } }
     }
     await store.send(.deleteAccountTapped) { $0.alert = .deleteAccount }
     await store.send(.alert(.presented(.confirmDeleteAccount))) {
@@ -51,6 +58,8 @@ struct SettingsAccountTests {
     }
     #expect(deleted.value)
     #expect(resets.value == 1)
+    // The identity goes before the sync bookkeeping, so no sync can run as the deleted account with the old cursor.
+    #expect(order.value == ["deleteAccount", "identity.reset", "syncClient.reset"])
   }
 
   @Test

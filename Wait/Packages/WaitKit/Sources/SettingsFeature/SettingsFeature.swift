@@ -98,9 +98,20 @@ public struct SettingsFeature {
           return .run { [apiClient, identity, syncClient] send in
             do {
               try await apiClient.deleteAccount()
-              // Bumps the sync generation and forgets the old account's cursor. The local watchlist stays and re-uploads under the new identity.
+              // The identity goes first, so a sync that starts from here on can't authenticate as the deleted account. The sync
+              // bookkeeping goes second: it bumps the sync generation, so a run that is mid-request drops its result, and it forgets
+              // the old account's cursor and acknowledgements (which would otherwise stop the new account from receiving the items).
+              // The local watchlist stays and re-uploads under the new identity. The reset runs even when the identity reset fails.
+              var identityError: (any Error)?
+              do {
+                try identity.reset()
+              } catch {
+                identityError = error
+              }
               await syncClient.reset()
-              try identity.reset()
+              if let identityError {
+                throw identityError
+              }
               await send(.accountDeleted)
             } catch {
               await send(.accountDeletionFailed(error.localizedDescription))

@@ -76,4 +76,26 @@ struct SettingsSyncTests {
 
     #expect(resets.value == 1)
   }
+
+  @Test
+  func theSyncStateIsStillResetWhenTheIdentityResetFails() async {
+    struct KeychainFailure: Error, LocalizedError {
+      var errorDescription: String? { "keychain failed" }
+    }
+    let resets = LockIsolated(0)
+    let store = TestStore(initialState: SettingsFeature.State()) {
+      SettingsFeature()
+    } withDependencies: {
+      $0.apiClient.deleteAccount = {}
+      $0.identity.reset = { throw KeychainFailure() }
+      $0.syncClient.reset = { resets.withValue { $0 += 1 } }
+    }
+    store.exhaustivity = .off(showSkippedAssertions: false)
+
+    await store.send(.deleteAccountTapped)
+    await store.send(.alert(.presented(.confirmDeleteAccount)))
+    await store.receive(\.accountDeletionFailed)
+
+    #expect(resets.value == 1)
+  }
 }

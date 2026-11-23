@@ -94,6 +94,9 @@ public struct WatchlistFeature {
     case task
     case sceneBecameActive
     case refreshPulled
+    /// Loads quotes for the watchlist symbols that have none yet (rows a sync pulled in). Like `symbolQuotesLoaded`'s load,
+    /// it leaves `quotesStatus` (e.g. a rate-limit banner) and an in-flight full-list load alone.
+    case missingQuotesRequested
     case quotesLoaded([Quote])
     /// The one-symbol load after adding a stock. Unlike `quotesLoaded` it leaves `quotesStatus` (e.g. a rate-limit banner) alone.
     case symbolQuotesLoaded([Quote])
@@ -130,6 +133,10 @@ public struct WatchlistFeature {
             .send(.delegate(.refreshRequested)),
             loadQuotes(symbols: state.items.map(\.symbol), policies: [.reload], id: .all)
           )
+
+        case .missingQuotesRequested:
+          let missing = state.items.map(\.symbol).filter { state.quotes[$0] == nil }
+          return loadQuotes(symbols: missing, policies: [.useCache], id: .missing)
 
         case let .quotesLoaded(quotes):
           state.merge(quotes)
@@ -196,6 +203,7 @@ public struct WatchlistFeature {
 
   private enum CancelID: Hashable {
     case all
+    case missing
     case single(String)
   }
 
