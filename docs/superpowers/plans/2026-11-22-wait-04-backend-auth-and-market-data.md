@@ -6869,11 +6869,11 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Packages/WaitKit/Sources/SettingsFeature/AccountSection.swift`
 - Test: `Packages/WaitKit/Tests/SettingsFeatureTests/SettingsAccountTests.swift`
 
-- [ ] **Step 1: Add the dependency**
+- [x] **Step 1: Add the dependency**
 
 In `Package.swift`, add `"APIClient"` to the `SettingsFeature` target's `dependencies`, and also to `SettingsFeatureTests`.
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `Packages/WaitKit/Tests/SettingsFeatureTests/SettingsAccountTests.swift`:
 ```swift
@@ -6959,12 +6959,12 @@ struct SettingsAccountTests {
 }
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [ ] **Step 3: Run the tests to verify they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh SettingsFeatureTests/SettingsAccountTests`
 Expected: the build fails with `type 'SettingsFeature.Action' has no member 'task'` and `no member 'deleteAccountTapped'`.
 
-- [ ] **Step 4: Extend `SettingsFeature`**
+- [x] **Step 4: Extend `SettingsFeature`**
 
 All edits are in `Packages/WaitKit/Sources/SettingsFeature/SettingsFeature.swift`.
 
@@ -7086,7 +7086,7 @@ extension AlertState where Action == SettingsFeature.Action.Alert {
     .ifLet(\.$alert, action: \.alert)
 ```
 
-- [ ] **Step 5: Add the view and wire it in**
+- [x] **Step 5: Add the view and wire it in**
 
 Create `Packages/WaitKit/Sources/SettingsFeature/AccountSection.swift`:
 ```swift
@@ -7145,12 +7145,12 @@ In `Packages/WaitKit/Sources/SettingsFeature/SettingsView.swift`:
       .task { await store.send(.task).finish() }
 ```
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [ ] **Step 6: Run the tests to verify they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh SettingsFeatureTests && scripts/build-app.sh`
 Expected: `** TEST SUCCEEDED **` (plan 02's 2 settings tests plus these 4), then `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait

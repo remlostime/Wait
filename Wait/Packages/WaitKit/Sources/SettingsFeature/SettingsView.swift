@@ -34,15 +34,18 @@ public struct SettingsView: View {
           }
           .foregroundStyle(.primary)
         }
+        AccountSection(store: store)
         Section {
           LabeledContent("Version", value: store.appVersion)
         } header: {
           Text("About")
         } footer: {
-          Text("Data: Twelve Data (temporary). Prices may be delayed. Not investment advice.")
+          Text("Data provided by Finnhub, Tiingo, Alpaca and Massive, for personal use only. 1D and 1W charts are delayed 15 minutes. Not investment advice.")
         }
       }
       .navigationTitle("Settings")
+      .alert($store.scope(\.alert, action: \.alert))
+      .task { await store.send(.task).finish() }
     } destination: { store in
       switch store.case {
         case let .checklistTemplate(templateStore):
