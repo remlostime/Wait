@@ -49,7 +49,7 @@ let package = Package(
     .target(name: "StockDetailsFeature", dependencies: ["Domain", "Persistence", "MarketDataClient", "StockChartFeature", "DesignSystem", .tca]),
     .target(name: "WatchlistFeature", dependencies: ["Domain", "Persistence", "MarketDataClient", "StockDetailsFeature", "ChecklistFeature", "DesignSystem", .tca]),
     .target(name: "SettingsFeature", dependencies: ["ChecklistFeature", "DesignSystem", .tca]),
-    .target(name: "AppFeature", dependencies: ["Domain", "DesignSystem", "Logging", "Persistence", "SettingsFeature", "WatchlistFeature", .tca]),
+    .target(name: "AppFeature", dependencies: ["Connectivity", "Domain", "DesignSystem", "Logging", "Persistence", "SettingsFeature", "WatchlistFeature", .tca]),
 
     // Tests
     .testTarget(name: "DomainTests", dependencies: ["Domain"], resources: [.copy("Fixtures")]),
@@ -68,7 +68,7 @@ let package = Package(
     .testTarget(name: "SettingsFeatureTests", dependencies: ["SettingsFeature", "ChecklistFeature", .tca, .dependenciesTestSupport]),
     .testTarget(
       name: "AppFeatureTests",
-      dependencies: ["AppFeature", "Domain", "MarketDataClient", "Persistence", "StockDetailsFeature", "WatchlistFeature", .tca, .dependenciesTestSupport]
+      dependencies: ["AppFeature", "Connectivity", "Domain", "MarketDataClient", "Persistence", "StockDetailsFeature", "WatchlistFeature", .tca, .dependenciesTestSupport]
     ),
   ],
   swiftLanguageModes: [.v6]

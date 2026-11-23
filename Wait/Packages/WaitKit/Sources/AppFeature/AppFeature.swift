@@ -4,6 +4,7 @@
 //
 
 import ComposableArchitecture
+import Connectivity
 import Domain
 import Foundation
 import Logging
@@ -62,7 +63,10 @@ public struct AppFeature {
         switch action {
           case .appDelegate(.didFinishLaunching):
             // Publish once on launch, so the widget has data even before any quote changes.
-            return publishSnapshot(state.watchlist.snapshotInputs)
+            return .merge(
+              publishSnapshot(state.watchlist.snapshotInputs),
+              .run { [connectivity] _ in await connectivity.activate() }
+            )
 
           case let .scenePhaseChanged(phase):
             switch phase {
@@ -123,6 +127,7 @@ public struct AppFeature {
 
   // MARK: Internal
 
+  @Dependency(\.connectivity) var connectivity
   @Dependency(\.continuousClock) var clock
   @Dependency(\.date) var date
   @Dependency(\.snapshotClient) var snapshotClient
@@ -132,11 +137,11 @@ public struct AppFeature {
   /// The only `snapshotClient.publish` call site: debounced 1 s by default and cancellable by `CancelID.publishSnapshot`.
   /// With `debounced: false` it publishes at once and cancels any pending debounced publish.
   private func publishSnapshot(_ inputs: WatchlistFeature.SnapshotInputs, debounced: Bool = true) -> Effect<Action> {
-    .run { [clock, date, snapshotClient] _ in
+    .run { [clock, date, snapshotClient, connectivity] _ in
       if debounced {
         try await clock.sleep(for: .seconds(1))
       }
-      await snapshotClient.publish(WatchlistSnapshot.make(items: inputs.items, quotes: inputs.quotes, now: date.now))
+      await snapshotClient.alsoSending(to: connectivity).publish(WatchlistSnapshot.make(items: inputs.items, quotes: inputs.quotes, now: date.now))
     }
     .cancellable(id: CancelID.publishSnapshot, cancelInFlight: true)
   }

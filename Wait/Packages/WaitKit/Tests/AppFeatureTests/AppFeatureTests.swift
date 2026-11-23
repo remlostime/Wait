@@ -7,6 +7,7 @@
 
 import AppFeature
 import ComposableArchitecture
+import Connectivity
 import DependenciesTestSupport
 import Domain
 import Foundation
@@ -50,6 +51,7 @@ struct AppFeatureTests {
     } withDependencies: {
       $0.continuousClock = clock
       $0.date.now = appNow
+      $0.connectivity = .noop
       $0.snapshotClient.publish = { snapshot in published.withValue { $0.append(snapshot) } }
     }
     await store.send(.appDelegate(.didFinishLaunching))
@@ -97,6 +99,7 @@ struct AppFeatureTests {
     } withDependencies: {
       $0.continuousClock = clock
       $0.date.now = appNow
+      $0.connectivity = .noop
       $0.snapshotClient.publish = { snapshot in published.withValue { $0.append(snapshot) } }
     }
     // The edit starts a 1 s debounced publish; `.background` must not wait for it.
@@ -121,6 +124,7 @@ struct AppFeatureTests {
       $0.continuousClock = clock
       $0.date.now = appNow
       $0.marketData.quotes = { _, _ in [quote] }
+      $0.connectivity = .noop
       $0.snapshotClient.publish = { snapshot in published.withValue { $0.append(snapshot) } }
     }
     await store.send(.scenePhaseChanged(.active))
@@ -144,6 +148,7 @@ struct AppFeatureTests {
     } withDependencies: {
       $0.continuousClock = clock
       $0.date.now = appNow
+      $0.connectivity = .noop
       $0.snapshotClient.publish = { snapshot in published.withValue { $0.append(snapshot) } }
     }
     await store.send(.watchlist(.quotesLoaded([first]))) { $0.watchlist.quotes = ["AAPL": first] }

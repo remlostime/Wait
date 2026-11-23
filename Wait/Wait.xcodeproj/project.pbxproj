@@ -10,7 +10,6 @@
 		0D644AE42B9D4318B9EDB31E /* StockCurrentQuoteNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D26CD41523F0B9F6D8B0811 /* StockCurrentQuoteNetworkClient.swift */; };
 		1578A275E0EE4C559364385B /* PriceHistoryDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBAF5ADE019A7B57FA021A99 /* PriceHistoryDataSource.swift */; };
 		28D7449E4F3A212BF732DD18 /* Money in Frameworks */ = {isa = PBXBuildFile; productRef = DC545A725082129FF2399D0F /* Money */; };
-		2E308C8D3AB37011DF6FA3A9 /* Connectivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EEC12710451DD1486B0D24 /* Connectivity.swift */; };
 		30471EC91141DB4E1F410BF9 /* Stock.swift in Sources */ = {isa = PBXBuildFile; fileRef = B426B64091352264298D6C7C /* Stock.swift */; };
 		334F3F89D2E59EA0A88AB2EE /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 4AC47668988F6798D9CF6531 /* DesignSystem */; };
 		390A3F85646E3724602129D4 /* WidgetRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5236369514DF6571E3BA305 /* WidgetRowView.swift */; };
@@ -120,7 +119,6 @@
 		C259450DBA91BF16EFC34576 /* TimeSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSection.swift; sourceTree = "<group>"; };
 		C34DB7B30ACE23427504F9E0 /* WaitWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitWatchApp.swift; sourceTree = "<group>"; };
 		CBAF5ADE019A7B57FA021A99 /* PriceHistoryDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceHistoryDataSource.swift; sourceTree = "<group>"; };
-		D3EEC12710451DD1486B0D24 /* Connectivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connectivity.swift; sourceTree = "<group>"; };
 		FF6FE02474D2F7C248F6AFB0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -163,7 +161,6 @@
 			children = (
 				C0C4A62D25C7D13D08D4B986 /* Config */,
 				8E340A7A6D80BF31C60FFAF6 /* Packages */,
-				BD0D84444E92AD19F8760D60 /* Shared */,
 				9B2192203F839070C1439FB2 /* Wait */,
 				9F2598622909EE3FE8424285 /* WaitWatch Watch App */,
 				4C2E8507E3BB934D5DAC400A /* WaitWidget */,
@@ -262,14 +259,6 @@
 				58AD4A145D802A3974949D93 /* Preview Content */,
 			);
 			path = "WaitWatch Watch App";
-			sourceTree = "<group>";
-		};
-		BD0D84444E92AD19F8760D60 /* Shared */ = {
-			isa = PBXGroup;
-			children = (
-				D3EEC12710451DD1486B0D24 /* Connectivity.swift */,
-			);
-			path = Shared;
 			sourceTree = "<group>";
 		};
 		C0C4A62D25C7D13D08D4B986 /* Config */ = {
@@ -436,7 +425,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2E308C8D3AB37011DF6FA3A9 /* Connectivity.swift in Sources */,
 				541BD4FD9194A643DD45F5BC /* ContentView.swift in Sources */,
 				1578A275E0EE4C559364385B /* PriceHistoryDataSource.swift in Sources */,
 				8F38D1DD8F9C3A8B7D44A62C /* PriceHistoryNetworkClient.swift in Sources */,

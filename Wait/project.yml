@@ -96,7 +96,6 @@ targets:
     platform: watchOS
     sources:
       - path: "WaitWatch Watch App"
-      - path: Shared/Connectivity.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.chenkai.wait.watchkitapp

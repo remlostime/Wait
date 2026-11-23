@@ -1442,7 +1442,7 @@ EOF
 - Delete (if present): `Wait/Shared/Connectivity.swift`
 - Modify: `Wait/project.yml` (remove the single `path: Shared/Connectivity.swift` source entry under `WaitWatch`)
 
-- [ ] **Step 1: Add `Connectivity` to the AppFeature targets**
+- [x] **Step 1: Add `Connectivity` to the AppFeature targets**
 
 In `Wait/Packages/WaitKit/Package.swift`:
 - Add the string `"Connectivity",` to the `dependencies:` array of `.target(name: "AppFeature", …)`.
@@ -1456,7 +1456,7 @@ awk '/\.library\(/{next} /name: "AppFeatureTests"/{b=1; print; next} b && /\.(ta
 ```
 Expected: `1`, then `3`. The commands count matches, not lines, because plan 02 writes the `AppFeatureTests` dependency list on a single line. Each `awk` prints only one target's block: from its `name:` line up to the next `.target(` or `.testTarget(`. It skips `.library(` product lines, so `.library(name: "AppFeature", …)` can't match.
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `Wait/Packages/WaitKit/Tests/AppFeatureTests/AppFeatureConnectivityTests.swift`:
 
@@ -1468,6 +1468,7 @@ Create `Wait/Packages/WaitKit/Tests/AppFeatureTests/AppFeatureConnectivityTests.
 
 import ComposableArchitecture
 import Connectivity
+import DependenciesTestSupport
 import Domain
 import Foundation
 import Persistence
@@ -1487,7 +1488,7 @@ private actor CallLog {
 // MARK: - AppFeatureConnectivityTests
 
 @MainActor
-@Suite
+@Suite(.dependencies { $0.defaultFileStorage = .inMemory })
 struct AppFeatureConnectivityTests {
   // MARK: Internal
 
@@ -1536,7 +1537,8 @@ struct AppFeatureConnectivityTests {
     var iterator = activations.makeAsyncIterator()
     let activated: Void? = await iterator.next()
     #expect(activated != nil)
-    await store.skipInFlightEffects()
+    // `strict: false`: the effects may already have finished, which is not a failure here.
+    await store.skipInFlightEffects(strict: false)
   }
 
   // MARK: Private
@@ -1545,7 +1547,7 @@ struct AppFeatureConnectivityTests {
 }
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [ ] **Step 3: Run the tests to verify they fail** — NOT RUN (code-only)
 
 Run:
 ```bash
@@ -1555,7 +1557,7 @@ cd /Users/ckai/code/Wait/Wait/Packages/WaitKit && xcodebuild test -scheme WaitKi
 ```
 Expected: FAIL with compile error `value of type 'SnapshotClient' has no member 'alsoSending'`.
 
-- [ ] **Step 4: Implement the combinator**
+- [x] **Step 4: Implement the combinator**
 
 Create `Wait/Packages/WaitKit/Sources/AppFeature/SnapshotClient+Connectivity.swift`:
 
@@ -1587,7 +1589,7 @@ extension SnapshotClient {
 }
 ```
 
-- [ ] **Step 5: Run the tests to verify the combinator passes and launch still fails**
+- [ ] **Step 5: Run the tests to verify the combinator passes and launch still fails** — NOT RUN (code-only)
 
 Run: the same command as Step 3.
 Expected: FAIL overall.
@@ -1596,7 +1598,7 @@ Expected: FAIL overall.
 
 The test overrides `continuousClock` and `date` because plan 02's launch case also runs `publishSnapshot`. If the launch test fails instead with `Unimplemented: …` for another dependency, add a no-op override for the dependency named in the message to its `withDependencies` closure, re-run, and expect the time-limit failure.
 
-- [ ] **Step 6: Inject the dependency**
+- [x] **Step 6: Inject the dependency**
 
 In `Wait/Packages/WaitKit/Sources/AppFeature/AppFeature.swift`:
 - Add `import Connectivity` to the import block, keeping it alphabetical.
@@ -1606,7 +1608,7 @@ In `Wait/Packages/WaitKit/Sources/AppFeature/AppFeature.swift`:
   @Dependency(\.connectivity) var connectivity
 ```
 
-- [ ] **Step 7: Send every published snapshot to the watch**
+- [x] **Step 7: Send every published snapshot to the watch**
 
 In the same file, the single publish call site is in plan 02's `publishSnapshot(_:)` helper. Swift 6 requires `connectivity` to be captured explicitly, so make two edits:
 1. Add `connectivity` to the effect's capture list. `[clock, date, snapshotClient]` becomes `[clock, date, snapshotClient, connectivity]`.
@@ -1634,7 +1636,7 @@ cd /Users/ckai/code/Wait/Wait/Packages/WaitKit && grep -c "snapshotClient.alsoSe
 ```
 Expected: `1`, then `0`. Also check the capture list: `grep -c "\[clock, date, snapshotClient, connectivity\]" Sources/AppFeature/AppFeature.swift` prints `1`.
 
-- [ ] **Step 8: Activate on launch**
+- [x] **Step 8: Activate on launch**
 
 In the same file, find `case .appDelegate(.didFinishLaunching):`. Plan 02's version publishes a snapshot on launch. Wrap that effect in `.merge` with an activation effect that captures `connectivity` explicitly (Swift 6). The case becomes:
 
@@ -1651,12 +1653,12 @@ If the case's `return` differs from `return publishSnapshot(state.watchlist.snap
 
 Leave every other statement in that case unchanged. Verify with `grep -n -A 6 "case .appDelegate(.didFinishLaunching):" Sources/AppFeature/AppFeature.swift | grep -c "connectivity.activate()"`, and expect `1`.
 
-- [ ] **Step 9: Run the new tests to verify they pass**
+- [ ] **Step 9: Run the new tests to verify they pass** — NOT RUN (code-only)
 
 Run: the same command as Step 3.
 Expected: PASS. `** TEST SUCCEEDED **`, with all 3 tests in `AppFeatureConnectivityTests` passing.
 
-- [ ] **Step 10: Keep plan 02's AppFeature tests green**
+- [ ] **Step 10: Keep plan 02's AppFeature tests green** — NOT RUN (code-only; the `$0.connectivity = .noop` and `import Connectivity` edits to the 4 tests are done)
 
 Run:
 ```bash
@@ -1673,7 +1675,7 @@ If any existing test fails with `Unimplemented: 'ConnectivityClient.activate'` o
 
 These are the only changes allowed to plan-02 tests in this task.
 
-- [ ] **Step 11: Remove the legacy singleton and its source entries**
+- [x] **Step 11: Remove the legacy singleton and its source entries**
 
 Run:
 ```bash
@@ -1692,7 +1694,7 @@ After plan 02's cutover, only the watch target (key `WaitWatch`, or `"WaitWatch 
 
 In `Wait/project.yml`, delete that one list item, plus any keys indented under it. If Task 1 Step 6 found no `Shared` line, there is nothing to delete. Either way, verify with `grep -n "Shared" Wait/project.yml` and expect no output.
 
-- [ ] **Step 12: Regenerate and build the app**
+- [ ] **Step 12: Regenerate and build the app** — NOT RUN (code-only; `xcodegen generate` ran, the build did not)
 
 Run:
 ```bash
@@ -1702,7 +1704,7 @@ xcodebuild -project Wait.xcodeproj -scheme Wait -destination 'platform=iOS Simul
 ```
 Expected: `Created project at /Users/ckai/code/Wait/Wait/Wait.xcodeproj`, then `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 13: Commit**
+- [x] **Step 13: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
