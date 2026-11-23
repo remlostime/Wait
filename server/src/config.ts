@@ -11,6 +11,10 @@ export interface Config {
   tiingoApiKey: string
   alpacaKeyId: string
   alpacaSecretKey: string
+  massive: { apiKey: string; baseUrl: string }
+  cronSecret: string
+  /** `key` is the raw env value; ApnsTokenProvider parses it lazily (Task 9). */
+  apns: { key: string; keyId: string; teamId: string; topic: string }
 }
 
 export class ConfigError extends Error {
@@ -29,6 +33,13 @@ const EnvSchema = z.object({
   TIINGO_API_KEY: z.string().trim().min(1),
   ALPACA_KEY_ID: z.string().trim().min(1),
   ALPACA_SECRET_KEY: z.string().trim().min(1),
+  MASSIVE_API_KEY: z.string().trim().min(1),
+  MASSIVE_BASE_URL: z.string().url().default("https://api.massive.com"),
+  CRON_SECRET: z.string().min(16),
+  APNS_KEY: z.string().min(1),
+  APNS_KEY_ID: z.string().length(10),
+  APNS_TEAM_ID: z.string().length(10),
+  APNS_TOPIC: z.string().min(1).default("com.chenkai.wait"),
 })
 
 /** Pure: validates `env` and returns a typed config. Throws `ConfigError` naming (never echoing) bad variables. */
@@ -48,5 +59,8 @@ export function loadConfig(env: Record<string, string | undefined>): Config {
     tiingoApiKey: e.TIINGO_API_KEY,
     alpacaKeyId: e.ALPACA_KEY_ID,
     alpacaSecretKey: e.ALPACA_SECRET_KEY,
+    massive: { apiKey: e.MASSIVE_API_KEY, baseUrl: e.MASSIVE_BASE_URL.replace(/\/+$/, "") },
+    cronSecret: e.CRON_SECRET,
+    apns: { key: e.APNS_KEY, keyId: e.APNS_KEY_ID, teamId: e.APNS_TEAM_ID, topic: e.APNS_TOPIC },
   }
 }

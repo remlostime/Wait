@@ -1,5 +1,6 @@
 import type { Config } from "../../src/config.js"
 import { buildApp } from "../../src/app.js"
+import { TEST_APNS_KEY_BASE64 } from "./apnsKey.js"
 import { createMockContainer, type Container } from "../../src/container.js"
 
 export const testConfig: Config = {
@@ -11,6 +12,9 @@ export const testConfig: Config = {
   tiingoApiKey: "tiingo-test-key",
   alpacaKeyId: "alpaca-test-id",
   alpacaSecretKey: "alpaca-test-secret",
+  massive: { apiKey: "massive-test-key", baseUrl: "https://api.massive.com" },
+  cronSecret: "cron-test-secret-cron-test-secret",
+  apns: { key: TEST_APNS_KEY_BASE64, keyId: "ABC123DEFG", teamId: "5WDN96EM72", topic: "com.chenkai.wait" },
 }
 
 export const TEST_ANONYMOUS_ID = "00000000-0000-4000-8000-000000000001"

@@ -2972,7 +2972,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 Every fixture uses the generated key from `test/support/apnsKey.ts` (Task 9). No fixture contains a fake or real `.p8`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 In `server/test/config.test.ts`, make these changes:
 
@@ -3025,12 +3025,12 @@ In `server/test/support/app.ts`, add `import { TEST_APNS_KEY_BASE64 } from "./ap
   apns: { key: TEST_APNS_KEY_BASE64, keyId: "ABC123DEFG", teamId: "5WDN96EM72", topic: "com.chenkai.wait" },
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `npx vitest run test/config.test.ts && npm run typecheck`
 Expected: FAIL. The full-config `toEqual` misses `massive`, `cronSecret` and `apns`, and the "fails fast" cases don't throw. `tsc` reports that `testConfig` has unknown properties.
 
-- [ ] **Step 3: Extend the config**
+- [x] **Step 3: Extend the config**
 
 In `server/src/config.ts`, make three additions.
 
@@ -3071,12 +3071,12 @@ APNS_TEAM_ID=5WDN96EM72
 APNS_TOPIC=com.chenkai.wait
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `npx vitest run test/config.test.ts test/server.test.ts && npm test && npm run typecheck`
 Expected: PASS. `config.test.ts` gains 8 tests, and the whole suite stays green. `tsc` exits 0.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add server/src/config.ts server/.env.example server/test/config.test.ts server/test/server.test.ts server/test/support/app.ts

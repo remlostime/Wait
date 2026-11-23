@@ -1,4 +1,5 @@
 import { afterAll, describe, expect, it } from "vitest"
+import { TEST_APNS_KEY_BASE64 } from "./support/apnsKey.js"
 
 const env = {
   NODE_ENV: "test",
@@ -9,6 +10,11 @@ const env = {
   TIINGO_API_KEY: "tiingo-test-key",
   ALPACA_KEY_ID: "alpaca-test-id",
   ALPACA_SECRET_KEY: "alpaca-test-secret",
+  MASSIVE_API_KEY: "massive-test-key",
+  CRON_SECRET: "cron-test-secret-cron-test-secret",
+  APNS_KEY: TEST_APNS_KEY_BASE64,
+  APNS_KEY_ID: "ABC123DEFG",
+  APNS_TEAM_ID: "5WDN96EM72",
 }
 Object.assign(process.env, env)
 const mod = await import("../src/server.js")
