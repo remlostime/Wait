@@ -9407,7 +9407,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 The legacy `SettingsTab.SettingsView` (body `Text("haha")`) stays compiled until the cutover. The new type has the same name but lives in a different module, and no file imports both.
 
-- [ ] **Step 1: Update `Package.swift`**
+- [x] **Step 1: Update `Package.swift`**
   - Append to `products:`: `.library(name: "SettingsFeature", targets: ["SettingsFeature"]),`
   - Append to `targets:`:
     ```swift
@@ -9431,12 +9431,12 @@ The legacy `SettingsTab.SettingsView` (body `Text("haha")`) stays compiled until
     ```
   - Create `Wait/Packages/WaitKit/Sources/SettingsFeature/SettingsFeature.swift` containing only the file header, so the package loads (SwiftPM rejects a target with no sources). Step 4 fills it in.
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 `Wait/Packages/WaitKit/Tests/SettingsFeatureTests/SettingsFeatureTests.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -9463,17 +9463,17 @@ struct SettingsFeatureTests {
 }
 ```
 
-- [ ] **Step 3: Run the test and confirm it fails**
+- [ ] **Step 3: Run the test and confirm it fails** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh SettingsFeatureTests`
 Expected FAIL: `error: cannot find 'SettingsFeature' in scope`.
 
-- [ ] **Step 4: Implement**
+- [x] **Step 4: Implement**
 
 `Wait/Packages/WaitKit/Sources/SettingsFeature/SettingsFeature.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -9545,7 +9545,7 @@ extension SettingsFeature.Path.State: Equatable {}
 `Wait/Packages/WaitKit/Sources/SettingsFeature/SettingsView.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -9566,7 +9566,7 @@ public struct SettingsView: View {
   // MARK: Public
 
   public var body: some View {
-    NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
+    NavigationStack(path: $store.scope(\.path, action: \.path)) {
       Form {
         Section("Checklist") {
           Button {
@@ -9607,12 +9607,12 @@ public struct SettingsView: View {
 }
 ```
 
-- [ ] **Step 5: Run the tests and confirm they pass**
+- [ ] **Step 5: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh SettingsFeatureTests`
 Expected PASS: 2 tests pass.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/SettingsFeature Wait/Packages/WaitKit/Tests/SettingsFeatureTests
 git commit -m "feat(settings): SettingsFeature with reachable checklist template editor
