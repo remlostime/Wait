@@ -2472,7 +2472,7 @@ MSG
 - Create: `Wait/Packages/WaitKit/Tests/SyncClientTests/SyncFixtures.swift` (shared test fixtures)
 - Test: `Wait/Packages/WaitKit/Tests/SyncClientTests/SyncPlannerTests.swift`
 
-- [ ] **Step 1: Write the shared fixtures**
+- [x] **Step 1: Write the shared fixtures**
 
 Create `Wait/Packages/WaitKit/Tests/SyncClientTests/SyncFixtures.swift`:
 ```swift
@@ -2517,7 +2517,7 @@ func remote(_ item: WatchlistItem, deleted: Bool = false, version: Int = 1) -> R
 }
 ```
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `Wait/Packages/WaitKit/Tests/SyncClientTests/SyncPlannerTests.swift`:
 ```swift
@@ -2590,12 +2590,12 @@ struct SyncPlannerTests {
 }
 ```
 
-- [ ] **Step 3: Run the test and confirm it fails**
+- [ ] **Step 3: Run the test and confirm it fails — NOT RUN through Xcode (code-only; the /tmp harness failed with `cannot find 'SyncPlanner' in scope`)**
 
 Run, with `-only-testing:SyncClientTests/SyncPlannerTests`, the package command from the chunk header.
 Expected: `** TEST BUILD FAILED **` with `cannot find 'SyncPlanner' in scope`.
 
-- [ ] **Step 4: Write the implementation**
+- [x] **Step 4: Write the implementation**
 
 Create `Wait/Packages/WaitKit/Sources/SyncClient/SyncPlanner.swift`:
 ```swift
@@ -2648,12 +2648,12 @@ public enum SyncPlanner {
 }
 ```
 
-- [ ] **Step 5: Run the test and confirm it passes**
+- [ ] **Step 5: Run the test and confirm it passes — NOT RUN through Xcode (code-only; real `SyncPlannerTests` ran in a /tmp macOS harness with a stand-in `IdentifiedArray`: 7 of 7 passed)**
 
 Run, with `-only-testing:SyncClientTests/SyncPlannerTests`, the package command from the chunk header.
 Expected: `** TEST SUCCEEDED **`, with 7 tests passing.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
