@@ -5929,7 +5929,7 @@ public struct TemperatureBadge: View {
       .accessibilityLabel(temperature.map { "Temperature \(Int($0.value.rounded())), \($0.band.title)" } ?? "No temperature")
   }
 
-  public static func label(for temperature: Temperature?) -> String {
+  public nonisolated static func label(for temperature: Temperature?) -> String {
     temperature?.formatted ?? "—"
   }
 
@@ -6412,6 +6412,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 ### Task 20: `StockChartFeature` and `ChartGeometry`
 
+> Review fix (2026-11-23): `load` no longer returns early when the range is already in `loading` (a cancelled `.task` left it stuck; `cancelInFlight` handles duplicates), and `nearestIndex`/`selectionChanged` take a raw `Double?` and round to the nearest point.
+
 **Files:**
 - Modify: `Wait/Packages/WaitKit/Package.swift` (add the `StockChartFeature` target and product, and `StockChartFeatureTests`)
 - Create: `Wait/Packages/WaitKit/Sources/StockChartFeature/ChartGeometry.swift`, `Wait/Packages/WaitKit/Sources/StockChartFeature/StockChartFeature.swift`
@@ -6491,6 +6493,14 @@ func points(_ closes: [String]) -> [PricePoint] {
     #expect(ChartGeometry.nearestIndex(-3, count: 2) == 0)
     #expect(ChartGeometry.nearestIndex(nil, count: 2) == nil)
     #expect(ChartGeometry.nearestIndex(0, count: 0) == nil)
+  }
+
+  @Test func nearestIndexRoundsToTheClosestPoint() {
+    #expect(ChartGeometry.nearestIndex(2.4, count: 5) == 2)
+    #expect(ChartGeometry.nearestIndex(2.6, count: 5) == 3)
+    #expect(ChartGeometry.nearestIndex(-1, count: 5) == 0)
+    #expect(ChartGeometry.nearestIndex(9.7, count: 5) == 4)
+    #expect(ChartGeometry.nearestIndex(.nan, count: 5) == nil)
   }
 
   @Test func trendAndChange() {
@@ -6612,12 +6622,33 @@ let oneYear = PriceSeries(symbol: "AAPL", range: .oneYear, points: points(["10",
     }
   }
 
+  @Test func taskAfterACancelledLoadFetchesAgain() async {
+    // A cancelled `.task` leaves its range in `loading`. The next `.task` must still fetch and clear it.
+    var state = StockChartFeature.State(symbol: "AAPL")
+    state.loading = [.oneYear]
+    let store = TestStore(initialState: state) {
+      StockChartFeature()
+    } withDependencies: {
+      $0.marketData.series = { _, _, policy in
+        if policy == .cacheOnly { throw MarketDataError.notCached }
+        return oneYear
+      }
+    }
+    await store.send(.task)
+    await store.receive(\.seriesLoaded) {
+      $0.loading = []
+      $0.series[.oneYear] = oneYear
+    }
+  }
+
   @Test func selectionSnapsToAValidIndex() async {
     var state = StockChartFeature.State(symbol: "AAPL")
     state.series[.oneYear] = oneYear
     let store = TestStore(initialState: state) { StockChartFeature() }
     await store.send(.selectionChanged(7)) { $0.selectedIndex = 1 }
     #expect(store.state.selectedPoint?.close == 12)
+    await store.send(.selectionChanged(0.4)) { $0.selectedIndex = 0 }
+    await store.send(.selectionChanged(0.6)) { $0.selectedIndex = 1 }
     await store.send(.selectionChanged(nil)) { $0.selectedIndex = nil }
   }
 }
@@ -6666,11 +6697,12 @@ public enum ChartGeometry {
     return max(0, low - pad) ... (high + pad)
   }
 
-  public static func nearestIndex(_ raw: Int?, count: Int) -> Int? {
-    guard let raw, count > 0 else {
+  /// Rounds the raw x value to the nearest point index and clamps it to `0 ..< count`. Nil for nil, NaN or no points.
+  public static func nearestIndex(_ raw: Double?, count: Int) -> Int? {
+    guard let raw, raw.isFinite, count > 0 else {
       return nil
     }
-    return min(max(raw, 0), count - 1)
+    return Int(min(max(raw.rounded(), 0), Double(count - 1)))
   }
 
   public static func trend(_ points: [PricePoint]) -> ChartTrend {
@@ -6758,7 +6790,8 @@ public struct StockChartFeature {
     case task
     case rangeSelected(ChartRange)
     case retryTapped
-    case selectionChanged(Int?)
+    /// The raw x value from `chartXSelection`; the reducer rounds it to the nearest point.
+    case selectionChanged(Double?)
     /// Cache-first result. It fills the chart but keeps `loading`, because the fresh request is still running.
     case cachedSeriesLoaded(ChartRange, PriceSeries)
     case seriesLoaded(ChartRange, PriceSeries)
@@ -6814,9 +6847,8 @@ public struct StockChartFeature {
 
   /// For `.useCache`, cached data goes out first (`.cachedSeriesLoaded`), then the possibly network-backed result.
   private func load(_ state: inout State, range: ChartRange, policy: CachePolicy) -> Effect<Action> {
-    guard !state.loading.contains(range) else {
-      return .none
-    }
+    // No in-flight guard: a cancelled load (view disappeared) would leave `range` in `loading` and block every later load.
+    // `cancelInFlight` already supersedes a still-running request.
     state.loading.insert(range)
     state.failed[range] = nil
     let symbol = state.symbol
@@ -6850,6 +6882,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 ### Task 21: `StockChartView` (Swift Charts on iOS 17)
 
+> Review fix (2026-11-23): the view imports `MarketDataClient` (it uses `.previewValue`/`MarketDataError`), and `chartXSelection` binds a raw `Double?` so a scrub rounds to the nearest point instead of truncating; the feature does the rounding.
+
 **Files:**
 - Create: `Wait/Packages/WaitKit/Sources/StockChartFeature/StockChartView.swift`
 
@@ -6868,6 +6902,7 @@ import Charts
 import ComposableArchitecture
 import DesignSystem
 import Domain
+import MarketDataClient
 import SwiftUI
 
 // MARK: - StockChartView
@@ -6987,7 +7022,7 @@ public struct StockChartView: View {
         }
       }
       .chartYAxis { AxisMarks(position: .trailing) }
-      .chartXSelection(value: Binding(get: { store.selectedIndex }, set: { store.send(.selectionChanged($0)) }))
+      .chartXSelection(value: Binding<Double?>(get: { store.selectedIndex.map(Double.init) }, set: { store.send(.selectionChanged($0)) }))
       .accessibilityLabel("\(store.symbol) price chart, \(store.range.title)")
     } else if store.loading.contains(store.range) {
       ProgressView()

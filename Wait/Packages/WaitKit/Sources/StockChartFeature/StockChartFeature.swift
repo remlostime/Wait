@@ -53,7 +53,8 @@ public struct StockChartFeature {
     case task
     case rangeSelected(ChartRange)
     case retryTapped
-    case selectionChanged(Int?)
+    /// The raw x value from `chartXSelection`; the reducer rounds it to the nearest point.
+    case selectionChanged(Double?)
     /// Cache-first result. It fills the chart but keeps `loading`, because the fresh request is still running.
     case cachedSeriesLoaded(ChartRange, PriceSeries)
     case seriesLoaded(ChartRange, PriceSeries)
@@ -109,9 +110,8 @@ public struct StockChartFeature {
 
   /// For `.useCache`, cached data goes out first (`.cachedSeriesLoaded`), then the possibly network-backed result.
   private func load(_ state: inout State, range: ChartRange, policy: CachePolicy) -> Effect<Action> {
-    guard !state.loading.contains(range) else {
-      return .none
-    }
+    // No in-flight guard: a cancelled load (view disappeared) would leave `range` in `loading` and block every later load.
+    // `cancelInFlight` already supersedes a still-running request.
     state.loading.insert(range)
     state.failed[range] = nil
     let symbol = state.symbol

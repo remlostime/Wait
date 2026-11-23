@@ -100,12 +100,33 @@ let oneYear = PriceSeries(symbol: "AAPL", range: .oneYear, points: points(["10",
     }
   }
 
+  @Test func taskAfterACancelledLoadFetchesAgain() async {
+    // A cancelled `.task` leaves its range in `loading`. The next `.task` must still fetch and clear it.
+    var state = StockChartFeature.State(symbol: "AAPL")
+    state.loading = [.oneYear]
+    let store = TestStore(initialState: state) {
+      StockChartFeature()
+    } withDependencies: {
+      $0.marketData.series = { _, _, policy in
+        if policy == .cacheOnly { throw MarketDataError.notCached }
+        return oneYear
+      }
+    }
+    await store.send(.task)
+    await store.receive(\.seriesLoaded) {
+      $0.loading = []
+      $0.series[.oneYear] = oneYear
+    }
+  }
+
   @Test func selectionSnapsToAValidIndex() async {
     var state = StockChartFeature.State(symbol: "AAPL")
     state.series[.oneYear] = oneYear
     let store = TestStore(initialState: state) { StockChartFeature() }
     await store.send(.selectionChanged(7)) { $0.selectedIndex = 1 }
     #expect(store.state.selectedPoint?.close == 12)
+    await store.send(.selectionChanged(0.4)) { $0.selectedIndex = 0 }
+    await store.send(.selectionChanged(0.6)) { $0.selectedIndex = 1 }
     await store.send(.selectionChanged(nil)) { $0.selectedIndex = nil }
   }
 }

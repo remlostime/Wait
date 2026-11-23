@@ -127,7 +127,7 @@ public struct StockChartView: View {
         }
       }
       .chartYAxis { AxisMarks(position: .trailing) }
-      .chartXSelection(value: Binding(get: { store.selectedIndex }, set: { store.send(.selectionChanged($0)) }))
+      .chartXSelection(value: Binding<Double?>(get: { store.selectedIndex.map(Double.init) }, set: { store.send(.selectionChanged($0)) }))
       .accessibilityLabel("\(store.symbol) price chart, \(store.range.title)")
     } else if store.loading.contains(store.range) {
       ProgressView()

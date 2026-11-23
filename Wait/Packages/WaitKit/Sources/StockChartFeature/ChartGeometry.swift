@@ -34,11 +34,12 @@ public enum ChartGeometry {
     return max(0, low - pad) ... (high + pad)
   }
 
-  public static func nearestIndex(_ raw: Int?, count: Int) -> Int? {
-    guard let raw, count > 0 else {
+  /// Rounds the raw x value to the nearest point index and clamps it to `0 ..< count`. Nil for nil, NaN or no points.
+  public static func nearestIndex(_ raw: Double?, count: Int) -> Int? {
+    guard let raw, raw.isFinite, count > 0 else {
       return nil
     }
-    return min(max(raw, 0), count - 1)
+    return Int(min(max(raw.rounded(), 0), Double(count - 1)))
   }
 
   public static func trend(_ points: [PricePoint]) -> ChartTrend {

@@ -5,6 +5,8 @@
 
 import CoreGraphics
 
+// MARK: - Spacing
+
 /// 4-pt spacing scale. It replaces the legacy `Size` enum, which is deleted at the cutover.
 public enum Spacing {
   public static let xxs: CGFloat = 2

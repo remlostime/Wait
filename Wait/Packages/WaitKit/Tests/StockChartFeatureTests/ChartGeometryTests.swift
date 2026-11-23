@@ -45,6 +45,14 @@ func points(_ closes: [String]) -> [PricePoint] {
     #expect(ChartGeometry.nearestIndex(0, count: 0) == nil)
   }
 
+  @Test func nearestIndexRoundsToTheClosestPoint() {
+    #expect(ChartGeometry.nearestIndex(2.4, count: 5) == 2)
+    #expect(ChartGeometry.nearestIndex(2.6, count: 5) == 3)
+    #expect(ChartGeometry.nearestIndex(-1, count: 5) == 0)
+    #expect(ChartGeometry.nearestIndex(9.7, count: 5) == 4)
+    #expect(ChartGeometry.nearestIndex(.nan, count: 5) == nil)
+  }
+
   @Test func trendAndChange() {
     #expect(ChartGeometry.trend(points(["10", "12"])) == .up)
     #expect(ChartGeometry.trend(points(["12", "10"])) == .down)

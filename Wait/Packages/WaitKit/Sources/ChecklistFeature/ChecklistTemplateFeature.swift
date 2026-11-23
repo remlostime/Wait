@@ -21,7 +21,11 @@ public struct ChecklistTemplateFeature {
 
   @ObservableState
   public struct State: Equatable {
+    // MARK: Lifecycle
+
     public init() {}
+
+    // MARK: Public
 
     @Shared(.checklistTemplate) public var items
   }

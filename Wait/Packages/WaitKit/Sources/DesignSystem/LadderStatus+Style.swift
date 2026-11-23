@@ -6,6 +6,8 @@
 import Domain
 import SwiftUI
 
+// MARK: - LadderStatus + Style
+
 public extension LadderStatus {
   var tint: Color {
     switch self {
@@ -31,6 +33,8 @@ public extension LadderStatus {
     }
   }
 }
+
+// MARK: - TemperatureBand + Style
 
 public extension TemperatureBand {
   var tint: Color {
