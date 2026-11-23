@@ -74,6 +74,8 @@ targets:
         product: LegacyStockDetails
       - package: WaitKit
         product: SettingsTab
+      - package: WaitKit
+        product: AppFeature
       - target: WaitWidgetExtension
       - target: WaitWatch
         embed: true

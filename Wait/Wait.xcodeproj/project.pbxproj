@@ -30,6 +30,7 @@
 		6C73841B21050FDFBE13CCAF /* WidgetStockRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E478B4BDC31D2236A5414F50 /* WidgetStockRow.swift */; };
 		762DF6E2E25F5ADA611EBBA9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8EDC53D595167F3F43483AAF /* Assets.xcassets */; };
 		7636D4E7FC5422B74C563749 /* TradeAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A361D2F41410099492A2DF35 /* TradeAction.swift */; };
+		7A59ADCA66C41218DD9101E2 /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 9B00CBC5A571C467101E5FFD /* AppFeature */; };
 		7AE3A33744C0DF7A3DFA9AA0 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4883E77163278A92AEE2B9F2 /* WidgetKit.framework */; };
 		7F80CA9AD4A788B5AA35337E /* StockCurrentQuote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF5A7973A635E10F39B5718 /* StockCurrentQuote.swift */; };
 		81EF7A752C7D255C2939D5F1 /* Size.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E11F4E5A762BE1A09315B /* Size.swift */; };
@@ -189,6 +190,7 @@
 				1F344F0ECD5BD1B79C470E83 /* StockCharts in Frameworks */,
 				B462FA3BA72C17DA05D559D1 /* LegacyStockDetails in Frameworks */,
 				B3945D627A1FA845466E70F5 /* SettingsTab in Frameworks */,
+				7A59ADCA66C41218DD9101E2 /* AppFeature in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -395,6 +397,7 @@
 				3861CD96BF78DAD3918F2BBE /* StockCharts */,
 				CAC6E9A046C937132BCB6F9D /* LegacyStockDetails */,
 				123B16A861D38A1ABFDC87C6 /* SettingsTab */,
+				9B00CBC5A571C467101E5FFD /* AppFeature */,
 			);
 			productName = Wait;
 			productReference = 6737893A6D7EE7DBB6F4C6D7 /* Wait.app */;
@@ -970,6 +973,10 @@
 		7DFC5A12F104EA60FF18A678 /* Networking */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Networking;
+		};
+		9B00CBC5A571C467101E5FFD /* AppFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AppFeature;
 		};
 		9FAD0E7761409BA4561840C0 /* DesignSystem */ = {
 			isa = XCSwiftPackageProductDependency;

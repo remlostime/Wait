@@ -39,6 +39,7 @@ let package = Package(
     .library(name: "StockDetailsFeature", targets: ["StockDetailsFeature"]),
     .library(name: "WatchlistFeature", targets: ["WatchlistFeature"]),
     .library(name: "SettingsFeature", targets: ["SettingsFeature"]),
+    .library(name: "AppFeature", targets: ["AppFeature"]),
   ],
   dependencies: [
     .package(
@@ -147,6 +148,18 @@ let package = Package(
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
       ]
     ),
+    .target(
+      name: "AppFeature",
+      dependencies: [
+        "Domain",
+        "DesignSystem",
+        "Logging",
+        "Persistence",
+        "SettingsFeature",
+        "WatchlistFeature",
+        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+      ]
+    ),
     .testTarget(name: "DomainTests", dependencies: ["Domain"], resources: [.copy("Fixtures")]),
     .testTarget(name: "LoggingTests", dependencies: ["Logging"]),
     .testTarget(name: "DesignSystemTests", dependencies: ["DesignSystem", "Domain"]),
@@ -216,6 +229,19 @@ let package = Package(
       dependencies: [
         "SettingsFeature",
         "ChecklistFeature",
+        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+        .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
+      ]
+    ),
+    .testTarget(
+      name: "AppFeatureTests",
+      dependencies: [
+        "AppFeature",
+        "Domain",
+        "MarketDataClient",
+        "Persistence",
+        "StockDetailsFeature",
+        "WatchlistFeature",
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
         .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
       ]

@@ -1,27 +1,20 @@
-// Created by kai_chen on 5/4/21.
+//
+// Created by: kai_chen on 5/4/21.
+// Copyright © 2021 Wait. All rights reserved.
+//
 
-import DesignSystem
-import SettingsTab
+import AppFeature
 import SwiftUI
 
 // MARK: - WaitApp
 
 @main
 struct WaitApp: App {
+  @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+
   var body: some Scene {
     WindowGroup {
-      TabView {
-        MainView()
-          .tabItem {
-            Image(systemName: "house")
-          }
-
-        SettingsView()
-          .tabItem {
-            Image(systemName: "gearshape")
-          }
-      }
-      .accentColor(.mint)
+      AppView(store: appDelegate.store)
     }
   }
 }

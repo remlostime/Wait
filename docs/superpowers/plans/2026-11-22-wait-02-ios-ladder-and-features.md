@@ -9675,7 +9675,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `Wait/Wait/Info.plist` (add the URL scheme)
 - Modify: `Wait/project.yml` (the app target gains the `AppFeature` product)
 
-- [ ] **Step 1: Update `Package.swift`**
+- [x] **Step 1: Update `Package.swift`**
   - Append to `products:`: `.library(name: "AppFeature", targets: ["AppFeature"]),`
   - Append to `targets:`:
     ```swift
@@ -9707,7 +9707,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
     ```
   - Create `Wait/Packages/WaitKit/Sources/AppFeature/DeepLink.swift` containing only the file header, so the package loads (SwiftPM rejects a target with no sources). Step 4 fills it in.
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/AppFeatureTests/AppFeatureTests.swift`:
 ```swift
@@ -9715,6 +9715,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 // Created by: Claude on 2026-11-22.
 // Copyright © 2021 Wait. All rights reserved.
 //
+
+// swiftlint:disable force_try
 
 import AppFeature
 import ComposableArchitecture
@@ -9832,12 +9834,12 @@ struct AppFeatureTests {
 }
 ```
 
-- [ ] **Step 3: Run the tests and confirm they fail**
+- [ ] **Step 3: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh AppFeatureTests`
 Expected FAIL: `error: cannot find 'DeepLink' in scope` and `cannot find 'AppFeature' in scope`.
 
-- [ ] **Step 4: Implement `DeepLink.swift` (replacing the header-only file) and `AppDelegateAction.swift`**
+- [x] **Step 4: Implement `DeepLink.swift` (replacing the header-only file) and `AppDelegateAction.swift`**
 
 `Wait/Packages/WaitKit/Sources/AppFeature/DeepLink.swift`:
 ```swift
@@ -9893,7 +9895,7 @@ public enum AppDelegateAction: Equatable, Sendable {
 }
 ```
 
-- [ ] **Step 5: Implement `AppFeature.swift`.**
+- [x] **Step 5: Implement `AppFeature.swift`.**
 
 The whole composition is wrapped in `CombineReducers`, and `.onChange(of: \.watchlist.snapshotInputs)` is attached outside it. That matters: `onChange` only sees mutations made by the reducer it wraps (overview §12.3). Attached to the inner `Reduce`, it would never see the watchlist child's changes. Plan 05 appends a second `.onChange` (the sync debounce on `\.watchlist.items`) to the same `CombineReducers`.
 
@@ -9952,10 +9954,10 @@ public struct AppFeature {
   public var body: some ReducerOf<Self> {
     CombineReducers {
       BindingReducer()
-      Scope(state: \.watchlist, action: \.watchlist) {
+      Scope(\.watchlist, action: \.watchlist) {
         WatchlistFeature()
       }
-      Scope(state: \.settings, action: \.settings) {
+      Scope(\.settings, action: \.settings) {
         SettingsFeature()
       }
       Reduce { state, action in
@@ -9997,10 +9999,9 @@ public struct AppFeature {
         }
       }
     }
-    .onChange(of: \.watchlist.snapshotInputs) { _, inputs in
-      Reduce { _, _ in
-        publishSnapshot(inputs)
-      }
+    // TCA 1.26.2 `onChange(of:_:)`: `perform: (oldValue, inout State) -> EffectOf<Self>`. The `{ Reducer }` builder form is deprecated.
+    .onChange(of: \.watchlist.snapshotInputs) { _, state in
+      publishSnapshot(state.watchlist.snapshotInputs)
     }
   }
 
@@ -10023,12 +10024,12 @@ public struct AppFeature {
 }
 ```
 
-- [ ] **Step 6: Run the tests and confirm they pass**
+- [ ] **Step 6: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh AppFeatureTests`
 Expected PASS: 6 tests pass.
 
-- [ ] **Step 7: Implement `AppView.swift` and `AppDelegate.swift`** (`swiftui-expert:swiftui-expert-skill`)
+- [x] **Step 7: Implement `AppView.swift` and `AppDelegate.swift`** (`swiftui-expert:swiftui-expert-skill`)
 
 `Wait/Packages/WaitKit/Sources/AppFeature/AppView.swift`:
 ```swift
@@ -10056,10 +10057,10 @@ public struct AppView: View {
 
   public var body: some View {
     TabView(selection: $store.selectedTab) {
-      WatchlistView(store: store.scope(state: \.watchlist, action: \.watchlist))
+      WatchlistView(store: store.scope(\.watchlist, action: \.watchlist))
         .tabItem { Label("Watchlist", systemImage: "list.bullet.rectangle") }
         .tag(AppFeature.Tab.watchlist)
-      SettingsView(store: store.scope(state: \.settings, action: \.settings))
+      SettingsView(store: store.scope(\.settings, action: \.settings))
         .tabItem { Label("Settings", systemImage: "gearshape") }
         .tag(AppFeature.Tab.settings)
     }
@@ -10120,7 +10121,7 @@ public struct AppView: View {
 #endif
 ```
 
-- [ ] **Step 8: Rewrite the app entry point.** Replace the entire contents of `Wait/Wait/WaitApp.swift`:
+- [x] **Step 8: Rewrite the app entry point.** Replace the entire contents of `Wait/Wait/WaitApp.swift`:
 ```swift
 //
 // Created by: kai_chen on 5/4/21.
@@ -10144,7 +10145,7 @@ struct WaitApp: App {
 }
 ```
 
-- [ ] **Step 9: Register the `wait://` URL scheme in the app's Info.plist**
+- [x] **Step 9: Register the `wait://` URL scheme in the app's Info.plist**
 
 Run:
 ```sh
@@ -10158,7 +10159,7 @@ cd "$(git rev-parse --show-toplevel)/Wait" && /usr/libexec/PlistBuddy \
 ```
 Expected: `Array {` / `wait` / `}`.
 
-- [ ] **Step 10: Link the `AppFeature` product in `project.yml`.** In the `Wait` target's `dependencies:`, add `- package: WaitKit` with `product: AppFeature`. The legacy products stay until the cutover. Then regenerate and build:
+- [ ] **Step 10: Link the `AppFeature` product in `project.yml`.** In the `Wait` target's `dependencies:`, add `- package: WaitKit` with `product: AppFeature`. The legacy products stay until the cutover. Then regenerate and build: — NOT RUN (code-only; `xcodegen generate` ran, the build did not)
 
 Run: `cd "$(git rev-parse --show-toplevel)/Wait" && xcodegen generate && cd .. && scripts/build-app.sh`
 Expected: `** BUILD SUCCEEDED **`
@@ -10166,7 +10167,7 @@ Expected: `** BUILD SUCCEEDED **`
 Run: `R="$(git rev-parse --show-toplevel)"; test -f "$R/Wait/Wait.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved" && echo "Package.resolved present"; git -C "$R" status --short Wait/Wait.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`
 Expected: `Package.resolved present`, and never a ` D` status line.
 
-- [ ] **Step 11: Manual simulator check, including the legacy migration.** Run:
+- [ ] **Step 11: Manual simulator check, including the legacy migration.** Run: — NOT RUN (code-only)
 ```sh
 ROOT="$(git rev-parse --show-toplevel)"
 BUILT=$(xcodebuild -project "$ROOT/Wait/Wait.xcodeproj" -scheme Wait -destination 'platform=iOS Simulator,name=iPhone 17,OS=27.0' -showBuildSettings 2>/dev/null | awk -F' = ' '/ BUILT_PRODUCTS_DIR /{print $2; exit}')
@@ -10186,7 +10187,7 @@ The simulator should show:
 
 Also run `xcrun simctl openurl booted wait://stock/BABA`. It should open BABA's details.
 
-- [ ] **Step 12: Commit**
+- [x] **Step 12: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/AppFeature Wait/Packages/WaitKit/Tests/AppFeatureTests Wait/Wait/WaitApp.swift Wait/Wait/Info.plist Wait/project.yml Wait/Wait.xcodeproj
 git commit -m "feat(app): AppFeature root with tabs, deep links, scene phase refresh and debounced snapshot publishing
