@@ -5232,7 +5232,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Packages/WaitKit/Sources/APIClient/KeychainClient.swift`, `Packages/WaitKit/Sources/APIClient/IdentityClient.swift`
 - Test: `Packages/WaitKit/Tests/APIClientTests/IdentityClientTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 The live Keychain can't run in a hostless package test bundle (it fails with `-34018`, risk 9). Tests therefore use `KeychainClient.inMemory()`, and the live code is verified on a device in Task 30.
 
@@ -5280,12 +5280,12 @@ struct IdentityClientTests {
 }
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [ ] **Step 2: Run the tests to verify they fail** — NOT RUN (code-only; red confirmed in a /tmp harness)
 
 Run: `scripts/test-waitkit.sh APIClientTests/IdentityClientTests`
 Expected: the build fails with `cannot find 'KeychainClient' in scope`.
 
-- [ ] **Step 3: Implement both clients**
+- [x] **Step 3: Implement both clients**
 
 Create `Packages/WaitKit/Sources/APIClient/KeychainClient.swift`:
 ```swift
@@ -5450,12 +5450,12 @@ extension DependencyValues {
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [ ] **Step 4: Run the tests to verify they pass** — NOT RUN (code-only; 8/8 pass in a /tmp harness)
 
 Run: `scripts/test-waitkit.sh APIClientTests`
 Expected: `** TEST SUCCEEDED **`, with 8 tests passing.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
