@@ -46,7 +46,7 @@ public struct AddStockView: View {
       .overlay {
         if store.isSearching, store.results.isEmpty {
           ProgressView()
-        } else if !store.query.isEmpty, !store.isSearching, store.results.isEmpty, store.errorMessage == nil {
+        } else if !store.query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, !store.isSearching, store.results.isEmpty, store.errorMessage == nil {
           ContentUnavailableView.search(text: store.query)
         }
       }

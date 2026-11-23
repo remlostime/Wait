@@ -156,7 +156,32 @@ struct WatchlistFeatureTests {
       $0.$items.withLock { $0.append(expected) }
       $0.destination = nil
     }
-    await store.receive(\.quotesLoaded) {
+    await store.receive(\.symbolQuotesLoaded) {
+      $0.quotes = ["MSFT": quote]
+    }
+  }
+
+  @Test func singleSymbolLoadKeepsTheRateLimitBanner() async {
+    seed([listItem("AAPL", 0)])
+    var state = WatchlistFeature.State()
+    state.destination = .addStock(AddStockFeature.State())
+    state.quotesStatus = .delayed("Quotes delayed — rate limited")
+    let added = WatchlistItem(symbol: "MSFT", name: "Microsoft", createdAt: listNow, updatedAt: listNow)
+    let quote = Quote(symbol: "MSFT", price: 300, asOf: listNow)
+    let store = TestStore(initialState: state) {
+      WatchlistFeature()
+    } withDependencies: {
+      $0.date.now = listNow
+      $0.marketData.quotes = { _, _ in [quote] }
+    }
+    await store.send(.destination(.presented(.addStock(.delegate(.added(added)))))) {
+      var expected = added
+      expected.sortIndex = 1
+      $0.$items.withLock { $0.append(expected) }
+      $0.destination = nil
+    }
+    // `quotesStatus` stays `.delayed`: the closure changes only `quotes`.
+    await store.receive(\.symbolQuotesLoaded) {
       $0.quotes = ["MSFT": quote]
     }
   }

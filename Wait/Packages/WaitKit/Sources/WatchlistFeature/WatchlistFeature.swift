@@ -82,6 +82,12 @@ public struct WatchlistFeature {
       path.append(.details(StockDetailsFeature.State(item: item, quote: quotes[symbol])))
       return true
     }
+
+    fileprivate mutating func merge(_ loaded: [Quote]) {
+      for quote in loaded {
+        quotes[quote.symbol] = quote
+      }
+    }
   }
 
   public enum Action {
@@ -89,6 +95,8 @@ public struct WatchlistFeature {
     case sceneBecameActive
     case refreshPulled
     case quotesLoaded([Quote])
+    /// The one-symbol load after adding a stock. Unlike `quotesLoaded` it leaves `quotesStatus` (e.g. a rate-limit banner) alone.
+    case symbolQuotesLoaded([Quote])
     case quotesFailed(MarketDataError)
     case addTapped
     case rowTapped(symbol: String)
@@ -124,10 +132,12 @@ public struct WatchlistFeature {
           )
 
         case let .quotesLoaded(quotes):
-          for quote in quotes {
-            state.quotes[quote.symbol] = quote
-          }
+          state.merge(quotes)
           state.quotesStatus = quotes.contains(where: \.isStale) ? .delayed("Showing cached prices") : .idle
+          return .none
+
+        case let .symbolQuotesLoaded(quotes):
+          state.merge(quotes)
           return .none
 
         case let .quotesFailed(error):
@@ -197,10 +207,13 @@ public struct WatchlistFeature {
     guard !symbols.isEmpty else {
       return .none
     }
+    // Only a full-list load may touch `quotesStatus`; a one-symbol load must not clear a rate-limit banner.
+    let isFullList = id == .all
     return .run { [marketData] send in
       for policy in policies {
         do {
-          try await send(.quotesLoaded(marketData.quotes(symbols, policy)))
+          let quotes = try await marketData.quotes(symbols, policy)
+          await send(isFullList ? .quotesLoaded(quotes) : .symbolQuotesLoaded(quotes))
         } catch {
           let mapped = try MarketDataError(error) // rethrows cancellation
           if mapped != .notCached {

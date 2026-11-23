@@ -8721,7 +8721,7 @@ public struct AddStockView: View {
       .overlay {
         if store.isSearching, store.results.isEmpty {
           ProgressView()
-        } else if !store.query.isEmpty, !store.isSearching, store.results.isEmpty, store.errorMessage == nil {
+        } else if !store.query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, !store.isSearching, store.results.isEmpty, store.errorMessage == nil {
           ContentUnavailableView.search(text: store.query)
         }
       }
@@ -8763,6 +8763,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ## Chunk 13: Watchlist and settings
 
 ### Task 25: `WatchlistFeature`, list view and rows
+
+> Review fix (2026-11-23): a one-symbol load after adding a stock no longer resets `quotesStatus` (it was clearing an active rate-limit banner), so it uses its own `symbolQuotesLoaded` action. Also: `AddStockView` checks the trimmed query for the empty-search state, the root `.task` carries a note on the shared `.all` cancel ID, and the test count is 15.
 
 **Files:**
 - Create: `Wait/Packages/WaitKit/Sources/WatchlistFeature/WatchlistFeature.swift`, `Wait/Packages/WaitKit/Sources/WatchlistFeature/WatchlistView.swift`, `Wait/Packages/WaitKit/Sources/WatchlistFeature/WatchlistRow.swift`
@@ -8930,7 +8932,32 @@ struct WatchlistFeatureTests {
       $0.$items.withLock { $0.append(expected) }
       $0.destination = nil
     }
-    await store.receive(\.quotesLoaded) {
+    await store.receive(\.symbolQuotesLoaded) {
+      $0.quotes = ["MSFT": quote]
+    }
+  }
+
+  @Test func singleSymbolLoadKeepsTheRateLimitBanner() async {
+    seed([listItem("AAPL", 0)])
+    var state = WatchlistFeature.State()
+    state.destination = .addStock(AddStockFeature.State())
+    state.quotesStatus = .delayed("Quotes delayed — rate limited")
+    let added = WatchlistItem(symbol: "MSFT", name: "Microsoft", createdAt: listNow, updatedAt: listNow)
+    let quote = Quote(symbol: "MSFT", price: 300, asOf: listNow)
+    let store = TestStore(initialState: state) {
+      WatchlistFeature()
+    } withDependencies: {
+      $0.date.now = listNow
+      $0.marketData.quotes = { _, _ in [quote] }
+    }
+    await store.send(.destination(.presented(.addStock(.delegate(.added(added)))))) {
+      var expected = added
+      expected.sortIndex = 1
+      $0.$items.withLock { $0.append(expected) }
+      $0.destination = nil
+    }
+    // `quotesStatus` stays `.delayed`: the closure changes only `quotes`.
+    await store.receive(\.symbolQuotesLoaded) {
       $0.quotes = ["MSFT": quote]
     }
   }
@@ -9049,6 +9076,12 @@ public struct WatchlistFeature {
       path.append(.details(StockDetailsFeature.State(item: item, quote: quotes[symbol])))
       return true
     }
+
+    fileprivate mutating func merge(_ loaded: [Quote]) {
+      for quote in loaded {
+        quotes[quote.symbol] = quote
+      }
+    }
   }
 
   public enum Action {
@@ -9056,6 +9089,8 @@ public struct WatchlistFeature {
     case sceneBecameActive
     case refreshPulled
     case quotesLoaded([Quote])
+    /// The one-symbol load after adding a stock. Unlike `quotesLoaded` it leaves `quotesStatus` (e.g. a rate-limit banner) alone.
+    case symbolQuotesLoaded([Quote])
     case quotesFailed(MarketDataError)
     case addTapped
     case rowTapped(symbol: String)
@@ -9091,10 +9126,12 @@ public struct WatchlistFeature {
           )
 
         case let .quotesLoaded(quotes):
-          for quote in quotes {
-            state.quotes[quote.symbol] = quote
-          }
+          state.merge(quotes)
           state.quotesStatus = quotes.contains(where: \.isStale) ? .delayed("Showing cached prices") : .idle
+          return .none
+
+        case let .symbolQuotesLoaded(quotes):
+          state.merge(quotes)
           return .none
 
         case let .quotesFailed(error):
@@ -9164,10 +9201,13 @@ public struct WatchlistFeature {
     guard !symbols.isEmpty else {
       return .none
     }
+    // Only a full-list load may touch `quotesStatus`; a one-symbol load must not clear a rate-limit banner.
+    let isFullList = id == .all
     return .run { [marketData] send in
       for policy in policies {
         do {
-          try await send(.quotesLoaded(marketData.quotes(symbols, policy)))
+          let quotes = try await marketData.quotes(symbols, policy)
+          await send(isFullList ? .quotesLoaded(quotes) : .symbolQuotesLoaded(quotes))
         } catch {
           let mapped = try MarketDataError(error) // rethrows cancellation
           if mapped != .notCached {
@@ -9192,7 +9232,7 @@ extension WatchlistFeature.Destination.State: Equatable {}
 - [ ] **Step 4: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh WatchlistFeatureTests`
-Expected PASS: 9 tests pass.
+Expected PASS: 15 tests pass (5 AddStock and 10 Watchlist, since the target runs both suites).
 
 - [x] **Step 5: Add the views** (`swiftui-expert:swiftui-expert-skill`)
 
@@ -9304,6 +9344,7 @@ public struct WatchlistView: View {
         .sheet(item: $store.scope(\.$destination, action: \.destination).addStock) { addStore in
           AddStockView(store: addStore)
         }
+        // Shares the `.all` cancel ID with scene-active and pull-to-refresh; coalescing makes repeated loads cheap.
         .task { await store.send(.task).finish() }
     } destination: { store in
       switch store.case {

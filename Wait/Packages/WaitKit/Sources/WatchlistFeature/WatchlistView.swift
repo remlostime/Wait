@@ -39,6 +39,7 @@ public struct WatchlistView: View {
         .sheet(item: $store.scope(\.$destination, action: \.destination).addStock) { addStore in
           AddStockView(store: addStore)
         }
+        // Shares the `.all` cancel ID with scene-active and pull-to-refresh; coalescing makes repeated loads cheap.
         .task { await store.send(.task).finish() }
     } destination: { store in
       switch store.case {
