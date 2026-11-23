@@ -31,12 +31,21 @@ public struct APIError: Error, Equatable, Sendable {
 
   // MARK: Public
 
-  public static let misconfigured = APIError(status: 0, code: "MISCONFIGURED", message: "WaitAPIBaseURL is missing from Info.plist")
+  /// Codes for failures that no retry can fix: the app is built or set up wrongly, not offline.
+  public static let misconfiguredCode = "MISCONFIGURED"
+  public static let identityCode = "IDENTITY"
+
+  public static let misconfigured = APIError(status: 0, code: misconfiguredCode, message: "WaitAPIBaseURL is missing from Info.plist")
 
   public let status: Int
   public let code: String
   public let message: String
   public let retryAfter: Duration?
+
+  /// True for a client-side `MISCONFIGURED` or `IDENTITY` failure (status 0): waiting or retrying will not help.
+  public var isConfigurationFailure: Bool {
+    status == 0 && (code == Self.misconfiguredCode || code == Self.identityCode)
+  }
 
   public static func transport(_ message: String) -> APIError {
     APIError(status: 0, code: "NETWORK", message: message)

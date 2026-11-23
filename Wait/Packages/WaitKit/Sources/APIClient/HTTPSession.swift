@@ -44,11 +44,13 @@ public actor HTTPSession {
   // MARK: Public
 
   public func get<Response: Decodable & Sendable>(_ path: String, query: [URLQueryItem] = []) async throws -> Response {
-    try decode(try await send(APIRequest(method: "GET", path: path, query: query)))
+    let (data, status) = try await sendWithStatus(APIRequest(method: "GET", path: path, query: query))
+    return try decode(data, status: status)
   }
 
   public func post<Body: Encodable & Sendable, Response: Decodable & Sendable>(_ path: String, body: Body) async throws -> Response {
-    try decode(try await send(APIRequest(method: "POST", path: path, body: try encode(body))))
+    let (data, status) = try await sendWithStatus(APIRequest(method: "POST", path: path, body: try encode(body)))
+    return try decode(data, status: status)
   }
 
   /// For endpoints that answer 204.
@@ -62,16 +64,7 @@ public actor HTTPSession {
 
   /// Raw call with auth and the single 401 retry. Throws `APIError` for every non-2xx.
   public func send(_ request: APIRequest) async throws -> Data {
-    var token = request.requiresAuth ? try await validToken() : nil
-    var (data, response) = try await perform(request, token: token)
-    if response.statusCode == 401, request.requiresAuth {
-      token = try await validToken(replacing: token)
-      (data, response) = try await perform(request, token: token)
-    }
-    guard (200 ..< 300).contains(response.statusCode) else {
-      throw APIError(status: response.statusCode, body: data, retryAfterHeader: response.value(forHTTPHeaderField: "Retry-After"))
-    }
-    return data
+    try await sendWithStatus(request).data
   }
 
   // MARK: Private
@@ -82,6 +75,19 @@ public actor HTTPSession {
   private var token: String?
   private var registration: Task<String, any Error>?
 
+  private func sendWithStatus(_ request: APIRequest) async throws -> (data: Data, status: Int) {
+    var token = request.requiresAuth ? try await validToken() : nil
+    var (data, response) = try await perform(request, token: token)
+    if response.statusCode == 401, request.requiresAuth {
+      token = try await validToken(replacing: token)
+      (data, response) = try await perform(request, token: token)
+    }
+    guard (200 ..< 300).contains(response.statusCode) else {
+      throw APIError(status: response.statusCode, body: data, retryAfterHeader: response.value(forHTTPHeaderField: "Retry-After"))
+    }
+    return (data, response.statusCode)
+  }
+
   /// Returns the cached token unless it is `stale` (the one that just got a 401). Concurrent 401s for the
   /// same stale token share one registration; a caller holding an older token gets the newer one directly.
   private func validToken(replacing stale: String? = nil) async throws -> String {
@@ -91,12 +97,16 @@ public actor HTTPSession {
     if let registration {
       return try await registration.value
     }
-    let task = Task { try await self.register() }
+    // The task runs on this actor, so it publishes the token (and clears `registration`) itself. Every waiter,
+    // including a caller that was cancelled while waiting, then sees the token without depending on the first caller.
+    let task = Task { [self] in
+      defer { registration = nil }
+      let fresh = try await register()
+      token = fresh
+      return fresh
+    }
     registration = task
-    defer { registration = nil }
-    let fresh = try await task.value
-    token = fresh
-    return fresh
+    return try await task.value
   }
 
   private func register() async throws -> String {
@@ -104,14 +114,14 @@ public actor HTTPSession {
     do {
       id = try anonymousID()
     } catch {
-      throw APIError(status: 0, code: "IDENTITY", message: "Could not read the anonymous ID: \(error)")
+      throw APIError(status: 0, code: APIError.identityCode, message: "Could not read the anonymous ID: \(error)")
     }
     let body = try encode(RegisterRequestDTO(anonymousId: id.uuidString))
     let (data, response) = try await perform(APIRequest(method: "POST", path: "/api/auth/register", body: body, requiresAuth: false), token: nil)
     guard (200 ..< 300).contains(response.statusCode) else {
       throw APIError(status: response.statusCode, body: data, retryAfterHeader: response.value(forHTTPHeaderField: "Retry-After"))
     }
-    let decoded: RegisterResponseDTO = try decode(data)
+    let decoded: RegisterResponseDTO = try decode(data, status: response.statusCode)
     return decoded.token
   }
 
@@ -137,6 +147,10 @@ public actor HTTPSession {
     let response: URLResponse
     do {
       (data, response) = try await session.data(for: urlRequest)
+    } catch let error as URLError where error.code == .cancelled {
+      throw CancellationError()
+    } catch is CancellationError {
+      throw CancellationError()
     } catch {
       throw APIError.transport(error.localizedDescription)
     }
@@ -152,11 +166,11 @@ public actor HTTPSession {
     }
   }
 
-  private func decode<Response: Decodable>(_ data: Data) throws -> Response {
+  private func decode<Response: Decodable>(_ data: Data, status: Int) throws -> Response {
     do {
       return try WireDates.makeDecoder().decode(Response.self, from: data)
     } catch {
-      throw APIError.decoding(status: 200, String(describing: error))
+      throw APIError.decoding(status: status, String(describing: error))
     }
   }
 }

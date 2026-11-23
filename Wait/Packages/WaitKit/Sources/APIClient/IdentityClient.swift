@@ -6,6 +6,7 @@
 import Dependencies
 import DependenciesMacros
 import Foundation
+import Security
 
 // MARK: - IdentityClient
 
@@ -27,20 +28,29 @@ extension IdentityClient {
     return IdentityClient(
       anonymousID: {
         try lock.withValue { _ in
-          if
-            let data = try keychain.read(account, true),
-            let raw = String(data: data, encoding: .utf8),
-            let id = UUID(uuidString: raw)
-          {
+          if let id = try storedID(keychain) {
             return id
           }
           let id = UUID()
-          try keychain.write(Data(id.uuidString.utf8), account, true)
+          do {
+            try keychain.write(Data(id.uuidString.utf8), account, true)
+          } catch let error as KeychainError where error.status == errSecDuplicateItem {
+            // The iCloud copy arrived between our read and our add: keep the one that synced.
+            guard let existing = try storedID(keychain) else { throw error }
+            return existing
+          }
           return id
         }
       },
       reset: { try keychain.delete(account, true) }
     )
+  }
+
+  private static func storedID(_ keychain: KeychainClient) throws -> UUID? {
+    guard let data = try keychain.read(account, true), let raw = String(data: data, encoding: .utf8) else {
+      return nil
+    }
+    return UUID(uuidString: raw)
   }
 }
 

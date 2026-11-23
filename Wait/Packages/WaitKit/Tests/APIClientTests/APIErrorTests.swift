@@ -25,4 +25,12 @@ struct APIErrorTests {
     #expect(error.code == "HTTP_502")
     #expect(error.retryAfter == nil)
   }
+
+  @Test
+  func flagsOnlyClientSideConfigurationFailures() {
+    #expect(APIError.misconfigured.isConfigurationFailure)
+    #expect(APIError(status: 0, code: APIError.identityCode, message: "").isConfigurationFailure)
+    #expect(!APIError.transport("offline").isConfigurationFailure)
+    #expect(!APIError(status: 500, code: APIError.misconfiguredCode, message: "").isConfigurationFailure)
+  }
 }

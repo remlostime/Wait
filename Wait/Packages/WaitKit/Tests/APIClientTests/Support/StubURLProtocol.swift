@@ -15,6 +15,8 @@ final class StubURLProtocol: URLProtocol {
     var status: Int
     var body: Data
     var headers: [String: String] = [:]
+    /// When set, the request fails with this `URLError` instead of getting a response.
+    var failure: URLError.Code?
   }
 
   typealias Handler = @Sendable (URLRequest) -> Reply
@@ -52,6 +54,10 @@ final class StubURLProtocol: URLProtocol {
       return
     }
     let reply = handler(request)
+    if let failure = reply.failure {
+      client?.urlProtocol(self, didFailWithError: URLError(failure))
+      return
+    }
     let response = HTTPURLResponse(url: url, statusCode: reply.status, httpVersion: "HTTP/1.1", headerFields: reply.headers)!
     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
     client?.urlProtocol(self, didLoad: reply.body)

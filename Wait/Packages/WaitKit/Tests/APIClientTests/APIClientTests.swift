@@ -82,5 +82,16 @@ struct APIClientTests {
     #expect(APIClient.baseURL(infoValue: "https://wait-api.vercel.app") == URL(string: "https://wait-api.vercel.app"))
     #expect(APIClient.baseURL(infoValue: "") == nil)
     #expect(APIClient.baseURL(infoValue: nil) == nil)
+    #expect(APIClient.baseURL(infoValue: "http://localhost:3000") == URL(string: "http://localhost:3000"))
+    #expect(APIClient.baseURL(infoValue: "HTTPS://wait-api.vercel.app") != nil)
+  }
+
+  @Test
+  func baseURLRejectsValuesThatAreNotHTTPWithAHost() {
+    #expect(APIClient.baseURL(infoValue: "wait-api.vercel.app") == nil) // no scheme
+    #expect(APIClient.baseURL(infoValue: "ftp://wait-api.vercel.app") == nil)
+    #expect(APIClient.baseURL(infoValue: "https://") == nil) // no host
+    #expect(APIClient.baseURL(infoValue: "https:///api") == nil)
+    #expect(APIClient.baseURL(infoValue: "$(WAIT_API_BASE_URL)") == nil) // unexpanded build setting
   }
 }

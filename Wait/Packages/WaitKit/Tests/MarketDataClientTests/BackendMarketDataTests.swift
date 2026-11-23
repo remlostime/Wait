@@ -160,4 +160,24 @@ struct BackendMarketDataTests {
     await #expect(throws: MarketDataError.network("offline")) { try await client.search("app") }
     await #expect(throws: MarketDataError.unavailable) { try await client.series("AAPL", .oneYear, .useCache) }
   }
+
+  @Test
+  func configurationFailuresAreUnavailableNotNetwork() async {
+    var api = APIClient()
+    api.quotes = { _ in throw APIError.misconfigured }
+    api.search = { _ in throw APIError(status: 0, code: APIError.identityCode, message: "no ID") }
+    api.history = { _, _ in throw APIError.transport("offline") }
+    let client = MarketDataClient.backend(api)
+    await #expect(throws: MarketDataError.unavailable) { try await client.quotes(["AAPL"], .useCache) }
+    await #expect(throws: MarketDataError.unavailable) { try await client.search("app") }
+    await #expect(throws: MarketDataError.network("offline")) { try await client.series("AAPL", .oneYear, .useCache) }
+  }
+
+  @Test
+  func cancellationPassesThroughUnwrapped() async {
+    var api = APIClient()
+    api.profile = { _ in throw CancellationError() }
+    let client = MarketDataClient.backend(api)
+    await #expect(throws: CancellationError.self) { try await client.profile("AAPL") }
+  }
 }

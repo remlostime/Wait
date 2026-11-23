@@ -4,8 +4,10 @@
 //
 
 import APIClient
+import Dependencies
 import Domain
 import Foundation
+import Logging
 
 // MARK: - MarketDataClient + Backend
 
@@ -70,16 +72,30 @@ extension MarketDataError {
     switch apiError.status {
       case 429, 503: self = .rateLimited(retryAfter: apiError.retryAfter)
       case 404: self = .notFound
+      case 0 where apiError.isConfigurationFailure: self = .unavailable
       case 0: self = .network(apiError.message)
       default: self = apiError.code == "DECODING" ? .decoding(apiError.message) : .unavailable
     }
   }
 }
 
+/// A misconfigured base URL or an unreadable anonymous ID fails every call the same way. Log each code once, not once per call.
+private enum ConfigurationFailureLog {
+  static func record(_ error: APIError) {
+    guard error.isConfigurationFailure, reported.withValue({ $0.insert(error.code).inserted }) else {
+      return
+    }
+    Log.network.error("Backend unavailable (\(error.code)): \(error.message)")
+  }
+
+  private static let reported = LockIsolated<Set<String>>([])
+}
+
 private func mapAPIErrors<T>(_ work: () async throws -> T) async throws -> T {
   do {
     return try await work()
   } catch let error as APIError {
+    ConfigurationFailureLog.record(error)
     throw MarketDataError(apiError: error)
   } catch let partial as PartialQuotesError {
     throw partial // the decorator keeps partial.quotes and starts the cooldown

@@ -43,10 +43,15 @@ extension APIClient {
 
   /// `WaitAPIBaseURL` comes from `WAIT_API_BASE_URL` in `Config/*.xcconfig` (overview §8.2).
   public static func baseURL(infoValue: String?) -> URL? {
-    guard let infoValue, !infoValue.isEmpty else {
+    guard
+      let infoValue,
+      let url = URL(string: infoValue),
+      let scheme = url.scheme?.lowercased(), scheme == "http" || scheme == "https",
+      let host = url.host(), !host.isEmpty
+    else {
       return nil
     }
-    return URL(string: infoValue)
+    return url
   }
 
   static let misconfigured = APIClient(

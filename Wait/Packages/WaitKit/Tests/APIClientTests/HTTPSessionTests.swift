@@ -96,6 +96,50 @@ struct HTTPSessionTests {
   }
 
   @Test
+  func rethrowsURLErrorCancelledAsCancellationError() async {
+    let base = StubURLProtocol.stub { request in
+      request.url?.path() == "/api/auth/register"
+        ? jsonReply(200, #"{"token":"t","user":{"id":"u"}}"#)
+        : StubURLProtocol.Reply(status: 0, body: Data(), failure: .cancelled)
+    }
+    let id = anonymousID
+    let session = HTTPSession(baseURL: base, session: StubURLProtocol.makeSession(), anonymousID: { id })
+    await #expect(throws: CancellationError.self) {
+      let _: OK = try await session.get("/api/x")
+    }
+  }
+
+  @Test
+  func otherTransportFailuresStillBecomeNetworkErrors() async {
+    let base = StubURLProtocol.stub { request in
+      request.url?.path() == "/api/auth/register"
+        ? jsonReply(200, #"{"token":"t","user":{"id":"u"}}"#)
+        : StubURLProtocol.Reply(status: 0, body: Data(), failure: .notConnectedToInternet)
+    }
+    let id = anonymousID
+    let session = HTTPSession(baseURL: base, session: StubURLProtocol.makeSession(), anonymousID: { id })
+    let error = await #expect(throws: APIError.self) {
+      let _: OK = try await session.get("/api/x")
+    }
+    #expect(error?.status == 0 && error?.code == "NETWORK")
+  }
+
+  @Test
+  func decodingErrorsCarryTheRealStatus() async {
+    let base = StubURLProtocol.stub { request in
+      request.url?.path() == "/api/auth/register"
+        ? jsonReply(200, #"{"token":"t","user":{"id":"u"}}"#)
+        : jsonReply(201, #"{"unexpected":true}"#)
+    }
+    let id = anonymousID
+    let session = HTTPSession(baseURL: base, session: StubURLProtocol.makeSession(), anonymousID: { id })
+    let error = await #expect(throws: APIError.self) {
+      let _: OK = try await session.post("/api/x", body: Echo(value: "v"))
+    }
+    #expect(error?.status == 201 && error?.code == "DECODING")
+  }
+
+  @Test
   func concurrentFirstCallsRegisterOnce() async throws {
     let (session, _, registers) = makeSession(tokens: ["t1"]) { $0 == "t1" }
     async let a: OK = session.get("/api/x")
