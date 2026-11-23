@@ -1,5 +1,44 @@
 # Wait 01 — iOS Foundation Implementation Plan
 
+## Execution log
+
+**Executed** 2026-11-23 on branch `ck/ios` by Claude Code (subagent-driven). Every task was committed and reviewed against this plan at chunk level, read-only.
+
+**Verification mode: code-only (unverified).**
+- `xcodebuild` cannot run in the agent session: the org AI sandbox blocks SwiftPM's nested `sandbox-exec` with `sandbox_apply: Operation not permitted`. The user chose to skip builds rather than disable Xcode's manifest and plugin sandbox.
+- Every code, config and doc step was done.
+- Build and test steps are marked `NOT RUN (code-only)`.
+- Static checks stood in for them: `xcodegen generate`, `plutil -lint`, `swiftlint`, `bash -n`, `scripts/check-secrets.sh`, `swiftc -typecheck` for files without package dependencies, and reviewer checks against the real TCA 1.26.2 sources. See [baseline log](2026-11-22-wait-01-baseline-log.md).
+
+| Task | Commit |
+|---|---|
+| 1 Baseline log + CLAUDE.md destinations | `6563f07` |
+| 2 XcodeGen parity spec | `d65860c` |
+| 3 iOS 17 / watchOS 10, prune | `bba4f7d` |
+| 4 Fix and embed watch | `e59db9b` |
+| 5 Secrets out of source, drop Shake | `7866be0` |
+| 6 WaitKit + DesignSystem | `eefbb72` |
+| 7 Logging (`os.Logger` shim) | `169054b` |
+| 8 Legacy Model | `85a9edb` |
+| 9 CacheService + Networking | `2ec7323` |
+| 10 StockCharts | `163be0e` |
+| 11 Checklist + ChecklistEditFeature (+ tests) | `3f10216` |
+| 12 LegacyStockDetails + SettingsTab, drop UI | `6b3ebf0` |
+| 13 TCA 1.26.2 + reducer ports | `9758400` |
+| 14 Docs + final static verification | `4ff4577` |
+
+**Deviations:**
+- No worktree: the work happened directly on `ck/ios`, per the user's decision.
+- TCA stayed on 0.31 through Task 11. The baseline couldn't be measured, so the red-baseline rule wasn't applied.
+- Otherwise the code follows the plan verbatim.
+
+**User follow-ups:**
+1. Run commands B, C, D and E locally: the app build, tests, package tests and watch build. Fix anything a real compile finds.
+2. Run `xcodebuild -resolvePackageDependencies` and commit the refreshed `Wait/Wait.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`. It still pins TCA 0.31, Shake and SwiftyBeaver.
+3. Rotate or revoke the leaked keys (overview §10): Twelve Data, Alpha Vantage, Shake, SwiftyBeaver, Bitrise APM and Firebase. Put a new Twelve Data key in `Wait/Config/Secrets.xcconfig`.
+4. Task 1 Step 7, Task 12 and Task 13: seed parity data on the simulator and check the watchlist and checklist by hand.
+5. Task 14 Step 4: apply the Bitrise changes.
+
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 > **Deviations from overview** (three):
