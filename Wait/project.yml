@@ -69,22 +69,6 @@ targetTemplates:
 targets:
   UI:
     templates: [Framework]
-  StockCharts:
-    templates: [Framework]
-    dependencies:
-      - package: WaitKit
-        product: CacheService
-      - package: WaitKit
-        product: Networking
-      - package: WaitKit
-        product: Model
-      - package: WaitKit
-        product: DesignSystem
-      - package: WaitKit
-        product: Logging
-      - package: Money
-      - package: Alamofire
-      - package: SwiftyJSON
   Checklist:
     templates: [Framework]
     dependencies:
@@ -126,9 +110,9 @@ targets:
         product: DesignSystem
       - package: WaitKit
         product: Model
-      - target: StockCharts
+      - package: WaitKit
+        product: StockCharts
       - package: ComposableArchitecture
-      - package: Alamofire
   ChecklistTests:
     templates: [UnitTests]
     settings:
@@ -179,8 +163,6 @@ targets:
         product: Networking
       - package: WaitKit
         product: CacheService
-      - package: Alamofire
-      - package: SwiftyJSON
       - sdk: SwiftUI.framework
       - sdk: WidgetKit.framework
   WaitWatch:
@@ -246,7 +228,8 @@ targets:
         product: Logging
       - target: Checklist
       - target: ChecklistEditFeature
-      - target: StockCharts
+      - package: WaitKit
+        product: StockCharts
       - target: SettingsTab
       - target: StockDetailsFeature
       - package: WaitKit
@@ -259,9 +242,6 @@ targets:
         copy:
           destination: productsDirectory
           subpath: "$(CONTENTS_FOLDER_PATH)/Watch"
-      - package: Alamofire
-      - package: SwiftyJSON
-      - package: Money
       - package: ComposableArchitecture
 schemes:
   Wait:

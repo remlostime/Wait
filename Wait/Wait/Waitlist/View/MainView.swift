@@ -1,10 +1,8 @@
 // Created by kai_chen on 5/4/21.
 
-import Alamofire
 import DesignSystem
 import Logging
 import Model
-import Money
 import Networking
 import StockDetailsFeature
 import SwiftUI

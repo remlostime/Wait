@@ -1720,7 +1720,7 @@ EOF
   - `Wait/Wait/Waitlist/View/MainView.swift`: drop the unused `import Alamofire` and `import Money`
   - `Wait/Wait/Waitlist/View/SearchStockView.swift`: drop the unused `import Alamofire`
 
-- [ ] **Step 1: Move the sources and drop the unused app imports**
+- [x] **Step 1: Move the sources and drop the unused app imports**
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/StockCharts \
@@ -1739,7 +1739,7 @@ StockDetailsFeature/View/StockExpectedPriceInputView.swift:<n>:import Money
 ```
 The app and widget no longer import Alamofire, SwiftyJSON or Money. Inside the package, `Model` and `StockCharts` import them. Outside the package, only these three `StockDetailsFeature` files (which still get Money through the `Model` product) and the watch app do. Task 12 moves the three files into `LegacyStockDetails`, which declares `.money` explicitly.
 
-- [ ] **Step 2: Replace `Wait/Packages/WaitKit/Package.swift`**
+- [x] **Step 2: Replace `Wait/Packages/WaitKit/Package.swift`**
 
 ```swift
 // swift-tools-version: 6.1
@@ -1793,7 +1793,7 @@ let package = Package(
 )
 ```
 
-- [ ] **Step 3: Update `Wait/project.yml`**
+- [x] **Step 3: Update `Wait/project.yml`**
 
 1. Delete the `StockCharts:` target entry completely.
 2. Replace every `      - target: StockCharts` with the StockCharts product entry, in `StockDetailsFeature` and `Wait`:
@@ -1811,7 +1811,7 @@ cd /Users/ckai/code/Wait/Wait && grep -n "target: StockCharts$" project.yml; gre
 ```
 Expected: no output from the first grep. The second prints exactly three lines, all inside the `WaitWatch` target.
 
-- [ ] **Step 4: Regenerate, then build and test**
+- [ ] **Step 4: Regenerate, then build and test** — NOT RUN (code-only)
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 \
@@ -1819,7 +1819,7 @@ cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 \
 ```
 Expected: `Created project at …` and `** BUILD SUCCEEDED **`. Repeat the Package.resolved check from Task 2 Step 3, then run commands B, C and E with the same expectations as Task 7 Step 6.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add -A Wait && git status --short | grep -v '^[RMAD] ' ; git commit -m "$(cat <<'EOF'
