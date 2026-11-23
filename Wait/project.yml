@@ -8,6 +8,9 @@ options:
     watchOS: "10.0"
   createIntermediateGroups: true
   developmentLanguage: en
+configFiles:
+  Debug: Config/Base.xcconfig
+  Release: Config/Base.xcconfig
 settings:
   base:
     DEVELOPMENT_TEAM: 5WDN96EM72
@@ -25,9 +28,6 @@ packages:
   Money:
     url: https://github.com/Flight-School/Money
     from: 1.3.0
-  Shake:
-    url: https://github.com/shakebugs/shake-ios
-    from: 14.2.1
   SnapshotTesting:
     url: https://github.com/pointfreeco/swift-snapshot-testing
     from: 1.0.0
@@ -193,6 +193,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.chenkai.wait.watchkitapp
         GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_FILE: "WaitWatch Watch App/Info.plist"
         INFOPLIST_KEY_CFBundleDisplayName: WaitWatch
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown
         INFOPLIST_KEY_WKApplication: YES
@@ -215,10 +216,6 @@ targets:
     sources:
       - path: Wait
       - path: Shared/Connectivity.swift
-      - path: GoogleService-Info.plist
-        buildPhase: resources
-      - path: bitrise_configuration.plist
-        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.chenkai.wait
@@ -232,7 +229,6 @@ targets:
         SUPPORTED_PLATFORMS: iphoneos iphonesimulator
         SUPPORTS_MACCATALYST: NO
         SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
-        OTHER_LDFLAGS: ["-ObjC", "-l", "z", "-l", "c++"]
       configs:
         Debug:
           CODE_SIGN_ENTITLEMENTS: Wait/Wait.entitlements
@@ -262,7 +258,6 @@ targets:
       - package: Alamofire
       - package: SwiftyBeaver
       - package: SwiftyJSON
-      - package: Shake
       - package: Money
       - package: ComposableArchitecture
 schemes:

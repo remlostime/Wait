@@ -3,12 +3,9 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import Alamofire
 import Combine
 import Foundation
 import Model
-import Networking
-import SwiftUI
 
 // MARK: - StockOverviewNetworkClient
 
@@ -16,33 +13,14 @@ protocol StockOverviewNetworkClient {
   func fetchStockOverview(stock: Stock) -> AnyPublisher<StockOverview, Error>
 }
 
-// MARK: - DefaultStockOverviewNetworkClient
+// MARK: - EmptyStockOverviewNetworkClient
 
-final class DefaultStockOverviewNetworkClient: StockOverviewNetworkClient {
-  // MARK: Internal
-
+/// Alpha Vantage's OVERVIEW endpoint is Premium-only, so the stats section shows the empty overview
+/// until plan 04 serves fundamentals from the Wait backend.
+final class EmptyStockOverviewNetworkClient: StockOverviewNetworkClient {
   func fetchStockOverview(stock: Stock) -> AnyPublisher<StockOverview, Error> {
-    let url = buildURL(stock: stock)!
-
-    return URLSession.shared
-      .dataTaskPublisher(for: url)
-      .map(\.data)
-      .decode(type: StockOverview.self, decoder: Self.decoder)
+    Just(StockOverview.empty)
+      .setFailureType(to: Error.self)
       .eraseToAnyPublisher()
-  }
-
-  // MARK: Private
-
-  private static let decoder = JSONDecoder()
-
-  private func buildURL(stock: Stock) -> URL? {
-    let params = [
-      "symbol": stock.symbol,
-      "function": "OVERVIEW",
-    ]
-
-    let url = NetworkingURLBuilder.buildURL(domain: .alphaVantage, api: "query", params: params)
-
-    return url
   }
 }

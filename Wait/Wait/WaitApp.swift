@@ -3,7 +3,6 @@
 import Color
 import Logging
 import SettingsTab
-import Shake
 import SwiftUI
 
 // MARK: - WaitApp
@@ -13,7 +12,6 @@ struct WaitApp: App {
   // MARK: Lifecycle
 
   init() {
-    setupShake()
     Logger.setupLogger()
   }
 
@@ -34,17 +32,5 @@ struct WaitApp: App {
       }
       .accentColor(.mint)
     }
-  }
-
-  // MARK: Private
-
-  private func setupShake() {
-    Shake.configuration.isInvokedByShakeDeviceEvent = true
-    Shake.configuration.isInvokedByScreenshot = true
-    Shake.configuration.isCrashReportingEnabled = true
-    Shake.start(
-      clientId: "EMFDruyQ3NpZJixuCtgi2LiTl83hjfngf3tRFL3F",
-      clientSecret: "wh1riTvDR93wmB0itrbltVmOKMsFToZyM4O6Y65pPtARpvdiLq4Xtd1"
-    )
   }
 }

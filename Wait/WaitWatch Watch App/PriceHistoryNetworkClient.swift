@@ -94,19 +94,23 @@ public enum NetworkingURLBuilder {
 // MARK: - URLDomain
 
 public enum URLDomain: String {
-  case alphaVantage = "https://www.alphavantage.co"
   case twelveData = "https://api.twelvedata.com"
 }
 
 public extension URLDomain {
   var queryItems: [URLQueryItem] {
     switch self {
-      case .alphaVantage:
-        let apiKeyItem = URLQueryItem(name: "apikey", value: "L51Y2HE61NU1YU0G")
-        return [apiKeyItem]
       case .twelveData:
-        let apiKeyItem = URLQueryItem(name: "apikey", value: "58c41ef6d56249e5921d89f4b0c55fef")
-        return [apiKeyItem]
+        return [URLQueryItem(name: "apikey", value: APIKey.twelveData)]
     }
+  }
+}
+
+// MARK: - APIKey
+
+/// Provider keys injected at build time: `Config/Secrets.xcconfig` → build setting → Info.plist.
+enum APIKey {
+  static var twelveData: String {
+    Bundle.main.object(forInfoDictionaryKey: "TwelveDataAPIKey") as? String ?? ""
   }
 }

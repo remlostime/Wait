@@ -69,7 +69,7 @@ public struct StockDetailsView: View {
 
   @State var stock: Stock
 
-  @ObservedObject var stockOverviewDatSource = StockOverviewDataSource(networkClient: DefaultStockOverviewNetworkClient())
+  @ObservedObject var stockOverviewDatSource = StockOverviewDataSource(networkClient: EmptyStockOverviewNetworkClient())
 
   @State var stockIsFavorited: Bool = true
   @State var memo: String = ""

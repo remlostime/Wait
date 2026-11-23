@@ -815,7 +815,7 @@ This task removes the hard-coded Twelve Data and Alpha Vantage keys, Shake, the 
 - Modify: `.gitignore`, `Wait/project.yml`, `Wait/Wait/Info.plist`, `Wait/WaitWidget/Info.plist`, `Wait/Networking/URLDomain.swift`, `Wait/WaitWatch Watch App/PriceHistoryNetworkClient.swift`, `Wait/StockDetailsFeature/Network/StockOverviewNetworkClient.swift`, `Wait/StockDetailsFeature/View/StockDetailsView.swift:72`, `Wait/Wait/WaitApp.swift`, `Wait/Logging/Logging.swift`
 - Delete: `Wait/GoogleService-Info.plist`, `Wait/bitrise_configuration.plist`
 
-- [ ] **Step 1: Write the failing check: `scripts/check-secrets.sh`**
+- [x] **Step 1: Write the failing check: `scripts/check-secrets.sh`**
 
 ```bash
 #!/usr/bin/env bash
@@ -859,14 +859,14 @@ exit "$status"
 chmod +x /Users/ckai/code/Wait/scripts/check-secrets.sh
 ```
 
-- [ ] **Step 2: Run it and watch it fail**
+- [x] **Step 2: Run it and watch it fail**
 
 ```sh
 /Users/ckai/code/Wait/scripts/check-secrets.sh; echo "exit=$?"
 ```
 Expected: `file:line` locations (no values) in at least these files: `Wait/Networking/URLDomain.swift`, `Wait/WaitWatch Watch App/PriceHistoryNetworkClient.swift`, `Wait/Wait/WaitApp.swift`, `Wait/Logging/Logging.swift`, `Wait/bitrise_configuration.plist` and `Wait/GoogleService-Info.plist`. Then `check-secrets: possible credentials …` and `exit=1`.
 
-- [ ] **Step 3: Add the xcconfig files and ignore the real one**
+- [x] **Step 3: Add the xcconfig files and ignore the real one**
 
 `Wait/Config/Base.xcconfig`:
 ```
@@ -891,7 +891,7 @@ cd /Users/ckai/code/Wait && cp Wait/Config/Secrets.example.xcconfig Wait/Config/
 ```
 Expected: `.gitignore:<line>:Wait/Config/Secrets.xcconfig	Wait/Config/Secrets.xcconfig`
 
-- [ ] **Step 4: Expose the key through Info.plist for the app, widget and watch**
+- [x] **Step 4: Expose the key through Info.plist for the app, widget and watch**
 
 ```sh
 cd /Users/ckai/code/Wait/Wait \
@@ -911,7 +911,7 @@ plutil -lint "WaitWatch Watch App/Info.plist" Wait/Info.plist WaitWidget/Info.pl
 ```
 Expected: three `: OK` lines.
 
-- [ ] **Step 5: Update `Wait/project.yml`**
+- [x] **Step 5: Update `Wait/project.yml`**
 
 Make these edits:
 1. After the `options:` block, add project-level config files:
@@ -935,7 +935,7 @@ Make these edits:
            INFOPLIST_FILE: "WaitWatch Watch App/Info.plist"
    ```
 
-- [ ] **Step 6: Read the key from Info.plist in `Wait/Networking/URLDomain.swift`**
+- [x] **Step 6: Read the key from Info.plist in `Wait/Networking/URLDomain.swift`**
 
 Replace the whole file with:
 ```swift
@@ -969,7 +969,7 @@ enum APIKey {
 }
 ```
 
-- [ ] **Step 7: Do the same in the watch copy**
+- [x] **Step 7: Do the same in the watch copy**
 
 In `Wait/WaitWatch Watch App/PriceHistoryNetworkClient.swift`, replace everything from line 94 (`// MARK: - URLDomain`) to the end of the file (line 112) with:
 ```swift
@@ -998,7 +998,7 @@ enum APIKey {
 }
 ```
 
-- [ ] **Step 8: Replace the Alpha Vantage overview client**
+- [x] **Step 8: Replace the Alpha Vantage overview client**
 
 Replace the whole of `Wait/StockDetailsFeature/Network/StockOverviewNetworkClient.swift` with:
 ```swift
@@ -1038,7 +1038,7 @@ with:
   @ObservedObject var stockOverviewDatSource = StockOverviewDataSource(networkClient: EmptyStockOverviewNetworkClient())
 ```
 
-- [ ] **Step 9: Remove Shake from `Wait/Wait/WaitApp.swift`**
+- [x] **Step 9: Remove Shake from `Wait/Wait/WaitApp.swift`**
 
 Replace the whole file with:
 ```swift
@@ -1080,7 +1080,7 @@ struct WaitApp: App {
 }
 ```
 
-- [ ] **Step 10: Drop the SwiftyBeaver cloud destination**
+- [x] **Step 10: Drop the SwiftyBeaver cloud destination**
 
 Replace the whole of `Wait/Logging/Logging.swift` with this. SwiftyBeaver itself goes in Task 7.
 ```swift
@@ -1102,7 +1102,7 @@ public enum Logger {
 }
 ```
 
-- [ ] **Step 11: Delete the unused credential plists**
+- [x] **Step 11: Delete the unused credential plists**
 
 ```sh
 cd /Users/ckai/code/Wait && git rm -q Wait/GoogleService-Info.plist Wait/bitrise_configuration.plist && git status --short | grep "^D"
@@ -1113,14 +1113,14 @@ D  Wait/GoogleService-Info.plist
 D  Wait/bitrise_configuration.plist
 ```
 
-- [ ] **Step 12: Run the check again and watch it pass**
+- [x] **Step 12: Run the check again and watch it pass**
 
 ```sh
 /Users/ckai/code/Wait/scripts/check-secrets.sh; echo "exit=$?"
 ```
 Expected: `check-secrets: OK` and `exit=0`. If a location is still listed, fix it before continuing.
 
-- [ ] **Step 13: Regenerate, build, test and confirm the key is injected**
+- [ ] **Step 13: Regenerate, build, test and confirm the key is injected** — NOT RUN (code-only)
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1
@@ -1142,7 +1142,7 @@ com.chenkai.wait
 ```
 The placeholder appears until the user adds a real key in Step 14. The last line proves the generated `INFOPLIST_KEY_*` values still merge into the watch plist.
 
-- [ ] **Step 14 (manual: user): Rotate the leaked credentials**
+- [ ] **Step 14 (manual: user): Rotate the leaked credentials** — SKIPPED (manual)
 
 All of these are in git history, and the repo may be public. Rewriting history isn't enough, so revoke or rotate each one:
 1. **Twelve Data** (https://twelvedata.com/account/api-keys): regenerate the key. Put the new key in `Wait/Config/Secrets.xcconfig` as `TWELVE_DATA_API_KEY = <new key>`. Never commit that file.
@@ -1154,7 +1154,7 @@ All of these are in git history, and the repo may be public. Rewriting history i
 
 **This step is non-blocking.** Print the list for the user, then go straight on to Step 15 without waiting. Builds and tests work with the placeholder key, and the user can rotate the keys at any time.
 
-- [ ] **Step 15: Commit**
+- [x] **Step 15: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add .gitignore scripts/check-secrets.sh Wait/Config/Base.xcconfig Wait/Config/Secrets.example.xcconfig \

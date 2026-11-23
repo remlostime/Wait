@@ -92,3 +92,6 @@ fastlane/test_output
 # https://github.com/johnno1962/injectionforxcode
 
 iOSInjectionProject/
+
+# Build-time secrets (see Wait/Config/Secrets.example.xcconfig)
+Wait/Config/Secrets.xcconfig
