@@ -34,6 +34,7 @@ let package = Package(
     .library(name: "SettingsTab", targets: ["SettingsTab"]),
     .library(name: "Persistence", targets: ["Persistence"]),
     .library(name: "MarketDataClient", targets: ["MarketDataClient"]),
+    .library(name: "ChecklistFeature", targets: ["ChecklistFeature"]),
   ],
   dependencies: [
     .package(
@@ -93,6 +94,15 @@ let package = Package(
         .product(name: "DependenciesMacros", package: "swift-dependencies"),
       ]
     ),
+    .target(
+      name: "ChecklistFeature",
+      dependencies: [
+        "Domain",
+        "Persistence",
+        "DesignSystem",
+        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+      ]
+    ),
     .testTarget(name: "DomainTests", dependencies: ["Domain"], resources: [.copy("Fixtures")]),
     .testTarget(name: "LoggingTests", dependencies: ["Logging"]),
     .testTarget(name: "DesignSystemTests", dependencies: ["DesignSystem", "Domain"]),
@@ -115,6 +125,16 @@ let package = Package(
         .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
       ],
       resources: [.copy("Fixtures")]
+    ),
+    .testTarget(
+      name: "ChecklistFeatureTests",
+      dependencies: [
+        "ChecklistFeature",
+        "Domain",
+        "Persistence",
+        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+        .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
+      ]
     ),
     .testTarget(name: "ChecklistTests", dependencies: ["Checklist", "Model", .tca], swiftSettings: legacySettings),
     .testTarget(name: "ChecklistEditFeatureTests", dependencies: ["ChecklistEditFeature", "Model", .tca], swiftSettings: legacySettings),
