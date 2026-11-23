@@ -199,7 +199,11 @@ export class MarketDataService {
     try {
       return { ok: true, value: await call() }
     } catch (error) {
-      if (!(error instanceof ProviderError)) throw error
+      if (!(error instanceof ProviderError)) {
+        // A malformed-but-valid JSON body (or an adapter bug) must still reach the stale fallback, not a 500.
+        this.deps.logger?.warn({ err: error instanceof Error ? error.message : String(error) }, "market.provider_unexpected_error")
+        return { ok: false, reason: "unavailable" }
+      }
       if (error.kind === "rate_limited") {
         const seconds = error.retryAfterSec ?? 60
         for (const bucket of buckets) await this.deps.limiter.block(bucket.key, seconds)

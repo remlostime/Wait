@@ -42,4 +42,20 @@ describe("AlpacaProvider", () => {
     expect(bars).toEqual([{ t: "2026-11-19T14:30:00.000Z", c: "170" }])
     expect(fake.calls).toHaveLength(2)
   })
+
+  it("stops after a bounded number of pages when the provider keeps paging", async () => {
+    let page = 0
+    const fake = fakeFetch([{ match: () => true, respond: () => json({ bars: [], symbol: "AAPL", next_page_token: `p${(page += 1)}` }) }])
+    const alpaca = new AlpacaProvider("id-1", "secret-1", clock(), fake.fetch)
+    const bars = await alpaca.getIntradayBars("AAPL", "30Min", new Date("2026-11-13T14:30:00.000Z"), new Date("2026-11-20T14:00:00.000Z"))
+    expect(bars).toEqual([])
+    expect(fake.calls).toHaveLength(10)
+  })
+
+  it("returns no bars without a request when the window ends before it starts", async () => {
+    const fake = fakeFetch([{ match: () => true, respond: () => json({ bars: [], next_page_token: null }) }])
+    const alpaca = new AlpacaProvider("id-1", "secret-1", clock(), fake.fetch)
+    expect(await alpaca.getIntradayBars("AAPL", "5Min", new Date("2026-11-20T14:50:00.000Z"), new Date("2026-11-20T15:00:00.000Z"))).toEqual([])
+    expect(fake.calls).toHaveLength(0)
+  })
 })

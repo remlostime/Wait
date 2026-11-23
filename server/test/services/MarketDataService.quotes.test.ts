@@ -33,6 +33,15 @@ describe("MarketDataService.getQuotes", () => {
     expect(result.quotes[0]).toMatchObject({ symbol: "AAPL", price: "150", stale: true })
   })
 
+  it("treats an unexpected adapter exception (malformed body) like an outage and serves stale cache", async () => {
+    const { service, cache } = makeService({
+      providers: { quotes: { getQuote: vi.fn(async () => { throw new TypeError("Cannot read properties of null (reading 'c')") }) } },
+    })
+    await cache.putQuotes([{ symbol: "AAPL", payload: providerQuote("AAPL", "150"), provider: "finnhub", fetchedAt: new Date(0), expiresAt: new Date(1) }])
+    const result = await service.getQuotes(["AAPL"])
+    expect(result.quotes[0]).toMatchObject({ symbol: "AAPL", price: "150", stale: true })
+  })
+
   it("fetches at most 25 symbols per request", async () => {
     const { service, providers } = makeService()
     const symbols = Array.from({ length: 30 }, (_, i) => `SYM${i}`)

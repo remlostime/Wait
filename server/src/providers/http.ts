@@ -11,9 +11,10 @@ export interface GetJsonOptions {
 export function parseRetryAfter(value: string | null): number | undefined {
   if (!value) return undefined
   const seconds = Number(value)
-  if (Number.isFinite(seconds) && seconds >= 0) return seconds
+  // At least 1 s: a 0 (or a past HTTP date) would block for nothing and hit the provider again at once.
+  if (value.trim() !== "" && Number.isFinite(seconds) && seconds >= 0) return Math.max(1, Math.ceil(seconds))
   const date = Date.parse(value)
-  return Number.isNaN(date) ? undefined : Math.max(0, Math.ceil((date - Date.now()) / 1000))
+  return Number.isNaN(date) ? undefined : Math.max(1, Math.ceil((date - Date.now()) / 1000))
 }
 
 /** GET + JSON with an 8 s timeout. Keys travel in headers only, never in the URL. */
@@ -33,7 +34,14 @@ export async function getJson<T>(fetchImpl: FetchLike, url: string, options: Get
   if (response.status === 429) throw new ProviderError(provider, "rate_limited", parseRetryAfter(response.headers.get("retry-after")), 429)
   if (response.status === 404) throw new ProviderError(provider, "not_found", undefined, 404)
   if (!response.ok) throw new ProviderError(provider, "upstream", undefined, response.status)
-  const text = await response.text()
+  let text: string
+  try {
+    text = await response.text()
+  } catch (error) {
+    // The timeout signal also covers the body download.
+    const name = (error as { name?: string }).name
+    throw new ProviderError(provider, name === "TimeoutError" || name === "AbortError" ? "timeout" : "upstream", undefined, response.status)
+  }
   try {
     return JSON.parse(text) as T
   } catch {

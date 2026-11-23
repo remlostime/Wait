@@ -15,6 +15,13 @@ describe("server cache TTLs (overview §6.3 item 3)", () => {
     expect(iso("history1W", "2026-11-21T15:00:00.000Z")).toBe("2026-11-23T14:30:00.000Z")
   })
 
+  it("quotes and intraday bars fetched just after the close expire 20 min after it, not at the next open", () => {
+    expect(iso("history1D", "2026-11-20T21:05:00.000Z")).toBe("2026-11-20T21:20:00.000Z") // Fri 16:05 ET
+    expect(iso("quote", "2026-11-20T21:19:00.000Z")).toBe("2026-11-20T21:20:00.000Z")
+    expect(iso("history1W", "2026-11-20T21:20:00.000Z")).toBe("2026-11-23T14:30:00.000Z")
+    expect(iso("quote", "2026-11-23T13:00:00.000Z")).toBe("2026-11-23T14:30:00.000Z") // Mon pre-open
+  })
+
   it("daily5y refreshes two hours after the session close it belongs to", () => {
     expect(iso("daily5y", "2026-11-20T15:00:00.000Z")).toBe("2026-11-20T23:00:00.000Z") // Fri 10:00 → Fri 18:00 EST
     expect(iso("daily5y", "2026-11-20T21:30:00.000Z")).toBe("2026-11-20T23:00:00.000Z") // Fri 16:30 → same
