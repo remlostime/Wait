@@ -1,5 +1,44 @@
 # iOS Watch App and Cleanup Implementation Plan
 
+## Execution log
+
+**Executed:** 2026-11-23 on `ck/ios`, subagent-driven, in **code-only mode**, the same as plans 01–02 (see the [plan 01 baseline log](2026-11-22-wait-01-baseline-log.md)). Nothing has been built or tested in Xcode.
+
+**What was checked instead:**
+- **Connectivity tests, run for real:** the real Domain, Connectivity and test sources compiled in a `/tmp` harness with Testing.framework, and the real `@Observable` macro loaded through `-load-plugin-library`. `ConnectivityClient`'s `@DependencyClient` was swapped for a stand-in. Result: **30/30 tests pass**, stable over 40 runs.
+- **`alsoSending(to:)` combinator tests:** 2/2.
+- **Typechecks:** the watch app for watchOS 10 in Swift 6, and `LiveWCSessionAdapter` for iOS 17 and watchOS 10.
+- **AppFeature changes:** checked against the TCA 1.26.2 sources.
+- **Static checks:** `scripts/check-secrets.sh`, the §4.1 greps, `xcodegen generate` (no diff), and `swiftlint` (0 errors).
+
+| Task | Commit |
+|---|---|
+| 1 Contract check (no code) + 2 Connectivity/SnapshotCoding | `38b9d45` |
+| 3 ConnectivityEngine | `2a6c81a` |
+| 4 Live adapter + ConnectivityClient | `8d13066` |
+| 5 WatchSnapshotStore | `257214a` |
+| 6 AppFeature sends snapshots to the watch | `666515d` |
+| 7 Watch app on WaitKit | `0125af1` |
+| 8 Paired-simulator verification | `db89163` (marked NOT RUN) |
+| 9 SwiftFormat 6 / SwiftLint excludes | `23e7d69` |
+| 10 Final verification (static parts) | `de385b1` |
+| 11 CLAUDE.md + WaitKit README | `702d369` |
+| 12 Bitrise checklist | `57705d6` |
+
+**Review fixes:**
+- `dd8e09f` addresses two race conditions:
+  - Flushes are now serialized, so an older context can no longer win.
+  - The latest snapshot is replayed atomically to new subscribers.
+  
+  It also resends the last snapshot after a watch switch, and polishes the watch UI.
+- `d83e936`, from the final integration review across plans 01–03: the widget moves to Swift 6.
+
+**User follow-ups:**
+1. Run the real build and tests locally: `scripts/test-waitkit.sh`, `scripts/build-app.sh`, `scripts/build-app.sh WaitWatch`.
+2. Refresh `Package.resolved` with `xcodebuild -resolvePackageDependencies` and commit it.
+3. Task 8: pair the iPhone 17 and Apple Watch Series 12 simulators and check that the watch shows the phone's watchlist.
+4. Task 12 Step 3: apply `docs/ci/bitrise-checklist.md` in Bitrise.
+
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** The watch shows the iPhone's real watchlist, using the shared `Domain` types and a WCSession snapshot sent by the phone. The watch's drifted model copies, network clients and API keys are deleted, and the iOS tooling and docs are finished.
