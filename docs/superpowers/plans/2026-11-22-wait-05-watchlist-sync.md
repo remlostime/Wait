@@ -1123,7 +1123,7 @@ MSG
 - Create: `server/src/db/MockWatchlistRepository.ts`
 - Test: `server/test/db/MockWatchlistRepository.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/db/MockWatchlistRepository.test.ts`:
 ```ts
@@ -1145,12 +1145,12 @@ describeWatchlistRepositoryContract("MockWatchlistRepository", async () => {
 })
 ```
 
-- [ ] **Step 2: Run the test and confirm it fails**
+- [x] **Step 2: Run the test and confirm it fails**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/db/MockWatchlistRepository.test.ts`
 Expected: FAIL with `Failed to load url ../../src/db/MockWatchlistRepository.js`.
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation**
 
 Create `server/src/db/MockWatchlistRepository.ts`:
 ```ts
@@ -1247,12 +1247,12 @@ export class MockWatchlistRepository implements WatchlistRepository {
 }
 ```
 
-- [ ] **Step 4: Run both contract suites and confirm they pass**
+- [x] **Step 4: Run both contract suites and confirm they pass**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/db/MockWatchlistRepository.test.ts test/db/NeonWatchlistRepository.test.ts`
 Expected: PASS, `Test Files  2 passed (2)`, `Tests  22 passed (22)`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
