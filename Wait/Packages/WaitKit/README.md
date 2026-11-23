@@ -9,19 +9,19 @@ All of Wait's code except the three thin Xcode targets (`Wait`, `WaitWidgetExten
 | Target | Responsibility | Depends on | watchOS | Linked by |
 |---|---|---|---|---|
 | `Domain` | Value types and pure logic: `PriceLadder`, `Temperature`, `LadderStatus`, `WatchlistItem`, `WatchlistSnapshot`, market types, `MarketCalendar`, `PriceInput`, legacy decoders | – | ✓ | widget, watch, everything |
-| `Logging` | `Log.<channel>` on `os.Logger` | – (os) | ✓ | Persistence, MarketDataClient, AppFeature |
+| `Logging` | `Log.<channel>` on `os.Logger` | – (os) | ✓ | Persistence, MarketDataClient, NotificationClient, SyncClient, SettingsFeature, AppFeature |
 | `DesignSystem` | `Palette`, `Spacing`, `StatusPill`, `TemperatureBadge` | Domain | ✓ | widget, watch, features |
-| `Persistence` | App-group files, `@Shared(.watchlist)` and `@Shared(.checklistTemplate)`, mutation helpers, `SnapshotStore`, `SnapshotClient`, `LegacyMigration` | Domain, Logging, Sharing, IdentifiedCollections, Dependencies | ✓ | widget, ChecklistFeature, StockDetailsFeature, WatchlistFeature, AppFeature |
+| `Persistence` | App-group files, `@Shared(.watchlist)` and `@Shared(.checklistTemplate)`, mutation helpers, `SnapshotStore`, `SnapshotClient`, `LegacyMigration` | Domain, Logging, Sharing, IdentifiedCollections, Dependencies, DependenciesMacros | ✓ | widget, ChecklistFeature, StockDetailsFeature, WatchlistFeature, SettingsFeature, SyncClient, AppFeature |
 | `MarketDataClient` | `\.marketData` dependency: caching decorator (TTL, disk, coalescing, 429 cooldown) around `MarketDataClient.backend`, which reads the Wait backend through `APIClient` | Domain, Logging, APIClient, Dependencies, DependenciesMacros | – | StockChartFeature, StockDetailsFeature, WatchlistFeature |
 | `Connectivity` | `\.connectivity` dependency: `WCSession` behind the `WCSessionAdapter` protocol, `ConnectivityEngine` (latest-wins send and receive), snapshot coding, and the watch's `WatchSnapshotStore` | Domain, Dependencies, DependenciesMacros | ✓ | watch, AppFeature |
 | `ChecklistFeature` | Per-stock checklist and the checklist template editor (TCA) | Domain, Persistence, DesignSystem, TCA | – | WatchlistFeature, SettingsFeature |
 | `StockChartFeature` | Price-history chart: loads one range at a time, chart geometry and view | Domain, MarketDataClient, DesignSystem, TCA | – | StockDetailsFeature |
 | `StockDetailsFeature` | The stock detail screen: quote, stats, chart, ladder editor, notes editor, ladder history | Domain, Persistence, MarketDataClient, StockChartFeature, DesignSystem, TCA | – | WatchlistFeature |
 | `WatchlistFeature` | The watchlist screen, add-stock sheet, and navigation to details and checklist | Domain, Persistence, MarketDataClient, StockDetailsFeature, ChecklistFeature, DesignSystem, TCA | – | AppFeature |
-| `SettingsFeature` | The settings tab: checklist template editor, account section (anonymous ID, Delete Account), sync section ("Last synced", "Sync now"), alerts section ("Daily alerts" toggle, permission, Open Settings), data attribution | APIClient, ChecklistFeature, DesignSystem, Persistence, SyncClient, TCA | – | AppFeature |
-| `AppFeature` | Root feature and `AppView`, deep links, `AppDelegate` (owns the store, runs the legacy migration, forwards the APNs callbacks), `PushFeature`, snapshot publishing to the widget and the watch, sync triggers | Domain, DesignSystem, Logging, Persistence, Connectivity, SyncClient, SettingsFeature, WatchlistFeature, TCA | – | app |
+| `SettingsFeature` | The settings tab: checklist template editor, account section (anonymous ID, Delete Account), sync section ("Last synced", "Sync now"), alerts section ("Daily alerts" toggle, permission, Open Settings), data attribution | APIClient, ChecklistFeature, DesignSystem, Logging, NotificationClient, Persistence, SyncClient, TCA | – | AppFeature |
+| `AppFeature` | Root feature and `AppView`, deep links, `AppDelegate` (owns the store, runs the legacy migration, forwards the APNs callbacks), `PushFeature`, snapshot publishing to the widget and the watch, sync triggers | APIClient, Connectivity, Domain, DesignSystem, Logging, NotificationClient, Persistence, SettingsFeature, SyncClient, WatchlistFeature, TCA | – | app |
 | `APIClient` | Wait backend client: `HTTPSession` actor, `APIClient` endpoints and DTOs, `KeychainClient`, `IdentityClient` | Domain, Dependencies, DependenciesMacros | – | MarketDataClient, SettingsFeature, SyncClient |
-| `SyncClient` | `\.syncClient` dependency: watchlist sync (single-flight `SyncEngine`, pure `SyncPlanner` and `SyncMerger`, DTO mapping) | Domain, Persistence, APIClient, Logging, Sharing, IdentifiedCollections, Dependencies, DependenciesMacros | – | AppFeature, SettingsFeature |
+| `SyncClient` | `\.syncClient` dependency: watchlist sync (single-flight `SyncEngine`, pure `SyncPlanner` and `SyncMerger`, DTO mapping) | Domain, Persistence, APIClient, Logging, Dependencies, DependenciesMacros, Sharing, IdentifiedCollections | – | AppFeature, SettingsFeature |
 | `NotificationClient` | `\.notifications` dependency: notification permission, APNs registration, and the stream of tapped pushes (`NotificationPayload` parses the symbol). Its live `UNUserNotificationCenter` delegate is installed by `AppDelegate` | Logging, Dependencies, DependenciesMacros | – | AppFeature, SettingsFeature |
 
 Each target has a matching `<Target>Tests` test target.
@@ -66,7 +66,8 @@ Or `scripts/test-waitkit.sh [Target[/Suite]]` from the repo root.
 ## APIClient (plan 04)
 
 - `HTTPSession` is an actor. It sends the JWT from memory, registers on first use with `IdentityClient.anonymousID()`, re-registers once on a 401, and maps every non-2xx response to `APIError`.
-- `APIClient` (`@Dependency(\.apiClient)`) exposes the market endpoints plus `deleteAccount`. `syncWatchlist` is the sync endpoint. `registerDevice` and `unregisterDevice` are the push-token endpoints (`POST /api/devices`, `DELETE /api/devices/:token`).
+- `APIClient` (`@Dependency(\.apiClient)`) exposes the market endpoints plus `deleteAccount` and `resetSession`. `syncWatchlist` is the sync endpoint. `registerDevice` and `unregisterDevice` are the push-token endpoints (`POST /api/devices`, `DELETE /api/devices/:token`).
+- `HTTPSession` binds every token, and every registration in flight, to the anonymous ID it was issued for. When the identity returns another ID (after Delete Account), the old token is dropped and a fresh registration starts. `resetSession` also drops the token and ignores a registration in flight; `SettingsFeature` calls it right after `identity.reset()`.
 - `KeychainClient` and `IdentityClient` store the anonymous ID under service `com.chenkai.wait`, account `anonymous-id`, synchronizable. Tests always use `KeychainClient.inMemory()`.
 - `MarketDataClient.backend(_:)` maps DTOs to Domain types. The live value is `.cached(.backend(.liveValue), disk: .live, now:)`.
 

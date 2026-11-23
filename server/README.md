@@ -49,7 +49,7 @@ See `.env.example` and overview §8.2. The app fails at cold start, naming any m
 | `NODE_ENV` | no | `development`, `test` or `production`; default `development`. Set to `production` on Vercel |
 
 ## API (plan 04)
-All `/api/market/*` routes and `DELETE /api/auth/account` need `Authorization: Bearer <token>`. Every error is returned as `{ "error": { "code", "message" } }`.
+These routes need `Authorization: Bearer <token>` (the JWT from register): `/api/market/*`, `DELETE /api/auth/account`, `/api/watchlist/*` and `/api/devices/*`. Every error is returned as `{ "error": { "code", "message" } }`.
 
 | Route | Notes |
 |---|---|
