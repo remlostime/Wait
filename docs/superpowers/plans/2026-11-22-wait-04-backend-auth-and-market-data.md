@@ -2815,7 +2815,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/db/MarketCacheRepository.ts`, `server/src/db/NeonMarketCacheRepository.ts`, `server/src/db/MockMarketCacheRepository.ts`
 - Test: `server/test/db/MarketCacheRepository.test.ts`
 
-- [ ] **Step 1: Write the failing contract test**
+- [x] **Step 1: Write the failing contract test**
 
 Create `server/test/db/MarketCacheRepository.test.ts`:
 ```ts
@@ -2886,12 +2886,12 @@ describe.each(implementations)("%s", (_name, make) => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/db/MarketCacheRepository.test.ts`
 Expected: FAIL with `Failed to load url ../../src/db/MockMarketCacheRepository.js`.
 
-- [ ] **Step 3: Add migration 002**
+- [x] **Step 3: Add migration 002**
 
 Create `server/migrations/002_market_cache.sql`:
 ```sql
@@ -2929,7 +2929,7 @@ CREATE TABLE IF NOT EXISTS search_cache (
 );
 ```
 
-- [ ] **Step 4: Implement the interface and both repositories**
+- [x] **Step 4: Implement the interface and both repositories**
 
 Create `server/src/db/MarketCacheRepository.ts`:
 ```ts
@@ -3127,12 +3127,12 @@ export class MockMarketCacheRepository implements MarketCacheRepository {
 }
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `npx vitest run test/db && npm run typecheck`
 Expected: every test in `test/db` passes. That includes the migrations test, which now applies `[1, 2]`. The new file reports `8 passed` (4 × 2). Typecheck exits 0.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
