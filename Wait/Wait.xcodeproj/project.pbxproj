@@ -107,6 +107,7 @@
 /* Begin PBXFileReference section */
 		00AC94E61052A432C8AA5E61 /* WaitWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = WaitWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		01A1C4CF6ACABE2B1044D985 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		0281310D9D8A85B6B32A3FB1 /* WaitWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WaitWidget.entitlements; sourceTree = "<group>"; };
 		0F82B573DBA09882B100E915 /* StockChartImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockChartImageCache.swift; sourceTree = "<group>"; };
 		1DD0A9E00FFE87438B0ED30C /* WaitWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitWidget.swift; sourceTree = "<group>"; };
 		24BFFA34B10555750DDD4AC0 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -224,6 +225,7 @@
 			children = (
 				3D9628FA6879CD47DF60CA81 /* Assets.xcassets */,
 				7EE3F485BF0627E751A6EEC8 /* Info.plist */,
+				0281310D9D8A85B6B32A3FB1 /* WaitWidget.entitlements */,
 				1DD0A9E00FFE87438B0ED30C /* WaitWidget.swift */,
 				E478B4BDC31D2236A5414F50 /* WidgetStockRow.swift */,
 			);
@@ -655,6 +657,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = WaitWidget/WaitWidget.entitlements;
 				INFOPLIST_FILE = WaitWidget/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -741,7 +744,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = WaitWidgetExtensionRelease.entitlements;
+				CODE_SIGN_ENTITLEMENTS = WaitWidget/WaitWidget.entitlements;
 				INFOPLIST_FILE = WaitWidget/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

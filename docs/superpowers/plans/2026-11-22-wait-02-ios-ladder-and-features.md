@@ -2691,7 +2691,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/Persistence/AppGroup.swift`
 - Create: `Wait/Packages/WaitKit/Tests/PersistenceTests/AppGroupTests.swift`
 
-- [ ] **Step 1: Entitlements.** Replace `Wait/Wait/Wait.entitlements` with this. It keeps the existing push and iCloud keys and adds the group.
+- [x] **Step 1: Entitlements.** Replace `Wait/Wait/Wait.entitlements` with this. It keeps the existing push and iCloud keys and adds the group.
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -2729,7 +2729,7 @@ Leave `Wait/Wait/WaitRelease.entitlements` as it is; it already has the group. C
 ```
 Run: `git rm Wait/WaitWidgetExtensionRelease.entitlements`
 
-- [ ] **Step 2: Update `project.yml`.**
+- [x] **Step 2: Update `project.yml`.**
   - In **both** the `Wait` and `WaitWidgetExtension` targets, delete any `entitlements:` key. With that key, XcodeGen would regenerate the plist from YAML properties.
   - Delete any existing `CODE_SIGN_ENTITLEMENTS` lines.
   - Set the entitlements paths exactly as follows:
@@ -2756,7 +2756,7 @@ Expected: `CODE_SIGN_ENTITLEMENTS = WaitWidget/WaitWidget.entitlements`
 Run: `R="$(git rev-parse --show-toplevel)"; test -f "$R/Wait/Wait.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved" && echo "Package.resolved present"; git -C "$R" status --short Wait/Wait.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`
 Expected: `Package.resolved present`. The `git status` line may show ` M` once new packages resolve, but never ` D`, which would mean regeneration deleted the file (overview risk 21).
 
-- [ ] **Step 3: Add the package dependencies and the `Persistence` target to `Package.swift`**
+- [x] **Step 3: Add the package dependencies and the `Persistence` target to `Package.swift`**
   - Append to `dependencies:`:
     ```swift
     .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.17.0"),
@@ -2791,7 +2791,7 @@ Expected: `Package.resolved present`. The `git status` line may show ` M` once n
 
   - Create `Wait/Packages/WaitKit/Sources/Persistence/AppGroup.swift` containing only the file header, so the package loads. Step 6 fills it in.
 
-- [ ] **Step 4: Write the failing test**
+- [x] **Step 4: Write the failing test**
 
 `Wait/Packages/WaitKit/Tests/PersistenceTests/AppGroupTests.swift`:
 ```swift
@@ -2828,12 +2828,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 5: Run the test and confirm it fails**
+- [ ] **Step 5: Run the test and confirm it fails** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh PersistenceTests`
 Expected FAIL: `error: cannot find 'AppGroup' in scope`.
 
-- [ ] **Step 6: Replace the contents of `AppGroup.swift` with the implementation**
+- [x] **Step 6: Replace the contents of `AppGroup.swift` with the implementation**
 
 `Wait/Packages/WaitKit/Sources/Persistence/AppGroup.swift`:
 ```swift
@@ -2870,12 +2870,12 @@ public enum AppGroup {
 }
 ```
 
-- [ ] **Step 7: Run the tests and confirm they pass, then build the app**
+- [ ] **Step 7: Run the tests and confirm they pass, then build the app** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh PersistenceTests && scripts/build-app.sh`
 Expected: `** TEST SUCCEEDED **`, then `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 ```bash
 git add Wait/project.yml Wait/Wait.xcodeproj Wait/Wait/Wait.entitlements Wait/WaitWidget/WaitWidget.entitlements Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/Persistence Wait/Packages/WaitKit/Tests/PersistenceTests
 git commit -m "feat(persistence): app group entitlements for app and widget, AppGroup paths

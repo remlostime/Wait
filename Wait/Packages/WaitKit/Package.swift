@@ -32,6 +32,7 @@ let package = Package(
     .library(name: "ChecklistEditFeature", targets: ["ChecklistEditFeature"]),
     .library(name: "LegacyStockDetails", targets: ["LegacyStockDetails"]),
     .library(name: "SettingsTab", targets: ["SettingsTab"]),
+    .library(name: "Persistence", targets: ["Persistence"]),
   ],
   dependencies: [
     .package(
@@ -39,6 +40,9 @@ let package = Package(
       from: "1.26.2",
       traits: ["ComposableArchitecture2Deprecations"]
     ),
+    .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.17.0"),
+    .package(url: "https://github.com/pointfreeco/swift-sharing", from: "2.10.0"),
+    .package(url: "https://github.com/pointfreeco/swift-identified-collections", from: "1.1.0"),
     // Legacy only — removed at the plan 02 cutover.
     .package(url: "https://github.com/Flight-School/Money", exact: "1.3.0"),
     .package(url: "https://github.com/Alamofire/Alamofire", exact: "5.5.0"),
@@ -68,8 +72,29 @@ let package = Package(
       swiftSettings: legacySettings
     ),
     .target(name: "SettingsTab", dependencies: ["ChecklistEditFeature", "Model", .tca], swiftSettings: legacySettings),
+    .target(
+      name: "Persistence",
+      dependencies: [
+        "Domain",
+        "Logging",
+        .product(name: "Sharing", package: "swift-sharing"),
+        .product(name: "IdentifiedCollections", package: "swift-identified-collections"),
+        .product(name: "Dependencies", package: "swift-dependencies"),
+        .product(name: "DependenciesMacros", package: "swift-dependencies"),
+      ]
+    ),
     .testTarget(name: "DomainTests", dependencies: ["Domain"], resources: [.copy("Fixtures")]),
     .testTarget(name: "LoggingTests", dependencies: ["Logging"]),
+    .testTarget(
+      name: "PersistenceTests",
+      dependencies: [
+        "Persistence",
+        "Domain",
+        .product(name: "Sharing", package: "swift-sharing"),
+        .product(name: "IdentifiedCollections", package: "swift-identified-collections"),
+        .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
+      ]
+    ),
     .testTarget(name: "ChecklistTests", dependencies: ["Checklist", "Model", .tca], swiftSettings: legacySettings),
     .testTarget(name: "ChecklistEditFeatureTests", dependencies: ["ChecklistEditFeature", "Model", .tca], swiftSettings: legacySettings),
   ],

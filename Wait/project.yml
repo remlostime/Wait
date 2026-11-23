@@ -95,9 +95,7 @@ targets:
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME: WidgetBackground
         SKIP_INSTALL: YES
-      configs:
-        Release:
-          CODE_SIGN_ENTITLEMENTS: WaitWidgetExtensionRelease.entitlements
+        CODE_SIGN_ENTITLEMENTS: WaitWidget/WaitWidget.entitlements
     dependencies:
       - package: WaitKit
         product: DesignSystem
