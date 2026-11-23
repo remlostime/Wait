@@ -7,12 +7,28 @@ import Domain
 import Foundation
 import Testing
 
+// MARK: - MarketTypesCodingTests
+
 @Suite struct MarketTypesCodingTests {
   @Test func quoteRoundTripsWithDecimalStrings() throws {
     let quote = Quote(symbol: "AAPL", price: dec("189.98"), previousClose: dec("187.66"), changePercent: 1.23, volume: 1000, asOf: fridayOpen)
     let data = try JSONEncoder().encode(quote)
     #expect(String(decoding: data, as: UTF8.self).contains(#""price":"189.98""#))
     #expect(try JSONDecoder().decode(Quote.self, from: data) == quote)
+  }
+
+  @Test func malformedDecimalStringThrows() {
+    #expect(throws: DecodingError.self) {
+      _ = try JSONDecoder().decode(Quote.self, from: Data(#"{"symbol":"X","price":"abc","asOf":0}"#.utf8))
+    }
+    #expect(throws: DecodingError.self) {
+      _ = try JSONDecoder().decode(PriceLadder.self, from: Data(#"{"buyHigh":"abc"}"#.utf8))
+    }
+  }
+
+  @Test func decimalParsingRejectsNonASCIIDigits() {
+    #expect(DecimalCoding.parse("12") == dec("12"))
+    #expect(DecimalCoding.parse("12\u{0661}") == nil) // Arabic-Indic digit one
   }
 
   @Test func quoteMarkedStale() {

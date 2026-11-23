@@ -18,7 +18,7 @@ public enum DecimalCoding {
     let trimmed = string.trimmingCharacters(in: .whitespaces)
     guard
       !trimmed.isEmpty,
-      trimmed.range(of: #"^-?\d+(\.\d+)?([eE][-+]?\d+)?$"#, options: .regularExpression) != nil
+      trimmed.range(of: #"^-?[0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?$"#, options: .regularExpression) != nil
     else {
       return nil
     }

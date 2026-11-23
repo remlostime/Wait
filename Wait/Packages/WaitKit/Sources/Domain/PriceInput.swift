@@ -9,6 +9,7 @@ import Foundation
 
 /// Parses user-typed prices in the user's locale and formats ladder values back for editing.
 public enum PriceInput {
+  /// A grouping separator is only accepted in a well-formed position (`1,234.5`, `1.234,5`); `12.50` in de_DE is invalid, not 1250.
   /// `nil` means invalid. `.some(nil)` means the field is empty. Negative values are invalid.
   public static func parse(_ text: String, locale: Locale) -> Decimal?? {
     var string = text.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -23,14 +24,21 @@ public enum PriceInput {
     for space in [" ", "\u{00A0}", "\u{202F}"] {
       string = string.replacingOccurrences(of: space, with: "")
     }
-    if !groupingSeparator.isEmpty, groupingSeparator != decimalSeparator {
+    let decimal = NSRegularExpression.escapedPattern(for: decimalSeparator)
+    let grouping = NSRegularExpression.escapedPattern(for: groupingSeparator)
+    let plain = "^[0-9]*(\(decimal)[0-9]*)?$"
+    let grouped = "^[0-9]{1,3}(\(grouping)[0-9]{3})+(\(decimal)[0-9]+)?$"
+    let canGroup = !groupingSeparator.isEmpty && groupingSeparator != decimalSeparator
+    if canGroup, string.range(of: grouped, options: .regularExpression) != nil {
       string = string.replacingOccurrences(of: groupingSeparator, with: "")
+    } else if string.range(of: plain, options: .regularExpression) == nil {
+      return nil
     }
     if decimalSeparator != "." {
       string = string.replacingOccurrences(of: decimalSeparator, with: ".")
     }
     guard
-      string.range(of: #"^(\d+\.?\d*|\.\d+)$"#, options: .regularExpression) != nil,
+      string.range(of: "[0-9]", options: .regularExpression) != nil,
       let value = Decimal(string: string, locale: DecimalCoding.posix)
     else {
       return nil

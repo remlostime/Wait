@@ -7,6 +7,8 @@ import Domain
 import Foundation
 import Testing
 
+// MARK: - WatchlistModelTests
+
 @Suite struct WatchlistModelTests {
   @Test func millisecondTruncationIsIdempotentAndMatchesISOParsing() throws {
     let raw = Date(timeIntervalSince1970: 1_795_186_800.123_9)
@@ -90,5 +92,14 @@ import Testing
     #expect(snapshot.rows[0].status == nil)
     #expect(snapshot.quotesAsOf == fridayOpen)
     #expect(try JSONDecoder().decode(WatchlistSnapshot.self, from: JSONEncoder().encode(snapshot)) == snapshot)
+  }
+
+  @Test func snapshotOrderIsDeterministicWhenSortKeysTie() throws {
+    let zeta = WatchlistItem(symbol: "ZETA", name: "Zeta", sortIndex: 0, createdAt: fridayOpen, updatedAt: fridayOpen)
+    let alpha = WatchlistItem(symbol: "ALPHA", name: "Alpha", sortIndex: 0, createdAt: fridayOpen, updatedAt: fridayOpen)
+    let forward = WatchlistSnapshot.make(items: [zeta, alpha], quotes: [:], now: fridayOpen)
+    let backward = WatchlistSnapshot.make(items: [alpha, zeta], quotes: [:], now: fridayOpen)
+    #expect(forward.rows.map(\.symbol) == ["ALPHA", "ZETA"])
+    #expect(backward.rows.map(\.symbol) == ["ALPHA", "ZETA"])
   }
 }

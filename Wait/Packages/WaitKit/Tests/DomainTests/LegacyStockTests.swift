@@ -7,6 +7,8 @@ import Domain
 import Foundation
 import Testing
 
+// MARK: - LegacyStockTests
+
 @Suite struct LegacyStockTests {
   func fixture() throws -> [LegacyStock] {
     let url = try #require(Bundle.module.url(forResource: "legacy-stocks", withExtension: "json", subdirectory: "Fixtures"))
@@ -60,5 +62,27 @@ import Testing
     #expect(items[1].checklist.isEmpty) // looked up under the mapped key "BABA"
     #expect(items[2].checklist == ChecklistTemplate.defaultItems)
     #expect(items[2].ladder.isEmpty)
+  }
+
+  @Test func dropsNonPositiveHistoryAndCapsAtTwoHundred() throws {
+    let json = #"""
+    [{"symbol":"R","expectedPrice":{"amount":1.23456,"currencyCode":"USD"},"expectedPriceHistory":[
+      {"date":100,"price":{"amount":0,"currencyCode":"USD"}},
+      {"date":150,"price":{"amount":-3,"currencyCode":"USD"}},
+      {"date":200,"price":{"amount":2,"currencyCode":"USD"}}]}]
+    """#
+    let stocks = try JSONDecoder().decode([LegacyStock].self, from: Data(json.utf8))
+    let item = try #require(LegacyStockMapper.items(from: stocks, checklists: [:], template: [], now: fridayOpen).first)
+    #expect(item.ladder.buyHigh == dec("1.2346"))
+    #expect(item.ladderHistory.count == 1)
+    #expect(item.ladderHistory[0].ladder.buyHigh == 2)
+
+    let entries = (1 ... 205).map { #"{"date":\#($0),"price":{"amount":\#($0),"currencyCode":"USD"}}"# }.joined(separator: ",")
+    let longJSON = #"[{"symbol":"CAP","expectedPrice":{"amount":9,"currencyCode":"USD"},"expectedPriceHistory":[\#(entries)]}]"#
+    let longStocks = try JSONDecoder().decode([LegacyStock].self, from: Data(longJSON.utf8))
+    let capped = try #require(LegacyStockMapper.items(from: longStocks, checklists: [:], template: [], now: fridayOpen).first)
+    #expect(capped.ladderHistory.count == LadderRevision.maxCount)
+    #expect(capped.ladderHistory.first?.ladder.buyHigh == 6) // the oldest five are dropped
+    #expect(capped.ladderHistory.last?.ladder.buyHigh == 205)
   }
 }

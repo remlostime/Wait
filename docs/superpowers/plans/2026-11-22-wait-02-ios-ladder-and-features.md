@@ -410,7 +410,7 @@ public enum DecimalCoding {
     let trimmed = string.trimmingCharacters(in: .whitespaces)
     guard
       !trimmed.isEmpty,
-      trimmed.range(of: #"^-?\d+(\.\d+)?([eE][-+]?\d+)?$"#, options: .regularExpression) != nil
+      trimmed.range(of: #"^-?[0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?$"#, options: .regularExpression) != nil
     else {
       return nil
     }
@@ -1074,6 +1074,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 ### Task 4: `PriceInput`
 
+> Review fix (2026-11-23): `parse` strips a grouping separator only in a well-formed position (de_DE "12.50" and en_US "1,5" are invalid), digits are ASCII `[0-9]` only, and the snippets below match the code.
+
 **Files:**
 - Create: `Wait/Packages/WaitKit/Sources/Domain/PriceInput.swift`
 - Create: `Wait/Packages/WaitKit/Tests/DomainTests/PriceInputTests.swift`
@@ -1090,6 +1092,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 import Domain
 import Foundation
 import Testing
+
+// MARK: - PriceInputTests
 
 @Suite struct PriceInputTests {
   let us = Locale(identifier: "en_US")
@@ -1116,6 +1120,31 @@ import Testing
     #expect(PriceInput.parse("abc", locale: us) == nil)
     #expect(PriceInput.parse("-5", locale: us) == nil)
     #expect(PriceInput.parse("1.2.3", locale: us) == nil)
+  }
+
+  @Test func acceptsWellFormedGroupingOnly() {
+    let fr = Locale(identifier: "fr_FR")
+    #expect(PriceInput.parse("1,234.5", locale: us) == .some(dec("1234.5")))
+    #expect(PriceInput.parse("1,234,567", locale: us) == .some(dec("1234567")))
+    #expect(PriceInput.parse("1.234,5", locale: de) == .some(dec("1234.5")))
+    #expect(PriceInput.parse("1\u{202F}234,5", locale: fr) == .some(dec("1234.5")))
+    #expect(PriceInput.parse(".5", locale: us) == .some(dec("0.5")))
+    #expect(PriceInput.parse("5.", locale: us) == .some(dec("5")))
+  }
+
+  @Test func rejectsMisplacedGroupingSeparators() {
+    #expect(PriceInput.parse("12.50", locale: de) == nil) // "." is grouping in de_DE, not a decimal point
+    #expect(PriceInput.parse("1.2", locale: de) == nil)
+    #expect(PriceInput.parse("1,5", locale: us) == nil)
+    #expect(PriceInput.parse("1,23,456", locale: us) == nil)
+    #expect(PriceInput.parse("1234,567", locale: us) == nil)
+    #expect(PriceInput.parse(",5", locale: us) == nil)
+    #expect(PriceInput.parse("1,234.", locale: us) == nil)
+  }
+
+  @Test func rejectsNonASCIIDigits() {
+    #expect(PriceInput.parse("12\u{0661}", locale: us) == nil) // Arabic-Indic digit one
+    #expect(PriceInput.parse("\u{0661}\u{0662}", locale: us) == nil)
   }
 
   @Test func formats() {
@@ -1147,6 +1176,7 @@ import Foundation
 
 /// Parses user-typed prices in the user's locale and formats ladder values back for editing.
 public enum PriceInput {
+  /// A grouping separator is only accepted in a well-formed position (`1,234.5`, `1.234,5`); `12.50` in de_DE is invalid, not 1250.
   /// `nil` means invalid. `.some(nil)` means the field is empty. Negative values are invalid.
   public static func parse(_ text: String, locale: Locale) -> Decimal?? {
     var string = text.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -1161,14 +1191,21 @@ public enum PriceInput {
     for space in [" ", "\u{00A0}", "\u{202F}"] {
       string = string.replacingOccurrences(of: space, with: "")
     }
-    if !groupingSeparator.isEmpty, groupingSeparator != decimalSeparator {
+    let decimal = NSRegularExpression.escapedPattern(for: decimalSeparator)
+    let grouping = NSRegularExpression.escapedPattern(for: groupingSeparator)
+    let plain = "^[0-9]*(\(decimal)[0-9]*)?$"
+    let grouped = "^[0-9]{1,3}(\(grouping)[0-9]{3})+(\(decimal)[0-9]+)?$"
+    let canGroup = !groupingSeparator.isEmpty && groupingSeparator != decimalSeparator
+    if canGroup, string.range(of: grouped, options: .regularExpression) != nil {
       string = string.replacingOccurrences(of: groupingSeparator, with: "")
+    } else if string.range(of: plain, options: .regularExpression) == nil {
+      return nil
     }
     if decimalSeparator != "." {
       string = string.replacingOccurrences(of: decimalSeparator, with: ".")
     }
     guard
-      string.range(of: #"^(\d+\.?\d*|\.\d+)$"#, options: .regularExpression) != nil,
+      string.range(of: "[0-9]", options: .regularExpression) != nil,
       let value = Decimal(string: string, locale: DecimalCoding.posix)
     else {
       return nil
@@ -1189,7 +1226,7 @@ public enum PriceInput {
 - [ ] **Step 4: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests/PriceInputTests`
-Expected PASS: 5 tests pass.
+Expected PASS: 8 tests pass.
 
 - [x] **Step 5: Commit**
 ```bash
@@ -2193,7 +2230,7 @@ public struct WatchlistSnapshot: Codable, Equatable, Sendable {
   public let rows: [Row]
 
   public static func make(items: [WatchlistItem], quotes: [String: Quote], now: Date) -> WatchlistSnapshot {
-    let ordered = items.sorted { ($0.isFavorite ? 0 : 1, $0.sortIndex) < ($1.isFavorite ? 0 : 1, $1.sortIndex) }
+    let ordered = items.sorted { ($0.isFavorite ? 0 : 1, $0.sortIndex, $0.symbol) < ($1.isFavorite ? 0 : 1, $1.sortIndex, $1.symbol) }
     let rows = ordered.map { item in
       let quote = quotes[item.symbol]
       return Row(

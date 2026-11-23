@@ -61,11 +61,11 @@ public struct WatchlistSnapshot: Codable, Equatable, Sendable {
   public let generatedAt: Date
   /// The oldest quote time among the rows that have a quote.
   public let quotesAsOf: Date?
-  /// Favorites first, then by `sortIndex`.
+  /// Favorites first, then by `sortIndex`, then by symbol.
   public let rows: [Row]
 
   public static func make(items: [WatchlistItem], quotes: [String: Quote], now: Date) -> WatchlistSnapshot {
-    let ordered = items.sorted { ($0.isFavorite ? 0 : 1, $0.sortIndex) < ($1.isFavorite ? 0 : 1, $1.sortIndex) }
+    let ordered = items.sorted { ($0.isFavorite ? 0 : 1, $0.sortIndex, $0.symbol) < ($1.isFavorite ? 0 : 1, $1.sortIndex, $1.symbol) }
     let rows = ordered.map { item in
       let quote = quotes[item.symbol]
       return Row(

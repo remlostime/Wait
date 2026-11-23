@@ -7,6 +7,8 @@ import Domain
 import Foundation
 import Testing
 
+// MARK: - MarketCalendarTests
+
 @Suite struct MarketCalendarTests {
   func utc(_ iso: String) throws -> Date {
     try Date(iso, strategy: .iso8601)

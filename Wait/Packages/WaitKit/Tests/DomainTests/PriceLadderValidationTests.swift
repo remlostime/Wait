@@ -7,6 +7,8 @@ import Domain
 import Foundation
 import Testing
 
+// MARK: - PriceLadderValidationTests
+
 @Suite struct PriceLadderValidationTests {
   @Test func vectorsValidation() throws {
     let vectors = try LadderVectors.load()
