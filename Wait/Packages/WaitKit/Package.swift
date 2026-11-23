@@ -51,7 +51,7 @@ let package = Package(
   ],
   targets: [
     .target(name: "Domain"),
-    .target(name: "DesignSystem", swiftSettings: legacySettings),
+    .target(name: "DesignSystem", dependencies: ["Domain"], swiftSettings: legacySettings),
     .target(name: "Logging"),
     .target(name: "Model", dependencies: ["DesignSystem", .money], swiftSettings: legacySettings),
     .target(name: "CacheService", dependencies: ["Model", "Logging"], swiftSettings: legacySettings),
@@ -95,6 +95,7 @@ let package = Package(
     ),
     .testTarget(name: "DomainTests", dependencies: ["Domain"], resources: [.copy("Fixtures")]),
     .testTarget(name: "LoggingTests", dependencies: ["Logging"]),
+    .testTarget(name: "DesignSystemTests", dependencies: ["DesignSystem", "Domain"]),
     .testTarget(
       name: "PersistenceTests",
       dependencies: [

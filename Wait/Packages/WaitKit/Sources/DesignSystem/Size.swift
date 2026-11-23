@@ -3,7 +3,7 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
-import UIKit
+import CoreGraphics
 
 // MARK: - Size
 

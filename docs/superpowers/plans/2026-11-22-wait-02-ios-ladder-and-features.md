@@ -5363,11 +5363,11 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `Wait/Packages/WaitKit/Package.swift` (`DesignSystem` gains the `Domain` dependency; add `DesignSystemTests`)
 - Create: `Wait/Packages/WaitKit/Tests/DesignSystemTests/DesignSystemTests.swift`
 
-- [ ] **Step 1: Update `Package.swift`**
+- [x] **Step 1: Update `Package.swift`**
   - In the existing `.target(name: "DesignSystem", …)`, add `"Domain"` to `dependencies:` (create `dependencies: ["Domain"]` if the target has none). Keep its `swiftSettings`; it stays Swift 5 until the cutover.
   - Append to `targets:`: `.testTarget(name: "DesignSystemTests", dependencies: ["DesignSystem", "Domain"]),`
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/DesignSystemTests/DesignSystemTests.swift`:
 ```swift
@@ -5407,12 +5407,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 3: Run the tests and confirm they fail**
+- [ ] **Step 3: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DesignSystemTests`
 Expected FAIL: `error: value of type 'LadderStatus' has no member 'symbolName'`, and `cannot find 'TemperatureBadge' in scope`.
 
-- [ ] **Step 4: Remove the shadows of SwiftUI's colors**
+- [x] **Step 4: Remove the shadows of SwiftUI's colors**
 
 Run: `grep -rn "static let primary\|static let orange" Wait/Packages/WaitKit/Sources/DesignSystem`
 Expected: three hits:
@@ -5422,7 +5422,7 @@ Expected: three hits:
 
 Delete those three lines, plus the `// App Theme` comment above `primary`. Once they are gone, `.primary` is SwiftUI's primary label color again and `.orange` is the system orange. Before this change, the legacy `StockCard` text rendered mint.
 
-- [ ] **Step 5: Implement the tokens**
+- [x] **Step 5: Implement the tokens**
 
 `Wait/Packages/WaitKit/Sources/DesignSystem/Palette.swift`:
 ```swift
@@ -5659,12 +5659,12 @@ public struct TemperatureBadge: View {
 }
 ```
 
-- [ ] **Step 6: Run the tests and confirm they pass, then build the app**
+- [ ] **Step 6: Run the tests and confirm they pass, then build the app** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DesignSystemTests && scripts/build-app.sh`
 Expected: `** TEST SUCCEEDED **` and `** BUILD SUCCEEDED **`. Legacy code still compiles without the shadows.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/DesignSystem Wait/Packages/WaitKit/Tests/DesignSystemTests
 git commit -m "feat(designsystem): semantic palette, spacing, status pill, temperature badge; drop Color.primary/orange shadows

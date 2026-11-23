@@ -2,13 +2,12 @@
 
 import Foundation
 import SwiftUI
-import UIKit
+#if os(iOS)
+  import UIKit
 
-public extension Color {
-  // App Theme
-  static let primary = Color.mint
-
-  // Stock
-  static let stockGreen = Color(.olive)
-  static let stockRed = Color(.cherry)
-}
+  public extension Color {
+    // Stock
+    static let stockGreen = Color(.olive)
+    static let stockRed = Color(.cherry)
+  }
+#endif
