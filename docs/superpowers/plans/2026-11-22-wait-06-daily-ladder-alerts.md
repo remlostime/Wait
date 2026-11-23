@@ -1,5 +1,90 @@
 # Daily Ladder Alerts Implementation Plan (Plan 06)
 
+## Execution log
+
+**Executed:** 2026-11-23 on `ck/sever` with subagents. The server chunks ran in parallel with plan 05's iOS chunks.
+
+**Server (Tasks 1–18): fully verified.**
+- Real TDD with vitest and PGlite. Final `npm run typecheck` is clean, and `npm test` passes **396/396** across 46 files.
+- Nothing contacts Apple. The APNs tests use a generated P-256 key, a mock transport, and a local `node:http2` server.
+
+**iOS (Tasks 19–23): code-only.** Nothing has been built or tested in Xcode. What was checked instead:
+- The pure parts ran in `/tmp` Swift Testing harnesses:
+  - `NotificationPayload` and `TapBroadcaster`: 13/13
+  - APIClient device endpoints and session: 52/52, after the final fixes
+- The TCA code (`PushFeature`, `AppFeature`, `SettingsFeature`) was checked against the TCA 1.26.2 sources.
+- `swiftlint` reports 0 errors (one existing warning in `PriceInputTests.swift`). `plutil -lint` passes.
+
+| Task | Commit |
+|---|---|
+| 1 Interface check | (no commit; verified, notes in Task 1) |
+| 2 `shouldAlert` | `3ce3cb4` |
+| 3 Trading date | `a54bdc0` |
+| 4 Migration 004 | `6179645` |
+| 5 DeviceTokenRepository | `118d8cf` |
+| 6 AlertRepository | `2c8ff9e` |
+| 7 Massive adapter | `3e9f931` |
+| 8 DailyCloseResolver | `bdb5945` |
+| 9 ApnsTokenProvider | `1970dac` |
+| 10 Payload | `788e94d` |
+| 11 Transports | `386770a` |
+| 12 ApnsSender | `2675876` |
+| 13 Config | `faf80b1` |
+| 14 Devices routes | `ee47351` |
+| 15 AlertJobService | `7d3395c` |
+| 16 Cron route and wiring | `61f165f` |
+| 17 Vercel cron | `9f9734d` |
+| 18 `send-test-push` | `c7a1d5c` |
+| 19 NotificationClient | `63f0f17` |
+| 20 Device endpoints in APIClient | `5374a9c` |
+| 21 PushFeature | `1e5dc49` |
+| 22 Settings "Daily alerts" | `6008f5a` |
+| 23 Entitlement and verification | `f4bacaf` |
+| 24 Deploy and end-to-end check | `374684d` (SKIPPED, manual) |
+| 25 Docs | `641ae5a` |
+
+**Review fixes.** The code differs from this plan's text in these places, and the docs describe the code:
+- **Request logging:** `ee47351` adds a pino `req` serializer that redacts device tokens in logged URLs (`DELETE /api/devices/:token`).
+- **`1a3f212` (APNs sending):**
+  - APNs timeout is 3 s.
+  - Environment repair updates only that user's row.
+  - Pruning requires a matching environment and honours the 410 `timestamp`.
+  - `apns-expiration` is set to the next market open.
+  - A stream that closes without a response rejects at once.
+- **`f498067` (job resilience):**
+  - A second catch-up cron runs at `30 23 * * 1-5`.
+  - Delivery uses `mapLimit(5)` with a 45 s deadline.
+  - Each event is claimed atomically with `claimForSend`.
+  - The transport closes after each run.
+  - The function needs `maxDuration` ≥ 60 s.
+- **`f311696` (job correctness):**
+  - A day is a holiday only when SPY's date is strictly earlier than the target date. A missing SPY quote is retryable.
+  - The Finnhub fallback rotates by trading date.
+  - The seeding update also checks the anchors.
+  - Events for deleted items are skipped.
+- **`1d96543` (iOS push):**
+  - `NotificationClient.noop` is used in tests. `@DependencyClient` reports defaulted endpoints too.
+  - Delete Account re-registers for push.
+  - The token-keyed `deviceUnregistered` fixes an off/on toggle race, and `registered` ignores the token while alerts are off.
+  - Each tap subscriber gets its own stream.
+  - Authorization status reloads on scene active.
+  - `unregisterForRemoteNotifications` is no longer called.
+  - The Settings link goes to the notification settings page.
+- **`4ad508a`, `d5682e3`, `bc91931` (final integration review, plans 04–06):**
+  - `HTTPSession` binds each token to its anonymous ID. `APIClient.resetSession` runs after `identity.reset()`. Together these stop a deleted account from coming back.
+  - The app syncs right after Delete Account.
+  - Non-US symbols get `.notFound` for charts and profiles.
+  - The search query is trimmed by UTF-16 length.
+  - Opening a push or deep link for a symbol not yet on the device syncs and retries once.
+  - README dependency rows and the list of auth routes are corrected.
+
+**User follow-ups**
+1. Run the real Xcode build and tests (`scripts/test-waitkit.sh`, `scripts/build-app.sh`, `scripts/build-app.sh WaitWatch`). The likeliest surprises are TCA test exhaustivity, the `.noop` initializer order, and `Sendable` on the notification delegate.
+2. Set up the Massive account, the APNs `.p8` key, and `CRON_SECRET`, and enable the Push capability on `com.chenkai.wait`. Set the plan 06 env vars for Production and Preview.
+3. Apply migration 004 and deploy. Check that Vercel accepts both cron entries on the same path, and that the function's `maxDuration` is at least 60 s (Fluid compute).
+4. Run Task 24's end-to-end check with `npm run send-test-push` and a real device.
+5. `WaitRelease.entitlements` keeps `aps-environment = development`, as planned, because distribution signing swaps in production. The server retries the other APNs host on `BadDeviceToken`.
+
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** After every US trading day, the server checks each synced watchlist item's price ladder against the closing price. It sends an APNs push when a stock moves down into BUY_ZONE/DEEP_BUY or up into TRIM/SELL. Tapping the push opens that stock in the app.
@@ -53,16 +138,16 @@
 
 ## Prerequisites
 
-- [ ] **Worktree.**
+- [x] **Worktree.** Not created: the session rules say to work in place on `ck/sever` in `/Users/ckai/code/Wait`.
   - Use `superpowers:using-git-worktrees` to create a worktree off `ck/new-version`. Never `master`.
   - Every path below is relative to the worktree's root (`/Users/ckai/code/Wait` in the examples).
 - [ ] **Plans 01–05 are done.** Each of these must pass:
-  - `cd server && npm run typecheck && npm test` is green.
-  - The `WaitKit-Package` tests are green.
-  - `POST /api/watchlist/sync` is deployed.
-  - Migrations 001–003 are applied in production.
-- [ ] **(manual: user) Massive.** Sign up at https://massive.com (free "Basic" stocks plan) and copy the API key.
-- [ ] **(manual: user) APNs key.**
+  - `cd server && npm run typecheck && npm test` is green. (Server green: 209/209 on 2026-11-23.)
+  - The `WaitKit-Package` tests are green. (NOT RUN (code-only); plan 05 iOS (`SyncClient`) still pending.)
+  - `POST /api/watchlist/sync` is deployed. (server tests green; deploy pending, manual)
+  - Migrations 001–003 are applied in production. (server tests green; deploy pending, manual)
+- [ ] **(manual: user) Massive.** — SKIPPED (manual) Sign up at https://massive.com (free "Basic" stocks plan) and copy the API key.
+- [ ] **(manual: user) APNs key.** — SKIPPED (manual)
   1. Go to https://developer.apple.com/account/resources/authkeys/list and click **+**.
   2. Enable **Apple Push Notifications service (APNs)**, then **Continue → Register**.
   3. **Download** `AuthKey_<KEYID>.p8`. It can be downloaded only once.
@@ -71,9 +156,9 @@
      ```bash
      base64 -i AuthKey_<KEYID>.p8 | tr -d '\n'
      ```
-- [ ] **(manual: user) Cron secret.** Generate it with `openssl rand -hex 32`.
-- [ ] **(manual: user) Push capability.** In Certificates, IDs & Profiles → Identifiers → `com.chenkai.wait`, check that **Push Notifications** is enabled. Xcode's automatic signing usually turns it on once the entitlement is present; Task 23 checks it again.
-- [ ] **(manual: user) Local env.** Add these lines to `server/.env.local`, which is gitignored. Every config-loading command in this plan needs them.
+- [ ] **(manual: user) Cron secret.** — SKIPPED (manual) Generate it with `openssl rand -hex 32`.
+- [ ] **(manual: user) Push capability.** — SKIPPED (manual) In Certificates, IDs & Profiles → Identifiers → `com.chenkai.wait`, check that **Push Notifications** is enabled. Xcode's automatic signing usually turns it on once the entitlement is present; Task 23 checks it again.
+- [ ] **(manual: user) Local env.** — SKIPPED (manual) Add these lines to `server/.env.local`, which is gitignored. Every config-loading command in this plan needs them.
   ```
   MASSIVE_API_KEY=<massive key>
   CRON_SECRET=<64 hex chars>
@@ -183,7 +268,9 @@ Every `.run` closure captures its dependencies explicitly, e.g. `.run { [notific
 
 **Files:** none (read-only check)
 
-- [ ] **Step 1: Check the server names this plan depends on**
+- [x] **Step 1: Check the server names this plan depends on**
+
+> Result (2026-11-23): all 28 greps print `1`; the shouldAlert/parseLadderStatus/statusRank grep prints nothing; the config-builder grep prints one line per file (`test/config.test.ts:4`, `test/server.test.ts:3`, `test/support/app.ts:5`). No substitutions. The remaining table rows (`Clock`/`FixedClock`, `asNullableDate`, `AppError`, `MarketLogger`, `BucketPolicy`, `PROVIDER_BUCKETS.massive/.finnhub`, `QuoteProvider`, `Container` fields, `RouteOptions`) were also found as described.
 
 Run each line from `/Users/ckai/code/Wait/server`. Every line must print exactly one match. A `grep -c` printing `0` means the name differs: find the real one and substitute it (see the Interfaces table).
 ```bash
@@ -228,7 +315,10 @@ grep -n "const validEnv\|const env = {\|export const testConfig" test/config.tes
 ```
 Expected: one line for each of the three files.
 
-- [ ] **Step 2: Check the iOS names this plan depends on**
+- [x] **Step 2: Check the iOS names this plan depends on**
+
+> Result (2026-11-23), verified now: `scripts/test-waitkit.sh` (executable), the `.dependenciesTestSupport` helper (and `.tca`, `.dependencies`, `.dependenciesMacros`, `.sharing`), `Log.push`, `HTTPSession.post` (no-response overload), `HTTPSession.delete`, `APIClient.live(session:)`, `APIClient.misconfigured`, `HTTPSession.init(baseURL:session:anonymousID:)`, `AppDelegate` `lazy var store`, `AppFeature` `case .appDelegate(.didFinishLaunching):`, `ConnectivityClient.noop`, and `aps-environment` in both `Wait.entitlements` and `WaitRelease.entitlements` (not in `project.yml`, which only references the entitlement files). No substitutions.
+> Verified before Chunk 7 (2026-11-23, plan 05 code-complete): `Sources/SyncClient/SyncChange.swift` has `public struct SyncReport` with `public init(pushed: Int = 0, pulled: Int = 0, applied: Int = 0, rounds: Int = 0)` and `static let empty`; `SyncClient.swift` has `\.syncClient` (`sync: () async throws -> SyncReport`, `reset: () async -> Void`); `SettingsFeature.Action` has `case task` and `case syncNowTapped` (plus `syncFinished(SyncReport)` and `syncFailed(String)`). No substitutions.
 
 Run each line from `/Users/ckai/code/Wait`. Each `grep -c` must print `1` or more:
 ```bash
@@ -249,7 +339,9 @@ grep -n "aps-environment" Wait/project.yml Wait/Wait/Wait.entitlements Wait/Wait
 ```
 Expected: `test-waitkit ok`, every count at least `1`, and at least one `aps-environment` line.
 
-- [ ] **Step 3: Confirm the baseline is green**
+- [x] **Step 3: Confirm the baseline is green** — server part only; `scripts/test-waitkit.sh` NOT RUN (code-only)
+
+> Result (2026-11-23): `npm run typecheck` exits 0; `npm test` 29 files, 209/209 passed.
 
 Run:
 ```bash
@@ -268,7 +360,7 @@ No commit for this task.
 - Modify: `server/src/domain/ladder.ts` (append at the end)
 - Test: `server/test/domain/shouldAlert.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/domain/shouldAlert.test.ts`:
 ```ts
@@ -330,12 +422,12 @@ describe("parseLadderStatus / isAlertStatus", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `cd /Users/ckai/code/Wait/server && npx vitest run test/domain/shouldAlert.test.ts`
 Expected: FAIL. The new exports don't exist yet, so vitest reports `… is not a function` or a missing-export error.
 
-- [ ] **Step 3: Implement the rule**
+- [x] **Step 3: Implement the rule**
 
 Append to `server/src/domain/ladder.ts`. It reuses the file's existing `LADDER_STATUSES` and `LadderStatus`, so don't redeclare them. If Task 1 found that plan 05 already exports `parseLadderStatus`, leave that function out.
 ```ts
@@ -382,12 +474,12 @@ export function shouldAlert(previous: LadderStatus | null, next: LadderStatus): 
 }
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 Run: `npx vitest run test/domain/shouldAlert.test.ts && npm run typecheck`
 Expected: PASS (`Tests  18 passed (18)`), and `tsc` exits 0.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add server/src/domain/ladder.ts server/test/domain/shouldAlert.test.ts
@@ -404,7 +496,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/domain/tradingDate.ts` (re-exports plan 04's `etDateString` as `easternDate`, and adds `isWeekend`)
 - Test: `server/test/domain/tradingDate.test.ts` (pins the DST behavior this plan relies on)
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/domain/tradingDate.test.ts`:
 ```ts
@@ -438,12 +530,12 @@ describe("isWeekend", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/domain/tradingDate.test.ts`
 Expected: FAIL with `Failed to load url ../../src/domain/tradingDate.js … Does the file exist?`
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 Create `server/src/domain/tradingDate.ts`:
 ```ts
@@ -457,12 +549,12 @@ export function isWeekend(tradingDate: string): boolean {
 }
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 Run: `npx vitest run test/domain/tradingDate.test.ts && npm run typecheck`
 Expected: PASS (`Tests  12 passed (12)`).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add server/src/domain/tradingDate.ts server/test/domain/tradingDate.test.ts
@@ -479,7 +571,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/migrations/004_alerts.sql`
 - Test: `server/test/db/migration004.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/db/migration004.test.ts`:
 ```ts
@@ -535,12 +627,12 @@ describe("004_alerts.sql", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/db/migration004.test.ts`
 Expected: FAIL with `relation "device_tokens" does not exist`, or an empty table list.
 
-- [ ] **Step 3: Write the migration**
+- [x] **Step 3: Write the migration**
 
 Create `server/migrations/004_alerts.sql`. It is copied verbatim from overview §8.3:
 ```sql
@@ -560,12 +652,12 @@ CREATE TABLE IF NOT EXISTS alert_job_runs (
   started_at TIMESTAMPTZ NOT NULL, finished_at TIMESTAMPTZ, stats JSONB NOT NULL DEFAULT '{}');
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `npx vitest run test/db/migration004.test.ts && npm test`
 Expected: PASS (`Tests  4 passed (4)`), and the full suite stays green.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add server/migrations/004_alerts.sql server/test/db/migration004.test.ts
@@ -587,7 +679,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/test/support/alertFixtures.ts`
 - Test: `server/test/db/DeviceTokenRepository.test.ts`
 
-- [ ] **Step 1: Write the fixture helpers**
+- [x] **Step 1: Write the fixture helpers**
 
 Create `server/test/support/alertFixtures.ts`:
 ```ts
@@ -625,7 +717,7 @@ export async function insertItem(sql: Sql, item: ItemFixture): Promise<void> {
 }
 ```
 
-- [ ] **Step 2: Write the failing contract test**
+- [x] **Step 2: Write the failing contract test**
 
 Create `server/test/db/DeviceTokenRepository.test.ts`. The same suite runs against the Neon implementation (on PGlite) and against the Mock:
 ```ts
@@ -721,12 +813,12 @@ describe.each(harnesses)("%s", (_name, makeHarness) => {
 })
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run: `npx vitest run test/db/DeviceTokenRepository.test.ts`
 Expected: FAIL with `Failed to load url ../../src/db/MockDeviceTokenRepository.js`.
 
-- [ ] **Step 4: Write the interface**
+- [x] **Step 4: Write the interface**
 
 Create `server/src/db/DeviceTokenRepository.ts`:
 ```ts
@@ -757,7 +849,7 @@ export interface DeviceTokenRepository {
 }
 ```
 
-- [ ] **Step 5: Write the Neon implementation**
+- [x] **Step 5: Write the Neon implementation**
 
 Create `server/src/db/NeonDeviceTokenRepository.ts`:
 ```ts
@@ -834,7 +926,7 @@ export class NeonDeviceTokenRepository implements DeviceTokenRepository {
 }
 ```
 
-- [ ] **Step 6: Write the Mock implementation**
+- [x] **Step 6: Write the Mock implementation**
 
 Create `server/src/db/MockDeviceTokenRepository.ts`:
 ```ts
@@ -891,12 +983,12 @@ export class MockDeviceTokenRepository implements DeviceTokenRepository {
 }
 ```
 
-- [ ] **Step 7: Run the tests to verify they pass**
+- [x] **Step 7: Run the tests to verify they pass**
 
 Run: `npx vitest run test/db/DeviceTokenRepository.test.ts && npm run typecheck`
 Expected: PASS (`Tests  14 passed (14)`: 7 tests × 2 implementations).
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add server/src/db/DeviceTokenRepository.ts server/src/db/NeonDeviceTokenRepository.ts server/src/db/MockDeviceTokenRepository.ts \
@@ -917,7 +1009,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `server/test/support/alertFixtures.ts` (add `toEvaluableItem`)
 - Test: `server/test/db/AlertRepository.test.ts`
 
-- [ ] **Step 1: Add the fixture mapper**
+- [x] **Step 1: Add the fixture mapper**
 
 Append to `server/test/support/alertFixtures.ts`:
 ```ts
@@ -943,7 +1035,7 @@ export function toEvaluableItem(item: ItemFixture): EvaluableItem & { deleted: b
 ```
 Move the two new `import` lines to the top of the file, next to the existing `import type { Sql }`.
 
-- [ ] **Step 2: Write the failing contract test**
+- [x] **Step 2: Write the failing contract test**
 
 Create `server/test/db/AlertRepository.test.ts`:
 ```ts
@@ -1125,12 +1217,12 @@ describe("NeonAlertRepository (PGlite only)", () => {
 })
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run: `npx vitest run test/db/AlertRepository.test.ts`
 Expected: FAIL with `Failed to load url ../../src/db/AlertRepository.js`.
 
-- [ ] **Step 4: Write the interface**
+- [x] **Step 4: Write the interface**
 
 Create `server/src/db/AlertRepository.ts`:
 ```ts
@@ -1183,7 +1275,7 @@ export interface AlertRepository {
 }
 ```
 
-- [ ] **Step 5: Write the Neon implementation**
+- [x] **Step 5: Write the Neon implementation**
 
 Create `server/src/db/NeonAlertRepository.ts`:
 ```ts
@@ -1363,7 +1455,7 @@ export class NeonAlertRepository implements AlertRepository {
 }
 ```
 
-- [ ] **Step 6: Write the Mock implementation**
+- [x] **Step 6: Write the Mock implementation**
 
 Create `server/src/db/MockAlertRepository.ts`:
 ```ts
@@ -1499,13 +1591,13 @@ export class MockAlertRepository implements AlertRepository {
 }
 ```
 
-- [ ] **Step 7: Run the tests to verify they pass**
+- [x] **Step 7: Run the tests to verify they pass**
 
 Run: `npx vitest run test/db/AlertRepository.test.ts && npm run typecheck`
 Expected: PASS (`Tests  13 passed (13)`: 6 contract tests × 2 implementations, plus 1 PGlite-only test).
 If PGlite rejects `trim_scale` (it needs Postgres 13 or later), stop and report the PGlite version. Don't switch to a client-side workaround.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add server/src/db/AlertRepository.ts server/src/db/NeonAlertRepository.ts server/src/db/MockAlertRepository.ts \
@@ -1528,7 +1620,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/test/support/fixtures/massive/grouped-empty.json`
 - Test: `server/test/providers/massive.test.ts`
 
-- [ ] **Step 1: Add the fixtures**
+- [x] **Step 1: Add the fixtures**
 
 Create `server/test/support/fixtures/massive/grouped-2026-11-20.json`. This is the Polygon/Massive grouped-daily response shape; `t` is 2026-11-20T21:00:00Z in milliseconds.
 ```json
@@ -1550,7 +1642,7 @@ Create `server/test/support/fixtures/massive/grouped-empty.json`:
 { "adjusted": true, "queryCount": 0, "resultsCount": 0, "status": "OK", "request_id": "fixture-grouped-2" }
 ```
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `server/test/providers/massive.test.ts`:
 ```ts
@@ -1631,12 +1723,12 @@ describe("createMassiveProvider", () => {
 })
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run: `npx vitest run test/providers/massive.test.ts`
 Expected: FAIL with `Failed to load url ../../src/providers/massive.js`.
 
-- [ ] **Step 4: Extend the provider types**
+- [x] **Step 4: Extend the provider types**
 
 Append to `server/src/providers/types.ts`:
 ```ts
@@ -1649,7 +1741,7 @@ export interface GroupedDailyProvider {
 }
 ```
 
-- [ ] **Step 5: Implement the adapter**
+- [x] **Step 5: Implement the adapter**
 
 Create `server/src/providers/massive.ts`:
 ```ts
@@ -1710,12 +1802,12 @@ export function parseGroupedDaily(body: unknown): Map<string, DailyClose> {
 }
 ```
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [x] **Step 6: Run the tests to verify they pass**
 
 Run: `npx vitest run test/providers/massive.test.ts && npm run typecheck`
 Expected: PASS (`Tests  7 passed (7)`).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add server/src/providers/types.ts server/src/providers/massive.ts server/test/providers/massive.test.ts server/test/support/fixtures/massive
@@ -1734,7 +1826,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/services/DailyCloseResolver.ts`
 - Test: `server/test/services/DailyCloseResolver.test.ts`
 
-- [ ] **Step 1: Write the shared fakes**
+- [x] **Step 1: Write the shared fakes**
 
 Create `server/test/support/alertFakes.ts`:
 ```ts
@@ -1812,7 +1904,7 @@ export class RecordingLogger {
 ```
 Tests use plan 04's `fixedClock(new Date(…))` from `src/lib/clock.ts` wherever they need a clock they can move.
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `server/test/services/DailyCloseResolver.test.ts`:
 ```ts
@@ -1921,12 +2013,12 @@ describe("DailyCloseResolver", () => {
 })
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run: `npx vitest run test/services/DailyCloseResolver.test.ts`
 Expected: FAIL with `Failed to load url ../../src/services/DailyCloseResolver.js`.
 
-- [ ] **Step 4: Implement the resolver**
+- [x] **Step 4: Implement the resolver**
 
 Create `server/src/lib/logSink.ts`, the logger shape that the alert job, resolver and sender accept:
 ```ts
@@ -2052,12 +2144,12 @@ async function mapWithConcurrency<T, R>(items: T[], limit: number, work: (item: 
 }
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `npx vitest run test/services/DailyCloseResolver.test.ts && npm run typecheck`
 Expected: PASS (`Tests  9 passed (9)`).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add server/src/lib/logSink.ts server/src/services/DailyCloseResolver.ts server/test/services/DailyCloseResolver.test.ts server/test/support/alertFakes.ts
@@ -2077,7 +2169,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/apns/ApnsTokenProvider.ts`
 - Test: `server/test/apns/ApnsTokenProvider.test.ts`
 
-- [ ] **Step 1: Write the test key helper**
+- [x] **Step 1: Write the test key helper**
 
 Create `server/test/support/apnsKey.ts`. It generates a P-256 key pair once per test process. Task 13 uses `TEST_APNS_KEY_BASE64` in every test env/config fixture, so no fixture contains a fake or real `.p8`.
 ```ts
@@ -2095,7 +2187,7 @@ export const TEST_APNS_PUBLIC_KEY_PEM: string = pair.publicKey
 export const TEST_APNS_KEY_BASE64: string = Buffer.from(pair.privateKey).toString("base64")
 ```
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `server/test/apns/ApnsTokenProvider.test.ts`:
 ```ts
@@ -2171,12 +2263,12 @@ describe("normalizeApnsKey", () => {
 })
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run: `npx vitest run test/apns/ApnsTokenProvider.test.ts`
 Expected: FAIL with `Failed to load url ../../src/apns/ApnsTokenProvider.js`.
 
-- [ ] **Step 4: Implement**
+- [x] **Step 4: Implement**
 
 Create `server/src/apns/ApnsTokenProvider.ts`:
 ```ts
@@ -2238,12 +2330,12 @@ function base64url(value: object): string {
 }
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `npx vitest run test/apns/ApnsTokenProvider.test.ts && npm run typecheck`
 Expected: PASS (`Tests  8 passed (8)`).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add server/src/apns/ApnsTokenProvider.ts server/test/apns/ApnsTokenProvider.test.ts server/test/support/apnsKey.ts
@@ -2260,7 +2352,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/apns/payload.ts`
 - Test: `server/test/apns/payload.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/apns/payload.test.ts`:
 ```ts
@@ -2312,12 +2404,12 @@ describe("buildPayload", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/apns/payload.test.ts`
 Expected: FAIL with `Failed to load url ../../src/apns/payload.js`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 Create `server/src/apns/payload.ts`:
 ```ts
@@ -2379,12 +2471,12 @@ export function buildPayload(input: AlertPayloadInput): ApnsPayload {
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `npx vitest run test/apns/payload.test.ts && npm run typecheck`
 Expected: PASS (`Tests  6 passed (6)`).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add server/src/apns/payload.ts server/test/apns/payload.test.ts
@@ -2403,7 +2495,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/apns/MockApnsTransport.ts`
 - Test: `server/test/apns/transports.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/apns/transports.test.ts`. The HTTP/2 transport is exercised against a local cleartext HTTP/2 server; no Apple host is contacted:
 ```ts
@@ -2499,12 +2591,12 @@ describe("MockApnsTransport", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/apns/transports.test.ts`
 Expected: FAIL with `Failed to load url ../../src/apns/Http2ApnsTransport.js`.
 
-- [ ] **Step 3: Write the transport types**
+- [x] **Step 3: Write the transport types**
 
 Create `server/src/apns/types.ts`:
 ```ts
@@ -2521,7 +2613,7 @@ export interface ApnsTransport {
 }
 ```
 
-- [ ] **Step 4: Write the HTTP/2 transport**
+- [x] **Step 4: Write the HTTP/2 transport**
 
 Create `server/src/apns/Http2ApnsTransport.ts`:
 ```ts
@@ -2611,7 +2703,7 @@ function parseReason(body: string): string | undefined {
 }
 ```
 
-- [ ] **Step 5: Write the mock transport**
+- [x] **Step 5: Write the mock transport**
 
 Create `server/src/apns/MockApnsTransport.ts`:
 ```ts
@@ -2637,12 +2729,12 @@ export class MockApnsTransport implements ApnsTransport {
 }
 ```
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [x] **Step 6: Run the tests to verify they pass**
 
 Run: `npx vitest run test/apns/transports.test.ts && npm run typecheck`
 Expected: PASS (`Tests  3 passed (3)`).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add server/src/apns/types.ts server/src/apns/Http2ApnsTransport.ts server/src/apns/MockApnsTransport.ts server/test/apns/transports.test.ts
@@ -2659,7 +2751,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/apns/ApnsSender.ts`
 - Test: `server/test/apns/ApnsSender.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/apns/ApnsSender.test.ts`:
 ```ts
@@ -2805,12 +2897,12 @@ describe("ApnsSender", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/apns/ApnsSender.test.ts`
 Expected: FAIL with `Failed to load url ../../src/apns/ApnsSender.js`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 Create `server/src/apns/ApnsSender.ts`:
 ```ts
@@ -2936,12 +3028,12 @@ function describe(result: Attempt): { environment: ApnsEnvironment; status: numb
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `npx vitest run test/apns && npm run typecheck`
 Expected: PASS (all four `test/apns/*.test.ts` files; `Tests  27 passed (27)`).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add server/src/apns/ApnsSender.ts server/test/apns/ApnsSender.test.ts
@@ -2965,7 +3057,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 Every fixture uses the generated key from `test/support/apnsKey.ts` (Task 9). No fixture contains a fake or real `.p8`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 In `server/test/config.test.ts`, make these changes:
 
@@ -3018,12 +3110,12 @@ In `server/test/support/app.ts`, add `import { TEST_APNS_KEY_BASE64 } from "./ap
   apns: { key: TEST_APNS_KEY_BASE64, keyId: "ABC123DEFG", teamId: "5WDN96EM72", topic: "com.chenkai.wait" },
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `npx vitest run test/config.test.ts && npm run typecheck`
 Expected: FAIL. The full-config `toEqual` misses `massive`, `cronSecret` and `apns`, and the "fails fast" cases don't throw. `tsc` reports that `testConfig` has unknown properties.
 
-- [ ] **Step 3: Extend the config**
+- [x] **Step 3: Extend the config**
 
 In `server/src/config.ts`, make three additions.
 
@@ -3064,12 +3156,12 @@ APNS_TEAM_ID=5WDN96EM72
 APNS_TOPIC=com.chenkai.wait
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `npx vitest run test/config.test.ts test/server.test.ts && npm test && npm run typecheck`
 Expected: PASS. `config.test.ts` gains 8 tests, and the whole suite stays green. `tsc` exits 0.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add server/src/config.ts server/.env.example server/test/config.test.ts server/test/server.test.ts server/test/support/app.ts
@@ -3089,7 +3181,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `server/src/app.ts` (register the route)
 - Test: `server/test/routes/devices.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/routes/devices.test.ts`. It goes through `buildTestApp`, so it exercises the real JWT middleware, error handler and Ajv options (overview §8.1):
 ```ts
@@ -3180,12 +3272,12 @@ describe("devices routes", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/routes/devices.test.ts`
 Expected: FAIL. `POST /api/devices` returns 404 `NOT_FOUND`, and `tsc` reports that `container.deviceTokens` doesn't exist.
 
-- [ ] **Step 3: Write the schemas**
+- [x] **Step 3: Write the schemas**
 
 Create `server/src/schemas/devices.ts`:
 ```ts
@@ -3207,7 +3299,7 @@ export type RegisterDeviceBody = Static<typeof RegisterDeviceBodySchema>
 export const DeviceTokenParamsSchema = Type.Object({ token: Type.String({ pattern: DEVICE_TOKEN_PATTERN }) }, { additionalProperties: false })
 ```
 
-- [ ] **Step 4: Write the route plugin**
+- [x] **Step 4: Write the route plugin**
 
 Create `server/src/routes/api/devices.ts`. It follows plan 04's `RouteOptions` convention (see `routes/api/auth.ts`):
 ```ts
@@ -3251,7 +3343,7 @@ const deviceRoutes: FastifyPluginAsync<RouteOptions> = async (server, { containe
 export default deviceRoutes
 ```
 
-- [ ] **Step 5: Wire it into the container and app**
+- [x] **Step 5: Wire it into the container and app**
 
 In `server/src/container.ts`:
 
@@ -3273,12 +3365,12 @@ In `server/src/app.ts`, add `import deviceRoutes from "./routes/api/devices.js"`
   await app.register(deviceRoutes, { prefix: "/api/devices", container })
 ```
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [x] **Step 6: Run the tests to verify they pass**
 
 Run: `npx vitest run test/routes/devices.test.ts && npm test && npm run typecheck`
 Expected: PASS (`Tests  10 passed (10)` in `devices.test.ts`), and the whole suite stays green.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add server/src/schemas/devices.ts server/src/routes/api/devices.ts server/src/container.ts server/src/app.ts server/test/routes/devices.test.ts
@@ -3312,7 +3404,7 @@ Expected result: evaluated 5, transitions 3 (AAPL, NVDA, TSLA), alertsCreated 2,
 
 AAPL's temperature: 10 + (172.1 − 150) / 25 × 20 = 27.68, so the push body ends in `· 28°`.
 
-- [ ] **Step 1: Write the shared scenario**
+- [x] **Step 1: Write the shared scenario**
 
 Create `server/test/support/alertScenario.ts`:
 ```ts
@@ -3359,7 +3451,7 @@ export class FakeCloseResolver implements CloseResolver {
 }
 ```
 
-- [ ] **Step 2: Write the failing unit test (Mock repositories)**
+- [x] **Step 2: Write the failing unit test (Mock repositories)**
 
 Create `server/test/services/AlertJobService.test.ts`:
 ```ts
@@ -3590,12 +3682,12 @@ describe("AlertJobService", () => {
 })
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run: `npx vitest run test/services/AlertJobService.test.ts`
 Expected: FAIL with `Failed to load url ../../src/services/AlertJobService.js`.
 
-- [ ] **Step 4: Implement the job**
+- [x] **Step 4: Implement the job**
 
 Create `server/src/services/AlertJobService.ts`:
 ```ts
@@ -3800,12 +3892,12 @@ function groupByUser(devices: DeviceToken[]): Map<string, DeviceToken[]> {
 }
 ```
 
-- [ ] **Step 5: Run the unit test to verify it passes**
+- [x] **Step 5: Run the unit test to verify it passes**
 
 Run: `npx vitest run test/services/AlertJobService.test.ts`
 Expected: PASS (`Tests  12 passed (12)`).
 
-- [ ] **Step 6: Write the PGlite integration test**
+- [x] **Step 6: Write the PGlite integration test**
 
 Create `server/test/services/AlertJobService.pglite.test.ts`. It runs the same scenario through the real SQL repositories:
 ```ts
@@ -3864,12 +3956,12 @@ describe("AlertJobService on PGlite", () => {
 })
 ```
 
-- [ ] **Step 7: Run the integration test and the full suite**
+- [x] **Step 7: Run the integration test and the full suite**
 
 Run: `npx vitest run test/services && npm test && npm run typecheck`
 Expected: PASS (`Tests  13 passed (13)` for the two job files), and the whole suite stays green.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add server/src/services/AlertJobService.ts server/test/support/alertScenario.ts server/test/services/AlertJobService.test.ts server/test/services/AlertJobService.pglite.test.ts
@@ -3891,7 +3983,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `server/src/app.ts` (register the route)
 - Test: `server/test/routes/dailyAlerts.test.ts`
 
-- [ ] **Step 1: Write the failing route test**
+- [x] **Step 1: Write the failing route test**
 
 Create `server/test/routes/dailyAlerts.test.ts`. It runs through `buildTestApp` and overrides only `alertJob`. The secret is `testConfig.cronSecret` (Task 13).
 ```ts
@@ -3965,12 +4057,12 @@ describe("GET /api/internal/daily-alerts", () => {
 ```
 The mock container's clock is plan 04's fixed Friday 2026-11-20 15:00 UTC, and its default close resolver reports a holiday (Step 5), so the last test expects `holiday`.
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/routes/dailyAlerts.test.ts`
 Expected: FAIL. `tsc` reports that `alertJob` isn't a `Container` member, and the route answers 404.
 
-- [ ] **Step 3: Write the schema**
+- [x] **Step 3: Write the schema**
 
 Create `server/src/schemas/alerts.ts`:
 ```ts
@@ -3992,7 +4084,7 @@ export const DailyAlertsResponseSchema = Type.Object(
 )
 ```
 
-- [ ] **Step 4: Write the route**
+- [x] **Step 4: Write the route**
 
 Create `server/src/routes/api/internal/dailyAlerts.ts`:
 ```ts
@@ -4027,7 +4119,7 @@ const dailyAlertsRoutes: FastifyPluginAsync<DailyAlertsRouteOptions> = async (se
 export default dailyAlertsRoutes
 ```
 
-- [ ] **Step 5: Wire the job into the container**
+- [x] **Step 5: Wire the job into the container**
 
 In `server/src/container.ts`:
 
@@ -4105,12 +4197,12 @@ In `server/src/app.ts`, add `import dailyAlertsRoutes from "./routes/api/interna
   await app.register(dailyAlertsRoutes, { prefix: "/api/internal", container, cronSecret: config.cronSecret })
 ```
 
-- [ ] **Step 6: Run everything**
+- [x] **Step 6: Run everything**
 
 Run: `npx vitest run test/routes && npm test && npm run typecheck`
 Expected: PASS. `dailyAlerts.test.ts` reports `Tests  5 passed (5)`, and the whole suite stays green, including `server.test.ts`, which builds the real container from `process.env`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add server/src/schemas/alerts.ts server/src/routes/api/internal/dailyAlerts.ts server/src/container.ts server/src/app.ts \
@@ -4128,7 +4220,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `server/vercel.json`
 - Test: `server/test/vercelConfig.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/vercelConfig.test.ts`:
 ```ts
@@ -4151,12 +4243,12 @@ describe("vercel.json", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/vercelConfig.test.ts`
 Expected: FAIL. The first test sees `crons` as `undefined`. The second should already pass, because plan 04 routes `/api/(.*)` to `src/server.ts`.
 
-- [ ] **Step 3: Add the cron**
+- [x] **Step 3: Add the cron**
 
 Run (from `server/`):
 ```bash
@@ -4165,12 +4257,12 @@ git diff vercel.json
 ```
 Expected diff: only a top-level `"crons"` array was added. `builds` and `routes` are unchanged.
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 Run: `npx vitest run test/vercelConfig.test.ts`
 Expected: PASS (`Tests  2 passed (2)`).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add server/vercel.json server/test/vercelConfig.test.ts
@@ -4189,7 +4281,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 This is a thin CLI over modules that already have tests (`normalizeApnsKey`, `ApnsTokenProvider`, `buildPayload`, `Http2ApnsTransport`). It is verified by `npm run typecheck` now and by a real push in Task 24.
 
-- [ ] **Step 1: Write the script**
+- [x] **Step 1: Write the script**
 
 Create `server/scripts/send-test-push.ts`:
 ```ts
@@ -4263,7 +4355,7 @@ Add to `server/package.json`'s `"scripts"`:
 "send-test-push": "tsx scripts/send-test-push.ts"
 ```
 
-- [ ] **Step 2: Typecheck and smoke-test the argument handling**
+- [x] **Step 2: Typecheck and smoke-test the argument handling**
 
 Run:
 ```bash
@@ -4272,7 +4364,7 @@ npm run send-test-push -- --token NOT-HEX; echo "exit=$?"
 ```
 Expected: `tsc` exits 0. The second command fails before any network call with `Error: --token <lowercase hex APNs device token> is required`, followed by `exit=1`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add server/scripts/send-test-push.ts server/package.json
@@ -4300,7 +4392,7 @@ Source paths below are relative to `Wait/Packages/WaitKit/` unless they start wi
 - Create: `Packages/WaitKit/Sources/NotificationClient/NotificationClient+Live.swift`
 - Test: `Packages/WaitKit/Tests/NotificationClientTests/NotificationPayloadTests.swift`
 
-- [ ] **Step 1: Declare the targets**
+- [x] **Step 1: Declare the targets**
 
 In `Package.swift`, add the following to `targets:`, next to the other client targets:
 ```swift
@@ -4312,7 +4404,7 @@ and the following next to the other test targets:
 ```
 `Logging` is used by the live delegate (plan 02's `Log.push` channel).
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `Tests/NotificationClientTests/NotificationPayloadTests.swift`:
 ```swift
@@ -4383,12 +4475,12 @@ struct NotificationPayloadTests {
 }
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [ ] **Step 3: Run the test to verify it fails** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh NotificationClientTests`
 Expected: the build fails with `cannot find 'NotificationPayload' in scope` (or "no such module 'NotificationClient'").
 
-- [ ] **Step 4: Write the interface**
+- [x] **Step 4: Write the interface**
 
 Create `Sources/NotificationClient/NotificationClient.swift`:
 ```swift
@@ -4438,7 +4530,7 @@ public extension DependencyValues {
 }
 ```
 
-- [ ] **Step 5: Write the payload parser**
+- [x] **Step 5: Write the payload parser**
 
 Create `Sources/NotificationClient/NotificationPayload.swift`:
 ```swift
@@ -4481,7 +4573,7 @@ public enum NotificationPayload {
 }
 ```
 
-- [ ] **Step 6: Write the live implementation**
+- [x] **Step 6: Write the live implementation**
 
 Create `Sources/NotificationClient/NotificationClient+Live.swift`:
 ```swift
@@ -4586,13 +4678,15 @@ extension NotificationAuthorization {
 #endif
 ```
 
-- [ ] **Step 7: Run the test to verify it passes**
+- [ ] **Step 7: Run the test to verify it passes** — NOT RUN (code-only)
+
+> Result (2026-11-23): `/tmp` harness on macOS (the real `NotificationPayload.swift` and test file, hand-written `NotificationClient` stand-in): 7 of 7 payload tests passed; the iOS-only `mapsSystemAuthorizationStatuses` was typechecked, not run. The live delegate file typechecks clean under `-swift-version 6` for `arm64-apple-ios17.0-simulator` (no `@preconcurrency` needed); `swiftlint`: 0 violations.
 
 Run: `scripts/test-waitkit.sh NotificationClientTests`
 Expected: `** TEST SUCCEEDED **` with 8 tests.
 If Swift 6 reports that the delegate methods have a non-`Sendable` parameter crossing an isolation boundary, keep them `nonisolated` (the default for this class). Annotate the protocol conformance as `@preconcurrency UNUserNotificationCenterDelegate`. Don't make the class `@MainActor`, because `liveValue` must stay usable from any context.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -4611,7 +4705,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `Packages/WaitKit/Sources/APIClient/APIClient.swift`
 - Test: `Packages/WaitKit/Tests/APIClientTests/DeviceEndpointTests.swift`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `Tests/APIClientTests/DeviceEndpointTests.swift`. It uses its own `URLProtocol` stub, so it doesn't depend on plan 04's test helpers:
 ```swift
@@ -4733,12 +4827,14 @@ struct DeviceEndpointTests {
 ```
 The two endpoint tests go through plan 04's real `HTTPSession`: register, then a JWT, then a 204 with an empty body. That covers the empty-response `post` overload and `delete` against 204s.
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [ ] **Step 2: Run the test to verify it fails** — NOT RUN (code-only)
+
+> Result (2026-11-23): red confirmed in the `/tmp` harness: `value of type 'APIClient' has no member 'registerDevice'` / `'unregisterDevice'`.
 
 Run: `scripts/test-waitkit.sh APIClientTests/DeviceEndpointTests`
 Expected: the build fails with `cannot find 'APNsToken' in scope` and `value of type 'APIClient' has no member 'registerDevice'`.
 
-- [ ] **Step 3: Write the DTO**
+- [x] **Step 3: Write the DTO**
 
 Create `Sources/APIClient/DTOs/DeviceRegistrationDTO.swift`:
 ```swift
@@ -4792,7 +4888,7 @@ public enum APNsToken {
 }
 ```
 
-- [ ] **Step 4: Add the endpoints**
+- [x] **Step 4: Add the endpoints**
 
 Plan 04's `HTTPSession` already has the two primitives this needs, so it isn't changed:
 - `post<Body>(_ path:, body:) async throws`, the no-response overload documented "For endpoints that answer 204". It sends the body and ignores the empty response.
@@ -4823,12 +4919,14 @@ The closure's `Void` return type selects the no-response `post` overload.
     unregisterDevice: { _ in throw APIError.misconfigured }
 ```
 
-- [ ] **Step 5: Run the test to verify it passes**
+- [ ] **Step 5: Run the test to verify it passes** — NOT RUN (code-only)
+
+> Result (2026-11-23): `/tmp` macOS harness (real `HTTPSession`, `WireDates`, DTOs, `DeviceEndpointTests` and `APIClient.swift` minus the `@DependencyClient` macro and `DependencyKey` parts, built with `-DDEBUG`): 5 of 5 `DeviceEndpointTests` passed. Not run: the rest of `APIClientTests`. `swiftlint`: 0 violations. Server contract checked against `server/src/schemas/devices.ts` and `routes/api/devices.ts` (body `token`/`environment`/`bundleId`, 204 on both routes, token path param `^[0-9a-f]{64,200}$`).
 
 Run: `scripts/test-waitkit.sh APIClientTests`
 Expected: `** TEST SUCCEEDED **`, with the 5 new tests and the existing plan 04/05 `APIClientTests` all passing.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -4856,7 +4954,7 @@ Run iOS commands from `/Users/ckai/code/Wait` with `scripts/test-waitkit.sh` and
 - Test: `Wait/Packages/WaitKit/Tests/AppFeatureTests/PushFeatureTests.swift`
 - Test: `Wait/Packages/WaitKit/Tests/AppFeatureTests/AppFeaturePushRoutingTests.swift`
 
-- [ ] **Step 1: Add the dependencies and the shared keys**
+- [x] **Step 1: Add the dependencies and the shared keys**
 
 In `Package.swift`:
 - Add `"NotificationClient"` and `"APIClient"` to the `AppFeature` target's `dependencies`, skipping any it already has.
@@ -4882,7 +4980,7 @@ public extension SharedReaderKey where Self == AppStorageKey<String?> {
 }
 ```
 
-- [ ] **Step 2: Write the failing `PushFeature` test**
+- [x] **Step 2: Write the failing `PushFeature` test**
 
 Create `Tests/AppFeatureTests/PushFeatureTests.swift`:
 ```swift
@@ -5038,12 +5136,14 @@ struct PushFeatureTests {
 }
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [ ] **Step 3: Run the test to verify it fails** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh AppFeatureTests/PushFeatureTests`
 Expected: the build fails with `cannot find 'PushFeature' in scope`.
 
-- [ ] **Step 4: Implement `PushFeature`**
+- [x] **Step 4: Implement `PushFeature`**
+
+> Result (2026-11-23): `@Shared(.alertsEnabled) var alertsEnabled: Bool` and `@Shared(.apnsDeviceToken) var deviceToken: String?` carry explicit types (the optional key goes through `Shared.init<Wrapped>(_ key: some SharedKey<Value>) where Value == Wrapped?`, checked in swift-sharing). `swiftlint`: 0 violations.
 
 Create `Sources/AppFeature/PushFeature.swift`:
 ```swift
@@ -5171,12 +5271,12 @@ public struct PushFeature {
 }
 ```
 
-- [ ] **Step 5: Run the `PushFeature` test to verify it passes**
+- [ ] **Step 5: Run the `PushFeature` test to verify it passes** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh AppFeatureTests/PushFeatureTests`
 Expected: `** TEST SUCCEEDED **` (9 tests).
 
-- [ ] **Step 6: Write the failing routing test**
+- [x] **Step 6: Write the failing routing test**
 
 Create `Tests/AppFeatureTests/AppFeaturePushRoutingTests.swift`. It stubs the plan 03 and 05 clients that `AppFeature` effects touch:
 ```swift
@@ -5228,12 +5328,14 @@ struct AppFeaturePushRoutingTests {
 }
 ```
 
-- [ ] **Step 7: Run the routing test to verify it fails**
+- [ ] **Step 7: Run the routing test to verify it fails** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh AppFeatureTests/AppFeaturePushRoutingTests`
 Expected: the build fails with `type 'AppDelegateAction' has no member 'didRegisterForRemoteNotifications'` and `value of type 'AppFeature.State' has no member 'push'`.
 
-- [ ] **Step 8: Wire `PushFeature` into `AppFeature` and `AppDelegate`**
+- [x] **Step 8: Wire `PushFeature` into `AppFeature` and `AppDelegate`**
+
+> Deviation (2026-11-23): instead of `PushFeature().reduce(into: &state.push, action: …).map(Action.push)`, `AppFeature` returns `.send(.push(.launched))`, `.send(.push(.registered(token)))` and `.send(.push(.registrationFailed(message)))`. In TCA 1.26 both `Reducer.reduce(into:action:)` (unconditionally) and `Effect.map` (with the `ComposableArchitecture2Deprecations` trait this package enables) are deprecated, and the repo uses the canonical forms. The cost is one extra received action: `AppFeatureTests.didFinishLaunchingPublishesASnapshot` now also receives `.push(.launched)`, and the routing test receives `.push(.registered)`. The `AppFeature` reducer also changes `case .binding, .watchlist, .settings:` to include `.push`, because the plan's `case .push: return .none` is subsumed there.
 
 In `Sources/AppFeature/AppDelegateAction.swift`, add two cases (overview §12.3). Add `import Foundation` if it's missing.
 ```swift
@@ -5291,7 +5393,7 @@ In `Sources/AppFeature/AppDelegate.swift` (inside its `#if os(iOS)` block):
     }
 ```
 
-- [ ] **Step 9: Run the AppFeature tests to verify they pass**
+- [ ] **Step 9: Run the AppFeature tests to verify they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh AppFeatureTests`
 Expected: `** TEST SUCCEEDED **`, with every existing `AppFeatureTests` test and the 11 new ones passing.
@@ -5301,12 +5403,12 @@ If an existing exhaustive test that sends `.appDelegate(.didFinishLaunching)` no
 
 The default `authorizationStatus` returns `.notDetermined`.
 
-- [ ] **Step 10: Build the app**
+- [ ] **Step 10: Build the app** — NOT RUN (code-only); `xcodegen generate` ran (no `project.yml` change; only a cosmetic `WaitWatch.xcscheme` rewrite, which was reverted)
 
 Run: `cd /Users/ckai/code/Wait/Wait && xcodegen generate && cd .. && scripts/build-app.sh`
 Expected: `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 11: Commit**
+- [x] **Step 11: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -5330,13 +5432,13 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 Load `swiftui-expert:swiftui-expert-skill` before Step 5.
 
-- [ ] **Step 1: Add the dependencies**
+- [x] **Step 1: Add the dependencies**
 
 In `Package.swift`:
 - Add `"NotificationClient"`, `"Persistence"` and `"Logging"` to the `SettingsFeature` target's `dependencies`, skipping any it already has. `"APIClient"` and `"SyncClient"` came with plans 04 and 05.
 - Make `SettingsFeatureTests` include `.tca`, `.dependenciesTestSupport`, `"NotificationClient"` and `"APIClient"` (which also provides `\.identity`).
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `Tests/SettingsFeatureTests/SettingsAlertsTests.swift`:
 ```swift
@@ -5472,12 +5574,14 @@ struct SettingsAlertsTests {
 }
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [ ] **Step 3: Run the test to verify it fails** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh SettingsFeatureTests/SettingsAlertsTests`
 Expected: the build fails with `type 'SettingsFeature.Action' has no member 'alertsToggled'`.
 
-- [ ] **Step 4: Extend `SettingsFeature`**
+- [x] **Step 4: Extend `SettingsFeature`**
+
+> Result (2026-11-23): `alertsEnabled` and `apnsDeviceToken` carry explicit types (`Bool`, `String?`). The account-deletion flow (plan 04/05: `identity.reset()` then `syncClient.reset()`) is untouched and does not unregister the device: `DELETE /api/auth/account` cascades to `device_tokens` on the server (`004_alerts.sql`, `ON DELETE CASCADE`), so only the local `apnsDeviceToken` stays, and `PushFeature` re-registers under the new identity on the next launch.
 
 In `Sources/SettingsFeature/SettingsFeature.swift`, make the following changes.
 
@@ -5564,7 +5668,7 @@ In `Sources/SettingsFeature/SettingsFeature.swift`, make the following changes.
 ```
 The device token itself is uploaded by `PushFeature` when APNs calls back (Task 21).
 
-- [ ] **Step 5: Write the view**
+- [x] **Step 5: Write the view**
 
 Create `Sources/SettingsFeature/AlertsSection.swift`:
 ```swift
@@ -5615,13 +5719,15 @@ struct AlertsSection: View {
 ```
 In `Sources/SettingsFeature/SettingsView.swift`, add `AlertsSection(store: store)` inside the settings `Form`/`List`, after plan 05's sync section and before the attribution footer.
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [ ] **Step 6: Run the tests to verify they pass** — NOT RUN (code-only)
+
+> Result (2026-11-23): the existing `SettingsAccountTests.taskShowsTheAnonymousID` was adapted. `.task` now merges two concurrent effects, so the test sends `.task`, calls `finish()` in non-exhaustive mode and checks the account ID, instead of receiving the two actions in a fixed order. `swiftlint`: 0 violations.
 
 Run: `scripts/test-waitkit.sh SettingsFeatureTests`
 Expected: `** TEST SUCCEEDED **`, with every existing `SettingsFeatureTests` test and the 7 new ones passing.
 If an existing exhaustive test that sends `.task` now reports an unhandled `.authorizationStatusLoaded(.notDetermined)`, add `await store.receive(\.authorizationStatusLoaded, .notDetermined)` to it. The default `authorizationStatus` returns `.notDetermined`. Those tests already stub `\.identity` for plan 04's account load, so no other change is needed.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -5640,7 +5746,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 **Files:**
 - Verify (modify only if needed): `Wait/project.yml`, `Wait/Wait/Wait.entitlements`, `Wait/Wait/WaitRelease.entitlements`
 
-- [ ] **Step 1: Check the entitlement**
+- [x] **Step 1: Check the entitlement**
 
 Run:
 ```bash
@@ -5656,14 +5762,14 @@ If `project.yml` declares the app's entitlements with `properties:`, XcodeGen re
 /usr/libexec/PlistBuddy -c "Add :aps-environment string development" Wait/Wait.entitlements
 ```
 
-- [ ] **Step 2: (manual: user) Confirm the App ID has the Push Notifications capability**
+- [ ] **Step 2: (manual: user) Confirm the App ID has the Push Notifications capability** — SKIPPED (manual)
 
 1. Go to https://developer.apple.com/account/resources/identifiers/list and open `com.chenkai.wait`.
 2. Check that **Push Notifications** is ticked. If it isn't, tick it and click **Save**.
 
 Xcode's automatic signing usually enables it once `aps-environment` is in the entitlements. Without it, a device build fails `registerForRemoteNotifications` with "no valid aps-environment entitlement string found", which reaches `PushFeature.registrationFailed`.
 
-- [ ] **Step 3: Regenerate and build both apps**
+- [ ] **Step 3: Regenerate and build both apps** — NOT RUN (code-only; `xcodegen generate` ran, build not run)
 
 Run:
 ```bash
@@ -5672,7 +5778,7 @@ cd /Users/ckai/code/Wait && scripts/build-app.sh && scripts/build-app.sh WaitWat
 ```
 Expected: both print `** BUILD SUCCEEDED **`, and `git status` shows `Package.resolved` unchanged.
 
-- [ ] **Step 4: Run every suite**
+- [ ] **Step 4: Run every suite** — NOT RUN for `scripts/test-waitkit.sh` (code-only); server `npm run typecheck && npm test` ran: tsc exit 0, 46 files / 396 tests passed
 
 Run:
 ```bash
@@ -5681,7 +5787,7 @@ cd /Users/ckai/code/Wait/server && npm run typecheck && npm test
 ```
 Expected: `** TEST SUCCEEDED **`, `tsc` exits 0, and vitest reports every file passed.
 
-- [ ] **Step 5: Commit (only if Step 1 changed anything)**
+- [x] **Step 5: Commit (only if Step 1 changed anything)** — Step 1 changed nothing; only this plan file is committed
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -5699,7 +5805,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 The executor prints each instruction and waits for the user to confirm it.
 
-- [ ] **Step 1: (manual: user) Set the production env vars**
+- [ ] **Step 1: (manual: user) Set the production env vars** — SKIPPED (manual)
 
 Run from `server/`, pasting each value when `vercel` prompts:
 ```bash
@@ -5713,7 +5819,7 @@ done
 ```
 Set them for **Preview** as well as Production. `loadConfig` fails fast at cold start, so a preview deploy without them returns 500 on every route. `MASSIVE_BASE_URL` and `APNS_TOPIC` have defaults, so add them only to override them.
 
-- [ ] **Step 2: Apply migration 004 to production**
+- [ ] **Step 2: Apply migration 004 to production** — SKIPPED (manual)
 
 Follow plan 04's convention: `scripts/migrate.ts` reads `.env.development.local`, then `.env.local` with override, so the production URL must be in `.env.local`. Don't pass `DATABASE_URL` on the command line; `.env.local` would override it.
 ```bash
@@ -5723,7 +5829,7 @@ npm run migrate
 ```
 Expected: `migrations applied: [4] skipped: [1, 2, 3]`. A second `npm run migrate` prints `migrations applied: [] skipped: [1, 2, 3, 4]`.
 
-- [ ] **Step 3: (manual: user) Deploy**
+- [ ] **Step 3: (manual: user) Deploy** — SKIPPED (manual)
 
 Deploy the way plan 04 does it (`vercel --prod` from `server/`, or merging to the deploy branch). Then:
 ```bash
@@ -5733,7 +5839,7 @@ curl -sS -o /dev/null -w "%{http_code}\n" "$WAIT_API_BASE_URL/api/internal/daily
 ```
 Expected: `{"status":"ok",…}`, then `401` (no secret).
 
-- [ ] **Step 4: Check tap handling on the simulator (no APNs involved)**
+- [ ] **Step 4: Check tap handling on the simulator (no APNs involved)** — SKIPPED (manual)
 
 Write the payload file:
 ```bash
@@ -5747,7 +5853,7 @@ xcrun simctl push booted com.chenkai.wait /tmp/wait-push.apns
 ```
 Expected: a banner appears. Tapping it opens Wait on AAPL's details. The watchlist must contain AAPL; otherwise the deep link is ignored, as plan 02 designed.
 
-- [ ] **Step 5: (manual: user) Register a real device**
+- [ ] **Step 5: (manual: user) Register a real device** — SKIPPED (manual)
 
 1. Run the Debug build on a physical iPhone (Debug uses sandbox APNs).
 2. In Settings, turn on **Daily alerts**, then tap **Allow**.
@@ -5757,7 +5863,7 @@ Expected: a banner appears. Tapping it opens Wait on AAPL's details. The watchli
    ```
    Expected: one row, with environment `sandbox`.
 
-- [ ] **Step 6: (manual: user) Send a test push**
+- [ ] **Step 6: (manual: user) Send a test push** — SKIPPED (manual)
 
 Run from `server/`, using the token from Step 5:
 ```bash
@@ -5765,7 +5871,7 @@ npm run send-test-push -- --token <hex token> --env sandbox --symbol AAPL
 ```
 Expected: `{"environment":"sandbox","status":200,…}`, and the push arrives on the phone. Tapping it opens AAPL.
 
-- [ ] **Step 7: (manual: user) Run the job and force one transition**
+- [ ] **Step 7: (manual: user) Run the job and force one transition** — SKIPPED (manual)
 
 Seed today's statuses:
 ```bash
@@ -5781,12 +5887,12 @@ DELETE FROM alert_job_runs WHERE trading_date = '<today, YYYY-MM-DD in New York>
 Run the `curl` again.
 Expected: `"transitions":1,"alertsCreated":1,"alertsSent":1`, and a "BUY ZONE" push arrives.
 
-- [ ] **Step 8: Confirm the same-day rerun is silent**
+- [ ] **Step 8: Confirm the same-day rerun is silent** — SKIPPED (manual)
 
 Run the same `curl` once more.
 Expected: `"status":"resent","alertsSent":0`, and no new push.
 
-- [ ] **Step 9: (manual: user) Confirm the cron schedule**
+- [ ] **Step 9: (manual: user) Confirm the cron schedule** — SKIPPED (manual)
 
 In the Vercel dashboard, open the project → **Settings → Cron Jobs**.
 Expected: `/api/internal/daily-alerts` is listed with schedule `0 22 * * 1-5`.
@@ -5802,7 +5908,7 @@ No commit for this task.
 - Modify: `/Users/ckai/code/Wait/server/README.md`
 - Modify: `/Users/ckai/code/Wait/Wait/Packages/WaitKit/README.md`
 
-- [ ] **Step 1: Update `CLAUDE.md`**
+- [x] **Step 1: Update `CLAUDE.md`**
 
 Append this section after the data-flow sections that plan 05 left:
 ```markdown
@@ -5828,7 +5934,7 @@ Append this section after the data-flow sections that plan 05 left:
   - `cd server && npm run send-test-push -- --token <hex> --env sandbox` sends a real push.
 ```
 
-- [ ] **Step 2: Update `server/README.md`**
+- [x] **Step 2: Update `server/README.md`**
 
 First, replace plan 04's stale `## Environment` line, `See .env.example. Required: DATABASE_URL, … Optional: LOG_LEVEL (default info). …`, with:
 ```markdown
@@ -5859,7 +5965,7 @@ Then append:
 - **Re-run a day from scratch** (debugging only): delete that day's row from `alert_job_runs`.
 ~~~
 
-- [ ] **Step 3: Update `Packages/WaitKit/README.md`**
+- [x] **Step 3: Update `Packages/WaitKit/README.md`**
 
 Plan 03 already wrote the 4-column module table (`Target | Depends on | watchOS | Linked by`), including a `NotificationClient (plan 06)` row. Don't add a row. Edit the existing cells:
 - `NotificationClient (plan 06)`: set "Depends on" to `Logging, Dependencies, DependenciesMacros` and "Linked by" to `AppFeature, SettingsFeature`. Change nothing if they already read that way.
@@ -5871,7 +5977,7 @@ Below the table, after the sentence "The last three rows exist only after their 
 Plan 06: `NotificationClient` handles permission, APNs registration and the push-tap stream; its live delegate is installed by `AppDelegate`. `AppFeature` scopes `PushFeature` (launch registration, pending unregistration, device-token upload, tap → `openURL`). `SettingsFeature` has the Alerts section (`@Shared(.alertsEnabled)`, permission, Open Settings).
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait

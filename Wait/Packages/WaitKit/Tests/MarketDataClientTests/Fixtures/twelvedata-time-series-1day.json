@@ -1,8 +1,0 @@
-{
-  "meta": { "symbol": "AAPL", "interval": "1day", "currency": "USD", "exchange_timezone": "UTC", "exchange": "NASDAQ", "type": "Common Stock" },
-  "values": [
-    { "datetime": "2026-11-20", "open": "188.1", "high": "190.5", "low": "187.2", "close": "189.98", "volume": "51234567" },
-    { "datetime": "2026-11-19", "open": "186.0", "high": "188.0", "low": "185.0", "close": "187.66", "volume": "40000000" }
-  ],
-  "status": "ok"
-}

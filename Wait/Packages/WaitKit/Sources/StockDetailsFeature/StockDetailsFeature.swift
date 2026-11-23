@@ -40,6 +40,7 @@ public struct StockDetailsFeature {
 
     @Shared public var item: WatchlistItem
     public var quote: Quote?
+    public var profile: CompanyProfile?
     public var chart: StockChartFeature.State
     public var isShowingLadderHistory = false
     @Presents public var destination: Destination.State?
@@ -63,6 +64,8 @@ public struct StockDetailsFeature {
     case task
     case quoteLoaded(Quote)
     case quoteFailed(MarketDataError)
+    case profileLoaded(CompanyProfile)
+    case profileFailed(MarketDataError)
     case chart(StockChartFeature.Action)
     case editLadderTapped
     case editNotesTapped
@@ -105,6 +108,11 @@ public struct StockDetailsFeature {
             } catch {
               try await send(.quoteFailed(MarketDataError(error))) // rethrows cancellation
             }
+            do {
+              try await send(.profileLoaded(marketData.profile(symbol)))
+            } catch {
+              try await send(.profileFailed(MarketDataError(error))) // rethrows cancellation
+            }
           }
 
         case let .quoteLoaded(quote):
@@ -112,6 +120,13 @@ public struct StockDetailsFeature {
           return .none
 
         case .quoteFailed:
+          return .none
+
+        case let .profileLoaded(profile):
+          state.profile = profile
+          return .none
+
+        case .profileFailed:
           return .none
 
         case .editLadderTapped:

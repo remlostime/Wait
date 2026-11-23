@@ -1,5 +1,93 @@
 # Wait Backend: Auth and Market Data Implementation Plan
 
+## Execution log
+
+**Executed:** 2026-11-23 on `ck/sever`, subagent-driven, with a code review after every chunk or two.
+- **Server (Chunks 1–8): fully verified.** Every task ran real TDD with vitest and PGlite. At the end of plan 04, `npm run typecheck` was clean and `npm test` passed 117/117. Later plans grew the suite, and the shared helpers still pass.
+- **iOS (Chunks 9–12): code-only**, as in plans 01–03. Nothing has been built or tested in Xcode. Instead:
+  - The pure `APIClient`, `BackendMarketData` and DTO tests ran for real in `/tmp` Swift Testing harnesses, with hand-written stand-ins for `@DependencyClient`. Results: 38/38 after the review fixes, and `MarketDataClientTests` 32/32 in the reviewer's SwiftPM harness.
+  - The Foundation-only files were typechecked for iOS 17.
+  - TCA code was checked against the TCA 1.26.2 sources.
+  - `swiftlint` reports 0 errors.
+  - `xcodegen generate` produces no diff.
+  - `check-secrets.sh` and `check-client-has-no-provider-keys.sh` both pass.
+
+| Task | Commit |
+|---|---|
+| 1 Package, config | `562fe49` |
+| 2 Lib helpers | `9c60df7` |
+| 3 buildApp, logger, /health | `9ed8e75` |
+| 4 Sql adapter, migrations, 001 | `ad32f98` |
+| 5 Entry points, vercel.json | `6495ed0` |
+| 6 UserRepository | `a937963` |
+| 7 Token bucket RateLimiter | `24d27f2` |
+| 8 JWT, auth, register | `b906c15` |
+| 9 DELETE /api/auth/account | `db21d61` |
+| 10 Calendar, TTLs | `d40cefe` |
+| 11 Provider types, getJson | `d8eae5e` |
+| 12 Market cache, 002 | `b051da9` |
+| 13 Finnhub | `4e83dc2` |
+| 14 Tiingo | `be48ced` |
+| 15 Alpaca | `821530d` |
+| 16 Quotes service | `195fa71` |
+| 17 History | `812315e` |
+| 18 Search, profile | `9f790dd` |
+| 19 Market routes, container | `99d7856` |
+| 20 server/README.md | `0ac8b2e` |
+| 21 Deploy | `fd933b9` (SKIPPED, manual) |
+| 22 APIClient, WireDates, APIError | `d84d52f` |
+| 23 Keychain, Identity | `8eaa125` |
+| 24 HTTPSession | `9a12a42` |
+| 25 Market DTOs, APIClient dependency | `e154825` |
+| 26 MarketDataClient.backend | `a9ad4f0` |
+| 27 Fundamentals in Stock Details | `227782d` |
+| 28 Settings account section | `3fd76e0` |
+| 29 Remove Twelve Data, provider-key guard | `76d57b9` |
+| 30 Docs | `4110ed1` |
+
+**Review fixes**
+- `9f81972`, Chunks 1–3:
+  - logger redaction for top-level, nested and provider-header secrets
+  - an advisory lock in the migration runner, and a failed ROLLBACK no longer masks the original error
+  - `asDate`, `asNumber` and `mapLimit` reject invalid input, and provider keys are trimmed
+  - framework 4xx errors map to the §8.4 codes
+  - shell env vars win over `.env` files
+  - `test:neon` refuses to truncate `DATABASE_URL`
+  - a later, shorter 429 never shortens a block, and the bucket cost is bounded
+  - register `Retry-After` is computed per token
+  - JWTs without a `userId` are rejected
+  - account deletion also drops the register bucket
+- `5fc4973`, market core:
+  - adapter exceptions fall back to stale data instead of returning 500
+  - data fetched within 20 minutes of the close expires 20 minutes after the close, not at the next open
+  - Alpaca has a page cap
+  - `Retry-After` is at least 1 s
+- `2f044f7`:
+  - a profile with one half failed is retried after 60 s
+  - auth is tested on every market route
+- `29bdcf5`, iOS:
+  - cancellation is rethrown as `CancellationError`
+  - `MISCONFIGURED` and `IDENTITY` map to `.unavailable` and are logged once
+  - the ATS script declares its input and output files
+  - the registration task sets the token
+  - the base URL must have a scheme and a host
+  - decode errors carry the real status
+  - keychain `errSecDuplicateItem` triggers a re-read
+
+**User follow-ups**
+1. Run the real build and tests locally: `scripts/test-waitkit.sh`, `scripts/build-app.sh`, `scripts/build-app.sh WaitWatch`.
+2. Refresh `Package.resolved`.
+3. Task 21 (deploy):
+   - provider accounts: Finnhub, Tiingo, Alpaca
+   - Vercel project with Root Directory `server` and the Neon integration
+   - env vars
+   - `npm run migrate`
+   - curl smoke test
+4. Set `WAIT_API_BASE_URL` in `Config/Base.xcconfig` to the Vercel host. It is empty, and the app reports "misconfigured" until it is set.
+5. Revoke the old Twelve Data key, and delete `TWELVE_DATA_API_KEY` from your local `Secrets.xcconfig`.
+6. Known limitation: a quote batch that is partly rate-limited returns 200, with the deferred symbols in `missing` and no `Retry-After`. The client retries them on the next refresh.
+7. `npm audit` reports zod < 4.6.6 (GHSA-mrhx-c7xc-m3w5). Only env parsing uses zod. Upgrading is a major version bump.
+
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:**
@@ -148,7 +236,7 @@ All server commands run from `/Users/ckai/code/Wait/server` unless a step says o
 - Create: `server/src/config.ts`
 - Test: `server/test/config.test.ts`
 
-- [ ] **Step 1: Create the package skeleton**
+- [x] **Step 1: Create the package skeleton**
 
 ```bash
 mkdir -p /Users/ckai/code/Wait/server/{src,test,migrations,scripts}
@@ -253,12 +341,12 @@ dist/
 coverage/
 ```
 
-- [ ] **Step 2: Install dependencies**
+- [x] **Step 2: Install dependencies**
 
 Run: `cd /Users/ckai/code/Wait/server && npm install`
 Expected: `added N packages` with no `ERR!` lines, and `package-lock.json` is created. If `@electric-sql/pglite@^0.3.0` doesn't resolve, run `npm view @electric-sql/pglite version` and pin `^<major.minor>.0` of the version it prints.
 
-- [ ] **Step 3: Write the failing config test**
+- [x] **Step 3: Write the failing config test**
 
 Create `server/test/config.test.ts`:
 ```ts
@@ -317,12 +405,12 @@ describe("loadConfig", () => {
 })
 ```
 
-- [ ] **Step 4: Run the test to verify it fails**
+- [x] **Step 4: Run the test to verify it fails**
 
 Run: `npx vitest run test/config.test.ts`
 Expected: FAIL with `Failed to load url ../src/config.js` (or `Cannot find module`).
 
-- [ ] **Step 5: Implement `loadConfig`**
+- [x] **Step 5: Implement `loadConfig`**
 
 Create `server/src/config.ts`:
 ```ts
@@ -380,12 +468,12 @@ export function loadConfig(env: Record<string, string | undefined>): Config {
 }
 ```
 
-- [ ] **Step 6: Run the test to verify it passes**
+- [x] **Step 6: Run the test to verify it passes**
 
 Run: `npx vitest run test/config.test.ts && npm run typecheck`
 Expected: `5 passed`, and `tsc` prints nothing (exit 0).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -401,7 +489,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/lib/errors.ts`, `server/src/lib/safeEqual.ts`, `server/src/lib/clock.ts`, `server/src/lib/time.ts`, `server/src/lib/decimal.ts`, `server/src/lib/concurrency.ts`
 - Test: `server/test/lib/lib.test.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `server/test/lib/lib.test.ts`:
 ```ts
@@ -478,12 +566,12 @@ describe("mapLimit", () => {
 })
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `npx vitest run test/lib/lib.test.ts`
 Expected: FAIL with `Failed to load url ../../src/lib/errors.js`.
 
-- [ ] **Step 3: Implement the helpers**
+- [x] **Step 3: Implement the helpers**
 
 Create `server/src/lib/errors.ts`:
 ```ts
@@ -605,12 +693,12 @@ export async function mapLimit<T, R>(items: readonly T[], limit: number, fn: (it
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `npx vitest run test/lib/lib.test.ts && npm run typecheck`
 Expected: `6 passed`, and typecheck exits 0.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -627,7 +715,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/test/support/app.ts`
 - Test: `server/test/app.test.ts`
 
-- [ ] **Step 1: Add pino at the version Fastify already uses**
+- [x] **Step 1: Add pino at the version Fastify already uses**
 
 The app and every service share one pino logger, which is passed to Fastify as `loggerInstance`. Pin the same range Fastify depends on, so there's only one copy of pino and its types.
 
@@ -639,7 +727,7 @@ npm ls pino
 ```
 Expected: `package.json` now lists `pino` with the same range as Fastify (for example `^9.x`). `npm ls pino` shows a single deduped version.
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `server/test/support/app.ts`:
 ```ts
@@ -766,12 +854,12 @@ describe("buildApp", () => {
 })
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [x] **Step 3: Run the tests to verify they fail**
 
 Run: `npx vitest run test/app.test.ts`
 Expected: FAIL with `Failed to load url ../../src/app.js` (or `../src/lib/logger.js`).
 
-- [ ] **Step 4: Implement the logger, schemas, container, health route and app**
+- [x] **Step 4: Implement the logger, schemas, container, health route and app**
 
 Create `server/src/lib/logger.ts`:
 ```ts
@@ -908,14 +996,14 @@ export type App = Awaited<ReturnType<typeof buildApp>>
 ```
 `config` isn't used until Task 8, which registers the JWT plugin with `config.jwtSecret`.
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `npx vitest run test/app.test.ts && npm run typecheck`
 Expected: `8 passed`, and typecheck exits 0.
 - If the nullable test or the strict test fails, the `ajv.customOptions` line is missing.
 - If the redaction test fails, `loggerInstance` isn't wired to `container.logger`.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -934,7 +1022,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/test/support/pglite.ts`
 - Test: `server/test/db/sql.test.ts`, `server/test/db/migrations.test.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `server/test/db/sql.test.ts`:
 ```ts
@@ -1027,12 +1115,12 @@ describe("applyMigrations", () => {
 })
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `npx vitest run test/db`
 Expected: FAIL with `Failed to load url ../../src/db/sql.js` and `../support/pglite.js`.
 
-- [ ] **Step 3: Implement the `Sql` adapter**
+- [x] **Step 3: Implement the `Sql` adapter**
 
 Create `server/src/db/sql.ts`:
 ```ts
@@ -1073,7 +1161,7 @@ export function pgliteSql(db: QueryableDb): Sql {
 }
 ```
 
-- [ ] **Step 4: Implement the migration runner and migration 001**
+- [x] **Step 4: Implement the migration runner and migration 001**
 
 Create `server/src/db/migrations.ts`:
 ```ts
@@ -1180,7 +1268,7 @@ CREATE TABLE IF NOT EXISTS rate_buckets (
 );
 ```
 
-- [ ] **Step 5: Implement the test database helper**
+- [x] **Step 5: Implement the test database helper**
 
 Create `server/test/support/pglite.ts`:
 ```ts
@@ -1259,12 +1347,12 @@ export async function createTestDb(): Promise<TestDb> {
 }
 ```
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [x] **Step 6: Run the tests to verify they pass**
 
 Run: `npx vitest run test/db && npm run typecheck`
 Expected: `6 passed` (2 in `sql.test.ts`, 4 in `migrations.test.ts`). Typecheck exits 0.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -1280,7 +1368,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/server.ts`, `server/src/index.ts`, `server/scripts/migrate.ts`, `server/vercel.json`, `server/.env.example`
 - Test: `server/test/server.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/server.test.ts`:
 ```ts
@@ -1313,12 +1401,12 @@ describe("src/server.ts (Vercel entry)", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/server.test.ts`
 Expected: FAIL with `Failed to load url ../src/server.js`.
 
-- [ ] **Step 3: Implement the entry points and deploy files**
+- [x] **Step 3: Implement the entry points and deploy files**
 
 Create `server/src/server.ts`:
 ```ts
@@ -1416,12 +1504,12 @@ ALPACA_SECRET_KEY=
 # Plan 06 adds: MASSIVE_API_KEY, MASSIVE_BASE_URL, CRON_SECRET, APNS_KEY, APNS_KEY_ID, APNS_TEAM_ID, APNS_TOPIC
 ```
 
-- [ ] **Step 4: Run the full suite and typecheck**
+- [x] **Step 4: Run the full suite and typecheck**
 
 Run: `npm test && npm run typecheck`
 Expected: all test files pass (`Test Files  6 passed`), and typecheck exits 0.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -1439,7 +1527,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/db/types.ts`, `server/src/db/UserRepository.ts`, `server/src/db/NeonUserRepository.ts`, `server/src/db/MockUserRepository.ts`
 - Test: `server/test/db/UserRepository.test.ts`
 
-- [ ] **Step 1: Write the failing contract test, which runs against both implementations**
+- [x] **Step 1: Write the failing contract test, which runs against both implementations**
 
 Create `server/test/db/UserRepository.test.ts`:
 ```ts
@@ -1501,12 +1589,12 @@ describe.each(implementations)("%s", (_name, make) => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/db/UserRepository.test.ts`
 Expected: FAIL with `Failed to load url ../../src/db/MockUserRepository.js`.
 
-- [ ] **Step 3: Implement the types, the interface and both repositories**
+- [x] **Step 3: Implement the types, the interface and both repositories**
 
 Create `server/src/db/types.ts`:
 ```ts
@@ -1613,12 +1701,12 @@ export class MockUserRepository implements UserRepository {
 }
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 Run: `npx vitest run test/db/UserRepository.test.ts && npm run typecheck`
 Expected: `8 passed` (4 cases × 2 implementations). Typecheck exits 0.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -1634,7 +1722,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/services/RateLimiter.ts`
 - Test: `server/test/services/RateLimiter.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/services/RateLimiter.test.ts`:
 ```ts
@@ -1721,12 +1809,12 @@ describe("MockRateLimiter", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/services/RateLimiter.test.ts`
 Expected: FAIL with `Failed to load url ../../src/services/RateLimiter.js`.
 
-- [ ] **Step 3: Implement the rate limiter**
+- [x] **Step 3: Implement the rate limiter**
 
 Create `server/src/services/RateLimiter.ts`:
 ```ts
@@ -1824,12 +1912,12 @@ export class MockRateLimiter implements RateLimiter {
 }
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 Run: `npx vitest run test/services/RateLimiter.test.ts && npm run typecheck`
 Expected: `6 passed`, and typecheck exits 0.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -1846,7 +1934,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `server/src/container.ts` (whole file below), `server/src/app.ts` (register the JWT plugin and auth routes), `server/test/support/app.ts` (whole file below)
 - Test: `server/test/routes/auth.test.ts`
 
-- [ ] **Step 1: Write the failing route tests**
+- [x] **Step 1: Write the failing route tests**
 
 Create `server/test/routes/auth.test.ts`:
 ```ts
@@ -1910,12 +1998,12 @@ describe("POST /api/auth/register", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/routes/auth.test.ts`
 Expected: FAIL. `POST /api/auth/register` returns 404, so `app.jwt.verify` throws `TypeError: Cannot read properties of undefined` because the JWT plugin isn't registered yet.
 
-- [ ] **Step 3: Implement the JWT plugin and auth middleware**
+- [x] **Step 3: Implement the JWT plugin and auth middleware**
 
 Create `server/src/plugins/jwt.ts`:
 ```ts
@@ -1980,7 +2068,7 @@ export function buildAuthMiddleware(users: UserRepository) {
 }
 ```
 
-- [ ] **Step 4: Implement `AuthService`, the schemas and the route**
+- [x] **Step 4: Implement `AuthService`, the schemas and the route**
 
 Create `server/src/services/AuthService.ts`:
 ```ts
@@ -2058,7 +2146,7 @@ const authRoutes: FastifyPluginAsync<RouteOptions> = async (server, { container 
 export default authRoutes
 ```
 
-- [ ] **Step 5: Wire the container and the app**
+- [x] **Step 5: Wire the container and the app**
 
 Replace `server/src/container.ts` with:
 ```ts
@@ -2167,12 +2255,12 @@ export async function buildTestApp(overrides: Partial<Container> = {}) {
 }
 ```
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [x] **Step 6: Run the tests to verify they pass**
 
 Run: `npx vitest run test/routes/auth.test.ts test/app.test.ts test/server.test.ts && npm run typecheck`
 Expected: all pass (`4 passed` in auth.test.ts). Typecheck exits 0. `server.test.ts` still passes because `neonSql` makes no connection until the first query.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -2188,7 +2276,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `server/src/routes/api/auth.ts`
 - Test: `server/test/routes/account.test.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `server/test/routes/account.test.ts`:
 ```ts
@@ -2241,12 +2329,12 @@ describe("DELETE /api/auth/account", () => {
 })
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `npx vitest run test/routes/account.test.ts`
 Expected: FAIL. All 3 tests get `404` / `NOT_FOUND` where they expect `401` or `204`, because the route doesn't exist yet.
 
-- [ ] **Step 3: Add the route**
+- [x] **Step 3: Add the route**
 
 In `server/src/routes/api/auth.ts`:
 1. Add these imports:
@@ -2270,17 +2358,17 @@ import { buildAuthMiddleware } from "../../middleware/auth.js"
 ```
 Every 204 route in these plans uses `reply.status(204).send(null)`. Calling `send()` with no argument is a TS2554 error, and Fastify sends no body on a 204 anyway.
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `npx vitest run test/routes/account.test.ts`
 Expected: `3 passed`.
 
-- [ ] **Step 5: Run the whole suite and typecheck**
+- [x] **Step 5: Run the whole suite and typecheck**
 
 Run: `npm test && npm run typecheck`
 Expected: every test file passes, and typecheck exits 0.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -2298,7 +2386,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/domain/marketCalendar.ts`, `server/src/domain/ttl.ts`
 - Test: `server/test/domain/marketCalendar.test.ts`, `server/test/domain/ttl.test.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `server/test/domain/marketCalendar.test.ts`:
 ```ts
@@ -2373,12 +2461,12 @@ describe("server cache TTLs (overview §6.3 item 3)", () => {
 })
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `npx vitest run test/domain`
 Expected: FAIL with `Failed to load url ../../src/domain/marketCalendar.js`.
 
-- [ ] **Step 3: Implement the calendar**
+- [x] **Step 3: Implement the calendar**
 
 Create `server/src/domain/marketCalendar.ts`:
 ```ts
@@ -2493,7 +2581,7 @@ export function lastSessionOpen(atOrBefore: Date): Date {
 }
 ```
 
-- [ ] **Step 4: Implement the TTLs**
+- [x] **Step 4: Implement the TTLs**
 
 Create `server/src/domain/ttl.ts`:
 ```ts
@@ -2529,12 +2617,12 @@ export function expiresAt(kind: CacheKind, fetchedAt: Date): Date {
 }
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `npx vitest run test/domain && npm run typecheck`
 Expected: `10 passed` (6 calendar, 4 ttl). Typecheck exits 0.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -2551,7 +2639,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/test/support/fakeFetch.ts`
 - Test: `server/test/providers/http.test.ts`
 
-- [ ] **Step 1: Write the fake fetch helper**
+- [x] **Step 1: Write the fake fetch helper**
 
 Create `server/test/support/fakeFetch.ts`:
 ```ts
@@ -2594,7 +2682,7 @@ export function headerOf(init: RequestInit | undefined, name: string): string | 
 }
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `server/test/providers/http.test.ts`:
 ```ts
@@ -2649,12 +2737,12 @@ describe("parseRetryAfter", () => {
 })
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [x] **Step 3: Run the tests to verify they fail**
 
 Run: `npx vitest run test/providers/http.test.ts`
 Expected: FAIL with `Failed to load url ../../src/providers/http.js`.
 
-- [ ] **Step 4: Implement the provider types and HTTP helper**
+- [x] **Step 4: Implement the provider types and HTTP helper**
 
 Create `server/src/providers/types.ts`:
 ```ts
@@ -2793,12 +2881,12 @@ export async function getJson<T>(fetchImpl: FetchLike, url: string, options: Get
 }
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `npx vitest run test/providers/http.test.ts && npm run typecheck`
 Expected: `4 passed`, and typecheck exits 0.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -2815,7 +2903,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/db/MarketCacheRepository.ts`, `server/src/db/NeonMarketCacheRepository.ts`, `server/src/db/MockMarketCacheRepository.ts`
 - Test: `server/test/db/MarketCacheRepository.test.ts`
 
-- [ ] **Step 1: Write the failing contract test**
+- [x] **Step 1: Write the failing contract test**
 
 Create `server/test/db/MarketCacheRepository.test.ts`:
 ```ts
@@ -2886,12 +2974,12 @@ describe.each(implementations)("%s", (_name, make) => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/db/MarketCacheRepository.test.ts`
 Expected: FAIL with `Failed to load url ../../src/db/MockMarketCacheRepository.js`.
 
-- [ ] **Step 3: Add migration 002**
+- [x] **Step 3: Add migration 002**
 
 Create `server/migrations/002_market_cache.sql`:
 ```sql
@@ -2929,7 +3017,7 @@ CREATE TABLE IF NOT EXISTS search_cache (
 );
 ```
 
-- [ ] **Step 4: Implement the interface and both repositories**
+- [x] **Step 4: Implement the interface and both repositories**
 
 Create `server/src/db/MarketCacheRepository.ts`:
 ```ts
@@ -3127,12 +3215,12 @@ export class MockMarketCacheRepository implements MarketCacheRepository {
 }
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `npx vitest run test/db && npm run typecheck`
 Expected: every test in `test/db` passes. That includes the migrations test, which now applies `[1, 2]`. The new file reports `8 passed` (4 × 2). Typecheck exits 0.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -3156,7 +3244,7 @@ Each adapter is tested against a committed fixture through `fakeFetch`. Every te
 - Create: `server/test/support/fixtures/finnhub-quote-aapl.json`, `finnhub-quote-unknown.json`, `finnhub-search-app.json`, `finnhub-profile2-aapl.json`, `finnhub-metric-aapl.json`
 - Test: `server/test/providers/finnhub.test.ts`
 
-- [ ] **Step 1: Add the fixtures**
+- [x] **Step 1: Add the fixtures**
 
 Create `server/test/support/fixtures/finnhub-quote-aapl.json`:
 ```json
@@ -3204,7 +3292,7 @@ Create `server/test/support/fixtures/finnhub-metric-aapl.json`:
 }
 ```
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `server/test/providers/finnhub.test.ts`:
 ```ts
@@ -3271,12 +3359,12 @@ describe("FinnhubProvider", () => {
 })
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run: `npx vitest run test/providers/finnhub.test.ts`
 Expected: FAIL with `Failed to load url ../../src/providers/finnhub.js`.
 
-- [ ] **Step 4: Implement the adapter**
+- [x] **Step 4: Implement the adapter**
 
 Create `server/src/providers/finnhub.ts`:
 ```ts
@@ -3362,12 +3450,12 @@ export class FinnhubProvider implements QuoteProvider, SymbolSearchProvider, Pro
 }
 ```
 
-- [ ] **Step 5: Run the test to verify it passes**
+- [x] **Step 5: Run the test to verify it passes**
 
 Run: `npx vitest run test/providers/finnhub.test.ts && npm run typecheck`
 Expected: `5 passed`, and typecheck exits 0.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -3383,7 +3471,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/providers/tiingo.ts`, `server/test/support/fixtures/tiingo-daily-aapl.json`
 - Test: `server/test/providers/tiingo.test.ts`
 
-- [ ] **Step 1: Add the fixture**
+- [x] **Step 1: Add the fixture**
 
 Create `server/test/support/fixtures/tiingo-daily-aapl.json`:
 ```json
@@ -3394,7 +3482,7 @@ Create `server/test/support/fixtures/tiingo-daily-aapl.json`:
 ]
 ```
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `server/test/providers/tiingo.test.ts`:
 ```ts
@@ -3436,12 +3524,12 @@ describe("TiingoProvider", () => {
 })
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run: `npx vitest run test/providers/tiingo.test.ts`
 Expected: FAIL with `Failed to load url ../../src/providers/tiingo.js`.
 
-- [ ] **Step 4: Implement the adapter**
+- [x] **Step 4: Implement the adapter**
 
 Create `server/src/providers/tiingo.ts`:
 ```ts
@@ -3487,12 +3575,12 @@ export class TiingoProvider implements DailyBarsProvider {
 }
 ```
 
-- [ ] **Step 5: Run the test to verify it passes**
+- [x] **Step 5: Run the test to verify it passes**
 
 Run: `npx vitest run test/providers/tiingo.test.ts && npm run typecheck`
 Expected: `3 passed`, and typecheck exits 0.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -3508,7 +3596,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/providers/alpaca.ts`, `server/test/support/fixtures/alpaca-bars-aapl-5min.json`
 - Test: `server/test/providers/alpaca.test.ts`
 
-- [ ] **Step 1: Add the fixture**
+- [x] **Step 1: Add the fixture**
 
 Create `server/test/support/fixtures/alpaca-bars-aapl-5min.json`:
 ```json
@@ -3522,7 +3610,7 @@ Create `server/test/support/fixtures/alpaca-bars-aapl-5min.json`:
 }
 ```
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `server/test/providers/alpaca.test.ts`:
 ```ts
@@ -3573,12 +3661,12 @@ describe("AlpacaProvider", () => {
 })
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run: `npx vitest run test/providers/alpaca.test.ts`
 Expected: FAIL with `Failed to load url ../../src/providers/alpaca.js`.
 
-- [ ] **Step 4: Implement the adapter**
+- [x] **Step 4: Implement the adapter**
 
 Create `server/src/providers/alpaca.ts`:
 ```ts
@@ -3632,12 +3720,12 @@ export class AlpacaProvider implements IntradayBarsProvider {
 }
 ```
 
-- [ ] **Step 5: Run the test to verify it passes**
+- [x] **Step 5: Run the test to verify it passes**
 
 Run: `npx vitest run test/providers && npm run typecheck`
 Expected: every provider test passes (`14 passed` across http, finnhub, tiingo, alpaca). Typecheck exits 0.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -3663,7 +3751,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/test/support/market.ts`
 - Test: `server/test/services/MarketDataService.quotes.test.ts`
 
-- [ ] **Step 1: Write the test helpers**
+- [x] **Step 1: Write the test helpers**
 
 Create `server/test/support/market.ts`:
 ```ts
@@ -3706,7 +3794,7 @@ export function makeService(options: { providers?: Partial<MarketProviders>; now
 }
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `server/test/services/MarketDataService.quotes.test.ts`:
 ```ts
@@ -3792,12 +3880,12 @@ describe("MarketDataService.getQuotes", () => {
 })
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [x] **Step 3: Run the tests to verify they fail**
 
 Run: `npx vitest run test/services/MarketDataService.quotes.test.ts`
 Expected: FAIL with `Failed to load url ../../src/services/MarketDataService.js`.
 
-- [ ] **Step 4: Implement the service core and `getQuotes`**
+- [x] **Step 4: Implement the service core and `getQuotes`**
 
 Create `server/src/services/MarketDataService.ts`:
 ```ts
@@ -3978,12 +4066,12 @@ export class MarketDataService {
 }
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `npx vitest run test/services/MarketDataService.quotes.test.ts && npm run typecheck`
 Expected: `9 passed`, and typecheck exits 0.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -3999,7 +4087,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `server/src/services/MarketDataService.ts`
 - Test: `server/test/services/MarketDataService.history.test.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `server/test/services/MarketDataService.history.test.ts`:
 ```ts
@@ -4094,12 +4182,12 @@ describe("getHistory 1M / 1Y / 5Y (Tiingo daily5y)", () => {
 })
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `npx vitest run test/services/MarketDataService.history.test.ts`
 Expected: FAIL. `deriveDailyRange`/`isoWeekKey` aren't exported, and `service.getHistory is not a function`.
 
-- [ ] **Step 3: Implement `getHistory`**
+- [x] **Step 3: Implement `getHistory`**
 
 In `server/src/services/MarketDataService.ts`, add these imports below the existing ones:
 ```ts
@@ -4220,12 +4308,12 @@ Then add these methods inside `MarketDataService`, after `getQuotes`:
   }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `npx vitest run test/services && npm run typecheck`
 Expected: every service test passes, including `7 passed` in the history file. Typecheck exits 0.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -4241,7 +4329,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `server/src/services/MarketDataService.ts`
 - Test: `server/test/services/MarketDataService.searchProfile.test.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `server/test/services/MarketDataService.searchProfile.test.ts`:
 ```ts
@@ -4313,12 +4401,12 @@ describe("MarketDataService.getProfile", () => {
 })
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `npx vitest run test/services/MarketDataService.searchProfile.test.ts`
 Expected: FAIL with `service.search is not a function`.
 
-- [ ] **Step 3: Implement `search` and `getProfile`**
+- [x] **Step 3: Implement `search` and `getProfile`**
 
 In `server/src/services/MarketDataService.ts`, extend the `../db/MarketCacheRepository.js` type import to `import type { CacheEntry, HistorySeries, MarketCacheRepository, ProfilePayload } from "../db/MarketCacheRepository.js"`. Remove the separate `HistorySeries` import line added in Task 17. Then add `type SymbolMatch` to the `../providers/types.js` import list.
 
@@ -4427,12 +4515,12 @@ Add these methods inside `MarketDataService`, after `getHistory`:
   }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `npx vitest run test/services && npm run typecheck`
 Expected: every service test passes, including `5 passed` in the search/profile file. Typecheck exits 0.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -4451,7 +4539,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `server/src/container.ts` (whole file below), `server/src/app.ts` (register the market routes)
 - Test: `server/test/routes/market.test.ts`
 
-- [ ] **Step 1: Write the failing route tests**
+- [x] **Step 1: Write the failing route tests**
 
 Create `server/test/routes/market.test.ts`:
 ```ts
@@ -4549,12 +4637,12 @@ describe("GET /api/market/history, /search, /profile", () => {
 })
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `npx vitest run test/routes/market.test.ts`
 Expected: FAIL. `Container` has no `marketData` yet (typecheck error), and the market routes return 404.
 
-- [ ] **Step 3: Implement the schemas**
+- [x] **Step 3: Implement the schemas**
 
 Create `server/src/schemas/market.ts`:
 ```ts
@@ -4629,7 +4717,7 @@ export const ProfileResponseSchema = Type.Object({
 })
 ```
 
-- [ ] **Step 4: Implement the route plugin**
+- [x] **Step 4: Implement the route plugin**
 
 Create `server/src/routes/api/market.ts`:
 ```ts
@@ -4690,7 +4778,7 @@ const marketRoutes: FastifyPluginAsync<RouteOptions> = async (server, { containe
 export default marketRoutes
 ```
 
-- [ ] **Step 5: Wire the container and the app**
+- [x] **Step 5: Wire the container and the app**
 
 Replace `server/src/container.ts` with:
 ```ts
@@ -4805,12 +4893,12 @@ In `server/src/app.ts`, add `import marketRoutes from "./routes/api/market.js"` 
   await app.register(marketRoutes, { prefix: "/api/market", container })
 ```
 
-- [ ] **Step 6: Run the tests and typecheck**
+- [x] **Step 6: Run the tests and typecheck**
 
 Run: `npm test && npm run typecheck`
 Expected: every test file passes, including `8 passed` in `test/routes/market.test.ts`. Typecheck exits 0.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -4827,7 +4915,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 **Files:**
 - Create: `server/README.md`
 
-- [ ] **Step 1: Write the README**
+- [x] **Step 1: Write the README**
 
 Create `server/README.md`:
 ````markdown
@@ -4891,7 +4979,7 @@ When a provider is rate-limited, the API serves the cached value with `stale: tr
 Finnhub, Tiingo and Alpaca free tiers are **personal use only**. This server is for the owner and a few friends. Before any public release, move to a plan that allows external display. Only the adapters in `src/providers/` would change.
 ````
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -4907,11 +4995,11 @@ The executor stops at each `(manual: user)` step, prints the instructions and wa
 
 **Files:** none (dashboard and CLI only)
 
-- [ ] **Step 1: Create the provider keys `(manual: user)`**
+- [ ] **Step 1: Create the provider keys `(manual: user)`** — SKIPPED (manual)
 
 Create the Finnhub key, the Tiingo token, and the Alpaca **paper** Key ID and Secret (Prerequisites §3). Keep them in a password manager. Never paste them into the repo.
 
-- [ ] **Step 2: Create the Vercel project `(manual: user)`**
+- [ ] **Step 2: Create the Vercel project `(manual: user)`** — SKIPPED (manual)
 
 In the Vercel dashboard:
 1. **Add New → Project →** import the `Wait` GitHub repo.
@@ -4921,11 +5009,11 @@ In the Vercel dashboard:
 
 The legacy `builds` key in `vercel.json` makes Vercel ignore the dashboard build settings. The warning it shows about this is expected.
 
-- [ ] **Step 3: Attach Neon `(manual: user)`**
+- [ ] **Step 3: Attach Neon `(manual: user)`** — SKIPPED (manual)
 
 In the project, go to **Storage → Connect Database → Neon**. Create the database and connect it to all environments. This adds `DATABASE_URL`, `DATABASE_URL_UNPOOLED` and the `PG*` variables.
 
-- [ ] **Step 4: Add the env vars `(manual: user)`**
+- [ ] **Step 4: Add the env vars `(manual: user)`** — SKIPPED (manual)
 
 ```bash
 cd /Users/ckai/code/Wait/server
@@ -4941,17 +5029,17 @@ npx vercel@latest env pull .env.local --environment=production   # gitignored
 ```
 Expected: each `env add` prints `Added Environment Variable … to Project`. For `preview`, answer the git-branch prompt with an empty value, meaning all preview branches. `.env.local` now contains the names above; never print its values.
 
-- [ ] **Step 5: Run the migrations against Neon**
+- [ ] **Step 5: Run the migrations against Neon** — SKIPPED (manual)
 
 Run: `cd /Users/ckai/code/Wait/server && npm run migrate`
 Expected: `migrating <your-neon-host>`, then `migrations applied: [1, 2] skipped: []`. Run it again and expect `migrations applied: [] skipped: [1, 2]`.
 
-- [ ] **Step 6: Deploy**
+- [ ] **Step 6: Deploy** — SKIPPED (manual)
 
 Run: `npx vercel@latest --prod`
 Expected: the output ends with `Production: https://<project>.vercel.app`. Write the URL down; Task 26 Step 7 (Chunk 11) turns it into `WAIT_API_BASE_URL`.
 
-- [ ] **Step 7: Smoke test with curl**
+- [ ] **Step 7: Smoke test with curl** — SKIPPED (manual)
 
 ```bash
 export WAIT_API_BASE_URL=https://<project>.vercel.app
@@ -4978,7 +5066,7 @@ If a market call returns 502 `UPSTREAM_UNAVAILABLE`:
 1. Open the Vercel runtime logs and find the `market.provider_error` warning. It names the provider, the error kind and the HTTP status.
 2. Recheck the matching key with `npx vercel env ls`.
 
-- [ ] **Step 8: Record the deploy**
+- [ ] **Step 8: Record the deploy** — SKIPPED (manual)
 
 There is nothing to commit. Note the production URL in the PR description for this plan.
 
@@ -4995,7 +5083,7 @@ From here on, Swift paths are relative to `/Users/ckai/code/Wait/Wait`, and ever
 - Create: `Packages/WaitKit/Sources/APIClient/WireDates.swift`, `Packages/WaitKit/Sources/APIClient/APIError.swift`
 - Test: `Packages/WaitKit/Tests/APIClientTests/WireDatesTests.swift`, `Packages/WaitKit/Tests/APIClientTests/APIErrorTests.swift`
 
-- [ ] **Step 1: Declare the targets**
+- [x] **Step 1: Declare the targets**
 
 In `Packages/WaitKit/Package.swift`, add this target to `targets:` right after the `MarketDataClient` target. It uses plan 02's `Target.Dependency` shorthands.
 ```swift
@@ -5006,7 +5094,7 @@ Add this alongside the other test targets. Every module the tests import is decl
     .testTarget(name: "APIClientTests", dependencies: ["APIClient", "Domain", .dependencies, .dependenciesTestSupport]),
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `Packages/WaitKit/Tests/APIClientTests/WireDatesTests.swift`:
 ```swift
@@ -5079,12 +5167,12 @@ struct APIErrorTests {
 }
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [ ] **Step 3: Run the tests to verify they fail** — NOT RUN (code-only; red confirmed in a /tmp harness)
 
 Run: `scripts/test-waitkit.sh APIClientTests`
 Expected: the build fails with `cannot find 'WireDates' in scope` and `cannot find 'APIError' in scope`.
 
-- [ ] **Step 4: Implement `WireDates` and `APIError`**
+- [x] **Step 4: Implement `WireDates` and `APIError`**
 
 Create `Packages/WaitKit/Sources/APIClient/WireDates.swift`:
 ```swift
@@ -5211,12 +5299,12 @@ extension APIError: LocalizedError {
 }
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [ ] **Step 5: Run the tests to verify they pass** — NOT RUN (code-only; 5/5 pass in a /tmp harness)
 
 Run: `scripts/test-waitkit.sh APIClientTests`
 Expected: `** TEST SUCCEEDED **`, with 5 tests passing.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -5232,7 +5320,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Packages/WaitKit/Sources/APIClient/KeychainClient.swift`, `Packages/WaitKit/Sources/APIClient/IdentityClient.swift`
 - Test: `Packages/WaitKit/Tests/APIClientTests/IdentityClientTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 The live Keychain can't run in a hostless package test bundle (it fails with `-34018`, risk 9). Tests therefore use `KeychainClient.inMemory()`, and the live code is verified on a device in Task 30.
 
@@ -5280,12 +5368,12 @@ struct IdentityClientTests {
 }
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [ ] **Step 2: Run the tests to verify they fail** — NOT RUN (code-only; red confirmed in a /tmp harness)
 
 Run: `scripts/test-waitkit.sh APIClientTests/IdentityClientTests`
 Expected: the build fails with `cannot find 'KeychainClient' in scope`.
 
-- [ ] **Step 3: Implement both clients**
+- [x] **Step 3: Implement both clients**
 
 Create `Packages/WaitKit/Sources/APIClient/KeychainClient.swift`:
 ```swift
@@ -5450,12 +5538,12 @@ extension DependencyValues {
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [ ] **Step 4: Run the tests to verify they pass** — NOT RUN (code-only; 8/8 pass in a /tmp harness)
 
 Run: `scripts/test-waitkit.sh APIClientTests`
 Expected: `** TEST SUCCEEDED **`, with 8 tests passing.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -5474,7 +5562,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Packages/WaitKit/Tests/APIClientTests/Support/StubURLProtocol.swift`
 - Test: `Packages/WaitKit/Tests/APIClientTests/HTTPSessionTests.swift`
 
-- [ ] **Step 1: Write the URL stub**
+- [x] **Step 1: Write the URL stub**
 
 The stub routes each request by its unique host, so suites can run in parallel. Create `Packages/WaitKit/Tests/APIClientTests/Support/StubURLProtocol.swift`:
 ```swift
@@ -5525,7 +5613,8 @@ final class StubURLProtocol: URLProtocol {
       request.httpBody = Data(reading: stream)
     }
     let host = request.url?.host() ?? ""
-    Self.captured.withValue { $0[host, default: []].append(request) }
+    let recorded = request
+    Self.captured.withValue { $0[host, default: []].append(recorded) }
     guard let url = request.url, let handler = Self.handlers.value[host] else {
       client?.urlProtocol(self, didFailWithError: URLError(.cannotFindHost))
       return
@@ -5564,7 +5653,7 @@ extension Data {
 }
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `Packages/WaitKit/Tests/APIClientTests/HTTPSessionTests.swift`:
 ```swift
@@ -5676,12 +5765,12 @@ struct HTTPSessionTests {
 }
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [ ] **Step 3: Run the tests to verify they fail** — NOT RUN (code-only; red confirmed in a /tmp harness)
 
 Run: `scripts/test-waitkit.sh APIClientTests/HTTPSessionTests`
 Expected: the build fails with `cannot find 'HTTPSession' in scope`.
 
-- [ ] **Step 4: Implement the auth DTOs and `HTTPSession`**
+- [x] **Step 4: Implement the auth DTOs and `HTTPSession`**
 
 Create `Packages/WaitKit/Sources/APIClient/DTOs/AuthDTOs.swift`:
 ```swift
@@ -5799,8 +5888,12 @@ public actor HTTPSession {
   /// Returns the cached token unless it is `stale` (the one that just got a 401). Concurrent 401s for the
   /// same stale token share one registration; a caller holding an older token gets the newer one directly.
   private func validToken(replacing stale: String? = nil) async throws -> String {
-    if let token, token != stale { return token }
-    if let registration { return try await registration.value }
+    if let token, token != stale {
+      return token
+    }
+    if let registration {
+      return try await registration.value
+    }
     let task = Task { try await self.register() }
     registration = task
     defer { registration = nil }
@@ -5868,12 +5961,12 @@ public actor HTTPSession {
 }
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [ ] **Step 5: Run the tests to verify they pass** — NOT RUN (code-only; 14/14 pass in a /tmp harness)
 
 Run: `scripts/test-waitkit.sh APIClientTests`
 Expected: `** TEST SUCCEEDED **`, with 14 tests passing.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -5891,7 +5984,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Packages/WaitKit/Tests/APIClientTests/Fixtures/quotes.json`, `history-1d.json`, `search.json`, `profile.json`
 - Test: `Packages/WaitKit/Tests/APIClientTests/APIClientTests.swift`
 
-- [ ] **Step 1: Add the fixtures (the exact server wire shapes from Chunk 7)**
+- [x] **Step 1: Add the fixtures (the exact server wire shapes from Chunk 7)**
 
 In `Package.swift`, change the `APIClientTests` target to:
 ```swift
@@ -5918,7 +6011,7 @@ Create `Packages/WaitKit/Tests/APIClientTests/Fixtures/profile.json`:
 {"symbol":"AAPL","name":"Apple Inc","exchange":"NASDAQ NMS - GLOBAL MARKET","industry":"Technology","logoUrl":"https://example.com/aapl.png","marketCap":"2650000500000","peRatio":28.4,"pbRatio":45.2,"dividendYield":0.55,"roe":147.25,"roa":27.5,"profitMargin":25.31,"fiftyTwoWeekHigh":"199.62","fiftyTwoWeekLow":"164.08","beta":1.29,"asOf":"2026-11-20T15:00:00.000Z"}
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `Packages/WaitKit/Tests/APIClientTests/APIClientTests.swift`:
 ```swift
@@ -6003,12 +6096,12 @@ struct APIClientTests {
 }
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [ ] **Step 3: Run the tests to verify they fail** — NOT RUN (code-only; red confirmed in a /tmp harness)
 
 Run: `scripts/test-waitkit.sh APIClientTests/APIClientTests`
 Expected: the build fails with `cannot find 'APIClient' in scope` (as a type) and `cannot find type 'QuotesResponseDTO'`.
 
-- [ ] **Step 4: Implement the DTOs and the client**
+- [x] **Step 4: Implement the DTOs and the client**
 
 Create `Packages/WaitKit/Sources/APIClient/DTOs/MarketDTOs.swift`:
 ```swift
@@ -6152,7 +6245,9 @@ extension APIClient {
 
   /// `WaitAPIBaseURL` comes from `WAIT_API_BASE_URL` in `Config/*.xcconfig` (overview §8.2).
   public static func baseURL(infoValue: String?) -> URL? {
-    guard let infoValue, !infoValue.isEmpty else { return nil }
+    guard let infoValue, !infoValue.isEmpty else {
+      return nil
+    }
     return URL(string: infoValue)
   }
 
@@ -6171,7 +6266,9 @@ extension APIClient: DependencyKey {
   /// One shared session per process, so the in-memory JWT is reused by every caller.
   public static let liveValue: APIClient = {
     let info = Bundle.main.object(forInfoDictionaryKey: "WaitAPIBaseURL") as? String
-    guard let baseURL = baseURL(infoValue: info) else { return .misconfigured }
+    guard let baseURL = baseURL(infoValue: info) else {
+      return .misconfigured
+    }
     let identity = IdentityClient.liveValue
     return .live(session: HTTPSession(baseURL: baseURL, anonymousID: { try identity.anonymousID() }))
   }()
@@ -6187,12 +6284,12 @@ extension DependencyValues {
 }
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [ ] **Step 5: Run the tests to verify they pass** — NOT RUN (code-only; 19/19 pass in a /tmp harness)
 
 Run: `scripts/test-waitkit.sh APIClientTests`
 Expected: `** TEST SUCCEEDED **`, with 19 tests passing.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -6213,11 +6310,11 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `Config/Base.xcconfig`, `Config/Secrets.example.xcconfig`, `Wait/Info.plist`, `project.yml` (a Debug-only ATS build phase) and the regenerated `Wait.xcodeproj`
 - Test: `Packages/WaitKit/Tests/MarketDataClientTests/BackendMarketDataTests.swift`
 
-- [ ] **Step 1: Add the dependency**
+- [x] **Step 1: Add the dependency**
 
 In `Package.swift`, add `"APIClient"` to the `dependencies` of the `MarketDataClient` target and of the `MarketDataClientTests` test target. The test target then reads `["MarketDataClient", "Domain", "APIClient", .dependencies, .dependenciesTestSupport]`, plus plan 02's `resources:`.
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `Packages/WaitKit/Tests/MarketDataClientTests/BackendMarketDataTests.swift`:
 ```swift
@@ -6368,12 +6465,12 @@ struct BackendMarketDataTests {
 }
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [ ] **Step 3: Run the tests to verify they fail** — NOT RUN (code-only; the /tmp harness build failed with `type 'MarketDataClient' has no member 'backend'`)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests/BackendMarketDataTests`
 Expected: the build fails with `type 'MarketDataClient' has no member 'backend'`.
 
-- [ ] **Step 4: Implement the adapter**
+- [x] **Step 4: Implement the adapter**
 
 Create `Packages/WaitKit/Sources/MarketDataClient/Backend/BackendMarketData.swift`:
 ```swift
@@ -6531,12 +6628,12 @@ extension CompanyProfile {
 }
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [ ] **Step 5: Run the tests to verify they pass** — NOT RUN (code-only; /tmp Swift Testing harness: 8/8 BackendMarketDataTests pass)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests`
 Expected: `** TEST SUCCEEDED **`. The 8 new tests pass, and so do all of plan 02's MarketDataClient suites.
 
-- [ ] **Step 6: Swap the live value to the backend**
+- [x] **Step 6: Swap the live value to the backend**
 
 In `Packages/WaitKit/Sources/MarketDataClient/MarketDataClient.swift`:
 1. Add `import APIClient` with the other imports.
@@ -6552,7 +6649,7 @@ extension MarketDataClient: DependencyKey {
 }
 ```
 
-- [ ] **Step 7: Point the app at the backend `(manual: user)` for the host**
+- [ ] **Step 7: Point the app at the backend `(manual: user)` for the host** — SKIPPED (manual): host unknown until Task 21. Done without it: `WaitAPIBaseURL` in Info.plist, an empty `WAIT_API_BASE_URL =` default in `Base.xcconfig`, the local override line in `Secrets.example.xcconfig`. Still to do: set `WAIT_API_BASE_URL = https:/$()/<host>` in `Base.xcconfig`.
 
 Ask the user for the production host from Task 21 Step 6, for example `wait-server.vercel.app`. Then run:
 ```bash
@@ -6576,7 +6673,7 @@ Expected:
 - The default line `WAIT_API_BASE_URL = https:/$()/<host>` comes **above** the `#include?` line, so a local `Secrets.xcconfig` can override it.
 - `plutil -p` shows `"WaitAPIBaseURL" => "$(WAIT_API_BASE_URL)"`.
 
-- [ ] **Step 8: Allow local networking in Debug builds only (risk 27)**
+- [ ] **Step 8: Allow local networking in Debug builds only (risk 27)** — PARTLY DONE: Debug-only ATS `postBuildScripts` added to `project.yml` and `xcodegen generate` run; the Debug/Release `xcodebuild` plist check and `scripts/build-app.sh` are NOT RUN (code-only)
 
 `Wait/Info.plist` is shared by every configuration, and ATS keys are booleans inside a dictionary, which build-setting substitution can't express. So the Debug-only key is added to the **built** Info.plist by a build phase:
 - The phase runs before code signing.
@@ -6615,7 +6712,7 @@ Expected:
 Then run: `cd /Users/ckai/code/Wait && scripts/build-app.sh`
 Expected: `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -6633,7 +6730,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `Packages/WaitKit/Tests/StockDetailsFeatureTests/StockDetailsFeatureTests.swift` (plan 02's `makeStore` and its task test)
 - Test: `Packages/WaitKit/Tests/StockDetailsFeatureTests/StockDetailsProfileTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `Packages/WaitKit/Tests/StockDetailsFeatureTests/StockDetailsProfileTests.swift`. It reuses `detailsItem()` and `detailsNow` from plan 02's `StockDetailsFeatureTests.swift`.
 ```swift
@@ -6691,12 +6788,12 @@ struct StockDetailsProfileTests {
 }
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [ ] **Step 2: Run the tests to verify they fail** — NOT RUN (code-only; TCA tests cannot run in the /tmp harness)
 
 Run: `scripts/test-waitkit.sh StockDetailsFeatureTests/StockDetailsProfileTests`
 Expected: the build fails with `value of type 'StockDetailsFeature.State' has no member 'profile'` and `no member 'profileLoaded'`.
 
-- [ ] **Step 3: Extend the reducer**
+- [x] **Step 3: Extend the reducer**
 
 In `Packages/WaitKit/Sources/StockDetailsFeature/StockDetailsFeature.swift`:
 1. In `State`, add after `public var quote: Quote?`:
@@ -6740,7 +6837,7 @@ In `Packages/WaitKit/Sources/StockDetailsFeature/StockDetailsFeature.swift`:
           return .none
 ```
 
-- [ ] **Step 4: Keep plan 02's task test exhaustive**
+- [x] **Step 4: Keep plan 02's task test exhaustive**
 
 In `Packages/WaitKit/Tests/StockDetailsFeatureTests/StockDetailsFeatureTests.swift`:
 1. Inside `makeStore`'s `withDependencies` closure, add `$0.marketData.profile = { _ in throw MarketDataError.notFound }` after `$0.date.now = detailsNow`.
@@ -6748,7 +6845,7 @@ In `Packages/WaitKit/Tests/StockDetailsFeatureTests/StockDetailsFeatureTests.swi
    - In `taskLoadsTheQuoteAndDerivesTheStatus`, add `await store.receive(\.profileFailed)` after the `receive(\.quoteLoaded)` line.
    - In `failedRefreshKeepsTheCachedQuote`, add `await store.receive(\.profileFailed)` after the `receive(\.quoteFailed)` line.
 
-- [ ] **Step 5: Show the fundamentals**
+- [x] **Step 5: Show the fundamentals**
 
 Replace `Packages/WaitKit/Sources/StockDetailsFeature/StatsSection.swift` with:
 ```swift
@@ -6835,12 +6932,12 @@ struct StatsSection: View {
 ```
 In `StockDetailsView.swift`, change `card { StatsSection(quote: store.quote) }` to `card { StatsSection(quote: store.quote, profile: store.profile) }`.
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [ ] **Step 6: Run the tests to verify they pass** — NOT RUN (code-only; `StatsSection.swift` typechecked with swiftc for iOS 17 / Swift 6, new and changed files pass swiftlint)
 
 Run: `scripts/test-waitkit.sh StockDetailsFeatureTests && scripts/build-app.sh`
 Expected: `** TEST SUCCEEDED **` (including plan 02's suites), then `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -6860,11 +6957,11 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Packages/WaitKit/Sources/SettingsFeature/AccountSection.swift`
 - Test: `Packages/WaitKit/Tests/SettingsFeatureTests/SettingsAccountTests.swift`
 
-- [ ] **Step 1: Add the dependency**
+- [x] **Step 1: Add the dependency**
 
 In `Package.swift`, add `"APIClient"` to the `SettingsFeature` target's `dependencies`, and also to `SettingsFeatureTests`.
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `Packages/WaitKit/Tests/SettingsFeatureTests/SettingsAccountTests.swift`:
 ```swift
@@ -6950,12 +7047,12 @@ struct SettingsAccountTests {
 }
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [ ] **Step 3: Run the tests to verify they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh SettingsFeatureTests/SettingsAccountTests`
 Expected: the build fails with `type 'SettingsFeature.Action' has no member 'task'` and `no member 'deleteAccountTapped'`.
 
-- [ ] **Step 4: Extend `SettingsFeature`**
+- [x] **Step 4: Extend `SettingsFeature`**
 
 All edits are in `Packages/WaitKit/Sources/SettingsFeature/SettingsFeature.swift`.
 
@@ -7077,7 +7174,7 @@ extension AlertState where Action == SettingsFeature.Action.Alert {
     .ifLet(\.$alert, action: \.alert)
 ```
 
-- [ ] **Step 5: Add the view and wire it in**
+- [x] **Step 5: Add the view and wire it in**
 
 Create `Packages/WaitKit/Sources/SettingsFeature/AccountSection.swift`:
 ```swift
@@ -7136,12 +7233,12 @@ In `Packages/WaitKit/Sources/SettingsFeature/SettingsView.swift`:
       .task { await store.send(.task).finish() }
 ```
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [ ] **Step 6: Run the tests to verify they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh SettingsFeatureTests && scripts/build-app.sh`
 Expected: `** TEST SUCCEEDED **` (plan 02's 2 settings tests plus these 4), then `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -7158,7 +7255,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Delete: `Packages/WaitKit/Sources/MarketDataClient/TwelveData/`, `Packages/WaitKit/Tests/MarketDataClientTests/Fixtures/twelvedata-*.json`, `Packages/WaitKit/Tests/MarketDataClientTests/TwelveDataMarketDataTests.swift`
 - Modify: `Packages/WaitKit/Package.swift` (the `MarketDataClientTests` resources), `Config/Base.xcconfig`, `Config/Secrets.example.xcconfig`, every `Info.plist` that still has `TwelveDataAPIKey`
 
-- [ ] **Step 1: Write the guard first**
+- [x] **Step 1: Write the guard first**
 
 Create `/Users/ckai/code/Wait/scripts/check-client-has-no-provider-keys.sh`:
 ```bash
@@ -7177,7 +7274,7 @@ echo "check-client-has-no-provider-keys: ok"
 Run: `chmod +x scripts/check-client-has-no-provider-keys.sh && scripts/check-client-has-no-provider-keys.sh; echo "exit=$?"`
 Expected: it fails, listing the remaining matches. These include `TwelveData/TwelveDataMarketData.swift` (`api.twelvedata.com`), the xcconfig `TWELVE_DATA_API_KEY` lines and `Info.plist` `TwelveDataAPIKey`. The last line is `exit=1`.
 
-- [ ] **Step 2: Delete the adapter, its tests and fixtures**
+- [x] **Step 2: Delete the adapter, its tests and fixtures**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -7191,7 +7288,7 @@ Expected: `Fixtures folder is gone`. Plan 02 only put Twelve Data fixtures there
 ```
 If other fixtures remain, keep the `resources` line.
 
-- [ ] **Step 3: Remove the key from build settings and plists**
+- [x] **Step 3: Remove the key from build settings and plists** — local `Secrets.xcconfig` cleanup and Twelve Data key revocation SKIPPED (manual: user)
 
 ```bash
 cd /Users/ckai/code/Wait/Wait
@@ -7204,7 +7301,7 @@ Expected: one `removed from …/Info.plist` line per plist that had the key (at 
 - Delete the `TWELVE_DATA_API_KEY` line from your local, gitignored `Wait/Config/Secrets.xcconfig`.
 - Revoke the Twelve Data key in the Twelve Data dashboard.
 
-- [ ] **Step 4: Scrub stale Twelve Data comments from plan 02 code**
+- [x] **Step 4: Scrub stale Twelve Data comments from plan 02 code**
 
 In `Wait/Packages/WaitKit/Sources/Domain/MarketTypes.swift`, replace the `CompanyProfile` doc comment
 `/// Fundamentals. Plan 02 has no source for these (Twelve Data stopgap). Plan 04 fills them from the backend.`
@@ -7216,12 +7313,12 @@ In `Wait/Packages/WaitKit/Sources/MarketDataClient/CachingMarketDataClient.swift
 Run: `git grep -niE "twelve ?data|stopgap" -- Wait/Packages/WaitKit/Sources Wait/Packages/WaitKit/Tests`
 Expected: no output. If anything remains, it's a comment: rewrite it to describe the backend, and keep the code unchanged.
 
-- [ ] **Step 5: Run every package test and build both apps**
+- [ ] **Step 5: Run every package test and build both apps** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh && scripts/build-app.sh && scripts/build-app.sh WaitWatch`
 Expected: `** TEST SUCCEEDED **`, then `** BUILD SUCCEEDED **` twice.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -7237,7 +7334,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 **Files:**
 - Modify: `/Users/ckai/code/Wait/CLAUDE.md`, `Packages/WaitKit/README.md`
 
-- [ ] **Step 1: Update `CLAUDE.md`**
+- [x] **Step 1: Update `CLAUDE.md`**
 
 Make these exact replacements in `/Users/ckai/code/Wait/CLAUDE.md`. Plan 03 wrote the first two, and plan 02 may have left the third.
 
@@ -7275,7 +7372,7 @@ Then add this section after the iOS architecture section:
 - Guard: `scripts/check-client-has-no-provider-keys.sh` must pass. The iOS app never contains provider hosts or keys.
 ```
 
-- [ ] **Step 2: Update `Packages/WaitKit/README.md`**
+- [x] **Step 2: Update `Packages/WaitKit/README.md`**
 
 Append:
 ```markdown
@@ -7287,7 +7384,7 @@ Append:
 - `MarketDataClient.backend(_:)` maps DTOs to Domain types. The live value is `.cached(.backend(.liveValue), disk: .live, now:)`.
 ```
 
-- [ ] **Step 3: Run the end-to-end check on the simulator `(manual: user)` for the steps that need eyes**
+- [ ] **Step 3: Run the end-to-end check on the simulator `(manual: user)` for the steps that need eyes** — items 1–2 done locally (server 320/320 tests, typecheck clean, both guards ok, DoD grep empty); items 3–5 SKIPPED (manual)
 
 1. `cd /Users/ckai/code/Wait/server && npm test && npm run typecheck`. Expected: all green.
 2. `cd /Users/ckai/code/Wait && scripts/check-client-has-no-provider-keys.sh && scripts/check-secrets.sh`. Expected: both print ok.
@@ -7303,7 +7400,7 @@ Append:
 4. In Settings, tap **Delete Account** and confirm. The ID row shows "Created on next sync". Pull to refresh the watchlist: quotes load again, which means the session re-registered with a new ID.
 5. Physical device, iCloud Keychain on: note the Anonymous ID, delete the app, reinstall from Xcode, and open Settings. The same ID is shown (overview §4.1 DoD for plan 04, risk 9).
 
-- [ ] **Step 4: CI notes for the user `(manual: user)`**
+- [ ] **Step 4: CI notes for the user `(manual: user)`** — SKIPPED (manual); `docs/ci/bitrise-checklist.md` already updated in Task 29
 
 Tell the user to update Bitrise (overview risk 19):
 1. Remove the step that writes `TWELVE_DATA_API_KEY` into `Secrets.xcconfig` (it was added in plan 03), and delete that secret.
@@ -7311,7 +7408,7 @@ Tell the user to update Bitrise (overview risk 19):
 3. Add `scripts/check-client-has-no-provider-keys.sh`.
 4. Add `cd server && npm ci && npm run typecheck && npm test`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait

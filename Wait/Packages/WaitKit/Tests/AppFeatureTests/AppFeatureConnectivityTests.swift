@@ -8,6 +8,7 @@ import Connectivity
 import DependenciesTestSupport
 import Domain
 import Foundation
+import NotificationClient
 import Persistence
 import Testing
 @testable import AppFeature
@@ -63,6 +64,7 @@ struct AppFeatureConnectivityTests {
     } withDependencies: {
       $0.connectivity = .noop
       $0.connectivity.activate = { activationContinuation.yield() }
+      $0.notifications = .noop
       $0.snapshotClient.publish = { _ in }
       $0.continuousClock = ImmediateClock()
       $0.date.now = Date(timeIntervalSince1970: 1_763_800_000)

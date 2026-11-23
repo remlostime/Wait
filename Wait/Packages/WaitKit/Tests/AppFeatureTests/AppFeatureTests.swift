@@ -12,8 +12,10 @@ import DependenciesTestSupport
 import Domain
 import Foundation
 import MarketDataClient
+import NotificationClient
 import Persistence
 import StockDetailsFeature
+import SyncClient
 import Testing
 import WatchlistFeature
 
@@ -52,9 +54,14 @@ struct AppFeatureTests {
       $0.continuousClock = clock
       $0.date.now = appNow
       $0.connectivity = .noop
+      $0.notifications = .noop
       $0.snapshotClient.publish = { snapshot in published.withValue { $0.append(snapshot) } }
     }
     await store.send(.appDelegate(.didFinishLaunching))
+    // `PushFeature` starts at launch. `.noop` reports `.notDetermined`, so it registers for nothing. The override is needed even for
+    // the endpoints that have a default: `@DependencyClient` reports "Unimplemented" for those too.
+    await store.receive(\.push.launched)
+    await store.receive(\.push.authorizationLoaded, .notDetermined)
     await clock.advance(by: .seconds(1))
     #expect(published.value.map { $0.rows.map(\.symbol) } == [["AAPL"]])
   }
@@ -70,23 +77,85 @@ struct AppFeatureTests {
     }
   }
 
-  @Test func unknownDeepLinkSymbolOnlySwitchesTabs() async {
+  @Test func unknownDeepLinkSymbolSwitchesTabsAndSyncsOnce() async {
     seedAAPL()
+    let syncs = LockIsolated(0)
     var state = AppFeature.State()
     state.selectedTab = .settings
-    let store = TestStore(initialState: state) { AppFeature() }
+    let store = TestStore(initialState: state) {
+      AppFeature()
+    } withDependencies: {
+      $0.syncClient.sync = {
+        syncs.withValue { $0 += 1 }
+        return .empty
+      }
+    }
     await store.send(.openURL(URL(string: "wait://stock/NOPE")!)) {
       $0.selectedTab = .watchlist
+      $0.pendingStockSymbol = "NOPE"
     }
+    // The stock is still unknown after the sync: the pending link is dropped, with no second sync and no navigation.
+    await store.receive(\.syncFinished) { $0.pendingStockSymbol = nil }
+    #expect(syncs.value == 1)
+    #expect(store.state.watchlist.path.isEmpty)
   }
 
   @Test func unknownDeepLinkSymbolKeepsTheNavigationStack() async {
     seedAAPL()
     var state = AppFeature.State()
     state.watchlist.showDetails(symbol: "AAPL")
-    let store = TestStore(initialState: state) { AppFeature() }
+    let store = TestStore(initialState: state) {
+      AppFeature()
+    } withDependencies: {
+      $0.syncClient.sync = { .empty }
+    }
+    store.exhaustivity = .off
     await store.send(.openURL(URL(string: "wait://stock/NOPE")!))
+    await store.receive(\.syncFinished)
     #expect(store.state.watchlist.path.count == 1)
+    #expect(store.state.pendingStockSymbol == nil)
+  }
+
+  @Test func deepLinkForAStockThatArrivesThroughSyncOpensItAfterwards() async {
+    seedAAPL()
+    var state = AppFeature.State()
+    state.selectedTab = .settings
+    let store = TestStore(initialState: state) {
+      AppFeature()
+    } withDependencies: {
+      $0.date.now = appNow
+      $0.continuousClock = TestClock()
+      $0.connectivity = .noop
+      $0.snapshotClient.publish = { _ in }
+      $0.marketData.quotes = { _, _ in [] }
+      $0.syncClient.sync = {
+        @Shared(.watchlist) var watchlist
+        $watchlist.withLock {
+          $0.append(WatchlistItem(symbol: "MSFT", name: "Microsoft", ladder: try! PriceLadder(buyHigh: 100), createdAt: appNow, updatedAt: appNow))
+        }
+        return SyncReport(pulled: 1, applied: 1, rounds: 1)
+      }
+    }
+    store.exhaustivity = .off
+    await store.send(.openURL(URL(string: "wait://stock/MSFT")!))
+    await store.receive(\.syncFinished)
+    #expect(store.state.pendingStockSymbol == nil)
+    #expect(store.state.selectedTab == .watchlist)
+    #expect(store.state.watchlist.path.count == 1)
+    await store.skipInFlightEffects()
+  }
+
+  @Test func aFailedSyncDropsThePendingDeepLink() async {
+    seedAAPL()
+    let store = TestStore(initialState: AppFeature.State()) {
+      AppFeature()
+    } withDependencies: {
+      $0.syncClient.sync = { throw URLError(.notConnectedToInternet) }
+    }
+    store.exhaustivity = .off
+    await store.send(.openURL(URL(string: "wait://stock/NOPE")!))
+    await store.receive(\.syncFailed)
+    #expect(store.state.pendingStockSymbol == nil)
   }
 
   @Test func backgroundPublishesImmediatelyAndCancelsTheDebouncedPublish() async {
@@ -125,14 +194,24 @@ struct AppFeatureTests {
       $0.date.now = appNow
       $0.marketData.quotes = { _, _ in [quote] }
       $0.connectivity = .noop
+      $0.notifications = .noop
       $0.snapshotClient.publish = { snapshot in published.withValue { $0.append(snapshot) } }
+      $0.syncClient.sync = {
+        try await clock.sleep(for: .seconds(1))
+        return .empty
+      }
     }
+    // `.active` also reloads the notification status in Settings. Its actions arrive in no fixed order next to the quotes, so the
+    // order isn't asserted.
+    store.exhaustivity = .off(showSkippedAssertions: false)
     await store.send(.scenePhaseChanged(.active))
     await store.receive(\.watchlist.sceneBecameActive)
+    await store.receive(\.settings.sceneBecameActive)
     await store.receive(\.watchlist.quotesLoaded) {
       $0.watchlist.quotes = ["AAPL": quote]
     }
     await clock.advance(by: .seconds(1))
+    await store.receive(\.syncFinished)
     #expect(published.value.count == 1)
     #expect(published.value.first?.rows.first?.status == .buyZone)
   }

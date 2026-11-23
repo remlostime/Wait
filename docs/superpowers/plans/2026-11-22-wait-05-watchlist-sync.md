@@ -1,5 +1,70 @@
 # Watchlist Sync Implementation Plan (Plan 05)
 
+## Execution log
+
+**Executed:** 2026-11-23 on `ck/sever` with subagents. The server chunks ran in parallel with plan 04's iOS chunks, and each lane committed only its own paths.
+
+**Server (Tasks 1–7): fully verified.**
+- Real TDD on vitest with PGlite.
+- `server/src/domain/ladder.ts` passes all 38 shared-vector cases.
+- At the end of plan 05, `npm run typecheck` was clean and `npm test` passed 396/396. That count includes plan 06's server work.
+- An extra test, `watchlistAccountDeletion.test.ts`, checks that `DELETE /api/auth/account` removes the user's rows, tombstones included.
+
+**iOS (Tasks 8–15): code-only.** Nothing has been built or tested in Xcode. What was checked instead:
+- **Harnesses:** the real SyncClient tests for stamp, planner, merger, mapping and engine ran in a `/tmp` Swift Testing harness, with stand-ins for `@DependencyClient`. Result: 62/62 after the review fixes.
+- **Live server round-trip:** a request encoded in Swift was posted to the real `buildTestApp`.
+- **Typechecks:** `SyncClient` and `Persistence` were typechecked against real Sharing and Dependencies modules built for the iOS simulator.
+- **Code read against sources:** TCA code was checked against the TCA 1.26.2 sources.
+- **Lint:** swiftlint reports 0 errors.
+
+| Task | Commit |
+|---|---|
+| 1 Server ladder domain | `6faf8b7` |
+| 2 Migration 003 | `475f0ab` |
+| 3 Types, cursor, decimals | `7a83196` |
+| 4 WatchlistRepository (SQL) | `3238e52` |
+| 5 Mock repository | `7b94ff2` |
+| 6 WatchlistSyncService | `f4802d4` |
+| 7 Routes and wiring | `c465792` |
+| 8 SyncState and tombstones | `8ea649a` |
+| 9 SyncClient, SyncStamp | `82cfc75` |
+| 10 SyncPlanner | `c855fa8` |
+| 11 SyncMerger | `60eab66` |
+| 12 DTOs, `syncWatchlist`, mapping | `1a17e5d` |
+| 13 SyncEngine | `06f551c` |
+| 14 AppFeature triggers | `ca7c91d` |
+| 15 Settings Sync section | `be3d528` |
+| 16 End-to-end check | SKIPPED (manual) |
+| 17 Docs | `6d174d6` |
+
+**Deviations made while executing** (in addition to the box below):
+- Task 8 uses `@Shared<SyncState>(.syncState)` with an explicit generic.
+- Task 12 also strips NUL from outgoing text. It treats items with an anchor that rounds to 0 (or exceeds the schema) as unsyncable.
+- Task 14 uses the effect-returning `onChange`.
+
+**Review fixes**
+- `0f5c31e` (server):
+  - Impossible timestamps and NUL text now return 400, not 500.
+  - `GET /api/watchlist` pages past 5,000 rows.
+- `3c1bb9a` (iOS):
+  - The echo of our own push keeps local content and only adopts the server stamp. Before, it overwrote long memos with the clamped wire copy.
+  - Items are saved before the cursor.
+  - One millisecond rule (truncation) everywhere.
+  - `sortIndex` and history dates are clamped.
+- `e18f0b5` (iOS):
+  - The background flush also saves `sync-state.json`.
+  - The debounce has its own cancel ID, so `.syncFinished` is never dropped.
+  - Pulled rows get their quotes loaded.
+  - Delete Account resets identity before sync state and forgets the cached JWT.
+
+**User follow-ups**
+1. Run the real Xcode tests: `scripts/test-waitkit.sh SyncClientTests PersistenceTests AppFeatureTests SettingsFeatureTests`.
+2. Apply migration 003 in production (`npm run migrate`).
+3. Task 16: the two-simulator end-to-end check against the deployed backend.
+4. Known limits:
+   - Memo text past 10,000 UTF-16 units is never synced.
+   - A remote row the client can't decode is skipped and logged.
+
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Sync each user's watchlist (ladder, memo, favorite, order, per-stock checklist, ladder history) between the iOS app and the backend. Sync is offline-first, last-write-wins per item, and keeps tombstones for deletes.
@@ -52,26 +117,26 @@
 
 ## Prerequisites
 
-- [ ] **Worktree.** Use superpowers:using-git-worktrees. Branch off the branch where plans 02 and 04 landed, never `master`:
+- [x] **Worktree** (work in place on `ck/sever` per session rules; no worktree created). Use superpowers:using-git-worktrees. Branch off the branch where plans 02 and 04 landed, never `master`:
   ```bash
   cd /Users/ckai/code/Wait && git worktree add ../Wait-plan05 -b ck/plan05-watchlist-sync
   ```
   Every path below is relative to the worktree root (`/Users/ckai/code/Wait-plan05`). Commands written with `/Users/ckai/code/Wait/...` mean the same paths inside the worktree.
-- [ ] **Plan 02 is done.** These exist:
+- [x] **Plan 02 is done.** These exist:
   - `shared/ladder-test-vectors.json`
   - `Wait/Packages/WaitKit/Sources/Persistence/{AppGroup,SharedKeys,Shared+Watchlist}.swift`
   - `Sources/AppFeature/AppFeature.swift`
   - `Sources/SettingsFeature/SettingsFeature.swift`
   - `Sources/WatchlistFeature/WatchlistFeature.swift`, which declares `Action.delegate(.refreshRequested)`
-- [ ] **Plan 04 is done.** These exist:
+- [x] **Plan 04 is done.** These exist:
   - `server/` with `npm test` passing
   - `server/migrations/001_*.sql` and `002_*.sql`
   - `Wait/Packages/WaitKit/Sources/APIClient/{APIClient,HTTPSession}.swift`
-- [ ] **Load these skills:**
+- [x] **Load these skills:**
   - superpowers:test-driven-development for every task
   - swiftui-expert:swiftui-expert-skill for Task 13 (the SwiftUI section)
   - ios-code-best-practice:ios-code-best-practice, only its Swift concurrency guidance (actor and `Sendable` rules)
-- [ ] **Check the cross-plan names this plan relies on.** Run:
+- [x] **Check the cross-plan names this plan relies on.** Run (2026-11-23: every name in the table exists; no substitution needed):
   ```bash
   cd /Users/ckai/code/Wait-plan05/server
   grep -n "export" src/db/sql.ts src/lib/errors.ts src/lib/clock.ts src/container.ts src/middleware/auth.ts src/schemas/common.ts test/support/pglite.ts test/support/app.ts
@@ -151,7 +216,7 @@
 - Test: `server/test/domain/ladder.test.ts`
 - Read only: `shared/ladder-test-vectors.json` (plan 02 created it; don't edit it here, see overview risk 32)
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/domain/ladder.test.ts`:
 ```ts
@@ -275,12 +340,12 @@ describe("ladder edge cases", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test and confirm it fails**
+- [x] **Step 2: Run the test and confirm it fails**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/domain/ladder.test.ts`
 Expected: FAIL. vitest reports `Failed to load url ../../src/domain/ladder.js` (or `Cannot find module`), and 0 tests run.
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation**
 
 Create `server/src/domain/ladder.ts`:
 ```ts
@@ -435,17 +500,17 @@ export function classifyStatus(ladder: LadderInput, price: number): LadderStatus
 }
 ```
 
-- [ ] **Step 4: Run the test and confirm it passes**
+- [x] **Step 4: Run the test and confirm it passes**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/domain/ladder.test.ts`
 Expected: PASS. `Test Files  1 passed (1)` and `Tests  38 passed (38)` (1 version check, 5 validation, 5 knots, 23 evaluations, 4 edge cases).
 
-- [ ] **Step 5: Typecheck**
+- [x] **Step 5: Typecheck**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npm run typecheck`
 Expected: exits 0 with no output from `tsc`.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
@@ -466,7 +531,7 @@ MSG
 - Create: `server/migrations/003_watchlist.sql`
 - Test: `server/test/db/migration003.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/db/migration003.test.ts`:
 ```ts
@@ -503,14 +568,14 @@ describe("003_watchlist.sql", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test and confirm it fails**
+- [x] **Step 2: Run the test and confirm it fails**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/db/migration003.test.ts`
 Expected: FAIL.
 - The first test reports `expected [] to deeply equal [ 'user_id', … ]`.
 - The second reports `relation "watchlist_items" does not exist`.
 
-- [ ] **Step 3: Write the migration**
+- [x] **Step 3: Write the migration**
 
 Create `server/migrations/003_watchlist.sql`. The SQL is copied verbatim from overview §8.3:
 ```sql
@@ -529,12 +594,12 @@ CREATE INDEX IF NOT EXISTS idx_watchlist_live_symbol ON watchlist_items(symbol) 
 ```
 `trim` is a Postgres column-name keyword. It's legal as a column name. Every query in this plan quotes it as `"trim"` to be safe in every position.
 
-- [ ] **Step 4: Run the test and confirm it passes**
+- [x] **Step 4: Run the test and confirm it passes**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/db/migration003.test.ts`
 Expected: PASS, `Tests  2 passed (2)`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
@@ -553,7 +618,7 @@ MSG
 - Create: `server/src/db/watchlistTypes.ts`
 - Test: `server/test/db/watchlistTypes.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/db/watchlistTypes.test.ts`:
 ```ts
@@ -597,12 +662,12 @@ describe("normalizeDecimal", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test and confirm it fails**
+- [x] **Step 2: Run the test and confirm it fails**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/db/watchlistTypes.test.ts`
 Expected: FAIL with `Failed to load url ../../src/db/watchlistTypes.js`.
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation**
 
 Create `server/src/db/watchlistTypes.ts`:
 ```ts
@@ -680,12 +745,12 @@ export function normalizeLadder(ladder: Partial<LadderValues>): LadderValues {
 }
 ```
 
-- [ ] **Step 4: Run the test and confirm it passes**
+- [x] **Step 4: Run the test and confirm it passes**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/db/watchlistTypes.test.ts`
 Expected: PASS, `Tests  5 passed (5)`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
@@ -707,7 +772,7 @@ MSG
 - Create: `server/test/db/watchlistRepositoryContract.ts` (a shared suite, run against both implementations)
 - Test: `server/test/db/NeonWatchlistRepository.test.ts`
 
-- [ ] **Step 1: Write the test builders**
+- [x] **Step 1: Write the test builders**
 
 Create `server/test/support/watchlist.ts`:
 ```ts
@@ -736,7 +801,7 @@ export function makeChange(overrides: Partial<WatchlistChange> & { symbol: strin
 }
 ```
 
-- [ ] **Step 2: Write the shared contract suite**
+- [x] **Step 2: Write the shared contract suite**
 
 Create `server/test/db/watchlistRepositoryContract.ts`. It has no `.test.ts` suffix, so vitest only runs it through the files that import it.
 ```ts
@@ -883,7 +948,7 @@ export function describeWatchlistRepositoryContract(name: string, makeHarness: (
 }
 ```
 
-- [ ] **Step 3: Write the failing SQL-backed test**
+- [x] **Step 3: Write the failing SQL-backed test**
 
 Create `server/test/db/NeonWatchlistRepository.test.ts`:
 ```ts
@@ -908,12 +973,12 @@ describeWatchlistRepositoryContract("NeonWatchlistRepository (PGlite)", async ()
 })
 ```
 
-- [ ] **Step 4: Run the test and confirm it fails**
+- [x] **Step 4: Run the test and confirm it fails**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/db/NeonWatchlistRepository.test.ts`
 Expected: FAIL with `Failed to load url ../../src/db/NeonWatchlistRepository.js`.
 
-- [ ] **Step 5: Write the interface**
+- [x] **Step 5: Write the interface**
 
 Create `server/src/db/WatchlistRepository.ts`:
 ```ts
@@ -934,7 +999,7 @@ export interface WatchlistRepository {
 }
 ```
 
-- [ ] **Step 6: Write the SQL implementation**
+- [x] **Step 6: Write the SQL implementation**
 
 Create `server/src/db/NeonWatchlistRepository.ts`. Per overview §8.1 it uses only plain value interpolation: no `sql.unsafe`, and the columns are written out in every query.
 ```ts
@@ -1095,12 +1160,12 @@ Notes:
 - The anchor-change test pushes `"100.000"` against a stored `100`. NUMERIC compares by value, so `IS DISTINCT FROM` is false and `last_status` survives. That's intended.
 - Symbol lists travel as one JSON parameter, not a Postgres array parameter, so the Neon HTTP driver and PGlite serialize them the same way.
 
-- [ ] **Step 7: Run the test and confirm it passes**
+- [x] **Step 7: Run the test and confirm it passes**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/db/NeonWatchlistRepository.test.ts`
 Expected: PASS, `Tests  11 passed (11)`.
 
-- [ ] **Step 8: Typecheck and commit**
+- [x] **Step 8: Typecheck and commit**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npm run typecheck`
 Expected: exits 0.
@@ -1123,7 +1188,7 @@ MSG
 - Create: `server/src/db/MockWatchlistRepository.ts`
 - Test: `server/test/db/MockWatchlistRepository.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/db/MockWatchlistRepository.test.ts`:
 ```ts
@@ -1145,12 +1210,12 @@ describeWatchlistRepositoryContract("MockWatchlistRepository", async () => {
 })
 ```
 
-- [ ] **Step 2: Run the test and confirm it fails**
+- [x] **Step 2: Run the test and confirm it fails**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/db/MockWatchlistRepository.test.ts`
 Expected: FAIL with `Failed to load url ../../src/db/MockWatchlistRepository.js`.
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation**
 
 Create `server/src/db/MockWatchlistRepository.ts`:
 ```ts
@@ -1247,12 +1312,12 @@ export class MockWatchlistRepository implements WatchlistRepository {
 }
 ```
 
-- [ ] **Step 4: Run both contract suites and confirm they pass**
+- [x] **Step 4: Run both contract suites and confirm they pass**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/db/MockWatchlistRepository.test.ts test/db/NeonWatchlistRepository.test.ts`
 Expected: PASS, `Test Files  2 passed (2)`, `Tests  22 passed (22)`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
@@ -1273,7 +1338,7 @@ MSG
 - Create: `server/src/services/WatchlistSyncService.ts`
 - Test: `server/test/services/WatchlistSyncService.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/services/WatchlistSyncService.test.ts`:
 ```ts
@@ -1421,12 +1486,12 @@ describe("WatchlistSyncService.list", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test and confirm it fails**
+- [x] **Step 2: Run the test and confirm it fails**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/services/WatchlistSyncService.test.ts`
 Expected: FAIL with `Failed to load url ../../src/services/WatchlistSyncService.js`.
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation**
 
 Create `server/src/services/WatchlistSyncService.ts`:
 ```ts
@@ -1531,12 +1596,12 @@ export class WatchlistSyncService {
 }
 ```
 
-- [ ] **Step 4: Run the test and confirm it passes**
+- [x] **Step 4: Run the test and confirm it passes**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/services/WatchlistSyncService.test.ts`
 Expected: PASS, `Tests  16 passed (16)`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
@@ -1558,7 +1623,7 @@ MSG
 - Modify: `server/src/app.ts` (route registration inside `buildApp`)
 - Test: `server/test/routes/watchlist.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/routes/watchlist.test.ts`:
 ```ts
@@ -1661,12 +1726,12 @@ describe("watchlist routes", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test and confirm it fails**
+- [x] **Step 2: Run the test and confirm it fails**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/routes/watchlist.test.ts`
 Expected: FAIL. `container.watchlist` is `undefined`, so `seedUser` throws `TypeError: Cannot read properties of undefined (reading 'seedUser')`, and none of the routes exist yet.
 
-- [ ] **Step 3: Write the schemas and DTO mapping**
+- [x] **Step 3: Write the schemas and DTO mapping**
 
 Create `server/src/schemas/watchlist.ts`:
 ```ts
@@ -1772,7 +1837,7 @@ export function toWatchlistItemDto(row: WatchlistRow): WatchlistItemDto {
 }
 ```
 
-- [ ] **Step 4: Write the route plugin**
+- [x] **Step 4: Write the route plugin**
 
 Create `server/src/routes/api/watchlist.ts`:
 ```ts
@@ -1830,7 +1895,7 @@ const watchlistRoutes: FastifyPluginAsync<RouteOptions> = async (server, { conta
 export default watchlistRoutes
 ```
 
-- [ ] **Step 5: Wire the container**
+- [x] **Step 5: Wire the container**
 
 In `server/src/container.ts`, add these imports next to the other repository and service imports:
 ```ts
@@ -1859,7 +1924,7 @@ In `createMockContainer(overrides)`, follow plan 04's `overrides.x ?? default` p
     watchlistSync: overrides.watchlistSync ?? new WatchlistSyncService(watchlist),
 ```
 
-- [ ] **Step 6: Register the routes**
+- [x] **Step 6: Register the routes**
 
 In `server/src/app.ts`, add the import next to the other route imports:
 ```ts
@@ -1870,17 +1935,17 @@ Then, inside `buildApp`, register the plugin directly after the `/api/market` re
   await app.register(watchlistRoutes, { prefix: "/api/watchlist", container })
 ```
 
-- [ ] **Step 7: Run the route tests and confirm they pass**
+- [x] **Step 7: Run the route tests and confirm they pass**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/routes/watchlist.test.ts`
 Expected: PASS, `Tests  8 passed (8)`.
 
-- [ ] **Step 8: Run the whole server suite and the typecheck**
+- [x] **Step 8: Run the whole server suite and the typecheck**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npm run typecheck && npm test`
 Expected: `tsc` exits 0. vitest shows every file passing, including plan 04's suites and this plan's 7 new files: `ladder`, `migration003`, `watchlistTypes`, `NeonWatchlistRepository`, `MockWatchlistRepository`, `WatchlistSyncService`, `watchlist` routes.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
@@ -1894,7 +1959,7 @@ MSG
 )"
 ```
 
-- [ ] **Step 10: Apply the migration in production (manual: user)**
+- [ ] **Step 10: Apply the migration in production (manual: user)** — SKIPPED (manual)
 
 After this branch is deployed to the Vercel production project:
 ```bash
@@ -1929,14 +1994,14 @@ Shared iOS facts for Chunks 4–7:
 - Modify: `Wait/Packages/WaitKit/Package.swift` (the `PersistenceTests` dependencies)
 - Test: `Wait/Packages/WaitKit/Tests/PersistenceTests/SyncStateTests.swift`
 
-- [ ] **Step 0: Declare the test target's imports**
+- [x] **Step 0: Declare the test target's imports**
 
 The new test imports `Dependencies`, `DependenciesTestSupport`, `Domain`, `IdentifiedCollections`, `Persistence` and `Sharing`. Plan 02's `.testTarget(name: "PersistenceTests", …)` lists `"Persistence", .sharing, .identifiedCollections, .dependenciesTestSupport`. Add `"Domain"` and `.dependencies` to that array, so it reads:
 ```swift
     .testTarget(name: "PersistenceTests", dependencies: ["Persistence", "Domain", .dependencies, .sharing, .identifiedCollections, .dependenciesTestSupport]),
 ```
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `Wait/Packages/WaitKit/Tests/PersistenceTests/SyncStateTests.swift`:
 ```swift
@@ -2034,12 +2099,12 @@ struct SyncStateTests {
 }
 ```
 
-- [ ] **Step 2: Run the test and confirm it fails**
+- [ ] **Step 2: Run the test and confirm it fails — NOT RUN (code-only; a typecheck against typecheck-only module builds failed on `.syncState` as expected)**
 
 Run, with `-only-testing:PersistenceTests/SyncStateTests`, the package command from the chunk header.
 Expected: `** TEST BUILD FAILED **`. The errors include `cannot find 'SyncState' in scope`, and the `@Shared(.syncState)` lines fail because no member `syncState` exists yet.
 
-- [ ] **Step 3: Write `SyncState`**
+- [x] **Step 3: Write `SyncState`**
 
 Create `Wait/Packages/WaitKit/Sources/Persistence/SyncState.swift`:
 ```swift
@@ -2117,13 +2182,13 @@ public extension SharedReaderKey where Self == FileStorageKey<SyncState>.Default
 }
 ```
 
-- [ ] **Step 4: Record and clear tombstones in the mutation helpers**
+- [x] **Step 4: Record and clear tombstones in the mutation helpers**
 
 In `Wait/Packages/WaitKit/Sources/Persistence/Shared+Watchlist.swift`, keep both signatures exactly as plan 02 wrote them.
 
-Insert these lines as the **first statements** of `public func add(_ item: WatchlistItem, now: Date)`:
+Insert these lines as the **first statements** of `public func add(_ item: WatchlistItem, now: Date)`. Write the generic argument explicitly (`@Shared<SyncState>`): inside `extension Shared where Value == …`, a bare `@Shared(.syncState)` infers `Shared<Value>` of the extension and fails to compile (`requires the types 'IdentifiedArray<…>' and 'SyncState' be equivalent`):
 ```swift
-    @Shared(.syncState) var syncState
+    @Shared<SyncState>(.syncState) var syncState
     $syncState.withLock { $0.tombstones[item.symbol] = nil }
 ```
 Plan 02 wrote the body of `add` as a single implicit-return expression, `withLock { … }`. Once these statements come before it, the implicit return no longer applies, so that line must become `return withLock { … }`. Keep the closure's contents unchanged. If the helper returns `Void`, the explicit `return` is still valid and harmless. Apply the same rule to `remove` if its body is also a single `withLock { … }` expression.
@@ -2131,23 +2196,23 @@ Plan 02 wrote the body of `add` as a single implicit-return expression, `withLoc
 In `func remove(_ symbol: String, now: Date)`, delete plan 02's placeholder line `_ = now // Plan 05 records a tombstone at `now`.`, and insert these lines as the **first statements** in its place:
 ```swift
     if wrappedValue[id: symbol] != nil {
-      @Shared(.syncState) var syncState
+      @Shared<SyncState>(.syncState) var syncState
       $syncState.withLock { $0.tombstones[symbol] = now.truncatedToMilliseconds }
     }
 ```
 The helper's existing body then removes the item exactly as before. Local property wrappers (`@Shared` inside a function) are supported in Swift 5.4 and later.
 
-- [ ] **Step 5: Run the test and confirm it passes**
+- [ ] **Step 5: Run the test and confirm it passes — NOT RUN (code-only; 2 of the 5 tests, the Codable ones, ran in a /tmp macOS harness and passed 2/2; the 3 `@Shared` tests were typechecked only)**
 
 Run, with `-only-testing:PersistenceTests/SyncStateTests`, the package command from the chunk header.
 Expected: `** TEST SUCCEEDED **`, with 5 tests passing.
 
-- [ ] **Step 6: Run all Persistence tests (plan 02's helper tests must still pass)**
+- [ ] **Step 6: Run all Persistence tests (plan 02's helper tests must still pass) — NOT RUN (code-only)**
 
 Run, with `-only-testing:PersistenceTests`, the package command from the chunk header.
 Expected: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
@@ -2170,7 +2235,7 @@ MSG
 - Create: `Wait/Packages/WaitKit/Sources/SyncClient/SyncChange.swift`
 - Test: `Wait/Packages/WaitKit/Tests/SyncClientTests/SyncStampTests.swift`
 
-- [ ] **Step 1: Add the targets**
+- [x] **Step 1: Add the targets**
 
 In `Wait/Packages/WaitKit/Package.swift`, add these to `targets:`, next to the `APIClient` target. The test target lists every module its files import: `Domain`, `Persistence`, `APIClient`, `Dependencies` (for `LockIsolated`), `Sharing` (`Shared(value:)`) and `IdentifiedCollections`. They use plan 02's `Target.Dependency` statics (`.dependencies`, `.dependenciesMacros`, `.dependenciesTestSupport`, `.sharing`, `.identifiedCollections`):
 ```swift
@@ -2184,7 +2249,7 @@ In `Wait/Packages/WaitKit/Package.swift`, add these to `targets:`, next to the `
     ),
 ```
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `Wait/Packages/WaitKit/Tests/SyncClientTests/SyncStampTests.swift`:
 ```swift
@@ -2241,12 +2306,12 @@ struct SyncStampTests {
 }
 ```
 
-- [ ] **Step 3: Run the test and confirm it fails**
+- [ ] **Step 3: Run the test and confirm it fails — NOT RUN (code-only; the /tmp harness failed to build without the sources)**
 
 Run, with `-only-testing:SyncClientTests/SyncStampTests`, the package command from the chunk header.
 Expected: `** TEST BUILD FAILED **`. The `SyncClient` target has no sources yet, so you get `no such module 'SyncClient'` or `cannot find 'SyncStamp' in scope`.
 
-- [ ] **Step 4: Write `SyncStamp`**
+- [x] **Step 4: Write `SyncStamp`**
 
 Create `Wait/Packages/WaitKit/Sources/SyncClient/SyncStamp.swift`:
 ```swift
@@ -2343,7 +2408,7 @@ public enum SyncStamp {
 }
 ```
 
-- [ ] **Step 5: Write the sync value types**
+- [x] **Step 5: Write the sync value types**
 
 Create `Wait/Packages/WaitKit/Sources/SyncClient/SyncChange.swift`:
 ```swift
@@ -2446,12 +2511,12 @@ public struct SyncReport: Equatable, Sendable {
 }
 ```
 
-- [ ] **Step 6: Run the test and confirm it passes**
+- [ ] **Step 6: Run the test and confirm it passes — NOT RUN through Xcode (code-only; the real `SyncStampTests` ran in a /tmp macOS harness: 5 of 5 passed)**
 
 Run, with `-only-testing:SyncClientTests/SyncStampTests`, the package command from the chunk header.
 Expected: `** TEST SUCCEEDED **`, with 5 tests passing.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
@@ -2472,7 +2537,7 @@ MSG
 - Create: `Wait/Packages/WaitKit/Tests/SyncClientTests/SyncFixtures.swift` (shared test fixtures)
 - Test: `Wait/Packages/WaitKit/Tests/SyncClientTests/SyncPlannerTests.swift`
 
-- [ ] **Step 1: Write the shared fixtures**
+- [x] **Step 1: Write the shared fixtures**
 
 Create `Wait/Packages/WaitKit/Tests/SyncClientTests/SyncFixtures.swift`:
 ```swift
@@ -2517,7 +2582,7 @@ func remote(_ item: WatchlistItem, deleted: Bool = false, version: Int = 1) -> R
 }
 ```
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `Wait/Packages/WaitKit/Tests/SyncClientTests/SyncPlannerTests.swift`:
 ```swift
@@ -2590,12 +2655,12 @@ struct SyncPlannerTests {
 }
 ```
 
-- [ ] **Step 3: Run the test and confirm it fails**
+- [ ] **Step 3: Run the test and confirm it fails — NOT RUN through Xcode (code-only; the /tmp harness failed with `cannot find 'SyncPlanner' in scope`)**
 
 Run, with `-only-testing:SyncClientTests/SyncPlannerTests`, the package command from the chunk header.
 Expected: `** TEST BUILD FAILED **` with `cannot find 'SyncPlanner' in scope`.
 
-- [ ] **Step 4: Write the implementation**
+- [x] **Step 4: Write the implementation**
 
 Create `Wait/Packages/WaitKit/Sources/SyncClient/SyncPlanner.swift`:
 ```swift
@@ -2648,12 +2713,12 @@ public enum SyncPlanner {
 }
 ```
 
-- [ ] **Step 5: Run the test and confirm it passes**
+- [ ] **Step 5: Run the test and confirm it passes — NOT RUN through Xcode (code-only; real `SyncPlannerTests` ran in a /tmp macOS harness with a stand-in `IdentifiedArray`: 7 of 7 passed)**
 
 Run, with `-only-testing:SyncClientTests/SyncPlannerTests`, the package command from the chunk header.
 Expected: `** TEST SUCCEEDED **`, with 7 tests passing.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
@@ -2675,7 +2740,7 @@ MSG
 - Create: `Wait/Packages/WaitKit/Sources/SyncClient/SyncMerger.swift`
 - Test: `Wait/Packages/WaitKit/Tests/SyncClientTests/SyncMergerTests.swift`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 This test covers the full case matrix from overview §8.5, client step 3, plus deviation 2 (ties apply the remote row). Create `Wait/Packages/WaitKit/Tests/SyncClientTests/SyncMergerTests.swift`:
 ```swift
@@ -2806,12 +2871,12 @@ struct SyncMergerTests {
 }
 ```
 
-- [ ] **Step 2: Run the test and confirm it fails**
+- [ ] **Step 2: Run the test and confirm it fails — NOT RUN through Xcode (code-only; the /tmp harness failed with `cannot find 'SyncMerger' in scope`)**
 
 Run, with `-only-testing:SyncClientTests/SyncMergerTests`, the package command from the chunk header.
 Expected: `** TEST BUILD FAILED **` with `cannot find 'SyncMerger' in scope`.
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation** (adds `import Foundation` for `Date`)
 
 Create `Wait/Packages/WaitKit/Sources/SyncClient/SyncMerger.swift`:
 ```swift
@@ -2924,12 +2989,12 @@ public enum SyncMerger {
 }
 ```
 
-- [ ] **Step 4: Run the test and confirm it passes**
+- [ ] **Step 4: Run the test and confirm it passes — NOT RUN through Xcode (code-only; real `SyncMergerTests` ran in a /tmp macOS harness with a stand-in `IdentifiedArray`: 13 of 13 passed)**
 
 Run, with `-only-testing:SyncClientTests/SyncMergerTests`, the package command from the chunk header.
 Expected: `** TEST SUCCEEDED **`, with 13 tests passing.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
@@ -2951,7 +3016,7 @@ MSG
 - Test: `Wait/Packages/WaitKit/Tests/APIClientTests/WatchlistSyncDTOTests.swift`
 - Test: `Wait/Packages/WaitKit/Tests/SyncClientTests/SyncMappingTests.swift`
 
-- [ ] **Step 1: Write the failing DTO test**
+- [x] **Step 1: Write the failing DTO test**
 
 Create `Wait/Packages/WaitKit/Tests/APIClientTests/WatchlistSyncDTOTests.swift`:
 ```swift
@@ -3007,12 +3072,12 @@ struct WatchlistSyncDTOTests {
 }
 ```
 
-- [ ] **Step 2: Run it and confirm it fails**
+- [ ] **Step 2: Run it and confirm it fails — NOT RUN through Xcode (code-only; the /tmp harness failed with `no such module 'APIClient'` before the DTO file existed)**
 
 Run, with `-only-testing:APIClientTests/WatchlistSyncDTOTests`, the package command from the chunk header.
 Expected: `** TEST BUILD FAILED **` with `cannot find 'SyncRequestDTO' in scope`.
 
-- [ ] **Step 3: Write the DTOs**
+- [x] **Step 3: Write the DTOs**
 
 Create `Wait/Packages/WaitKit/Sources/APIClient/DTOs/WatchlistSyncDTOs.swift`. The shapes come from overview §8.4: prices are decimal strings, and timestamps are pre-formatted ISO strings.
 ```swift
@@ -3219,7 +3284,7 @@ public struct SyncResponseDTO: Codable, Equatable, Sendable {
 ```
 Every DTO has a public memberwise initializer, because `SyncClient` (another module) and its tests build them.
 
-- [ ] **Step 4: Add the endpoint to `APIClient`**
+- [x] **Step 4: Add the endpoint to `APIClient`** (`grep -c syncWatchlist` = 3. Also added `APIClientTests.syncWatchlistPostsTheBatchAndDecodesTheEnvelope`.)
 
 `Wait/Packages/WaitKit/Sources/APIClient/APIClient.swift` (plan 04) declares the endpoints in this order: `quotes`, `history`, `search`, `profile`, `deleteAccount`. Both `live(session:)` and `misconfigured` call the full memberwise init, and memberwise arguments follow declaration order. Append `syncWatchlist` **after `deleteAccount` in all three places**:
 
@@ -3246,12 +3311,12 @@ grep -c "syncWatchlist" Sources/APIClient/APIClient.swift
 ```
 Expected: `3`.
 
-- [ ] **Step 5: Run the DTO test and confirm it passes**
+- [ ] **Step 5: Run the DTO test and confirm it passes — NOT RUN through Xcode (code-only; real `WatchlistSyncDTOTests` plus `APIClientTests` ran in a /tmp macOS harness: 10 of 10 passed)**
 
 Run, with `-only-testing:APIClientTests/WatchlistSyncDTOTests`, the package command from the chunk header.
 Expected: `** TEST SUCCEEDED **`, with 2 tests passing.
 
-- [ ] **Step 6: Write the failing mapping test**
+- [x] **Step 6: Write the failing mapping test** (the listing's `(0 ..< 150).map { ChecklistItem(...) }` does not compile; the file uses `{ _ in ... }`)
 
 Create `Wait/Packages/WaitKit/Tests/SyncClientTests/SyncMappingTests.swift`:
 ```swift
@@ -3363,12 +3428,12 @@ struct SyncMappingTests {
 }
 ```
 
-- [ ] **Step 7: Run it and confirm it fails**
+- [ ] **Step 7: Run it and confirm it fails — NOT RUN through Xcode (code-only; the /tmp harness failed with `cannot find 'SyncMapping' in scope`)**
 
 Run, with `-only-testing:SyncClientTests/SyncMappingTests`, the package command from the chunk header.
 Expected: `** TEST BUILD FAILED **` with `cannot find 'SyncMapping' in scope`.
 
-- [ ] **Step 8: Write the mapping**
+- [x] **Step 8: Write the mapping** (plus two client-side hardenings from the server review, below)
 
 Create `Wait/Packages/WaitKit/Sources/SyncClient/SyncMapping.swift`:
 ```swift
@@ -3538,12 +3603,17 @@ enum SyncMapping {
 }
 ```
 
-- [ ] **Step 9: Run the mapping test and confirm it passes**
+- [ ] **Step 9: Run the mapping test and confirm it passes — NOT RUN through Xcode (code-only; real `SyncMappingTests` and `SyncPlannerTests` ran in a /tmp macOS harness with a stand-in `IdentifiedArray`: 19 of 19 passed, i.e. 11 mapping + 8 planner)**
 
 Run, with `-only-testing:SyncClientTests/SyncMappingTests`, the package command from the chunk header.
 Expected: `** TEST SUCCEEDED **`, with 7 tests passing.
 
-- [ ] **Step 10: Commit**
+**Hardening added after the server review** (the code above is the plan's baseline; the committed files also have these):
+- **NUL stripping.** The server answers 400 for the whole batch when `name`, `memo` or a checklist `id`/`name` contains U+0000. `SyncMapping.sanitize` strips `\0` first, then clamps, so a NUL never uses up the length budget.
+- **Unrepresentable anchors stay local-only.** An anchor is rounded to 6 decimals, so a positive anchor below 0.0000005 goes out as `"0"` and the server rejects the batch with `INVALID_LADDER` on every sync. An anchor of 10^12 or more fails the decimal pattern the same way. `SyncMapping.isRepresentable(_:)` detects both. `SyncPlanner.isSyncable(_ item:)` uses it, so `pendingChanges` skips the item and `unsyncableSymbols` lists it for the engine log (deviation 6 applies). `changeDTO` drops history revisions that fail the same check.
+- Tests: `SyncMappingTests` (NUL, representability, history) and `SyncPlannerTests.leavesItemsWhoseAnchorsTheServerWouldReadAsZeroLocalOnly`.
+
+- [x] **Step 10: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
@@ -3569,7 +3639,7 @@ MSG
 
 Logging uses plan 02's `Log.sync`, a `LogChannel` with `error(_ message: String)`. Messages are plain strings, with no `privacy:` arguments, because `LogChannel` logs everything as public.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test** (two edits to the listing: `broken` is now a `let` copy, because a `var` captured by the `@Sendable` handler is a Swift 6 error; `Gate.wait` uses a multi-line `guard`, for SwiftLint)
 
 Create `Wait/Packages/WaitKit/Tests/SyncClientTests/SyncEngineTests.swift`:
 ```swift
@@ -3595,7 +3665,9 @@ actor Gate {
   // MARK: Internal
 
   func wait() async {
-    if isOpen { return }
+    guard !isOpen else {
+      return
+    }
     await withCheckedContinuation { continuation = $0 }
   }
 
@@ -3726,8 +3798,9 @@ struct SyncEngineTests {
 
   @Test
   func skipsUnreadableRowsButStillAdvancesTheCursor() async throws {
-    var broken = SyncMapping.itemDTO(from: SyncMapping.changeDTO(.upsert(makeItem("BAD", updatedAt: stamp(3))), now: .distantFuture), version: 3)
-    broken.ladder = LadderDTO(buyLow: "20", buyHigh: "10")
+    var unreadable = SyncMapping.itemDTO(from: SyncMapping.changeDTO(.upsert(makeItem("BAD", updatedAt: stamp(3))), now: .distantFuture), version: 3)
+    unreadable.ladder = LadderDTO(buyLow: "20", buyHigh: "10")
+    let broken = unreadable
     let good = SyncMapping.itemDTO(from: SyncMapping.changeDTO(.upsert(makeItem("NVDA", updatedAt: stamp(3))), now: .distantFuture), version: 3)
     let (engine, items, state) = makeEngine { _ in SyncResponseDTO(changes: [broken, good], cursor: "3:NVDA", hasMore: false) }
 
@@ -3844,12 +3917,12 @@ struct SyncEngineTests {
 ```
 `Shared(value:)` makes an unpersisted reference, so these tests don't touch file storage. `LockIsolated` comes from ConcurrencyExtras, which `Dependencies` re-exports.
 
-- [ ] **Step 2: Run the test and confirm it fails**
+- [ ] **Step 2: Run the test and confirm it fails — NOT RUN through Xcode (code-only; the /tmp harness failed with `cannot find type 'SyncEngine' in scope`)**
 
 Run, with `-only-testing:SyncClientTests/SyncEngineTests`, the package command from the chunk header.
 Expected: `** TEST BUILD FAILED **` with `cannot find 'SyncEngine' in scope`.
 
-- [ ] **Step 3: Write the engine**
+- [x] **Step 3: Write the engine**
 
 Create `Wait/Packages/WaitKit/Sources/SyncClient/SyncEngine.swift`:
 ```swift
@@ -3953,7 +4026,9 @@ public actor SyncEngine {
         startGeneration = generation
       }
     } while rerunRequested
-    guard !lastPassDiscarded else { return total }
+    guard !lastPassDiscarded else {
+      return total
+    }
     let finishedAt = now().truncatedToMilliseconds
     state.withLock { $0.lastSyncedAt = finishedAt }
     return total
@@ -3995,7 +4070,7 @@ public actor SyncEngine {
 }
 ```
 
-- [ ] **Step 4: Write the dependency**
+- [x] **Step 4: Write the dependency** (typechecked in a /tmp harness against the real Sharing/Dependencies modules, with the `@DependencyClient` macro replaced by a hand-written init: the macro plugin can't run in the sandbox)
 
 Create `Wait/Packages/WaitKit/Sources/SyncClient/SyncClient.swift`:
 ```swift
@@ -4047,12 +4122,12 @@ extension DependencyValues {
 ```
 `liveValue` is a `static let`, so the app has exactly one engine. That's what makes single-flight work across every caller.
 
-- [ ] **Step 5: Run the tests and confirm they pass**
+- [ ] **Step 5: Run the tests and confirm they pass — NOT RUN through Xcode (code-only; real `SyncEngineTests` ran in a /tmp macOS harness with stand-ins for `Shared`, `IdentifiedArray` and `APIClient`: 11 of 11 passed, stable over 20 runs)**
 
 Run, with `-only-testing:SyncClientTests`, the package command from the chunk header.
 Expected: `** TEST SUCCEEDED **`. That's 5 SyncStamp, 7 planner, 13 merger, 7 mapping and 11 engine tests.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
@@ -4081,11 +4156,11 @@ These are the triggers from overview §8.5 and §12.3 (including the TCA `onChan
 
 When the sync engine writes remote rows, no action is involved, so `onChange` doesn't fire. That means remote changes can't cause a sync loop. It also means the widget/watch snapshot wouldn't see them, so AppFeature republishes the snapshot on `.syncFinished` whenever `report.pulled > 0` (§12.3).
 
-- [ ] **Step 1: Add the dependency**
+- [x] **Step 1: Add the dependency** (both lines are wrapped over several lines, for the 180-character SwiftLint limit; `AppFeatureTests` already had `Connectivity` and `.dependenciesTestSupport`)
 
 In `Wait/Packages/WaitKit/Package.swift`, add `"SyncClient"` to the `AppFeature` target's `dependencies` array. Also make sure the `AppFeatureTests` test target lists `"SyncClient"`, `.dependenciesTestSupport` and `"Connectivity"` (plan 03 normally adds the last one), and add whichever are missing.
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `Wait/Packages/WaitKit/Tests/AppFeatureTests/AppFeatureSyncTests.swift`:
 ```swift
@@ -4221,12 +4296,12 @@ struct AppFeatureSyncTests {
 }
 ```
 
-- [ ] **Step 3: Run the test and confirm it fails**
+- [ ] **Step 3: Run the test and confirm it fails — NOT RUN (code-only; TCA `TestStore` code can't run in the /tmp harness)**
 
 Run, with `-only-testing:AppFeatureTests/AppFeatureSyncTests`, the package command from the chunk header.
 Expected: `** TEST BUILD FAILED **`, with errors like `type 'AppFeature.Action' has no member 'syncFinished'` and `value of type 'DependencyValues' has no member 'syncClient'`.
 
-- [ ] **Step 4: Add the triggers to `AppFeature`**
+- [x] **Step 4: Add the triggers to `AppFeature`** (item 7 uses the effect-returning `onChange` form, as CLAUDE.md requires: the reducer-builder overload is deprecated. Checked against TCA 1.26.2 `OnChange.swift`: `perform: (oldValue, inout State) -> EffectOf<Self>`)
 
 All edits are in `Wait/Packages/WaitKit/Sources/AppFeature/AppFeature.swift`. After plans 02 and 03, `body` has the §12.3 shape: `CombineReducers { BindingReducer(); Scope…; Scope…; Reduce { … } }`, followed by one `.onChange(of: \.watchlist.snapshotInputs) { _, inputs in Reduce { _, _ in publishSnapshot(inputs) } }`. The debounced `publishSnapshot(_:)` helper calls `snapshotClient.alsoSending(to: connectivity).publish(…)`.
 
@@ -4275,7 +4350,7 @@ All edits are in `Wait/Packages/WaitKit/Sources/AppFeature/AppFeature.swift`. Af
 7. **Add the debounce trigger.** Chain a second `.onChange` on the same `CombineReducers`, directly after the snapshot one. It has to wrap the whole composition, because the edits happen in child reducers (§12.3):
    ```swift
      .onChange(of: \.watchlist.items) { _, _ in
-       Reduce { _, _ in sync(after: .seconds(2)) }
+       sync(after: .seconds(2))
      }
    ```
    After this edit, `body` looks like this (with plan 02's and plan 03's contents unchanged):
@@ -4293,7 +4368,7 @@ All edits are in `Wait/Packages/WaitKit/Sources/AppFeature/AppFeature.swift`. Af
          Reduce { _, _ in publishSnapshot(inputs) }
        }
        .onChange(of: \.watchlist.items) { _, _ in
-         Reduce { _, _ in sync(after: .seconds(2)) }
+         sync(after: .seconds(2))
        }
      }
    ```
@@ -4316,12 +4391,12 @@ All edits are in `Wait/Packages/WaitKit/Sources/AppFeature/AppFeature.swift`. Af
      }
    ```
 
-- [ ] **Step 5: Run the new tests and confirm they pass**
+- [ ] **Step 5: Run the new tests and confirm they pass — NOT RUN (code-only)**
 
 Run, with `-only-testing:AppFeatureTests/AppFeatureSyncTests`, the package command from the chunk header.
 Expected: `** TEST SUCCEEDED **`, with 6 tests passing. The earlier AppFeature suites are fixed and run in Step 6.
 
-- [ ] **Step 6: Update the earlier exhaustive AppFeature tests that reach the new sync paths**
+- [x] **Step 6: Update the earlier exhaustive AppFeature tests that reach the new sync paths** (the grep matched only `becomingActiveRefreshesQuotesAndPublishesOneSnapshot`, which is edited as written; the test run is NOT RUN (code-only))
 
 `.active` and the `.refreshRequested` delegate now sync, and any action that changes `watchlist.items` starts the 2 s debounce. Exhaustive tests from plans 02 and 03 that hit these paths must stub `syncClient.sync` and receive `.syncFinished`. Find them:
 ```bash
@@ -4348,7 +4423,7 @@ In `Tests/AppFeatureTests/AppFeatureTests.swift`:
 Run, with `-only-testing:AppFeatureTests`, the package command from the chunk header.
 Expected: `** TEST SUCCEEDED **`. Every plan 02/03 AppFeature test passes, plus the 6 new ones.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
@@ -4376,13 +4451,13 @@ MSG
 
 Load swiftui-expert:swiftui-expert-skill before writing the view.
 
-- [ ] **Step 1: Add the dependencies**
+- [x] **Step 1: Add the dependencies**
 
 In `Wait/Packages/WaitKit/Package.swift`:
 - Add `"SyncClient"` and `"Persistence"` to the `SettingsFeature` target's `dependencies` array, if they aren't already there.
 - Add `"Persistence"`, `"SyncClient"` and `.dependenciesTestSupport` to the `SettingsFeatureTests` test target, if any of them are missing. The new and updated tests import `Persistence` and `SyncClient`.
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `Wait/Packages/WaitKit/Tests/SettingsFeatureTests/SettingsSyncTests.swift`:
 ```swift
@@ -4468,12 +4543,12 @@ struct SettingsSyncTests {
 ```
 The last test drives plan 04's delete-account flow (`deleteAccountTapped`, then the alert's confirm action). If plan 04 named the confirm action differently, use plan 04's name. If plan 04's deletion effect calls more dependencies, stub them the same way.
 
-- [ ] **Step 3: Run the test and confirm it fails**
+- [ ] **Step 3: Run the test and confirm it fails** — NOT RUN (code-only)
 
 Run, with `-only-testing:SettingsFeatureTests/SettingsSyncTests`, the package command from the chunk header.
 Expected: `** TEST BUILD FAILED **`, with errors like `type 'SettingsFeature.Action' has no member 'syncNowTapped'`.
 
-- [ ] **Step 4: Extend `SettingsFeature`**
+- [x] **Step 4: Extend `SettingsFeature`**
 
 All edits are in `Wait/Packages/WaitKit/Sources/SettingsFeature/SettingsFeature.swift`.
 
@@ -4534,7 +4609,7 @@ All edits are in `Wait/Packages/WaitKit/Sources/SettingsFeature/SettingsFeature.
      ```
    Deleting the account keeps the local watchlist (it's offline-first). With the sync state reset, the next sync uploads the list under the new anonymous identity.
 
-- [ ] **Step 5: Write the section view**
+- [x] **Step 5: Write the section view**
 
 Create `Wait/Packages/WaitKit/Sources/SettingsFeature/SyncSection.swift`:
 ```swift
@@ -4597,7 +4672,7 @@ struct SyncSection: View {
 }
 ```
 
-- [ ] **Step 6: Show the section**
+- [x] **Step 6: Show the section**
 
 In `Wait/Packages/WaitKit/Sources/SettingsFeature/SettingsView.swift`, inside the settings `Form`/`List`, add this directly after plan 04's `AccountSection(…)`:
 ```swift
@@ -4609,7 +4684,7 @@ In `Wait/Packages/WaitKit/Sources/SettingsFeature/SettingsView.swift`, inside th
         )
 ```
 
-- [ ] **Step 7: Run the tests and confirm they pass**
+- [ ] **Step 7: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 First update plan 04's exhaustive test, which now reaches `syncClient.reset()` (an unimplemented dependency fails it). In `Tests/SettingsFeatureTests/SettingsAccountTests.swift`:
 - Add `import SyncClient`.
@@ -4622,7 +4697,7 @@ Its expected state changes and received actions stay the same, because `reset()`
 Run, with `-only-testing:SettingsFeatureTests`, the package command from the chunk header.
 Expected: `** TEST SUCCEEDED **`. Plan 02's settings tests, plan 04's updated account tests, and these 5 all pass.
 
-- [ ] **Step 8: Build the app**
+- [ ] **Step 8: Build the app** — NOT RUN (code-only)
 
 Run (overview §5.1):
 ```bash
@@ -4631,7 +4706,7 @@ xcodebuild -project /Users/ckai/code/Wait-plan05/Wait/Wait.xcodeproj -scheme Wai
 ```
 Expected: `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
@@ -4649,7 +4724,7 @@ MSG
 
 **Files:** none changed. This task is verification only.
 
-- [ ] **Step 1: Deploy the server (manual: user)**
+- [ ] **Step 1: Deploy the server (manual: user)** — SKIPPED (manual)
 
 Merge or deploy this branch to the Vercel project, then run the migration from Task 7, Step 10. Export the base URL the app uses (plan 04's `WAIT_API_BASE_URL`):
 ```bash
@@ -4658,7 +4733,7 @@ curl -s "$WAIT_API_BASE_URL/health"
 ```
 Expected: `{"status":"ok","timestamp":"…"}`.
 
-- [ ] **Step 2: Install and launch the app on the simulator**
+- [ ] **Step 2: Install and launch the app on the simulator** — SKIPPED (manual)
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
@@ -4670,7 +4745,7 @@ xcrun simctl launch booted com.chenkai.wait
 ```
 Expected: the app opens and shows the watchlist. If the simulator has no data yet, add 2 stocks (for example AAPL and MSFT), and give one of them a note.
 
-- [ ] **Step 3: Get a token for the same identity**
+- [ ] **Step 3: Get a token for the same identity** — SKIPPED (manual)
 
 The anonymous ID is shown in Settings → Account (plan 04). Copy it, then:
 ```bash
@@ -4681,12 +4756,12 @@ curl -s "$WAIT_API_BASE_URL/api/watchlist" -H "authorization: Bearer $TOKEN" | j
 ```
 Expected: every stock on the device is listed, with the same memo, favorite flag and ladder. This was the first upload, which needs no special case.
 
-- [ ] **Step 4: A local edit reaches the server**
+- [ ] **Step 4: A local edit reaches the server** — SKIPPED (manual)
 
 In the app, change a stock's note. Wait about 3 seconds (the 2 s debounce plus the request), then repeat the `GET` from Step 3.
 Expected: the new memo appears, and the item's `clientUpdatedAt` is the edit time.
 
-- [ ] **Step 5: A remote edit reaches the device (simulates a second device)**
+- [ ] **Step 5: A remote edit reaches the device (simulates a second device)** — SKIPPED (manual)
 
 ```bash
 NOW=$(date -u +%Y-%m-%dT%H:%M:%S.000Z)
@@ -4696,7 +4771,7 @@ curl -s -X POST "$WAIT_API_BASE_URL/api/watchlist/sync" -H "authorization: Beare
 In the app, pull to refresh the watchlist.
 Expected: NVDA appears in Favorites with the note "added from curl". Settings → Sync shows "Last synced" a few seconds ago.
 
-- [ ] **Step 6: A delete becomes a tombstone**
+- [ ] **Step 6: A delete becomes a tombstone** — SKIPPED (manual)
 
 In the app, swipe to delete NVDA and wait about 3 seconds. Then:
 ```bash
@@ -4708,7 +4783,7 @@ Expected:
 - The first command prints `{"symbol":"NVDA","deleted":true}`.
 - The second command's list doesn't include NVDA.
 
-- [ ] **Step 7: A reinstall restores the list from the server**
+- [ ] **Step 7: A reinstall restores the list from the server** — SKIPPED (manual)
 
 ```bash
 xcrun simctl uninstall booted com.chenkai.wait
@@ -4720,7 +4795,7 @@ Expected:
 - Settings → Account shows the same anonymous ID, which survived in the Keychain.
 - If the ID is different, the simulator dropped the Keychain item (overview risk 9). Report it, and skip this step rather than failing the plan.
 
-- [ ] **Step 8: Record the results**
+- [ ] **Step 8: Record the results** — SKIPPED (manual)
 
 Add a note to the PR description (or tell the user) saying which of Steps 3–7 passed. If any failed, include the `curl` output.
 
@@ -4731,7 +4806,7 @@ Add a note to the PR description (or tell the user) saying which of Steps 3–7 
 - Modify: `Wait/Packages/WaitKit/README.md`
 - Modify: `server/README.md`
 
-- [ ] **Step 1: Update `CLAUDE.md`**
+- [x] **Step 1: Update `CLAUDE.md`**
 
 Under `## Architecture`, add this subsection after the data-flow subsection:
 ```markdown
@@ -4745,7 +4820,7 @@ Under `## Architecture`, add this subsection after the data-flow subsection:
 - Server: `server/src/services/WatchlistSyncService.ts` and `server/src/db/NeonWatchlistRepository.ts` (one CTE for push, `(version, symbol)` cursor for pull). The server's ladder logic in `server/src/domain/ladder.ts` must keep passing `shared/ladder-test-vectors.json`.
 ```
 
-- [ ] **Step 2: Update `Wait/Packages/WaitKit/README.md`**
+- [x] **Step 2: Update `Wait/Packages/WaitKit/README.md`**
 
 Append:
 ```markdown
@@ -4764,7 +4839,7 @@ Append:
 Tests: `xcodebuild test -scheme WaitKit-Package … -only-testing:SyncClientTests`.
 ```
 
-- [ ] **Step 3: Update `server/README.md`**
+- [x] **Step 3: Update `server/README.md`**
 
 Append:
 ```markdown
@@ -4778,7 +4853,7 @@ Append:
 - `src/domain/ladder.ts` mirrors the Swift ladder. `test/domain/ladder.test.ts` reads `../shared/ladder-test-vectors.json`.
 ```
 
-- [ ] **Step 4: Run every suite one last time**
+- [ ] **Step 4: Run every suite one last time** — server part done (typecheck clean, 396/396 vitest tests in 46 files); xcodebuild test and build NOT RUN (code-only)
 
 ```bash
 cd /Users/ckai/code/Wait-plan05/server && npm run typecheck && npm test
@@ -4792,7 +4867,7 @@ Expected, in order:
 - `** TEST SUCCEEDED **`.
 - `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
@@ -4805,6 +4880,6 @@ MSG
 )"
 ```
 
-- [ ] **Step 6: Finish the branch**
+- [ ] **Step 6: Finish the branch** — SKIPPED (manual: no push or merge in this session)
 
 Use superpowers:finishing-a-development-branch.

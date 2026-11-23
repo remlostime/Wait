@@ -249,7 +249,7 @@ public struct SymbolSearchResult: Codable, Equatable, Identifiable, Sendable {
 
 // MARK: - CompanyProfile
 
-/// Fundamentals. Plan 02 has no source for these (Twelve Data stopgap). Plan 04 fills them from the backend.
+/// Fundamentals from the Wait backend (`GET /api/market/profile`: Finnhub profile2 + metrics). Ratios are percentages.
 public struct CompanyProfile: Equatable, Sendable {
   // MARK: Lifecycle
 

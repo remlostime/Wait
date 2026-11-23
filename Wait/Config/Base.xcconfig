@@ -1,7 +1,9 @@
 // Project-wide build settings for every configuration.
 // Secrets are kept out of git: copy Secrets.example.xcconfig to Secrets.xcconfig and fill it in.
-// The default below keeps builds working when Secrets.xcconfig is missing (quotes won't load).
 
-TWELVE_DATA_API_KEY =
+// The Wait backend (plan 04). Set the production host here once it is deployed, as `https:/$()/<host>`:
+// `/$()/` keeps xcconfig from reading `//` as a comment (risk 27). Empty until then, so the app reports
+// "WaitAPIBaseURL is missing" instead of calling a wrong host. A local Secrets.xcconfig overrides it.
+WAIT_API_BASE_URL =
 
 #include? "Secrets.xcconfig"

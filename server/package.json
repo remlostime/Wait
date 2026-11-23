@@ -1,0 +1,37 @@
+{
+  "name": "wait-server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Wait backend: anonymous auth, market-data proxy, watchlist sync, daily ladder alerts",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.test.json --noEmit",
+    "test": "vitest run",
+    "test:neon": "TEST_DB=neon vitest run --no-file-parallelism test/db test/services",
+    "migrate": "tsx scripts/migrate.ts",
+    "send-test-push": "tsx scripts/send-test-push.ts"
+  },
+  "dependencies": {
+    "@fastify/jwt": "^10.0.0",
+    "@fastify/type-provider-typebox": "^6.1.0",
+    "@neondatabase/serverless": "^1.0.2",
+    "@sinclair/typebox": "^0.34.49",
+    "fastify": "^5.7.1",
+    "fastify-plugin": "^5.1.0",
+    "pino": "^10.4.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.3.0",
+    "@types/node": "^22.15.0",
+    "dotenv": "^17.2.3",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.1"
+  }
+}

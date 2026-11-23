@@ -186,6 +186,40 @@ struct WatchlistFeatureTests {
     }
   }
 
+  @Test func missingQuotesRequestedLoadsOnlySymbolsWithoutAQuoteAndKeepsTheBanner() async {
+    seed([listItem("AAPL", 0), listItem("MSFT", 1)])
+    let aapl = Quote(symbol: "AAPL", price: 100, asOf: listNow)
+    let msft = Quote(symbol: "MSFT", price: 300, asOf: listNow)
+    let requested = LockIsolated<[[String]]>([])
+    var state = WatchlistFeature.State()
+    state.quotes = ["AAPL": aapl]
+    state.quotesStatus = .delayed("Quotes delayed — rate limited")
+    let store = TestStore(initialState: state) {
+      WatchlistFeature()
+    } withDependencies: {
+      $0.marketData.quotes = { symbols, policy in
+        requested.withValue { $0.append(symbols) }
+        #expect(policy == .useCache)
+        return [msft]
+      }
+    }
+    await store.send(.missingQuotesRequested)
+    await store.receive(\.symbolQuotesLoaded) {
+      $0.quotes = ["AAPL": aapl, "MSFT": msft]
+    }
+    #expect(requested.value == [["MSFT"]])
+  }
+
+  @Test func missingQuotesRequestedDoesNothingWhenEverySymbolHasAQuote() async {
+    seed([listItem("AAPL", 0)])
+    var state = WatchlistFeature.State()
+    state.quotes = ["AAPL": Quote(symbol: "AAPL", price: 100, asOf: listNow)]
+    let store = TestStore(initialState: state) {
+      WatchlistFeature()
+    }
+    await store.send(.missingQuotesRequested)
+  }
+
   @Test func pullToRefreshRequestsSyncAndReloads() async {
     seed([listItem("AAPL", 0)])
     let fresh = Quote(symbol: "AAPL", price: 101, asOf: listNow)

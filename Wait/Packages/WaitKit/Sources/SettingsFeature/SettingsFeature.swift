@@ -3,13 +3,19 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
+import APIClient
 import ChecklistFeature
 import ComposableArchitecture
 import Foundation
+import Logging
+import NotificationClient
+import Persistence
+import SyncClient
 
 // MARK: - SettingsFeature
 
-/// Plan 02 scope: the checklist template editor and the app version. Plans 04/05/06 add account, sync and alerts sections (overview §12.3).
+/// Settings: the checklist template editor, the account section (anonymous ID, Delete Account), the sync section
+/// ("Last synced", "Sync now"), the "Daily alerts" toggle and the app version.
 @Reducer
 public struct SettingsFeature {
   // MARK: Lifecycle
@@ -35,6 +41,22 @@ public struct SettingsFeature {
 
     public var path = StackState<Path.State>()
     public var appVersion: String
+    public var account = AccountState()
+    @Presents public var alert: AlertState<Action.Alert>?
+    @SharedReader(.syncState) public var syncState: SyncState
+    public var isSyncing = false
+    public var syncError: String?
+    @Shared(.alertsEnabled) public var alertsEnabled: Bool
+    @Shared(.apnsDeviceToken) public var apnsDeviceToken: String?
+    public var authorizationStatus: NotificationAuthorization = .notDetermined
+
+    public var showsOpenSystemSettings: Bool {
+      authorizationStatus == .denied
+    }
+
+    public var lastSyncedAt: Date? {
+      syncState.lastSyncedAt
+    }
 
     public static func versionString(info: [String: Any]?) -> String {
       let version = info?["CFBundleShortVersionString"] as? String ?? "?"
@@ -44,13 +66,179 @@ public struct SettingsFeature {
   }
 
   public enum Action {
+    case task
     case checklistTemplateTapped
     case path(StackActionOf<Path>)
+    case accountLoaded(String)
+    case deleteAccountTapped
+    case alert(PresentationAction<Alert>)
+    case accountDeleted
+    case accountDeletionFailed(String)
+    case syncNowTapped
+    case syncFinished(SyncReport)
+    case syncFailed(String)
+    case alertsToggled(Bool)
+    case authorizationStatusLoaded(NotificationAuthorization)
+    case alertsEnablementFinished(granted: Bool)
+    case deviceUnregistered(String)
+    case sceneBecameActive
+    case openSystemSettingsTapped
+
+    public enum Alert: Equatable, Sendable {
+      case confirmDeleteAccount
+    }
   }
 
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+        case .task:
+          return .merge(
+            .run { [identity] send in
+              if let id = try? identity.anonymousID() {
+                await send(.accountLoaded(id.uuidString))
+              }
+            },
+            loadAuthorizationStatus()
+          )
+
+        case let .accountLoaded(id):
+          state.account.anonymousID = id
+          return .none
+
+        case .deleteAccountTapped:
+          state.alert = .deleteAccount
+          return .none
+
+        case .alert(.presented(.confirmDeleteAccount)):
+          state.account.isDeleting = true
+          state.account.errorMessage = nil
+          return .run { [apiClient, identity, syncClient] send in
+            do {
+              try await apiClient.deleteAccount()
+              // The identity goes first, so a request that starts from here on can't authenticate as the deleted account. The API
+              // session goes second: it drops the old token and any registration in flight (`HTTPSession` also binds every token to its
+              // anonymous ID, so a request that raced the reset can't keep the old account's session). The sync bookkeeping goes last:
+              // it bumps the sync generation, so a run that is mid-request drops its result, and it forgets the old account's cursor and
+              // acknowledgements (which would otherwise stop the new account from receiving the items). The local watchlist stays and
+              // re-uploads under the new identity. Both resets run even when the identity reset fails.
+              var identityError: (any Error)?
+              do {
+                try identity.reset()
+              } catch {
+                identityError = error
+              }
+              await apiClient.resetSession()
+              await syncClient.reset()
+              if let identityError {
+                throw identityError
+              }
+              await send(.accountDeleted)
+            } catch {
+              await send(.accountDeletionFailed(error.localizedDescription))
+            }
+          }
+
+        case .alert:
+          return .none
+
+        case .accountDeleted:
+          state.account.isDeleting = false
+          state.account.anonymousID = nil
+          // The local watchlist re-uploads under the new identity at once, instead of waiting for the next edit or launch.
+          state.isSyncing = true
+          state.syncError = nil
+          let sync = syncEffect()
+          // The server dropped this device with the account. APNs hands the token back through `AppDelegate` and `PushFeature`
+          // uploads it under the new identity.
+          guard state.alertsEnabled else {
+            return sync
+          }
+          return .merge(
+            sync,
+            .run { [notifications] _ in
+              await notifications.registerForRemoteNotifications()
+            }
+          )
+
+        case let .accountDeletionFailed(message):
+          state.account.isDeleting = false
+          state.account.errorMessage = message
+          return .none
+
+        case .syncNowTapped:
+          guard !state.isSyncing else {
+            return .none
+          }
+          state.isSyncing = true
+          state.syncError = nil
+          return syncEffect()
+
+        case .syncFinished:
+          state.isSyncing = false
+          return .none
+
+        case let .syncFailed(message):
+          state.isSyncing = false
+          state.syncError = message
+          return .none
+
+        case .alertsToggled(true):
+          return .run { [notifications] send in
+            let granted = (try? await notifications.requestAuthorization()) ?? false
+            await send(.authorizationStatusLoaded(notifications.authorizationStatus()))
+            await send(.alertsEnablementFinished(granted: granted))
+            if granted {
+              await notifications.registerForRemoteNotifications()
+            }
+          }
+
+        case .alertsToggled(false):
+          // Keep the token until the server confirms the DELETE; PushFeature retries a pending unregistration at launch.
+          let token = state.apnsDeviceToken
+          state.$alertsEnabled.withLock { $0 = false }
+          // No `unregisterForRemoteNotifications()`: the server DELETE stops the pushes, and Apple discourages unregistering.
+          return .run { [apiClient] send in
+            guard let token else {
+              return
+            }
+            do {
+              try await apiClient.unregisterDevice(token)
+              await send(.deviceUnregistered(token))
+            } catch {
+              Log.push.error("Device unregistration failed, will retry next launch: \(error)")
+            }
+          }
+
+        case let .alertsEnablementFinished(granted):
+          state.$alertsEnabled.withLock { $0 = granted }
+          return .none
+
+        case let .deviceUnregistered(removed):
+          // Only forget the token the server confirmed. The user may have re-enabled alerts, and APNs stored a new one, meanwhile.
+          state.$apnsDeviceToken.withLock { stored in
+            if stored == removed {
+              stored = nil
+            }
+          }
+          return .none
+
+        case .sceneBecameActive:
+          // The user may have changed the permission in the system Settings app.
+          return loadAuthorizationStatus()
+
+        case let .authorizationStatusLoaded(status):
+          state.authorizationStatus = status
+          return .none
+
+        case .openSystemSettingsTapped:
+          return .run { [notifications, openURL] _ in
+            guard let url = await notifications.notificationSettingsURL() else {
+              return
+            }
+            await openURL(url)
+          }
+
         case .checklistTemplateTapped:
           state.path.append(.checklistTemplate(ChecklistTemplateFeature.State()))
           return .none
@@ -60,6 +248,69 @@ public struct SettingsFeature {
       }
     }
     .forEach(\.path, action: \.path)
+    .ifLet(\.$alert, action: \.alert)
+  }
+
+  // MARK: Internal
+
+  @Dependency(\.apiClient) var apiClient
+  @Dependency(\.identity) var identity
+  @Dependency(\.notifications) var notifications
+  @Dependency(\.openURL) var openURL
+  @Dependency(\.syncClient) var syncClient
+
+  // MARK: Private
+
+  private func syncEffect() -> Effect<Action> {
+    .run { [syncClient] send in
+      do {
+        await send(.syncFinished(try await syncClient.sync()))
+      } catch {
+        await send(.syncFailed(error.localizedDescription))
+      }
+    }
+  }
+
+  private func loadAuthorizationStatus() -> Effect<Action> {
+    .run { [notifications] send in
+      await send(.authorizationStatusLoaded(notifications.authorizationStatus()))
+    }
+  }
+}
+
+// MARK: - AccountState
+
+public struct AccountState: Equatable, Sendable {
+  // MARK: Lifecycle
+
+  public init(anonymousID: String? = nil) {
+    self.anonymousID = anonymousID
+  }
+
+  // MARK: Public
+
+  /// Nil after a deletion, until the next server call mints a new ID.
+  public var anonymousID: String?
+  public var isDeleting = false
+  public var errorMessage: String?
+}
+
+// MARK: - AlertState + Delete account
+
+extension AlertState where Action == SettingsFeature.Action.Alert {
+  static var deleteAccount: Self {
+    AlertState {
+      TextState("Delete your Wait account?")
+    } actions: {
+      ButtonState(role: .destructive, action: .confirmDeleteAccount) {
+        TextState("Delete Account")
+      }
+      ButtonState(role: .cancel) {
+        TextState("Cancel")
+      }
+    } message: {
+      TextState("This removes your synced watchlist, notes and alert settings from the Wait server. The stocks on this iPhone stay.")
+    }
   }
 }
 

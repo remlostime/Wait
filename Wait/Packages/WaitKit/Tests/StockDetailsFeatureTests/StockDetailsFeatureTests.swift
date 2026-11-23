@@ -25,6 +25,7 @@ func detailsItem() -> WatchlistItem {
       StockDetailsFeature()
     } withDependencies: {
       $0.date.now = detailsNow
+      $0.marketData.profile = { _ in throw MarketDataError.notFound }
       if let quotes {
         $0.marketData.quotes = quotes
       }
@@ -88,6 +89,7 @@ func detailsItem() -> WatchlistItem {
     await store.send(.task)
     await store.receive(\.quoteLoaded) { $0.quote = cached }
     await store.receive(\.quoteFailed)
+    await store.receive(\.profileFailed)
     #expect(store.state.quote == cached)
   }
 
@@ -145,6 +147,7 @@ func detailsItem() -> WatchlistItem {
     }
     await store.send(.task)
     await store.receive(\.quoteLoaded) { $0.quote = quote }
+    await store.receive(\.profileFailed)
     #expect(store.state.status == .buyZone)
     #expect(store.state.temperature != nil)
   }

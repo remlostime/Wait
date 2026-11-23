@@ -1,0 +1,10 @@
+{
+  "count": 5,
+  "result": [
+    { "description": "APPLE INC", "displaySymbol": "AAPL", "symbol": "AAPL", "type": "Common Stock" },
+    { "description": "APPLE INC", "displaySymbol": "AAPL.MX", "symbol": "AAPL.MX", "type": "Common Stock" },
+    { "description": "APPLIED MATERIALS INC", "displaySymbol": "AMAT", "symbol": "AMAT", "type": "Common Stock" },
+    { "description": "APP WARRANT", "displaySymbol": "APPW", "symbol": "APPW", "type": "Warrant" },
+    { "description": "SPDR S&P 500 ETF TRUST", "displaySymbol": "SPY", "symbol": "SPY", "type": "ETP" }
+  ]
+}

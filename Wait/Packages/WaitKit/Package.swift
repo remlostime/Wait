@@ -41,23 +41,44 @@ let package = Package(
     .target(name: "DesignSystem", dependencies: ["Domain"]),
     .target(name: "Persistence", dependencies: ["Domain", "Logging", .sharing, .identifiedCollections, .dependencies, .dependenciesMacros]),
     .target(name: "Connectivity", dependencies: ["Domain", .dependencies, .dependenciesMacros]),
-    .target(name: "MarketDataClient", dependencies: ["Domain", "Logging", .dependencies, .dependenciesMacros]),
+    .target(name: "MarketDataClient", dependencies: ["Domain", "Logging", "APIClient", .dependencies, .dependenciesMacros]),
+    .target(name: "APIClient", dependencies: ["Domain", .dependencies, .dependenciesMacros]),
+    .target(name: "NotificationClient", dependencies: ["Logging", .dependencies, .dependenciesMacros]),
+    .target(
+      name: "SyncClient",
+      dependencies: ["Domain", "Persistence", "APIClient", "Logging", .dependencies, .dependenciesMacros, .sharing, .identifiedCollections]
+    ),
 
     // Features
     .target(name: "ChecklistFeature", dependencies: ["Domain", "Persistence", "DesignSystem", .tca]),
     .target(name: "StockChartFeature", dependencies: ["Domain", "MarketDataClient", "DesignSystem", .tca]),
     .target(name: "StockDetailsFeature", dependencies: ["Domain", "Persistence", "MarketDataClient", "StockChartFeature", "DesignSystem", .tca]),
     .target(name: "WatchlistFeature", dependencies: ["Domain", "Persistence", "MarketDataClient", "StockDetailsFeature", "ChecklistFeature", "DesignSystem", .tca]),
-    .target(name: "SettingsFeature", dependencies: ["ChecklistFeature", "DesignSystem", .tca]),
-    .target(name: "AppFeature", dependencies: ["Connectivity", "Domain", "DesignSystem", "Logging", "Persistence", "SettingsFeature", "WatchlistFeature", .tca]),
+    .target(
+      name: "SettingsFeature",
+      dependencies: ["APIClient", "ChecklistFeature", "DesignSystem", "Logging", "NotificationClient", "Persistence", "SyncClient", .tca]
+    ),
+    .target(
+      name: "AppFeature",
+      dependencies: [
+        "APIClient", "Connectivity", "Domain", "DesignSystem", "Logging", "NotificationClient", "Persistence", "SettingsFeature", "SyncClient",
+        "WatchlistFeature", .tca,
+      ]
+    ),
 
     // Tests
     .testTarget(name: "DomainTests", dependencies: ["Domain"], resources: [.copy("Fixtures")]),
     .testTarget(name: "LoggingTests", dependencies: ["Logging"]),
     .testTarget(name: "DesignSystemTests", dependencies: ["DesignSystem", "Domain"]),
-    .testTarget(name: "PersistenceTests", dependencies: ["Persistence", "Domain", .sharing, .identifiedCollections, .dependenciesTestSupport]),
+    .testTarget(name: "PersistenceTests", dependencies: ["Persistence", "Domain", .dependencies, .sharing, .identifiedCollections, .dependenciesTestSupport]),
     .testTarget(name: "ConnectivityTests", dependencies: ["Connectivity", "Domain"]),
-    .testTarget(name: "MarketDataClientTests", dependencies: ["MarketDataClient", "Domain", .dependencies], resources: [.copy("Fixtures")]),
+    .testTarget(name: "MarketDataClientTests", dependencies: ["MarketDataClient", "Domain", "APIClient", .dependencies, .dependenciesTestSupport]),
+    .testTarget(name: "APIClientTests", dependencies: ["APIClient", "Domain", .dependencies, .dependenciesTestSupport], resources: [.copy("Fixtures")]),
+    .testTarget(
+      name: "SyncClientTests",
+      dependencies: ["SyncClient", "Domain", "Persistence", "APIClient", .dependencies, .dependenciesTestSupport, .sharing, .identifiedCollections]
+    ),
+    .testTarget(name: "NotificationClientTests", dependencies: ["NotificationClient"]),
     .testTarget(name: "ChecklistFeatureTests", dependencies: ["ChecklistFeature", "Domain", "Persistence", .tca, .dependenciesTestSupport]),
     .testTarget(name: "StockChartFeatureTests", dependencies: ["StockChartFeature", "Domain", "MarketDataClient", .tca]),
     .testTarget(name: "StockDetailsFeatureTests", dependencies: ["StockDetailsFeature", "Domain", "MarketDataClient", .tca]),
@@ -65,10 +86,16 @@ let package = Package(
       name: "WatchlistFeatureTests",
       dependencies: ["WatchlistFeature", "ChecklistFeature", "Domain", "MarketDataClient", "Persistence", "StockDetailsFeature", .tca, .dependenciesTestSupport]
     ),
-    .testTarget(name: "SettingsFeatureTests", dependencies: ["SettingsFeature", "ChecklistFeature", .tca, .dependenciesTestSupport]),
+    .testTarget(
+      name: "SettingsFeatureTests",
+      dependencies: ["SettingsFeature", "APIClient", "ChecklistFeature", "NotificationClient", "Persistence", "SyncClient", .tca, .dependenciesTestSupport]
+    ),
     .testTarget(
       name: "AppFeatureTests",
-      dependencies: ["AppFeature", "Connectivity", "Domain", "MarketDataClient", "Persistence", "StockDetailsFeature", "WatchlistFeature", .tca, .dependenciesTestSupport]
+      dependencies: [
+        "AppFeature", "APIClient", "Connectivity", "Domain", "MarketDataClient", "NotificationClient", "Persistence", "StockDetailsFeature", "SyncClient",
+        "WatchlistFeature", .tca, .dependenciesTestSupport,
+      ]
     ),
   ],
   swiftLanguageModes: [.v6]

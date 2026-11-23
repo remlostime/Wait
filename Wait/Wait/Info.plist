@@ -31,8 +31,6 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>TwelveDataAPIKey</key>
-	<string>$(TWELVE_DATA_API_KEY)</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -59,5 +57,7 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>WaitAPIBaseURL</key>
+	<string>$(WAIT_API_BASE_URL)</string>
 </dict>
 </plist>

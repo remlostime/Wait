@@ -7,6 +7,7 @@
   import ComposableArchitecture
   import Foundation
   import Logging
+  import NotificationClient
   import Persistence
   import UIKit
 
@@ -34,8 +35,18 @@
       _ application: UIApplication,
       didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
+      // Installed before the first action, so a cold-start tap is buffered until `PushFeature` subscribes.
+      NotificationClient.installDelegate()
       store.send(.appDelegate(.didFinishLaunching))
       return true
+    }
+
+    public func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+      store.send(.appDelegate(.didRegisterForRemoteNotifications(deviceToken)))
+    }
+
+    public func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: any Error) {
+      store.send(.appDelegate(.didFailToRegisterForRemoteNotifications(error.localizedDescription)))
     }
   }
 #endif

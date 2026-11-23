@@ -47,6 +47,21 @@ targets:
           CODE_SIGN_ENTITLEMENTS: Wait/Wait.entitlements
         Release:
           CODE_SIGN_ENTITLEMENTS: Wait/WaitRelease.entitlements
+    postBuildScripts:
+      - name: "ATS: allow local networking (Debug only)"
+        basedOnDependencyAnalysis: false
+        # Declared so the script also works with user script sandboxing (it edits the processed Info.plist in place).
+        inputFiles:
+          - "$(TARGET_BUILD_DIR)/$(INFOPLIST_PATH)"
+        outputFiles:
+          - "$(TARGET_BUILD_DIR)/$(INFOPLIST_PATH)"
+        script: |
+          # Debug builds may talk to `npm run dev` on http://localhost:3000. Release builds never get this key.
+          [ "${CONFIGURATION}" = "Debug" ] || exit 0
+          plist="${TARGET_BUILD_DIR}/${INFOPLIST_PATH}"
+          /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity dict" "$plist" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Delete :NSAppTransportSecurity:NSAllowsLocalNetworking" "$plist" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity:NSAllowsLocalNetworking bool true" "$plist"
     dependencies:
       - package: WaitKit
         product: AppFeature

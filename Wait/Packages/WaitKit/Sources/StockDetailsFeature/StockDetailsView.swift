@@ -27,7 +27,7 @@ public struct StockDetailsView: View {
         header
         card { StockChartView(store: store.scope(\.chart, action: \.chart), ladder: store.item.ladder) }
         card { ladderCard }
-        card { StatsSection(quote: store.quote) }
+        card { StatsSection(quote: store.quote, profile: store.profile) }
         card { checklistRow }
         card { notesCard }
       }
