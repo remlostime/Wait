@@ -1,5 +1,44 @@
 # iOS Watch App and Cleanup Implementation Plan
 
+## Execution log
+
+**Executed:** 2026-11-23 on `ck/ios`, subagent-driven, in **code-only mode**, the same as plans 01–02 (see the [plan 01 baseline log](2026-11-22-wait-01-baseline-log.md)). Nothing has been built or tested in Xcode.
+
+**What was checked instead:**
+- **Connectivity tests, run for real:** the real Domain, Connectivity and test sources compiled in a `/tmp` harness with Testing.framework, and the real `@Observable` macro loaded through `-load-plugin-library`. `ConnectivityClient`'s `@DependencyClient` was swapped for a stand-in. Result: **30/30 tests pass**, stable over 40 runs.
+- **`alsoSending(to:)` combinator tests:** 2/2.
+- **Typechecks:** the watch app for watchOS 10 in Swift 6, and `LiveWCSessionAdapter` for iOS 17 and watchOS 10.
+- **AppFeature changes:** checked against the TCA 1.26.2 sources.
+- **Static checks:** `scripts/check-secrets.sh`, the §4.1 greps, `xcodegen generate` (no diff), and `swiftlint` (0 errors).
+
+| Task | Commit |
+|---|---|
+| 1 Contract check (no code) + 2 Connectivity/SnapshotCoding | `38b9d45` |
+| 3 ConnectivityEngine | `2a6c81a` |
+| 4 Live adapter + ConnectivityClient | `8d13066` |
+| 5 WatchSnapshotStore | `257214a` |
+| 6 AppFeature sends snapshots to the watch | `666515d` |
+| 7 Watch app on WaitKit | `0125af1` |
+| 8 Paired-simulator verification | `db89163` (marked NOT RUN) |
+| 9 SwiftFormat 6 / SwiftLint excludes | `23e7d69` |
+| 10 Final verification (static parts) | `de385b1` |
+| 11 CLAUDE.md + WaitKit README | `702d369` |
+| 12 Bitrise checklist | `57705d6` |
+
+**Review fixes:**
+- `dd8e09f` addresses two race conditions:
+  - Flushes are now serialized, so an older context can no longer win.
+  - The latest snapshot is replayed atomically to new subscribers.
+  
+  It also resends the last snapshot after a watch switch, and polishes the watch UI.
+- `d83e936`, from the final integration review across plans 01–03: the widget moves to Swift 6.
+
+**User follow-ups:**
+1. Run the real build and tests locally: `scripts/test-waitkit.sh`, `scripts/build-app.sh`, `scripts/build-app.sh WaitWatch`.
+2. Refresh `Package.resolved` with `xcodebuild -resolvePackageDependencies` and commit it.
+3. Task 8: pair the iPhone 17 and Apple Watch Series 12 simulators and check that the watch shows the phone's watchlist.
+4. Task 12 Step 3: apply `docs/ci/bitrise-checklist.md` in Bitrise.
+
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** The watch shows the iPhone's real watchlist, using the shared `Domain` types and a WCSession snapshot sent by the phone. The watch's drifted model copies, network clients and API keys are deleted, and the iOS tooling and docs are finished.
@@ -18,6 +57,8 @@
 > 1. `WatchSnapshotStore` lives in the `Connectivity` package target (`Sources/Connectivity/WatchSnapshotStore.swift`), not in `WaitWatch/WatchSnapshotStore.swift` as overview §12.1 says. The watch app has no test target, and package tests run on the iOS simulator, so this is the only place the store can be tested.
 > 2. Files beyond the two that §12.1 lists: `Connectivity/{SnapshotCoding,ConnectivityEngine,LiveWCSessionAdapter,WatchSnapshotStore}.swift`, `AppFeature/SnapshotClient+Connectivity.swift`, and `WaitWatch/{WatchlistRowView,WatchFormat}.swift`.
 > 3. The publish effect reaches `connectivity.send` through `snapshotClient.alsoSending(to: connectivity)`. This combinator lives in `AppFeature` and keeps every other `SnapshotClient` endpoint intact. That satisfies §12.3's "In 03 it also calls `connectivity.send`".
+> 4. **Plan 02's app-layer fix changed `publishSnapshot` (verified by Task 1).** The helper is now `private func publishSnapshot(_ inputs:, debounced: Bool = true)`, and the `.run` effect does `if debounced { try await clock.sleep(for: .seconds(1)) }` before publishing. `.scenePhaseChanged(.background)` calls it with `debounced: false` inside a `.merge`, so a suspended app still publishes at once. There is still exactly one `snapshotClient.publish(` call site, so Task 6's two substring edits apply unchanged. Only the code block in Task 6 Step 7 is adapted. More plan-02 tests now reach the publish path than Task 6 Step 10 lists: `didFinishLaunchingPublishesASnapshot`, `backgroundPublishesImmediatelyAndCancelsTheDebouncedPublish`, `becomingActiveRefreshesQuotesAndPublishesOneSnapshot` and `burstsOfChangesPublishOnce`. Step 10's rule (add `$0.connectivity = .noop` plus `import Connectivity`) applies to each of them.
+> 5. `Package.swift` already defines `Target.Dependency` shortcuts, so Task 2 Step 1 writes `.dependencies` and `.dependenciesMacros` instead of `.product(name: "Dependencies", package: "swift-dependencies")`, and declares the `Connectivity` target on one line.
 >
 > `Connectivity` depends only on Domain, Dependencies and DependenciesMacros, as overview §3.1 specifies, so the watch doesn't link Persistence, Sharing or IdentifiedCollections. It logs with `os.Logger` directly.
 
@@ -82,7 +123,7 @@ No code changes and no commit. If any expected output differs, **stop and ask th
 
 **Files:** none (read-only)
 
-- [ ] **Step 1: Check the Domain snapshot initializers**
+- [x] **Step 1: Check the Domain snapshot initializers**
 
 Run:
 ```bash
@@ -98,7 +139,7 @@ Expected:
 - The `-A 9` grep shows the multi-line `Row` init. Its parameters, one per line and in this order, are `symbol: String`, `name: String`, `price: Decimal?`, `changePercent: Double?`, `status: LadderStatus?`, `temperature: Double?`, `ladder: PriceLadder`, `isFavorite: Bool`.
 - If the `Row` init is on a single line instead, it shows up in the `public init` count and should read `public init(symbol: String, name: String, price: Decimal?, changePercent: Double?, status: LadderStatus?, temperature: Double?, ladder: PriceLadder, isFavorite: Bool)`.
 
-- [ ] **Step 2: Check `LadderRung` and `StatusPill`**
+- [x] **Step 2: Check `LadderRung` and `StatusPill`**
 
 Run: `grep -rn -A 5 "public struct LadderRung" Sources/Domain/ && grep -n "public init" Sources/DesignSystem/StatusPill.swift`
 
@@ -107,13 +148,13 @@ Expected:
 - `PriceLadder.Rung` has `public var title: String` ("Buy low", "Buy high", …). Check with `grep -n "public var title" Sources/Domain/PriceLadder.swift`. The watch detail view uses it.
 - `StatusPill` has an initializer whose first parameter is `status:` and whose other parameters all have defaults. Plan 02 writes `public init(status: LadderStatus?, compact: Bool = false)`, which is fine. This plan calls `StatusPill(status:compact:)` with `compact: true`.
 
-- [ ] **Step 3: Check `SnapshotClient`**
+- [x] **Step 3: Check `SnapshotClient`**
 
 Run: `grep -n -B 2 -A 4 "struct SnapshotClient" Sources/Persistence/SnapshotClient.swift && grep -rn "var snapshotClient" Sources/Persistence/`
 
 Expected: `@DependencyClient` above `public struct SnapshotClient`, a `public var publish: @Sendable (_ snapshot: WatchlistSnapshot) async -> Void` (the argument label may be omitted), and a `public var snapshotClient: SnapshotClient` in a `DependencyValues` extension.
 
-- [ ] **Step 4: Check the AppFeature anchors**
+- [x] **Step 4: Check the AppFeature anchors**
 
 Run: `grep -n "didFinishLaunching" Sources/AppFeature/*.swift; grep -c "snapshotClient.publish(" Sources/AppFeature/AppFeature.swift; grep -n "public init()" Sources/AppFeature/AppFeature.swift; ls Tests/AppFeatureTests`
 
@@ -123,13 +164,13 @@ Expected:
 - `AppFeature.State` has a `public init()` (inside `struct State`).
 - `Tests/AppFeatureTests` lists at least one `.swift` file.
 
-- [ ] **Step 5: Check the package dependency identities**
+- [x] **Step 5: Check the package dependency identities**
 
 Run: `grep -n "swift-dependencies\|swift-composable-architecture" Package.swift | head -4`
 
 Expected: `.package(url: "https://github.com/pointfreeco/swift-dependencies", …)` and the TCA package are both declared.
 
-- [ ] **Step 6: Check platforms, the snapshot dependency, the watch target key and `.gitignore`**
+- [x] **Step 6: Check platforms, the snapshot dependency, the watch target key and `.gitignore`**
 
 Run:
 ```bash
@@ -164,7 +205,7 @@ On any mismatch, stop and ask the user. The one exception is `.gitignore`: if ei
 - Create: `Wait/Packages/WaitKit/Tests/ConnectivityTests/Support/SnapshotFixtures.swift`
 - Test: `Wait/Packages/WaitKit/Tests/ConnectivityTests/SnapshotCodingTests.swift`
 
-- [ ] **Step 1: Declare the product and targets**
+- [x] **Step 1: Declare the product and targets**
 
 In `Wait/Packages/WaitKit/Package.swift`, add this element to the `products:` array (after the `Persistence` product):
 
@@ -192,7 +233,7 @@ Add these two elements to the `targets:` array (after the `Persistence` target):
     ),
 ```
 
-- [ ] **Step 2: Write the test fixtures**
+- [x] **Step 2: Write the test fixtures**
 
 Create `Wait/Packages/WaitKit/Tests/ConnectivityTests/Support/SnapshotFixtures.swift`:
 
@@ -233,7 +274,7 @@ enum SnapshotFixtures {
 }
 ```
 
-- [ ] **Step 3: Write the failing tests**
+- [x] **Step 3: Write the failing tests**
 
 Create `Wait/Packages/WaitKit/Tests/ConnectivityTests/SnapshotCodingTests.swift`:
 
@@ -301,7 +342,7 @@ struct SnapshotCodingTests {
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they fail**
+- [ ] **Step 4: Run the tests to verify they fail** — NOT RUN (code-only; checked in the /tmp harness instead: RED = `no such module 'Connectivity'`, GREEN = 5 of 5 pass)
 
 Run:
 ```bash
@@ -311,7 +352,7 @@ cd /Users/ckai/code/Wait/Wait/Packages/WaitKit && xcodebuild test -scheme WaitKi
 ```
 Expected: FAIL. Package resolution reports that the target `Connectivity` has no source files under `Sources/Connectivity`, or the compile stops with `cannot find 'SnapshotCoding' in scope`.
 
-- [ ] **Step 5: Implement `SnapshotCoding`**
+- [x] **Step 5: Implement `SnapshotCoding`**
 
 Create `Wait/Packages/WaitKit/Sources/Connectivity/SnapshotCoding.swift`:
 
@@ -372,12 +413,12 @@ public enum SnapshotCodingError: Error, Equatable, Sendable {
 }
 ```
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [ ] **Step 6: Run the tests to verify they pass** — NOT RUN (code-only; checked in the /tmp harness instead: RED = `no such module 'Connectivity'`, GREEN = 5 of 5 pass)
 
 Run: the same command as Step 4.
 Expected: PASS. `** TEST SUCCEEDED **`, with 5 tests passing in `SnapshotCodingTests`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -394,13 +435,15 @@ EOF
 
 ### Task 3: `ConnectivityEngine`: latest-wins delivery behind `WCSessionAdapter`
 
+> Review fix (2026-11-23): `flush()` now runs under a serial `flushLock` (read pending, send, clear if unchanged) so two sends cannot reach the session out of order, and the state lock is never held across IPC. `snapshots()` registers and replays the latest snapshot in one critical section, `deliver` yields under the lock, and the last sent payload is resent on `.activated`/`.counterpartChanged` when nothing is pending. `FakeSessionAdapter` gained a one-shot `UpdateGate` so a test can block one `updateContext` and interleave a second send; the new tests cover the race and the resend.
+
 **Files:**
 - Create: `Wait/Packages/WaitKit/Sources/Connectivity/WCSessionAdapter.swift`
 - Create: `Wait/Packages/WaitKit/Sources/Connectivity/ConnectivityEngine.swift`
 - Create: `Wait/Packages/WaitKit/Tests/ConnectivityTests/Support/FakeSessionAdapter.swift`
 - Test: `Wait/Packages/WaitKit/Tests/ConnectivityTests/ConnectivityEngineTests.swift`
 
-- [ ] **Step 1: Write the fake session**
+- [x] **Step 1: Write the fake session**
 
 Create `Wait/Packages/WaitKit/Tests/ConnectivityTests/Support/FakeSessionAdapter.swift`:
 
@@ -410,6 +453,7 @@ Create `Wait/Packages/WaitKit/Tests/ConnectivityTests/Support/FakeSessionAdapter
 // Copyright © 2021 Wait. All rights reserved.
 //
 
+import Dispatch
 import Foundation
 import os
 @testable import Connectivity
@@ -418,6 +462,16 @@ import os
 
 enum FakeSessionError: Error, Equatable, Sendable {
   case notReachable
+}
+
+// MARK: - UpdateGate
+
+/// Makes one `updateContext` call block until the test lets it go, so a test can interleave a second send.
+final class UpdateGate: Sendable {
+  /// Signalled once the blocked call has started.
+  let entered = DispatchSemaphore(value: 0)
+  /// The blocked call waits on this.
+  let release = DispatchSemaphore(value: 0)
 }
 
 // MARK: - FakeSessionAdapter
@@ -440,6 +494,7 @@ final class FakeSessionAdapter: WCSessionAdapter, Sendable {
     var activationCount = 0
     var sentContexts: [Data] = []
     var updateError: FakeSessionError?
+    var gate: UpdateGate?
     var onEvent: (@Sendable (SessionEvent) -> Void)?
   }
 
@@ -458,12 +513,26 @@ final class FakeSessionAdapter: WCSessionAdapter, Sendable {
   }
 
   func updateContext(_ data: Data) throws {
+    // One-shot: only the next call blocks. The wait happens outside the state lock.
+    let gate = state.withLock { locked -> UpdateGate? in
+      defer { locked.gate = nil }
+      return locked.gate
+    }
+    if let gate {
+      gate.entered.signal()
+      gate.release.wait()
+    }
     try state.withLock { locked in
       if let error = locked.updateError {
         throw error
       }
       locked.sentContexts.append(data)
     }
+  }
+
+  /// The next `updateContext` call blocks, before it records anything, until `gate.release` is signalled.
+  func blockNextUpdate(_ gate: UpdateGate) {
+    state.withLock { $0.gate = gate }
   }
 
   /// Simulates `activationDidCompleteWith: .activated`.
@@ -503,7 +572,7 @@ final class FakeSessionAdapter: WCSessionAdapter, Sendable {
 }
 ```
 
-- [ ] **Step 2: Write the failing engine tests**
+- [x] **Step 2: Write the failing engine tests**
 
 Create `Wait/Packages/WaitKit/Tests/ConnectivityTests/ConnectivityEngineTests.swift`:
 
@@ -513,8 +582,10 @@ Create `Wait/Packages/WaitKit/Tests/ConnectivityTests/ConnectivityEngineTests.sw
 // Copyright © 2021 Wait. All rights reserved.
 //
 
+import Dispatch
 import Domain
 import Foundation
+import os
 import Testing
 @testable import Connectivity
 
@@ -583,6 +654,120 @@ struct ConnectivityEngineTests {
     fake.setUpdateError(nil)
     fake.setCanSendToCounterpart(true)
     #expect(fake.sentContexts.count == 1)
+  }
+
+  @Test
+  func aSlowSendCannotOvertakeANewerOne() throws {
+    let fake = FakeSessionAdapter()
+    let engine = ConnectivityEngine(adapter: fake)
+    engine.activate()
+    fake.completeActivation()
+    let older = try SnapshotFixtures.snapshot(rowCount: 1)
+    let newer = try SnapshotFixtures.snapshot(rowCount: 2, generatedAt: SnapshotFixtures.generatedAt.addingTimeInterval(30))
+    let gate = UpdateGate()
+    fake.blockNextUpdate(gate)
+    let firstDone = DispatchGroup()
+    let secondDone = DispatchGroup()
+
+    // The first send blocks inside `updateContext`.
+    firstDone.enter()
+    DispatchQueue.global().async {
+      _ = try? engine.send(older)
+      firstDone.leave()
+    }
+    gate.entered.wait()
+    // A second send races it. Serialized flushes make it wait for the first one; unserialized, it finishes first.
+    secondDone.enter()
+    DispatchQueue.global().async {
+      _ = try? engine.send(newer)
+      secondDone.leave()
+    }
+    _ = secondDone.wait(timeout: .now() + .milliseconds(300))
+    gate.release.signal()
+    firstDone.wait()
+    secondDone.wait()
+
+    let sent = fake.sentContexts.map { SnapshotCoding.decode($0) }
+    #expect(sent.last == newer)
+    #expect(sent == [older, newer])
+  }
+
+  @Test
+  func theLastSentSnapshotIsResentAfterTheWatchChanges() throws {
+    let fake = FakeSessionAdapter()
+    let engine = ConnectivityEngine(adapter: fake)
+    engine.activate()
+    fake.completeActivation()
+    let snapshot = try SnapshotFixtures.snapshot(rowCount: 1)
+    try engine.send(snapshot)
+    #expect(fake.sentContexts.count == 1)
+
+    fake.setCanSendToCounterpart(false)
+    #expect(fake.sentContexts.count == 1)
+    fake.setCanSendToCounterpart(true)
+
+    #expect(fake.sentContexts.count == 2)
+    #expect(SnapshotCoding.decode(try #require(fake.sentContexts.last)) == snapshot)
+  }
+
+  @Test
+  func theLastSentSnapshotIsResentOnReactivation() throws {
+    let fake = FakeSessionAdapter()
+    let engine = ConnectivityEngine(adapter: fake)
+    engine.activate()
+    fake.completeActivation()
+    try engine.send(try SnapshotFixtures.snapshot(rowCount: 1))
+
+    fake.completeActivation()
+
+    #expect(fake.sentContexts.count == 2)
+    #expect(fake.sentContexts.first == fake.sentContexts.last)
+  }
+
+  @Test
+  func aPendingSnapshotWinsOverTheResend() throws {
+    let fake = FakeSessionAdapter()
+    let engine = ConnectivityEngine(adapter: fake)
+    engine.activate()
+    fake.completeActivation()
+    let older = try SnapshotFixtures.snapshot(rowCount: 1)
+    let newer = try SnapshotFixtures.snapshot(rowCount: 2, generatedAt: SnapshotFixtures.generatedAt.addingTimeInterval(30))
+    try engine.send(older)
+    fake.setCanSendToCounterpart(false)
+    try engine.send(newer)
+
+    fake.setCanSendToCounterpart(true)
+
+    #expect(fake.sentContexts.map { SnapshotCoding.decode($0) } == [older, newer])
+  }
+
+  @Test
+  func nothingIsResentWhenNothingWasEverSent() {
+    let fake = FakeSessionAdapter()
+    let engine = ConnectivityEngine(adapter: fake)
+    engine.activate()
+    fake.completeActivation()
+
+    fake.setCanSendToCounterpart(true)
+
+    #expect(fake.sentContexts.isEmpty)
+  }
+
+  @Test
+  func aFailedResendIsNotRecordedAsSent() throws {
+    let fake = FakeSessionAdapter()
+    let engine = ConnectivityEngine(adapter: fake)
+    engine.activate()
+    fake.completeActivation()
+    try engine.send(try SnapshotFixtures.snapshot(rowCount: 1))
+    fake.setUpdateError(.notReachable)
+
+    fake.setCanSendToCounterpart(true)
+    #expect(fake.sentContexts.count == 1)
+
+    fake.setUpdateError(nil)
+    fake.setCanSendToCounterpart(true)
+    #expect(fake.sentContexts.count == 2)
   }
 
   @Test
@@ -686,10 +871,42 @@ struct ConnectivityEngineTests {
     let first = await iterator.next()
     #expect(first == snapshot)
   }
+
+  @Test
+  func subscribingWhileASnapshotArrivesNeverEndsOnTheOlderOne() async throws {
+    // Not deterministic by construction (there is no hook between registering and yielding), so it repeats
+    // the race. It can never fail on correct code; on the old code it fails when the interleaving hits.
+    let base = SnapshotFixtures.generatedAt
+    let older = try SnapshotFixtures.snapshot(rowCount: 1, generatedAt: base)
+    let newer = try SnapshotFixtures.snapshot(rowCount: 2, generatedAt: base.addingTimeInterval(60))
+    let olderData = try SnapshotCoding.encode(older)
+    let newerData = try SnapshotCoding.encode(newer)
+
+    for _ in 0 ..< 500 {
+      let fake = FakeSessionAdapter()
+      let engine = ConnectivityEngine(adapter: fake)
+      engine.activate()
+      fake.completeActivation()
+      fake.receive(olderData)
+      let box = OSAllocatedUnfairLock<AsyncStream<WatchlistSnapshot>?>(initialState: nil)
+
+      DispatchQueue.concurrentPerform(iterations: 2) { index in
+        if index == 0 {
+          box.withLock { $0 = engine.snapshots() }
+        } else {
+          fake.receive(newerData)
+        }
+      }
+
+      var iterator = try #require(box.withLock { $0 }).makeAsyncIterator()
+      let observed = await iterator.next()
+      #expect(observed == newer)
+    }
+  }
 }
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [ ] **Step 3: Run the tests to verify they fail** — NOT RUN (code-only; checked in the /tmp harness instead: RED = `cannot find 'ConnectivityEngine' in scope`)
 
 Run:
 ```bash
@@ -699,7 +916,7 @@ cd /Users/ckai/code/Wait/Wait/Packages/WaitKit && xcodebuild test -scheme WaitKi
 ```
 Expected: FAIL with compile errors `cannot find type 'WCSessionAdapter' in scope` and `cannot find 'ConnectivityEngine' in scope`.
 
-- [ ] **Step 4: Write the adapter protocol**
+- [x] **Step 4: Write the adapter protocol**
 
 Create `Wait/Packages/WaitKit/Sources/Connectivity/WCSessionAdapter.swift`:
 
@@ -739,7 +956,7 @@ public protocol WCSessionAdapter: AnyObject, Sendable {
 }
 ```
 
-- [ ] **Step 5: Implement the engine**
+- [x] **Step 5: Implement the engine**
 
 Create `Wait/Packages/WaitKit/Sources/Connectivity/ConnectivityEngine.swift`:
 
@@ -759,11 +976,16 @@ import os
 ///
 /// - Sending is latest-wins. `send` keeps only the newest payload and delivers it once the session
 ///   is activated and the counterpart app is installed. Older payloads that were never delivered are dropped.
+/// - Sends are serialized. One flush at a time reads the pending payload, sends it, and clears it only if no
+///   newer one arrived meanwhile, so an older payload can never be handed to the session after a newer one.
+/// - The last payload that was handed to the session successfully is kept. It is sent again when the session
+///   re-activates or the counterpart changes (for example the user switches watches) and nothing newer is pending.
 /// - Receiving is latest-wins by `generatedAt`. A context older than, or equal to, the latest one is ignored.
 /// - Every stream from `snapshots()` first yields the latest snapshot already known (including the
 ///   context received before launch), then each newer one.
 ///
 /// State sits behind a lock and events are handled synchronously, so delivery order is deterministic.
+/// The state lock is never held across a call into the session; `flushLock` serializes those calls instead.
 public final class ConnectivityEngine: Sendable {
   // MARK: Lifecycle
 
@@ -802,15 +1024,16 @@ public final class ConnectivityEngine: Sendable {
   public func snapshots() -> AsyncStream<WatchlistSnapshot> {
     let (stream, continuation) = AsyncStream.makeStream(of: WatchlistSnapshot.self, bufferingPolicy: .bufferingNewest(1))
     let id = UUID()
-    let latest = state.withLock { locked -> WatchlistSnapshot? in
-      locked.continuations[id] = continuation
-      return locked.latestReceived
-    }
-    if let latest {
-      continuation.yield(latest)
-    }
     continuation.onTermination = { [weak self] _ in
       self?.removeContinuation(id: id)
+    }
+    // Register and replay in one critical section: `deliver` yields under the same lock, so the replayed
+    // value is always yielded before any newer one.
+    state.withLock { locked in
+      locked.continuations[id] = continuation
+      if let latest = locked.latestReceived {
+        continuation.yield(latest)
+      }
     }
     return stream
   }
@@ -823,9 +1046,9 @@ public final class ConnectivityEngine: Sendable {
         if let data = adapter.receivedContextData {
           deliver(data)
         }
-        flush()
+        flush(resendingLastSent: true)
       case .counterpartChanged:
-        flush()
+        flush(resendingLastSent: true)
       case let .receivedContext(data):
         deliver(data)
     }
@@ -836,6 +1059,7 @@ public final class ConnectivityEngine: Sendable {
   private struct State: Sendable {
     var didRequestActivation = false
     var pending: Data?
+    var lastSent: Data?
     var latestReceived: WatchlistSnapshot?
     var continuations: [UUID: AsyncStream<WatchlistSnapshot>.Continuation] = [:]
   }
@@ -845,23 +1069,30 @@ public final class ConnectivityEngine: Sendable {
   private let adapter: any WCSessionAdapter
   private let maxContextBytes: Int
   private let state = OSAllocatedUnfairLock(initialState: State())
+  /// Held for a whole flush (read pending, send, clear). Never taken while holding `state`.
+  private let flushLock = NSLock()
 
-  private func flush() {
-    guard adapter.isActivated, adapter.canSendToCounterpart else {
-      return
-    }
-    guard let data = state.withLock({ $0.pending }) else {
-      return
-    }
-    do {
-      try adapter.updateContext(data)
-      state.withLock { locked in
-        if locked.pending == data {
-          locked.pending = nil
-        }
+  /// Sends the pending payload, or, when `resendingLastSent` and nothing is pending, the last one that was sent.
+  private func flush(resendingLastSent: Bool = false) {
+    flushLock.withLock {
+      guard adapter.isActivated, adapter.canSendToCounterpart else {
+        return
       }
-    } catch {
-      Self.logger.error("updateApplicationContext failed: \(error.localizedDescription, privacy: .public)")
+      let data = state.withLock { locked in locked.pending ?? (resendingLastSent ? locked.lastSent : nil) }
+      guard let data else {
+        return
+      }
+      do {
+        try adapter.updateContext(data)
+        state.withLock { locked in
+          if locked.pending == data {
+            locked.pending = nil
+          }
+          locked.lastSent = data
+        }
+      } catch {
+        Self.logger.error("updateApplicationContext failed: \(error.localizedDescription, privacy: .public)")
+      }
     }
   }
 
@@ -870,15 +1101,16 @@ public final class ConnectivityEngine: Sendable {
       Self.logger.error("Dropped an application context that is not a WatchlistSnapshot")
       return
     }
-    let continuations = state.withLock { locked -> [AsyncStream<WatchlistSnapshot>.Continuation] in
+    // Yield under the lock so two deliveries (or a delivery and a new subscriber) cannot be reordered.
+    // `yield` on a buffered stream never blocks and never calls `onTermination` synchronously.
+    state.withLock { locked in
       if let current = locked.latestReceived, snapshot.generatedAt < current.generatedAt || snapshot == current {
-        return []
+        return
       }
       locked.latestReceived = snapshot
-      return Array(locked.continuations.values)
-    }
-    for continuation in continuations {
-      continuation.yield(snapshot)
+      for continuation in locked.continuations.values {
+        continuation.yield(snapshot)
+      }
     }
   }
 
@@ -888,12 +1120,12 @@ public final class ConnectivityEngine: Sendable {
 }
 ```
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [ ] **Step 6: Run the tests to verify they pass** — NOT RUN (code-only; checked in the /tmp harness instead: GREEN = 16 of 16 pass, 11 engine + 5 coding, stable over 31 runs)
 
 Run: the same command as Step 3.
 Expected: PASS. `** TEST SUCCEEDED **`, with all 11 `ConnectivityEngineTests` passing plus the 5 `SnapshotCodingTests`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -912,13 +1144,15 @@ EOF
 
 ### Task 4: Live WCSession adapter and `ConnectivityClient`
 
+> Review fix (2026-11-23): no snippet in this task changed. The engine now replays the last sent payload on `.activated` and `.counterpartChanged`, so the live adapter's `sessionWatchStateDidChange`/`sessionCompanionAppInstalledDidChange` events (and the re-`activate()` in `sessionDidDeactivate`) are what bring a newly switched watch up to date.
+
 **Files:**
 - Create: `Wait/Packages/WaitKit/Sources/Connectivity/LiveWCSessionAdapter.swift`
 - Create: `Wait/Packages/WaitKit/Sources/Connectivity/ConnectivityClient.swift`
 - Create: `Wait/Packages/WaitKit/Tests/ConnectivityTests/Support/CallRecorder.swift`
 - Test: `Wait/Packages/WaitKit/Tests/ConnectivityTests/ConnectivityClientTests.swift`
 
-- [ ] **Step 1: Write the call recorder**
+- [x] **Step 1: Write the call recorder**
 
 Create `Wait/Packages/WaitKit/Tests/ConnectivityTests/Support/CallRecorder.swift`:
 
@@ -939,7 +1173,7 @@ actor CallRecorder {
 }
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `Wait/Packages/WaitKit/Tests/ConnectivityTests/ConnectivityClientTests.swift`:
 
@@ -983,7 +1217,7 @@ struct ConnectivityClientTests {
 }
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [ ] **Step 3: Run the tests to verify they fail** — NOT RUN (code-only)
 
 Run:
 ```bash
@@ -993,7 +1227,7 @@ cd /Users/ckai/code/Wait/Wait/Packages/WaitKit && xcodebuild test -scheme WaitKi
 ```
 Expected: FAIL with compile error `cannot find 'ConnectivityClient' in scope`.
 
-- [ ] **Step 4: Implement the live adapter**
+- [x] **Step 4: Implement the live adapter**
 
 Create `Wait/Packages/WaitKit/Sources/Connectivity/LiveWCSessionAdapter.swift`:
 
@@ -1118,7 +1352,7 @@ extension LiveWCSessionAdapter: WCSessionDelegate {
 }
 ```
 
-- [ ] **Step 5: Implement the client**
+- [x] **Step 5: Implement the client**
 
 Create `Wait/Packages/WaitKit/Sources/Connectivity/ConnectivityClient.swift`:
 
@@ -1182,12 +1416,12 @@ public extension DependencyValues {
 }
 ```
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [ ] **Step 6: Run the tests to verify they pass** — NOT RUN (code-only)
 
 Run: the same command as Step 3.
 Expected: PASS. `** TEST SUCCEEDED **`, with 2 `ConnectivityClientTests` passing plus the 16 tests from Tasks 2–3.
 
-- [ ] **Step 7: Build for watchOS to prove the target compiles there**
+- [ ] **Step 7: Build for watchOS to prove the target compiles there** — NOT RUN (code-only)
 
 Run:
 ```bash
@@ -1197,7 +1431,7 @@ cd /Users/ckai/code/Wait/Wait/Packages/WaitKit && xcodebuild build -scheme Conne
 ```
 Expected: `** BUILD SUCCEEDED **`. If Xcode reports `scheme Connectivity not found`, run `xcodebuild -list` in the same directory and use the scheme it lists for the `Connectivity` library. The scheme is auto-generated per product.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -1218,7 +1452,7 @@ EOF
 - Create: `Wait/Packages/WaitKit/Sources/Connectivity/WatchSnapshotStore.swift`
 - Test: `Wait/Packages/WaitKit/Tests/ConnectivityTests/WatchSnapshotStoreTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `Wait/Packages/WaitKit/Tests/ConnectivityTests/WatchSnapshotStoreTests.swift`:
 
@@ -1321,7 +1555,7 @@ struct WatchSnapshotStoreTests {
 }
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [ ] **Step 2: Run the tests to verify they fail** — NOT RUN (code-only)
 
 Run:
 ```bash
@@ -1331,7 +1565,7 @@ cd /Users/ckai/code/Wait/Wait/Packages/WaitKit && xcodebuild test -scheme WaitKi
 ```
 Expected: FAIL with compile error `cannot find 'WatchSnapshotStore' in scope`.
 
-- [ ] **Step 3: Implement the store**
+- [x] **Step 3: Implement the store**
 
 Create `Wait/Packages/WaitKit/Sources/Connectivity/WatchSnapshotStore.swift`:
 
@@ -1402,7 +1636,7 @@ public final class WatchSnapshotStore {
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [ ] **Step 4: Run the tests to verify they pass** — NOT RUN (code-only)
 
 Run:
 ```bash
@@ -1412,7 +1646,7 @@ cd /Users/ckai/code/Wait/Wait/Packages/WaitKit && xcodebuild test -scheme WaitKi
 ```
 Expected: PASS. `** TEST SUCCEEDED **`, with 23 tests passing across the four suites.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -1440,7 +1674,7 @@ EOF
 - Delete (if present): `Wait/Shared/Connectivity.swift`
 - Modify: `Wait/project.yml` (remove the single `path: Shared/Connectivity.swift` source entry under `WaitWatch`)
 
-- [ ] **Step 1: Add `Connectivity` to the AppFeature targets**
+- [x] **Step 1: Add `Connectivity` to the AppFeature targets**
 
 In `Wait/Packages/WaitKit/Package.swift`:
 - Add the string `"Connectivity",` to the `dependencies:` array of `.target(name: "AppFeature", …)`.
@@ -1454,7 +1688,7 @@ awk '/\.library\(/{next} /name: "AppFeatureTests"/{b=1; print; next} b && /\.(ta
 ```
 Expected: `1`, then `3`. The commands count matches, not lines, because plan 02 writes the `AppFeatureTests` dependency list on a single line. Each `awk` prints only one target's block: from its `name:` line up to the next `.target(` or `.testTarget(`. It skips `.library(` product lines, so `.library(name: "AppFeature", …)` can't match.
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `Wait/Packages/WaitKit/Tests/AppFeatureTests/AppFeatureConnectivityTests.swift`:
 
@@ -1466,6 +1700,7 @@ Create `Wait/Packages/WaitKit/Tests/AppFeatureTests/AppFeatureConnectivityTests.
 
 import ComposableArchitecture
 import Connectivity
+import DependenciesTestSupport
 import Domain
 import Foundation
 import Persistence
@@ -1485,7 +1720,7 @@ private actor CallLog {
 // MARK: - AppFeatureConnectivityTests
 
 @MainActor
-@Suite
+@Suite(.dependencies { $0.defaultFileStorage = .inMemory })
 struct AppFeatureConnectivityTests {
   // MARK: Internal
 
@@ -1534,7 +1769,8 @@ struct AppFeatureConnectivityTests {
     var iterator = activations.makeAsyncIterator()
     let activated: Void? = await iterator.next()
     #expect(activated != nil)
-    await store.skipInFlightEffects()
+    // `strict: false`: the effects may already have finished, which is not a failure here.
+    await store.skipInFlightEffects(strict: false)
   }
 
   // MARK: Private
@@ -1543,7 +1779,7 @@ struct AppFeatureConnectivityTests {
 }
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [ ] **Step 3: Run the tests to verify they fail** — NOT RUN (code-only)
 
 Run:
 ```bash
@@ -1553,7 +1789,7 @@ cd /Users/ckai/code/Wait/Wait/Packages/WaitKit && xcodebuild test -scheme WaitKi
 ```
 Expected: FAIL with compile error `value of type 'SnapshotClient' has no member 'alsoSending'`.
 
-- [ ] **Step 4: Implement the combinator**
+- [x] **Step 4: Implement the combinator**
 
 Create `Wait/Packages/WaitKit/Sources/AppFeature/SnapshotClient+Connectivity.swift`:
 
@@ -1585,7 +1821,7 @@ extension SnapshotClient {
 }
 ```
 
-- [ ] **Step 5: Run the tests to verify the combinator passes and launch still fails**
+- [ ] **Step 5: Run the tests to verify the combinator passes and launch still fails** — NOT RUN (code-only)
 
 Run: the same command as Step 3.
 Expected: FAIL overall.
@@ -1594,7 +1830,7 @@ Expected: FAIL overall.
 
 The test overrides `continuousClock` and `date` because plan 02's launch case also runs `publishSnapshot`. If the launch test fails instead with `Unimplemented: …` for another dependency, add a no-op override for the dependency named in the message to its `withDependencies` closure, re-run, and expect the time-limit failure.
 
-- [ ] **Step 6: Inject the dependency**
+- [x] **Step 6: Inject the dependency**
 
 In `Wait/Packages/WaitKit/Sources/AppFeature/AppFeature.swift`:
 - Add `import Connectivity` to the import block, keeping it alphabetical.
@@ -1604,7 +1840,7 @@ In `Wait/Packages/WaitKit/Sources/AppFeature/AppFeature.swift`:
   @Dependency(\.connectivity) var connectivity
 ```
 
-- [ ] **Step 7: Send every published snapshot to the watch**
+- [x] **Step 7: Send every published snapshot to the watch**
 
 In the same file, the single publish call site is in plan 02's `publishSnapshot(_:)` helper. Swift 6 requires `connectivity` to be captured explicitly, so make two edits:
 1. Add `connectivity` to the effect's capture list. `[clock, date, snapshotClient]` becomes `[clock, date, snapshotClient, connectivity]`.
@@ -1613,10 +1849,13 @@ In the same file, the single publish call site is in plan 02's `publishSnapshot(
 With plan 02's code, the helper then reads:
 
 ```swift
-  /// The only `snapshotClient.publish` call site: debounced 1 s and cancellable by `CancelID.publishSnapshot`.
-  private func publishSnapshot(_ inputs: WatchlistFeature.SnapshotInputs) -> Effect<Action> {
+  /// The only `snapshotClient.publish` call site: debounced 1 s by default and cancellable by `CancelID.publishSnapshot`.
+  /// With `debounced: false` it publishes at once and cancels any pending debounced publish.
+  private func publishSnapshot(_ inputs: WatchlistFeature.SnapshotInputs, debounced: Bool = true) -> Effect<Action> {
     .run { [clock, date, snapshotClient, connectivity] _ in
-      try await clock.sleep(for: .seconds(1))
+      if debounced {
+        try await clock.sleep(for: .seconds(1))
+      }
       await snapshotClient.alsoSending(to: connectivity).publish(WatchlistSnapshot.make(items: inputs.items, quotes: inputs.quotes, now: date.now))
     }
     .cancellable(id: CancelID.publishSnapshot, cancelInFlight: true)
@@ -1629,7 +1868,7 @@ cd /Users/ckai/code/Wait/Wait/Packages/WaitKit && grep -c "snapshotClient.alsoSe
 ```
 Expected: `1`, then `0`. Also check the capture list: `grep -c "\[clock, date, snapshotClient, connectivity\]" Sources/AppFeature/AppFeature.swift` prints `1`.
 
-- [ ] **Step 8: Activate on launch**
+- [x] **Step 8: Activate on launch**
 
 In the same file, find `case .appDelegate(.didFinishLaunching):`. Plan 02's version publishes a snapshot on launch. Wrap that effect in `.merge` with an activation effect that captures `connectivity` explicitly (Swift 6). The case becomes:
 
@@ -1646,12 +1885,12 @@ If the case's `return` differs from `return publishSnapshot(state.watchlist.snap
 
 Leave every other statement in that case unchanged. Verify with `grep -n -A 6 "case .appDelegate(.didFinishLaunching):" Sources/AppFeature/AppFeature.swift | grep -c "connectivity.activate()"`, and expect `1`.
 
-- [ ] **Step 9: Run the new tests to verify they pass**
+- [ ] **Step 9: Run the new tests to verify they pass** — NOT RUN (code-only)
 
 Run: the same command as Step 3.
 Expected: PASS. `** TEST SUCCEEDED **`, with all 3 tests in `AppFeatureConnectivityTests` passing.
 
-- [ ] **Step 10: Keep plan 02's AppFeature tests green**
+- [ ] **Step 10: Keep plan 02's AppFeature tests green** — NOT RUN (code-only; the `$0.connectivity = .noop` and `import Connectivity` edits to the 4 tests are done)
 
 Run:
 ```bash
@@ -1661,14 +1900,14 @@ cd /Users/ckai/code/Wait/Wait/Packages/WaitKit && xcodebuild test -scheme WaitKi
 ```
 Expected: PASS.
 
-If any existing test fails with `Unimplemented: 'ConnectivityClient.activate'` or `Unimplemented: 'ConnectivityClient.send'`, it reaches the launch or publish path and now touches the watch. Plan 02's `didFinishLaunchingPublishesASnapshot()` is expected to be one of them. Fix each one the same way:
+If any existing test fails with `Unimplemented: 'ConnectivityClient.activate'` or `Unimplemented: 'ConnectivityClient.send'`, it reaches the launch or publish path and now touches the watch. Plan 02's `didFinishLaunchingPublishesASnapshot()`, `backgroundPublishesImmediatelyAndCancelsTheDebouncedPublish()`, `becomingActiveRefreshesQuotesAndPublishesOneSnapshot()` and `burstsOfChangesPublishOnce()` are expected to be among them. Fix each one the same way:
 1. Add `$0.connectivity = .noop` to that test's `withDependencies { … }` closure.
 2. Add `import Connectivity` to the top of its file.
 3. Re-run until the suite passes.
 
 These are the only changes allowed to plan-02 tests in this task.
 
-- [ ] **Step 11: Remove the legacy singleton and its source entries**
+- [x] **Step 11: Remove the legacy singleton and its source entries**
 
 Run:
 ```bash
@@ -1687,7 +1926,7 @@ After plan 02's cutover, only the watch target (key `WaitWatch`, or `"WaitWatch 
 
 In `Wait/project.yml`, delete that one list item, plus any keys indented under it. If Task 1 Step 6 found no `Shared` line, there is nothing to delete. Either way, verify with `grep -n "Shared" Wait/project.yml` and expect no output.
 
-- [ ] **Step 12: Regenerate and build the app**
+- [ ] **Step 12: Regenerate and build the app** — NOT RUN (code-only; `xcodegen generate` ran, the build did not)
 
 Run:
 ```bash
@@ -1697,7 +1936,7 @@ xcodebuild -project Wait.xcodeproj -scheme Wait -destination 'platform=iOS Simul
 ```
 Expected: `Created project at /Users/ckai/code/Wait/Wait/Wait.xcodeproj`, then `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 13: Commit**
+- [x] **Step 13: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -1717,6 +1956,8 @@ EOF
 
 ### Task 7: Watch app on WaitKit
 
+> Review fix (2026-11-23): `WatchFormat.distanceToBuy` takes the row's `LadderStatus` and says "Deep buy" instead of "In buy band" at or below `buyLow`; the footer uses a self-updating `Text(_, style: .relative)`; a 0% change is neutral (`.secondary`), not green.
+
 **Files:**
 - Move: `Wait/WaitWatch Watch App/` → `Wait/WaitWatch/`
 - Delete: `Wait/WaitWatch/{ContentView,PriceHistoryDataSource,PriceHistoryNetworkClient,Size,Stock,StockCurrentQuote,StockCurrentQuoteDataSource,StockCurrentQuoteNetworkClient,StockRow,StockTypeSwitchRow,TimeSection,TradeAction}.swift`, and `Wait/WaitWatch/Info.plist` if present
@@ -1724,7 +1965,7 @@ EOF
 - Create: `Wait/WaitWatch/{WatchlistListView,WatchlistRowView,WatchStockDetailView,WatchFormat}.swift`
 - Modify: `Wait/project.yml` (the `WaitWatch` target and `packages:`)
 
-- [ ] **Step 1: Move the folder and delete the drifted copies**
+- [x] **Step 1: Move the folder and delete the drifted copies**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -1738,7 +1979,7 @@ ls Wait/WaitWatch
 ```
 Expected: the last command lists exactly `Assets.xcassets`, `Preview Content` and `WaitWatchApp.swift`.
 
-- [ ] **Step 2: Point the watch target at WaitKit**
+- [x] **Step 2: Point the watch target at WaitKit**
 
 First find the watch target key. Plan 01 names it `WaitWatch`, but handle the older spelling too:
 
@@ -1812,7 +2053,7 @@ Expected:
 - The first command prints nothing.
 - The second prints exactly three lines: the target key `  WaitWatch:` under `targets:`, the `      - target: WaitWatch` line under the `Wait` target, and the scheme key `  WaitWatch:` under `schemes:`.
 
-- [ ] **Step 3: Write the formatting helpers**
+- [x] **Step 3: Write the formatting helpers**
 
 Create `Wait/WaitWatch/WatchFormat.swift`:
 
@@ -1849,12 +2090,13 @@ enum WatchFormat {
   }
 
   /// `distance` is `PriceLadder.distanceToBuy(from:)`: a percent number, ≥ 0 inside the buy band.
-  static func distanceToBuy(_ distance: Double?) -> String? {
+  /// `status` picks the wording inside the band: `.deepBuy` (at or below `buyLow`) reads "Deep buy", like `LadderStatus.title`.
+  static func distanceToBuy(_ distance: Double?, status: LadderStatus?) -> String? {
     guard let distance else {
       return nil
     }
     guard distance < 0 else {
-      return "In buy band"
+      return status == .deepBuy ? "Deep buy" : "In buy band"
     }
     return "\((-distance / 100).formatted(.percent.precision(.fractionLength(1)))) drop to buy"
   }
@@ -1903,7 +2145,7 @@ enum WatchFormat {
 #endif
 ```
 
-- [ ] **Step 4: Write the row view**
+- [x] **Step 4: Write the row view**
 
 Create `Wait/WaitWatch/WatchlistRowView.swift`:
 
@@ -1949,7 +2191,7 @@ struct WatchlistRowView: View {
 }
 ```
 
-- [ ] **Step 5: Write the list view**
+- [x] **Step 5: Write the list view**
 
 Create `Wait/WaitWatch/WatchlistListView.swift`:
 
@@ -2012,7 +2254,8 @@ struct WatchlistListView: View {
       }
       if let quotesAsOf = store.snapshot?.quotesAsOf {
         Section {
-          Text("Quotes \(quotesAsOf.formatted(.relative(presentation: .named)))")
+          // The `style:` interpolation keeps counting on its own; a formatted string would freeze at render time.
+          Text("Quotes \(quotesAsOf, style: .relative) ago")
             .font(.footnote)
             .foregroundStyle(.secondary)
         }
@@ -2046,7 +2289,7 @@ struct WatchlistListView: View {
 #endif
 ```
 
-- [ ] **Step 6: Write the detail view**
+- [x] **Step 6: Write the detail view**
 
 Create `Wait/WaitWatch/WatchStockDetailView.swift`:
 
@@ -2110,7 +2353,7 @@ struct WatchStockDetailView: View {
       if let change = WatchFormat.changePercent(row.changePercent) {
         Text(change)
           .font(.footnote.monospacedDigit())
-          .foregroundStyle((row.changePercent ?? 0) < 0 ? Color.red : Color.green)
+          .foregroundStyle(changeColor)
       }
       HStack {
         if let status = row.status {
@@ -2125,11 +2368,18 @@ struct WatchStockDetailView: View {
     }
   }
 
+  private var changeColor: Color {
+    guard let value = row.changePercent, value != 0 else {
+      return .secondary
+    }
+    return value < 0 ? .red : .green
+  }
+
   private var distanceText: String? {
     guard let price = row.price else {
       return nil
     }
-    return WatchFormat.distanceToBuy(row.ladder.distanceToBuy(from: price))
+    return WatchFormat.distanceToBuy(row.ladder.distanceToBuy(from: price), status: row.status)
   }
 }
 
@@ -2142,7 +2392,7 @@ struct WatchStockDetailView: View {
 #endif
 ```
 
-- [ ] **Step 7: Replace the app entry point**
+- [x] **Step 7: Replace the app entry point**
 
 Replace the whole contents of `Wait/WaitWatch/WaitWatchApp.swift` with:
 
@@ -2178,7 +2428,7 @@ struct WaitWatchApp: App {
 }
 ```
 
-- [ ] **Step 8: Regenerate, resolve packages and build both schemes**
+- [ ] **Step 8: Regenerate, resolve packages and build both schemes** — NOT RUN (code-only; xcodegen generate done, builds skipped)
 
 Run:
 ```bash
@@ -2205,7 +2455,7 @@ Expected:
 - `"WKRunsIndependentlyOfCompanionApp" => false` (or `0`)
 - the `ls` prints `WaitWatch.app`, which shows the phone app embeds the watch app.
 
-- [ ] **Step 9: Prove the watch has no network code, keys or dropped packages**
+- [ ] **Step 9: Prove the watch has no network code, keys or dropped packages** — PARTIAL (source grep clean; Package.resolved still lists the three packages until a real resolve, NOT RUN)
 
 Run:
 ```bash
@@ -2214,7 +2464,7 @@ grep -ciE '"identity" : "(money|alamofire|swiftyjson)"' Wait.xcodeproj/project.x
 ```
 Expected: the first command prints nothing, and the second prints `0`.
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -2245,7 +2495,7 @@ export WATCH_UDID=$(xcrun simctl list devices available | sed -n '/-- watchOS 27
 
 **Files:** none
 
-- [ ] **Step 1: Find the simulators and pair them**
+- [ ] **Step 1: Find the simulators and pair them** — NOT RUN (code-only)
 
 ```bash
 export PHONE_UDID=$(xcrun simctl list devices available | sed -n '/-- iOS 27.0 --/,/^--/p' | grep -E '^ +iPhone 17 \(' | grep -oE '[0-9A-F-]{36}' | head -1)
@@ -2262,7 +2512,7 @@ OLD_PAIR=$(xcrun simctl list pairs | grep -B 2 "$PHONE_UDID" | grep -oE '^[0-9A-
 xcrun simctl unpair "$OLD_PAIR" && xcrun simctl pair "$WATCH_UDID" "$PHONE_UDID"
 ```
 
-- [ ] **Step 2: Build into a known folder, install the phone app and launch the watch app**
+- [ ] **Step 2: Build into a known folder, install the phone app and launch the watch app** — NOT RUN (code-only)
 
 The phone app embeds the watch app (`Wait.app/Watch/WaitWatch.app`, checked in Task 7 Step 8). Installing the phone app on a paired phone simulator installs the watch app on the paired watch.
 
@@ -2289,7 +2539,7 @@ xcrun simctl io "$WATCH_UDID" screenshot /tmp/wait-watch-empty.png
 ```
 Open `/tmp/wait-watch-empty.png`: it shows "No stocks yet / Open Wait on iPhone".
 
-- [ ] **Step 3: Seed a watchlist on the phone and launch it**
+- [ ] **Step 3: Seed a watchlist on the phone and launch it** — NOT RUN (code-only)
 
 Launch the app once so plan 02's migration runs and writes its marker. Then terminate it and plant a two-item watchlist in the app group:
 
@@ -2304,7 +2554,7 @@ xcrun simctl launch "$PHONE_UDID" com.chenkai.wait
 ```
 Expected: the phone shows AAPL under Favorites and MSFT under Watchlist. If plan 02's `WatchlistItem` JSON has keys this sample doesn't, add them from `Wait/Packages/WaitKit/Tests/PersistenceTests` fixtures. The decoder uses `decodeIfPresent` (overview §7.5), so missing optional keys are fine.
 
-- [ ] **Step 4: Check the watch**
+- [ ] **Step 4: Check the watch** — NOT RUN (code-only)
 
 ```bash
 sleep 10; xcrun simctl io "$WATCH_UDID" screenshot /tmp/wait-watch-list.png
@@ -2313,7 +2563,7 @@ Expected: `/tmp/wait-watch-list.png` shows "Favorites: AAPL" and "Watchlist: MSF
 - If the watch still shows "No stocks yet", force a state change that publishes a new snapshot: relaunch the phone app (`xcrun simctl terminate "$PHONE_UDID" com.chenkai.wait && xcrun simctl launch "$PHONE_UDID" com.chenkai.wait`), or ask the user to toggle the star on MSFT. Wait 10 s and take the screenshot again. Pull-to-refresh is not enough: it publishes nothing when quotes don't change.
 - WCSession delivery on simulators can take up to about 30 s.
 
-- [ ] **Step 5: (manual: user) Tap through the detail screen**
+- [ ] **Step 5: (manual: user) Tap through the detail screen** — SKIPPED (manual)
 
 Ask the user to tap AAPL in the watch Simulator window and confirm the detail screen shows:
 - name, price, change %, status and temperature
@@ -2333,7 +2583,7 @@ Wait for confirmation before Chunk 4.
 - Modify: `Wait/.swiftlint.yml`
 - Modify: `.gitignore`
 
-- [ ] **Step 1: Update SwiftFormat**
+- [x] **Step 1: Update SwiftFormat**
 
 In `Wait/.swiftformat`:
 - Change the line `--swiftversion 5.0` to `--swiftversion 6.0`.
@@ -2343,7 +2593,7 @@ In `Wait/.swiftformat`:
 --exclude Tests/XCTestManifests.swift,Tests/BadConfig,Snapshots,Pods,Generated,Wait/Generated,Packages/WaitKit/.build,Packages/WaitKit/.swiftpm,build
 ```
 
-- [ ] **Step 2: Update SwiftLint**
+- [x] **Step 2: Update SwiftLint**
 
 In `Wait/.swiftlint.yml`, replace the `excluded:` block with the block below, and add the `deployment_target:` block directly after it:
 
@@ -2361,7 +2611,7 @@ deployment_target:
   watchOS_deployment_target: "10.0"
 ```
 
-- [ ] **Step 3: Ignore the package's own resolution file**
+- [x] **Step 3: Ignore the package's own resolution file**
 
 Plan 01 normally adds both lines already. Append only the ones that are missing:
 
@@ -2379,7 +2629,7 @@ cd /Users/ckai/code/Wait && git rm --cached --ignore-unmatch Wait/Packages/WaitK
 ```
 Expected: `Wait/.swiftformat` and `Wait/.swiftlint.yml` are modified. `.gitignore` is modified only if a line was appended. If they had been tracked, `Wait/Packages/WaitKit/Package.resolved` and `.swiftpm` show as deleted (`D`).
 
-- [ ] **Step 4: Lint**
+- [x] **Step 4: Lint**
 
 Run: `cd /Users/ckai/code/Wait/Wait && swiftlint lint --quiet | grep -c " error: "`
 Expected: `0`.
@@ -2390,11 +2640,11 @@ If the count is not 0, run `swiftlint lint --quiet | grep " error: "`.
 
 Warnings are allowed.
 
-- [ ] **Step 5: (optional) Format check**
+- [ ] **Step 5: (optional) Format check** — NOT RUN (SwiftFormat not installed)
 
 Only if SwiftFormat is installed (`brew install swiftformat`): run `cd /Users/ckai/code/Wait/Wait && swiftformat --lint .` and apply `swiftformat .` to files this plan created. The step passes whether or not SwiftFormat is installed.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -2415,7 +2665,7 @@ No code changes unless a check fails. A failing check means stop and fix it befo
 
 **Files:** none
 
-- [ ] **Step 1: Run all package tests**
+- [ ] **Step 1: Run all package tests** — NOT RUN (code-only)
 
 Run:
 ```bash
@@ -2424,7 +2674,7 @@ cd /Users/ckai/code/Wait/Wait/Packages/WaitKit && xcodebuild test -scheme WaitKi
 ```
 Expected: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 2: Build the app and the watch**
+- [ ] **Step 2: Build the app and the watch** — NOT RUN (code-only)
 
 Run:
 ```bash
@@ -2436,17 +2686,17 @@ xcodebuild -project Wait.xcodeproj -scheme WaitWatch \
 ```
 Expected: `** BUILD SUCCEEDED **` twice.
 
-- [ ] **Step 3: Confirm the project regenerates cleanly**
+- [x] **Step 3: Confirm the project regenerates cleanly**
 
 Run: `cd /Users/ckai/code/Wait/Wait && xcodegen generate && git status --short Wait.xcodeproj project.yml`
 Expected: no output. The committed project matches `project.yml`.
 
-- [ ] **Step 4: Run the secret scan**
+- [x] **Step 4: Run the secret scan**
 
 Run: `cd /Users/ckai/code/Wait && ./scripts/check-secrets.sh; echo "exit=$?"`
 Expected: the last line is `exit=0`.
 
-- [ ] **Step 5: Run the leftover guards**
+- [x] **Step 5: Run the leftover guards**
 
 Run:
 ```bash
@@ -2457,6 +2707,23 @@ grep -nE "Money|Alamofire|SwiftyJSON|Shake|SwiftyBeaver" Wait/project.yml Wait/P
 ```
 Expected: `0`, `0`, `0`.
 
+> **Results (2026-11-23, code-only mode).**
+> - **Step 3:** `xcodegen generate` ran and left `Wait.xcodeproj` and `project.yml` with no diff.
+> - **Step 4:** `scripts/check-secrets.sh` printed `check-secrets: OK`, exit 0.
+> - **Step 5:** the three guards print `0`, `0`, `0`.
+> - **Extra static checks:**
+>   - `swiftlint lint --quiet` in `Wait/` reports 0 errors and 1 warning (an `empty_string` in `PriceInputTests.swift`).
+>   - Overview §4.1 greps:
+>     - `grep -ri "twelvedata\|apikey" Wait/WaitWatch` and a grep for `URLSession`, `Alamofire` and `http(s)://` in `Wait/WaitWatch` find nothing.
+>     - `git grep -n "apikey=\|clientId:\|clientSecret:" -- . ':!docs' ':!scripts/check-secrets.sh'` finds nothing.
+>     - `Package.swift` has no Money, Alamofire, SwiftyJSON or legacy targets.
+> - **Connectivity harness** (`/tmp/wait-harness-03/build2.sh`: real `Domain`, `Connectivity` sources and `ConnectivityTests` files compiled with stand-ins for the macro and WatchConnectivity files): `Test run with 30 tests in 4 suites passed`. The suites are `ConnectivityEngineTests` (18), `SnapshotCodingTests` (5), `WatchSnapshotStoreTests` (5) and `ConnectivityClientTests` (2).
+> - **NOT RUN (code-only), user follow-up:**
+>   - Steps 1 and 2 (`WaitKit-Package` tests, `Wait` and `WaitWatch` builds).
+>   - The TCA `AppFeatureTests`, including `AppFeatureConnectivityTests`.
+>   - Task 8's paired-simulator check.
+> - **Open follow-up:** `Wait.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved` is stale. It still pins Alamofire, Money, Shake, SwiftyBeaver, SwiftyJSON and TCA 0.31 until `xcodebuild -resolvePackageDependencies` runs locally.
+
 ---
 
 ### Task 11: Rewrite CLAUDE.md for the iOS side and refresh the WaitKit README
@@ -2465,7 +2732,7 @@ Expected: `0`, `0`, `0`.
 - Modify: `CLAUDE.md`
 - Create or replace: `Wait/Packages/WaitKit/README.md`
 
-- [ ] **Step 1: Check the real names the docs mention**
+- [x] **Step 1: Check the real names the docs mention**
 
 The text in Steps 3–4 names things plans 01–02 created. Check each name against the code before writing:
 
@@ -2490,13 +2757,13 @@ Expected:
 
 If any name differs (say, a policy has another name or the debounce isn't 1 s), use the real name or value wherever Step 3 or 4 mentions it. If something is missing entirely (no `LegacyMigration` call, say), stop and ask the user. This plan doesn't own that code.
 
-- [ ] **Step 2: Keep any server section**
+- [x] **Step 2: Keep any server section**
 
 Run: `cd /Users/ckai/code/Wait && grep -n "^## " CLAUDE.md`
 
 If the output contains a heading that starts with `## Backend` (plan 04 writes ``## Backend (`server/`)`` when it ran before this plan), copy that whole section, heading included, from the heading up to the next `## ` heading or the end of the file. Keep it for Step 3.
 
-- [ ] **Step 3: Write the new CLAUDE.md**
+- [x] **Step 3: Write the new CLAUDE.md**
 
 Replace the contents of `/Users/ckai/code/Wait/CLAUDE.md` with the text below.
 - If Step 2 found a `## Backend` section, paste it unchanged, heading included, between `## Architecture` and `## Code style`.
@@ -2638,7 +2905,7 @@ Backend version of the **Market data** bullet. Use it only if Step 1 printed `up
 
 Check with `grep -n "Market data" /Users/ckai/code/Wait/CLAUDE.md`: exactly one line, and it names the upstream Step 1 found.
 
-- [ ] **Step 4: Write the WaitKit README**
+- [x] **Step 4: Write the WaitKit README**
 
 Create or replace `/Users/ckai/code/Wait/Wait/Packages/WaitKit/README.md` with:
 
@@ -2693,7 +2960,7 @@ cd Wait/Packages/WaitKit && xcodebuild test -scheme WaitKit-Package \
 4. Keep watchOS-compatible targets (see the table) free of UIKit and iOS-only APIs.
 ~~~
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -2706,6 +2973,15 @@ EOF
 )"
 ```
 
+> **Execution notes (Task 11, 2026-11-23).** Step 1 printed the expected values: `useCache`, `reload` and `cacheOnly` all exist, the publish debounce is 1 s, `LegacyMigration` runs in `AppDelegate.swift`, and `upstream=twelveData` (the Twelve Data version of the Market data bullet applies). Step 2 found no `## Backend` section. The docs differ from the text above in these places, because the code differs:
+> - `CLAUDE.md` keeps the execution-time facts that plans 01 and 02 added: the code-only verification caveat, the stale `Package.resolved` pins, the shared schemes, `TwelveDataAPIKey.isUsable`, `PriceInput` strict grouping, the canonical TCA scope forms, the `.onChange(of:)` effect form, and `symbolQuotesLoaded`.
+> - Test id example: `validatesOrder()` doesn't exist. It is `DomainTests/PriceLadderValidationTests/vectorsValidation()`.
+> - Ladder: fair is derived as `(buyHigh ?? buyLow) × 10 / 7` only when fair, trim and sell are all absent. Temperature knots are 10, 30, 50, 80 and 95.
+> - Snapshot fan-out: the debounce is on `watchlist.snapshotInputs`. Going to the background publishes at once.
+> - Fixtures exist today only for `DomainTests` and `MarketDataClientTests`.
+> - README: the dependency list of `AppFeature` also has `DesignSystem` and `Logging`. A Responsibility column was added and the existing conventions section (mutations, wire format, TCA forms, watchOS, key, price input) was kept.
+> - `.noop` exists only on `ConnectivityClient`.
+
 ---
 
 ### Task 12: Bitrise update checklist (manual: user)
@@ -2713,7 +2989,7 @@ EOF
 **Files:**
 - Create: `docs/ci/bitrise-checklist.md`
 
-- [ ] **Step 1: Write the checklist**
+- [x] **Step 1: Write the checklist**
 
 Create `/Users/ckai/code/Wait/docs/ci/bitrise-checklist.md`:
 
@@ -2747,7 +3023,7 @@ The Bitrise workflow lives in the Bitrise dashboard, not in this repo. After pla
 - [ ] **Bitrise APM:** if the workflow still references the Bitrise APM token plist that plan 01 removed, delete that step, and rotate the token in Bitrise.
 ~~~
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -2760,6 +3036,6 @@ EOF
 )"
 ```
 
-- [ ] **Step 3: (manual: user) Apply the checklist in Bitrise**
+- [ ] **Step 3: (manual: user) Apply the checklist in Bitrise** — SKIPPED (manual)
 
 Print the checklist and ask the user to apply it in the Bitrise dashboard and trigger a build of this branch. Wait for the user to confirm a green build, or to paste the failing step's log. Then finish with superpowers:finishing-a-development-branch.

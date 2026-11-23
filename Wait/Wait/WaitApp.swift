@@ -1,50 +1,20 @@
-// Created by kai_chen on 5/4/21.
+//
+// Created by: kai_chen on 5/4/21.
+// Copyright © 2021 Wait. All rights reserved.
+//
 
-import Color
-import Logging
-import SettingsTab
-import Shake
+import AppFeature
 import SwiftUI
 
 // MARK: - WaitApp
 
 @main
 struct WaitApp: App {
-  // MARK: Lifecycle
-
-  init() {
-    setupShake()
-    Logger.setupLogger()
-  }
-
-  // MARK: Internal
+  @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
   var body: some Scene {
     WindowGroup {
-      TabView {
-        MainView()
-          .tabItem {
-            Image(systemName: "house")
-          }
-
-        SettingsView()
-          .tabItem {
-            Image(systemName: "gearshape")
-          }
-      }
-      .accentColor(.mint)
+      AppView(store: appDelegate.store)
     }
-  }
-
-  // MARK: Private
-
-  private func setupShake() {
-    Shake.configuration.isInvokedByShakeDeviceEvent = true
-    Shake.configuration.isInvokedByScreenshot = true
-    Shake.configuration.isCrashReportingEnabled = true
-    Shake.start(
-      clientId: "EMFDruyQ3NpZJixuCtgi2LiTl83hjfngf3tRFL3F",
-      clientSecret: "wh1riTvDR93wmB0itrbltVmOKMsFToZyM4O6Y65pPtARpvdiLq4Xtd1"
-    )
   }
 }

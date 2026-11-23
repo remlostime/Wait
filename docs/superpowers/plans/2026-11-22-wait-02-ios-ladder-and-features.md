@@ -1,5 +1,63 @@
 # Wait iOS — Ladder, Features and New UI Implementation Plan
 
+## Execution log
+
+**Executed:** 2026-11-23 on `ck/ios`, subagent-driven, in **code-only mode** (see the [plan 01 baseline log](2026-11-22-wait-01-baseline-log.md)). `xcodebuild` can't run inside the agent sandbox, so no test or build step here has been run under Xcode.
+
+**How the work was checked instead:**
+- **Pure targets** (Domain, Persistence file I/O, MarketDataClient, ChartGeometry, DeepLink):
+  - typechecked with `swiftc` in Swift 6 mode
+  - real Swift Testing files run in a `/tmp` harness, with hand-written stand-ins for the `@DependencyClient` types. Totals: Domain 5,384 checks, MarketDataClient 39/39 tests, ChartGeometry 8/8, migration 39 checks, DeepLink 10/10, all passing.
+- **TCA features:**
+  - every API checked by reviewers against the real TCA 1.26.2, swift-sharing 2.10.1 and swift-dependencies 1.17.2 sources
+  - views typechecked against stub `Store` types
+  - the `@Reducer` macro code and the `TestStore` tests were **not compiled**
+- **Reviews:** one review per chunk group (Domain, Persistence, MarketData, Design/Checklist/Chart, Features, App layer). Every Critical and Important finding was fixed in the `fix(...)` commits listed below.
+
+| Task | Commit | | Task | Commit |
+|---|---|---|---|---|
+| 1 PriceLadder + vectors | `11845c0` | | 16 Caching decorator | `a85006e` |
+| 2 Knots/temperature | `ebb64cb` | | 17 Twelve Data stopgap | `74035a5` |
+| 3 Status/distance | `ecd5734` | | 18 Design tokens | `e32be28` |
+| 4 PriceInput | `39d8d73` | | 19 Checklist features | `344019e` |
+| 5 Market types/calendar | `a667d72` | | 20 StockChartFeature | `a514f20` |
+| 6 Watchlist models | `b59c407` | | 21 StockChartView | `c884e2d` |
+| 7 Legacy decoding | `a680fe1` | | 22 Ladder/notes editors | `3f03dd1` |
+| 8 Log channels | `faa2d83` | | 23 StockDetailsFeature | `e922583` |
+| 9 App group | `56e861d` | | 24 AddStockFeature | `44c0db8` |
+| 10 @Shared keys/helpers | `f258e0a` | | 25 WatchlistFeature | `d77c588` |
+| 11 SnapshotStore/Client | `bb22c04` | | 26 SettingsFeature | `ed04490` |
+| 12 LegacyMigration | `de4e230` | | 27 AppFeature/WaitApp | `72eeb51` |
+| 13 MarketDataClient | `83d1858` | | 28 Widget | `439eb38` |
+| 14 CacheTTL | `b27da0e` | | 29 Cutover, Swift 6 | `8dc99f0` |
+| 15 DiskCache | `be695aa` | | 30 Docs | `9f9fe83` |
+
+**Review fixes:** `fe9731e` (Domain), `584da14` (migration), `afe6545` (market data), `42a9dbc` (chart), `43bee6b` (watchlist), `cc6db3a` (app/widget), `b08d1c1` (restored checkboxes).
+
+**Notable deviations** (the plan text is updated in each case):
+- **Plan test bugs, fixed:**
+  - an out-of-order ladder fixture (Task 1)
+  - `allSatisfy(\.isStale)` inside `#expect` (Task 16)
+  - `.lineLimit(6 ...)` (Task 22)
+- **TCA forms:** canonical forms throughout (`scope(\.x, action: \.x)`, and `.onChange(of:) { _, state in Effect }`), because `ComposableArchitecture2Deprecations` deprecates the labeled forms.
+- **DesignSystem watchOS guard:** `#if os(iOS)`, because the watchOS SDK has UIKit but no `CAGradientLayer`.
+- **Behavior hardening:**
+  - `PriceInput` uses strict grouping, so `de_DE` "12.50" is rejected.
+  - Partial quotes survive chunk errors.
+  - A cancelled coalesced fetch is cancelled once it has no waiters left.
+  - An unset Twelve Data key throws `.unavailable` without a network call.
+  - The chart recovers from a cancelled load.
+  - A single-symbol load keeps the rate-limit banner.
+  - The background save catches and logs errors and publishes the snapshot immediately.
+  - The widget shows the real empty state.
+
+**Follow-ups for the user:**
+1. Run `scripts/test-waitkit.sh`, `scripts/build-app.sh` and `scripts/build-app.sh WaitWatch` locally, and fix anything the compiler finds. The riskiest code is the uncompiled `@Reducer` and `TestStore` code.
+2. Refresh `Package.resolved` with a package resolve, and commit it.
+3. Manual checks: Task 27 Step 11 (a legacy `stocks` file migrates on first launch), Task 28 Step 5 (the widget shows the real watchlist), and the Task 29 UI check.
+4. Put a real key in `Wait/Config/Secrets.xcconfig` (`TWELVE_DATA_API_KEY`). Without one, quotes show "unavailable".
+5. Known accepted risk: one undecodable item in `watchlist.json` makes the whole file load as empty. `WatchlistItem` decoding is lenient, but consider lossy array decoding.
+
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Replace the legacy Waitlist and StockDetails screens with TCA 1.26 features built on a new Swift 6 `Domain` (price ladder plus a 0–100 temperature), an app-group `Persistence` layer that migrates the old data, and a cached, rate-limit-safe `MarketDataClient`. Rewrite the widget to use a shared snapshot. Then delete every legacy module.
@@ -111,7 +169,7 @@ All paths are relative to `Wait/` unless they start with `scripts/` or `shared/`
 - Create: `Wait/Packages/WaitKit/Tests/DomainTests/LadderVectors.swift`, `Wait/Packages/WaitKit/Tests/DomainTests/PriceLadderValidationTests.swift`, `Wait/Packages/WaitKit/Tests/DomainTests/TestSupport.swift`
 - Modify: `Wait/Packages/WaitKit/Package.swift` (add the `Domain` product, target and test target)
 
-- [ ] **Step 1: Create the helper scripts.** If plan 01 already created files with these names, overwrite them.
+- [x] **Step 1: Create the helper scripts.** If plan 01 already created files with these names, overwrite them. — scripts created and `bash -n` checked; the `scripts/build-app.sh` baseline run is NOT RUN (code-only)
 
 `scripts/test-waitkit.sh`:
 ```bash
@@ -150,7 +208,7 @@ exit "${PIPESTATUS[0]}"
 Run: `chmod +x scripts/test-waitkit.sh scripts/build-app.sh && scripts/build-app.sh`
 Expected: `** BUILD SUCCEEDED **`. This is the plan 01 baseline.
 
-- [ ] **Step 2: Create `shared/ladder-test-vectors.json` from overview §7.4.** Extract the file directly from the overview, so it is byte-identical, then check it with `diff`:
+- [x] **Step 2: Create `shared/ladder-test-vectors.json` from overview §7.4.** Extract the file directly from the overview, so it is byte-identical, then check it with `diff`:
 
 Run:
 ```sh
@@ -180,7 +238,7 @@ PY
 ```
 Expected: `vectors match overview`. If §7.4 changes later, re-create the file with the block above, then rerun this check. The Swift and TS suites must both pass in the same commit (overview risk 32).
 
-- [ ] **Step 3: Register the `Domain` target in `Package.swift`.** Make three additions and change nothing else:
+- [x] **Step 3: Register the `Domain` target in `Package.swift`.** Make three additions and change nothing else:
   - Add `.library(name: "Domain", targets: ["Domain"]),` to the `products:` array.
   - Add `.target(name: "Domain"),` to the `targets:` array.
   - Add `.testTarget(name: "DomainTests", dependencies: ["Domain"]),` to the `targets:` array.
@@ -188,7 +246,7 @@ Expected: `vectors match overview`. If §7.4 changes later, re-create the file w
   `Domain` has no `swiftSettings`, so it compiles in the package default Swift 6 mode.
   - SwiftPM refuses to load a package with a source-less target. Create `Wait/Packages/WaitKit/Sources/Domain/PriceLadder.swift` containing only the file header (see Conventions). Step 7 fills it in.
 
-- [ ] **Step 4: Write the failing tests**
+- [x] **Step 4: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/DomainTests/TestSupport.swift`:
 ```swift
@@ -357,10 +415,10 @@ import Testing
   }
 
   @Test func encodesDecimalStringsAndOmitsMissingRungs() throws {
-    let ladder = try PriceLadder(buyHigh: dec("175.5"), trim: dec("0.0075"))
+    let ladder = try PriceLadder(buyHigh: dec("0.0075"), trim: dec("175.5"))
     let json = try String(decoding: JSONEncoder().encode(ladder), as: UTF8.self)
-    #expect(json.contains(#""buyHigh":"175.5""#))
-    #expect(json.contains(#""trim":"0.0075""#))
+    #expect(json.contains(#""buyHigh":"0.0075""#))
+    #expect(json.contains(#""trim":"175.5""#))
     #expect(!json.contains("buyLow"))
   }
 
@@ -381,12 +439,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 5: Run the tests and confirm they fail**
+- [ ] **Step 5: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests`
 Expected FAIL: `error: cannot find type 'PriceLadder' in scope` (and `DecimalCoding`), then `** TEST FAILED **`.
 
-- [ ] **Step 6: Implement `DecimalCoding.swift`**
+- [x] **Step 6: Implement `DecimalCoding.swift`**
 
 `Wait/Packages/WaitKit/Sources/Domain/DecimalCoding.swift`:
 ```swift
@@ -410,7 +468,7 @@ public enum DecimalCoding {
     let trimmed = string.trimmingCharacters(in: .whitespaces)
     guard
       !trimmed.isEmpty,
-      trimmed.range(of: #"^-?\d+(\.\d+)?([eE][-+]?\d+)?$"#, options: .regularExpression) != nil
+      trimmed.range(of: #"^-?[0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?$"#, options: .regularExpression) != nil
     else {
       return nil
     }
@@ -472,7 +530,7 @@ public extension KeyedEncodingContainer {
 }
 ```
 
-- [ ] **Step 7: Replace the contents of `PriceLadder.swift` with the implementation**
+- [x] **Step 7: Replace the contents of `PriceLadder.swift` with the implementation**
 
 `Wait/Packages/WaitKit/Sources/Domain/PriceLadder.swift`:
 ```swift
@@ -626,12 +684,12 @@ extension PriceLadder: Codable {
 }
 ```
 
-- [ ] **Step 8: Run the tests and confirm they pass**
+- [ ] **Step 8: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests`
 Expected PASS: `** TEST SUCCEEDED **`. Swift Testing reports 7 tests passed.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 ```bash
 git add scripts/test-waitkit.sh scripts/build-app.sh shared/ladder-test-vectors.json Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/Domain Wait/Packages/WaitKit/Tests/DomainTests
 git commit -m "feat(domain): add PriceLadder with validation and shared ladder vectors
@@ -645,7 +703,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/Domain/Temperature.swift`, `Wait/Packages/WaitKit/Sources/Domain/PriceLadder+Evaluation.swift`
 - Create: `Wait/Packages/WaitKit/Tests/DomainTests/PriceLadderTemperatureTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/DomainTests/PriceLadderTemperatureTests.swift`:
 ```swift
@@ -718,12 +776,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests/PriceLadderTemperatureTests`
 Expected FAIL: `error: value of type 'PriceLadder' has no member 'knots'` and `cannot find 'Temperature' in scope`.
 
-- [ ] **Step 3: Implement `Temperature.swift`**
+- [x] **Step 3: Implement `Temperature.swift`**
 
 `Wait/Packages/WaitKit/Sources/Domain/Temperature.swift`:
 ```swift
@@ -787,7 +845,7 @@ public struct Temperature: Equatable, Sendable {
 }
 ```
 
-- [ ] **Step 4: Implement `PriceLadder+Evaluation.swift`.** It also holds the status and distance helpers, which Task 3 tests.
+- [x] **Step 4: Implement `PriceLadder+Evaluation.swift`.** It also holds the status and distance helpers, which Task 3 tests.
 
 `Wait/Packages/WaitKit/Sources/Domain/PriceLadder+Evaluation.swift`:
 ```swift
@@ -907,7 +965,7 @@ public extension PriceLadder {
 }
 ```
 
-- [ ] **Step 5: Create a minimal `LadderStatus.swift`** so that `status(at:)` compiles. Task 3 adds the full version and its tests.
+- [x] **Step 5: Create a minimal `LadderStatus.swift`** so that `status(at:)` compiles. Task 3 adds the full version and its tests.
 
 `Wait/Packages/WaitKit/Sources/Domain/LadderStatus.swift`:
 ```swift
@@ -931,12 +989,12 @@ public enum LadderStatus: String, Codable, CaseIterable, Sendable {
 }
 ```
 
-- [ ] **Step 6: Run the tests and confirm they pass**
+- [ ] **Step 6: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests`
 Expected PASS: `** TEST SUCCEEDED **`, with all 12 Domain tests passing.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/Domain Wait/Packages/WaitKit/Tests/DomainTests
 git commit -m "feat(domain): ladder knots, derived fair and temperature bands
@@ -950,7 +1008,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `Wait/Packages/WaitKit/Sources/Domain/LadderStatus.swift`
 - Create: `Wait/Packages/WaitKit/Tests/DomainTests/PriceLadderStatusTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/DomainTests/PriceLadderStatusTests.swift`:
 ```swift
@@ -996,12 +1054,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests/PriceLadderStatusTests`
 Expected FAIL: `error: value of type 'LadderStatus' has no member 'rank'`.
 
-- [ ] **Step 3: Replace `LadderStatus.swift`**
+- [x] **Step 3: Replace `LadderStatus.swift`**
 
 `Wait/Packages/WaitKit/Sources/Domain/LadderStatus.swift`:
 ```swift
@@ -1057,12 +1115,12 @@ public enum LadderStatus: String, Codable, CaseIterable, Sendable {
 }
 ```
 
-- [ ] **Step 4: Run the tests and confirm they pass**
+- [ ] **Step 4: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests`
 Expected PASS: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/Domain/LadderStatus.swift Wait/Packages/WaitKit/Tests/DomainTests/PriceLadderStatusTests.swift
 git commit -m "feat(domain): ladder status rank, titles and distance to buy
@@ -1074,11 +1132,13 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 ### Task 4: `PriceInput`
 
+> Review fix (2026-11-23): `parse` strips a grouping separator only in a well-formed position (de_DE "12.50" and en_US "1,5" are invalid), digits are ASCII `[0-9]` only, and the snippets below match the code.
+
 **Files:**
 - Create: `Wait/Packages/WaitKit/Sources/Domain/PriceInput.swift`
 - Create: `Wait/Packages/WaitKit/Tests/DomainTests/PriceInputTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/DomainTests/PriceInputTests.swift`:
 ```swift
@@ -1090,6 +1150,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 import Domain
 import Foundation
 import Testing
+
+// MARK: - PriceInputTests
 
 @Suite struct PriceInputTests {
   let us = Locale(identifier: "en_US")
@@ -1118,6 +1180,31 @@ import Testing
     #expect(PriceInput.parse("1.2.3", locale: us) == nil)
   }
 
+  @Test func acceptsWellFormedGroupingOnly() {
+    let fr = Locale(identifier: "fr_FR")
+    #expect(PriceInput.parse("1,234.5", locale: us) == .some(dec("1234.5")))
+    #expect(PriceInput.parse("1,234,567", locale: us) == .some(dec("1234567")))
+    #expect(PriceInput.parse("1.234,5", locale: de) == .some(dec("1234.5")))
+    #expect(PriceInput.parse("1\u{202F}234,5", locale: fr) == .some(dec("1234.5")))
+    #expect(PriceInput.parse(".5", locale: us) == .some(dec("0.5")))
+    #expect(PriceInput.parse("5.", locale: us) == .some(dec("5")))
+  }
+
+  @Test func rejectsMisplacedGroupingSeparators() {
+    #expect(PriceInput.parse("12.50", locale: de) == nil) // "." is grouping in de_DE, not a decimal point
+    #expect(PriceInput.parse("1.2", locale: de) == nil)
+    #expect(PriceInput.parse("1,5", locale: us) == nil)
+    #expect(PriceInput.parse("1,23,456", locale: us) == nil)
+    #expect(PriceInput.parse("1234,567", locale: us) == nil)
+    #expect(PriceInput.parse(",5", locale: us) == nil)
+    #expect(PriceInput.parse("1,234.", locale: us) == nil)
+  }
+
+  @Test func rejectsNonASCIIDigits() {
+    #expect(PriceInput.parse("12\u{0661}", locale: us) == nil) // Arabic-Indic digit one
+    #expect(PriceInput.parse("\u{0661}\u{0662}", locale: us) == nil)
+  }
+
   @Test func formats() {
     #expect(PriceInput.format(dec("1234.5"), locale: us) == "1234.5")
     #expect(PriceInput.format(dec("1234.5"), locale: de) == "1234,5")
@@ -1127,12 +1214,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests/PriceInputTests`
 Expected FAIL: `error: cannot find 'PriceInput' in scope`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `Wait/Packages/WaitKit/Sources/Domain/PriceInput.swift`:
 ```swift
@@ -1147,6 +1234,7 @@ import Foundation
 
 /// Parses user-typed prices in the user's locale and formats ladder values back for editing.
 public enum PriceInput {
+  /// A grouping separator is only accepted in a well-formed position (`1,234.5`, `1.234,5`); `12.50` in de_DE is invalid, not 1250.
   /// `nil` means invalid. `.some(nil)` means the field is empty. Negative values are invalid.
   public static func parse(_ text: String, locale: Locale) -> Decimal?? {
     var string = text.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -1161,14 +1249,21 @@ public enum PriceInput {
     for space in [" ", "\u{00A0}", "\u{202F}"] {
       string = string.replacingOccurrences(of: space, with: "")
     }
-    if !groupingSeparator.isEmpty, groupingSeparator != decimalSeparator {
+    let decimal = NSRegularExpression.escapedPattern(for: decimalSeparator)
+    let grouping = NSRegularExpression.escapedPattern(for: groupingSeparator)
+    let plain = "^[0-9]*(\(decimal)[0-9]*)?$"
+    let grouped = "^[0-9]{1,3}(\(grouping)[0-9]{3})+(\(decimal)[0-9]+)?$"
+    let canGroup = !groupingSeparator.isEmpty && groupingSeparator != decimalSeparator
+    if canGroup, string.range(of: grouped, options: .regularExpression) != nil {
       string = string.replacingOccurrences(of: groupingSeparator, with: "")
+    } else if string.range(of: plain, options: .regularExpression) == nil {
+      return nil
     }
     if decimalSeparator != "." {
       string = string.replacingOccurrences(of: decimalSeparator, with: ".")
     }
     guard
-      string.range(of: #"^(\d+\.?\d*|\.\d+)$"#, options: .regularExpression) != nil,
+      string.range(of: "[0-9]", options: .regularExpression) != nil,
       let value = Decimal(string: string, locale: DecimalCoding.posix)
     else {
       return nil
@@ -1186,12 +1281,12 @@ public enum PriceInput {
 }
 ```
 
-- [ ] **Step 4: Run the tests and confirm they pass**
+- [ ] **Step 4: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests/PriceInputTests`
-Expected PASS: 5 tests pass.
+Expected PASS: 8 tests pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/Domain/PriceInput.swift Wait/Packages/WaitKit/Tests/DomainTests/PriceInputTests.swift
 git commit -m "feat(domain): locale-aware PriceInput parse and format
@@ -1205,7 +1300,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/Domain/MarketTypes.swift`, `Wait/Packages/WaitKit/Sources/Domain/MarketCalendar.swift`
 - Create: `Wait/Packages/WaitKit/Tests/DomainTests/MarketCalendarTests.swift`, `Wait/Packages/WaitKit/Tests/DomainTests/MarketTypesCodingTests.swift`
 
-- [ ] **Step 1: Write the failing tests.** All the expected UTC instants below were cross-checked with Python `zoneinfo`.
+- [x] **Step 1: Write the failing tests.** All the expected UTC instants below were cross-checked with Python `zoneinfo`.
 
 `Wait/Packages/WaitKit/Tests/DomainTests/MarketCalendarTests.swift`:
 ```swift
@@ -1297,12 +1392,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests/MarketCalendarTests DomainTests/MarketTypesCodingTests`
 Expected FAIL: `error: cannot find 'MarketCalendar' in scope` and `cannot find 'Quote' in scope`.
 
-- [ ] **Step 3: Implement `MarketCalendar.swift`**
+- [x] **Step 3: Implement `MarketCalendar.swift`**
 
 `Wait/Packages/WaitKit/Sources/Domain/MarketCalendar.swift`:
 ```swift
@@ -1382,7 +1477,7 @@ public enum MarketCalendar {
 }
 ```
 
-- [ ] **Step 4: Implement `MarketTypes.swift`**
+- [x] **Step 4: Implement `MarketTypes.swift`**
 
 `Wait/Packages/WaitKit/Sources/Domain/MarketTypes.swift`:
 ```swift
@@ -1755,12 +1850,12 @@ extension CompanyProfile: Codable {
 }
 ```
 
-- [ ] **Step 5: Run the tests and confirm they pass**
+- [ ] **Step 5: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests`
 Expected PASS: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/Domain Wait/Packages/WaitKit/Tests/DomainTests
 git commit -m "feat(domain): market value types and DST-aware MarketCalendar
@@ -1776,7 +1871,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/Domain/Date+Milliseconds.swift`, `ChecklistItem.swift`, `ChecklistTemplate.swift`, `LadderRevision.swift`, `WatchlistItem.swift`, `WatchlistSnapshot.swift`. All of these go under `Sources/Domain/`.
 - Create: `Wait/Packages/WaitKit/Tests/DomainTests/WatchlistModelTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/DomainTests/WatchlistModelTests.swift`:
 ```swift
@@ -1869,12 +1964,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests/WatchlistModelTests`
 Expected FAIL: `error: cannot find 'WatchlistItem' in scope`, along with `truncatedToMilliseconds`, `ChecklistItem` and `WatchlistSnapshot`.
 
-- [ ] **Step 3: Implement `Date+Milliseconds.swift`**
+- [x] **Step 3: Implement `Date+Milliseconds.swift`**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -1901,7 +1996,7 @@ public extension Date {
 }
 ```
 
-- [ ] **Step 4: Implement `ChecklistItem.swift`**
+- [x] **Step 4: Implement `ChecklistItem.swift`**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -1943,7 +2038,7 @@ public struct ChecklistItem: Codable, Equatable, Hashable, Identifiable, Sendabl
 }
 ```
 
-- [ ] **Step 5: Implement `ChecklistTemplate.swift`.** The prompts are copied verbatim from legacy `Model/ChecklistItem.swift` `allItems`.
+- [x] **Step 5: Implement `ChecklistTemplate.swift`.** The prompts are copied verbatim from legacy `Model/ChecklistItem.swift` `allItems`.
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -1984,7 +2079,7 @@ public enum ChecklistTemplate {
 }
 ```
 
-- [ ] **Step 6: Implement `LadderRevision.swift`**
+- [x] **Step 6: Implement `LadderRevision.swift`**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -2014,7 +2109,7 @@ public struct LadderRevision: Codable, Equatable, Sendable {
 }
 ```
 
-- [ ] **Step 7: Implement `WatchlistItem.swift`**
+- [x] **Step 7: Implement `WatchlistItem.swift`**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -2124,7 +2219,7 @@ extension WatchlistItem: Codable {
 }
 ```
 
-- [ ] **Step 8: Implement `WatchlistSnapshot.swift`**
+- [x] **Step 8: Implement `WatchlistSnapshot.swift`**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -2193,7 +2288,7 @@ public struct WatchlistSnapshot: Codable, Equatable, Sendable {
   public let rows: [Row]
 
   public static func make(items: [WatchlistItem], quotes: [String: Quote], now: Date) -> WatchlistSnapshot {
-    let ordered = items.sorted { ($0.isFavorite ? 0 : 1, $0.sortIndex) < ($1.isFavorite ? 0 : 1, $1.sortIndex) }
+    let ordered = items.sorted { ($0.isFavorite ? 0 : 1, $0.sortIndex, $0.symbol) < ($1.isFavorite ? 0 : 1, $1.sortIndex, $1.symbol) }
     let rows = ordered.map { item in
       let quote = quotes[item.symbol]
       return Row(
@@ -2253,12 +2348,12 @@ extension WatchlistSnapshot.Row: Codable {
 }
 ```
 
-- [ ] **Step 9: Run the tests and confirm they pass**
+- [ ] **Step 9: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests`
 Expected PASS: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/Domain Wait/Packages/WaitKit/Tests/DomainTests
 git commit -m "feat(domain): watchlist item, checklist template, snapshot and ms timestamps
@@ -2274,12 +2369,12 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Tests/DomainTests/LegacyStockTests.swift`
 - Modify: `Wait/Packages/WaitKit/Package.swift` (`DomainTests` gains a resource)
 
-- [ ] **Step 1: Add the fixture resource.** In `Package.swift`, change the `DomainTests` test target to:
+- [x] **Step 1: Add the fixture resource.** In `Package.swift`, change the `DomainTests` test target to:
 ```swift
 .testTarget(name: "DomainTests", dependencies: ["Domain"], resources: [.copy("Fixtures")]),
 ```
 
-- [ ] **Step 2: Create the fixture.** It uses the exact legacy on-disk shape: the Money keyed container `{amount, currencyCode}`, `Double` dates measured from the 2001 reference date (`JSONEncoder` default), a duplicate `AAPL`, the `"Empty"` placeholder, a lower-case symbol, a string amount, and a zero target.
+- [x] **Step 2: Create the fixture.** It uses the exact legacy on-disk shape: the Money keyed container `{amount, currencyCode}`, `Double` dates measured from the 2001 reference date (`JSONEncoder` default), a duplicate `AAPL`, the `"Empty"` placeholder, a lower-case symbol, a string amount, and a zero target.
 
 `Wait/Packages/WaitKit/Tests/DomainTests/Fixtures/legacy-stocks.json`:
 ```json
@@ -2323,7 +2418,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ]
 ```
 
-- [ ] **Step 3: Write the failing tests**
+- [x] **Step 3: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/DomainTests/LegacyStockTests.swift`:
 ```swift
@@ -2393,12 +2488,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 4: Run the tests and confirm they fail**
+- [ ] **Step 4: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests/LegacyStockTests`
 Expected FAIL: `error: cannot find type 'LegacyStock' in scope`.
 
-- [ ] **Step 5: Implement**
+- [x] **Step 5: Implement**
 
 `Wait/Packages/WaitKit/Sources/Domain/Legacy/LegacyStock.swift`:
 ```swift
@@ -2511,7 +2606,7 @@ public extension WatchlistItem {
       sortIndex: index,
       checklist: checklist,
       ladderHistory: Array(history.suffix(LadderRevision.maxCount)),
-      createdAt: history.first?.date ?? stamp,
+      createdAt: legacy.expectedPriceHistory?.first?.date ?? stamp,
       updatedAt: stamp
     )
   }
@@ -2551,12 +2646,12 @@ public enum LegacyStockMapper {
 }
 ```
 
-- [ ] **Step 6: Run the tests and confirm they pass**
+- [ ] **Step 6: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests`
 Expected PASS: `** TEST SUCCEEDED **`. All Domain suites pass.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/Domain/Legacy Wait/Packages/WaitKit/Tests/DomainTests
 git commit -m "feat(domain): decode legacy Money-based stocks and map to WatchlistItem
@@ -2577,11 +2672,11 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 `LegacyLogger.swift` from plan 01 stays until the cutover (Task 29). Legacy code keeps calling `Logger.shared`, and new code uses `Log.<channel>`.
 
-- [ ] **Step 1: Update `Package.swift`**
+- [x] **Step 1: Update `Package.swift`**
   - Add `.testTarget(name: "LoggingTests", dependencies: ["Logging"]),` to `targets:`.
   - If `products:` has no `Logging` library, add `.library(name: "Logging", targets: ["Logging"]),`.
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 `Wait/Packages/WaitKit/Tests/LoggingTests/LogTests.swift`:
 ```swift
@@ -2604,12 +2699,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 3: Run the test and confirm it fails**
+- [ ] **Step 3: Run the test and confirm it fails** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh LoggingTests`
 Expected FAIL: `error: cannot find 'Log' in scope`.
 
-- [ ] **Step 4: Implement.** The legacy shim in this module may define its own `Logger` type, so always write `os.Logger` with its module prefix.
+- [x] **Step 4: Implement.** The legacy shim in this module may define its own `Logger` type, so always write `os.Logger` with its module prefix.
 
 `Wait/Packages/WaitKit/Sources/Logging/Log.swift`:
 ```swift
@@ -2667,12 +2762,12 @@ public enum Log {
 }
 ```
 
-- [ ] **Step 5: Run the test and confirm it passes**
+- [ ] **Step 5: Run the test and confirm it passes** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh LoggingTests`
 Expected PASS: 1 test passes.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/Logging/Log.swift Wait/Packages/WaitKit/Tests/LoggingTests
 git commit -m "feat(logging): os.Logger channels for new targets
@@ -2691,7 +2786,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/Persistence/AppGroup.swift`
 - Create: `Wait/Packages/WaitKit/Tests/PersistenceTests/AppGroupTests.swift`
 
-- [ ] **Step 1: Entitlements.** Replace `Wait/Wait/Wait.entitlements` with this. It keeps the existing push and iCloud keys and adds the group.
+- [x] **Step 1: Entitlements.** Replace `Wait/Wait/Wait.entitlements` with this. It keeps the existing push and iCloud keys and adds the group.
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -2729,7 +2824,7 @@ Leave `Wait/Wait/WaitRelease.entitlements` as it is; it already has the group. C
 ```
 Run: `git rm Wait/WaitWidgetExtensionRelease.entitlements`
 
-- [ ] **Step 2: Update `project.yml`.**
+- [x] **Step 2: Update `project.yml`.**
   - In **both** the `Wait` and `WaitWidgetExtension` targets, delete any `entitlements:` key. With that key, XcodeGen would regenerate the plist from YAML properties.
   - Delete any existing `CODE_SIGN_ENTITLEMENTS` lines.
   - Set the entitlements paths exactly as follows:
@@ -2756,7 +2851,7 @@ Expected: `CODE_SIGN_ENTITLEMENTS = WaitWidget/WaitWidget.entitlements`
 Run: `R="$(git rev-parse --show-toplevel)"; test -f "$R/Wait/Wait.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved" && echo "Package.resolved present"; git -C "$R" status --short Wait/Wait.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`
 Expected: `Package.resolved present`. The `git status` line may show ` M` once new packages resolve, but never ` D`, which would mean regeneration deleted the file (overview risk 21).
 
-- [ ] **Step 3: Add the package dependencies and the `Persistence` target to `Package.swift`**
+- [x] **Step 3: Add the package dependencies and the `Persistence` target to `Package.swift`**
   - Append to `dependencies:`:
     ```swift
     .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.17.0"),
@@ -2791,7 +2886,7 @@ Expected: `Package.resolved present`. The `git status` line may show ` M` once n
 
   - Create `Wait/Packages/WaitKit/Sources/Persistence/AppGroup.swift` containing only the file header, so the package loads. Step 6 fills it in.
 
-- [ ] **Step 4: Write the failing test**
+- [x] **Step 4: Write the failing test**
 
 `Wait/Packages/WaitKit/Tests/PersistenceTests/AppGroupTests.swift`:
 ```swift
@@ -2828,12 +2923,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 5: Run the test and confirm it fails**
+- [ ] **Step 5: Run the test and confirm it fails** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh PersistenceTests`
 Expected FAIL: `error: cannot find 'AppGroup' in scope`.
 
-- [ ] **Step 6: Replace the contents of `AppGroup.swift` with the implementation**
+- [x] **Step 6: Replace the contents of `AppGroup.swift` with the implementation**
 
 `Wait/Packages/WaitKit/Sources/Persistence/AppGroup.swift`:
 ```swift
@@ -2870,12 +2965,12 @@ public enum AppGroup {
 }
 ```
 
-- [ ] **Step 7: Run the tests and confirm they pass, then build the app**
+- [ ] **Step 7: Run the tests and confirm they pass, then build the app** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh PersistenceTests && scripts/build-app.sh`
 Expected: `** TEST SUCCEEDED **`, then `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 ```bash
 git add Wait/project.yml Wait/Wait.xcodeproj Wait/Wait/Wait.entitlements Wait/WaitWidget/WaitWidget.entitlements Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/Persistence Wait/Packages/WaitKit/Tests/PersistenceTests
 git commit -m "feat(persistence): app group entitlements for app and widget, AppGroup paths
@@ -2889,7 +2984,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/Persistence/SharedKeys.swift`, `Wait/Packages/WaitKit/Sources/Persistence/Shared+Watchlist.swift`
 - Create: `Wait/Packages/WaitKit/Tests/PersistenceTests/SharedWatchlistTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/PersistenceTests/SharedWatchlistTests.swift`:
 ```swift
@@ -2980,12 +3075,12 @@ import Testing
 ```
 The `.dependencies` trait comes from `DependenciesTestSupport`, which is imported at the top of the file. It gives each test its own in-memory file storage.
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh PersistenceTests/SharedWatchlistTests`
 Expected FAIL: `error: value of type 'Shared<IdentifiedArray<String, WatchlistItem>>' has no member 'update'` and `type 'SharedReaderKey' has no member 'watchlist'`.
 
-- [ ] **Step 3: Implement `SharedKeys.swift`**
+- [x] **Step 3: Implement `SharedKeys.swift`**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -3019,7 +3114,7 @@ public extension SharedReaderKey where Self == FileStorageKey<IdentifiedArrayOf<
 }
 ```
 
-- [ ] **Step 4: Implement `Shared+Watchlist.swift`.** These are the only mutation paths, and every one of them stamps `updatedAt` truncated to milliseconds. Plan 05 changes the bodies of `add` and `remove` to keep tombstones, but leaves their signatures alone.
+- [x] **Step 4: Implement `Shared+Watchlist.swift`.** These are the only mutation paths, and every one of them stamps `updatedAt` truncated to milliseconds. Plan 05 changes the bodies of `add` and `remove` to keep tombstones, but leaves their signatures alone.
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -3057,10 +3152,10 @@ public extension Shared where Value == IdentifiedArrayOf<WatchlistItem> {
       guard items[id: item.symbol] == nil else {
         return false
       }
-      var item = item
-      item.sortIndex = (items.map(\.sortIndex).max() ?? -1) + 1
-      item.updatedAt = now.truncatedToMilliseconds
-      items.append(item)
+      var appended = item
+      appended.sortIndex = (items.map(\.sortIndex).max() ?? -1) + 1
+      appended.updatedAt = now.truncatedToMilliseconds
+      items.append(appended)
       return true
     }
   }
@@ -3103,12 +3198,12 @@ public extension Shared where Value == WatchlistItem {
 }
 ```
 
-- [ ] **Step 5: Run the tests and confirm they pass**
+- [ ] **Step 5: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh PersistenceTests`
 Expected PASS: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/Persistence Wait/Packages/WaitKit/Tests/PersistenceTests
 git commit -m "feat(persistence): shared watchlist and template keys with stamped mutation helpers
@@ -3122,7 +3217,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/Persistence/SnapshotStore.swift`, `Wait/Packages/WaitKit/Sources/Persistence/SnapshotClient.swift`
 - Create: `Wait/Packages/WaitKit/Tests/PersistenceTests/SnapshotStoreTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/PersistenceTests/SnapshotStoreTests.swift`:
 ```swift
@@ -3162,12 +3257,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh PersistenceTests/SnapshotStoreTests`
 Expected FAIL: `error: cannot find 'SnapshotStore' in scope`.
 
-- [ ] **Step 3: Implement `SnapshotStore.swift`**
+- [x] **Step 3: Implement `SnapshotStore.swift`**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -3215,7 +3310,7 @@ public struct SnapshotStore: Sendable {
 }
 ```
 
-- [ ] **Step 4: Implement `SnapshotClient.swift`**
+- [x] **Step 4: Implement `SnapshotClient.swift`**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -3269,12 +3364,12 @@ public extension DependencyValues {
 }
 ```
 
-- [ ] **Step 5: Run the tests and confirm they pass**
+- [ ] **Step 5: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh PersistenceTests`
 Expected PASS: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/Persistence Wait/Packages/WaitKit/Tests/PersistenceTests
 git commit -m "feat(persistence): snapshot store and snapshot client dependency
@@ -3284,11 +3379,13 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 ### Task 12: `LegacyMigration`
 
+> Review fix (2026-11-23): a zero-byte `checklist-template.json` no longer blocks the template migration, a `stocks` file whose rows all fail to decode now throws `LegacyMigrationError.undecodableStocks` (no marker, retried next launch), and the first duplicate symbol keeps its own per-stock checklist.
+
 **Files:**
 - Create: `Wait/Packages/WaitKit/Sources/Persistence/LegacyMigration.swift`
 - Create: `Wait/Packages/WaitKit/Tests/PersistenceTests/LegacyMigrationTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/PersistenceTests/LegacyMigrationTests.swift`:
 ```swift
@@ -3401,15 +3498,82 @@ import Testing
     }
     #expect(!markerExists(group))
   }
+
+  @Test func aZeroByteTemplateFileDoesNotBlockMigratingTheLegacyTemplate() throws {
+    let (documents, group) = try dirs()
+    try FileManager.default.createDirectory(at: group, withIntermediateDirectories: true)
+    try Data().write(to: group.appending(path: "checklist-template.json")) // swift-sharing creates empty files when subscribing
+    try Data(template.utf8).write(to: documents.appending(path: "checklist-items.json"))
+
+    let report = try LegacyMigration(documents: documents, destination: group).runIfNeeded(now: now)
+
+    #expect(report.migratedTemplate)
+    let data = try Data(contentsOf: group.appending(path: "checklist-template.json"))
+    #expect(try JSONDecoder().decode([ChecklistItem].self, from: data).map(\.name) == ["T1"])
+  }
+
+  @Test func aNonEmptyTemplateFileIsNeverOverwritten() throws {
+    let (documents, group) = try dirs()
+    try FileManager.default.createDirectory(at: group, withIntermediateDirectories: true)
+    let existing = #"[{"name":"Mine","isChecked":false,"id":"00000000-0000-0000-0000-0000000000BB"}]"#
+    try Data(existing.utf8).write(to: group.appending(path: "checklist-template.json"))
+    try Data(template.utf8).write(to: documents.appending(path: "checklist-items.json"))
+
+    let report = try LegacyMigration(documents: documents, destination: group).runIfNeeded(now: now)
+
+    #expect(!report.migratedTemplate)
+    let data = try Data(contentsOf: group.appending(path: "checklist-template.json"))
+    #expect(try JSONDecoder().decode([ChecklistItem].self, from: data).map(\.name) == ["Mine"])
+  }
+
+  @Test func rowsThatAllFailToDecodeThrowAndLeaveNoMarker() throws {
+    let (documents, group) = try dirs()
+    try Data(#"[42, {"name":"no symbol"}]"#.utf8).write(to: documents.appending(path: "stocks"))
+    #expect(throws: LegacyMigrationError.undecodableStocks(rowCount: 2)) {
+      try LegacyMigration(documents: documents, destination: group).runIfNeeded(now: now)
+    }
+    #expect(!markerExists(group))
+    #expect(!FileManager.default.fileExists(atPath: group.appending(path: "watchlist.json").path))
+  }
+
+  @Test func anEmptyStocksArrayStillMigratesCleanly() throws {
+    let (documents, group) = try dirs()
+    try Data("[]".utf8).write(to: documents.appending(path: "stocks"))
+    let report = try LegacyMigration(documents: documents, destination: group).runIfNeeded(now: now)
+    #expect(report == MigrationReport(didRun: true, migratedItems: 0, migratedTemplate: false))
+    #expect(markerExists(group))
+  }
+
+  @Test func theFirstDuplicateSymbolKeepsItsOwnChecklist() throws {
+    let (documents, group) = try dirs()
+    let duplicates = #"""
+    [
+      {"symbol":" AAPL","name":"First","memo":"first"},
+      {"symbol":"AAPL","name":"Second","memo":"second"}
+    ]
+    """#
+    let first = #"[{"name":"FirstList","isChecked":true,"id":"00000000-0000-0000-0000-0000000000C1"}]"#
+    let second = #"[{"name":"SecondList","isChecked":true,"id":"00000000-0000-0000-0000-0000000000C2"}]"#
+    try Data(duplicates.utf8).write(to: documents.appending(path: "stocks"))
+    try Data(first.utf8).write(to: documents.appending(path: "checklist- AAPL"))
+    try Data(second.utf8).write(to: documents.appending(path: "checklist-AAPL"))
+
+    _ = try LegacyMigration(documents: documents, destination: group).runIfNeeded(now: now)
+
+    let items = try decodeWatchlist(group)
+    #expect(items.map(\.symbol) == ["AAPL"])
+    #expect(items[0].memo == "first")
+    #expect(items[0].checklist.map(\.name) == ["FirstList"])
+  }
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh PersistenceTests/LegacyMigrationTests`
 Expected FAIL: `error: cannot find 'LegacyMigration' in scope`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `Wait/Packages/WaitKit/Sources/Persistence/LegacyMigration.swift`:
 ```swift
@@ -3436,6 +3600,13 @@ public struct MigrationReport: Equatable, Sendable {
   public var migratedTemplate: Bool
 }
 
+// MARK: - LegacyMigrationError
+
+public enum LegacyMigrationError: Error, Equatable, Sendable {
+  /// `stocks` has rows but none could be decoded. Nothing is written, so the migration retries on the next launch.
+  case undecodableStocks(rowCount: Int)
+}
+
 // MARK: - LegacyMigration
 
 /// One-time move of the legacy Documents files into the app group (overview §7.6).
@@ -3444,7 +3615,8 @@ public struct MigrationReport: Equatable, Sendable {
 /// - Old files are kept.
 /// - A destination watchlist that already has items is never overwritten. A missing, zero-byte or `[]` watchlist counts as absent.
 /// - Malformed `stocks` rows are skipped and logged.
-/// - If `stocks` exists but can't be read or isn't a JSON array, this throws without writing the marker, so the migration retries on the next launch.
+/// - If `stocks` exists but can't be read, isn't a JSON array, or has rows but none decode, this throws without writing the marker, so the migration retries on the next launch.
+/// - `checklist-template.json` counts as absent when it is missing, zero-byte or `[]`.
 public struct LegacyMigration: Sendable {
   // MARK: Lifecycle
 
@@ -3483,7 +3655,7 @@ public struct LegacyMigration: Sendable {
       !legacyTemplate.isEmpty
     {
       template = Self.uniqueByID(legacyTemplate)
-      if !fileManager.fileExists(atPath: templateURL.path) {
+      if (try? Self.isAbsentOrEmpty(templateURL)) == true { // best-effort like the rest of the template block: an unreadable file is left alone
         try encoder.encode(template).write(to: templateURL, options: .atomic)
         report.migratedTemplate = true
       }
@@ -3493,6 +3665,9 @@ public struct LegacyMigration: Sendable {
     if try Self.isAbsentOrEmpty(watchlistURL), let data = try Self.readIfPresent(documents.appending(path: "stocks")) {
       let rows = try decoder.decode([LossyLegacyStock].self, from: data)
       let stocks = rows.compactMap(\.stock)
+      if stocks.isEmpty, !rows.isEmpty {
+        throw LegacyMigrationError.undecodableStocks(rowCount: rows.count)
+      }
       if stocks.count < rows.count {
         Log.persistence.error("Legacy migration skipped \(rows.count - stocks.count) malformed stock rows")
       }
@@ -3500,7 +3675,10 @@ public struct LegacyMigration: Sendable {
       for stock in stocks {
         let url = documents.appending(path: "checklist-\(stock.symbol)")
         if let data = try? Self.readIfPresent(url), let items = try? decoder.decode([ChecklistItem].self, from: data) {
-          checklists[LegacyStockMapper.mappedSymbol(stock.symbol)] = Self.uniqueByID(items)
+          let key = LegacyStockMapper.mappedSymbol(stock.symbol)
+          if checklists[key] == nil { // the mapper keeps the first row of a duplicated symbol, so keep its checklist too
+            checklists[key] = Self.uniqueByID(items)
+          }
         }
       }
       let items = LegacyStockMapper.items(from: stocks, checklists: checklists, template: template, now: now)
@@ -3546,12 +3724,12 @@ public struct LegacyMigration: Sendable {
 }
 ```
 
-- [ ] **Step 4: Run the tests and confirm they pass**
+- [ ] **Step 4: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh PersistenceTests`
 Expected PASS: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/Persistence/LegacyMigration.swift Wait/Packages/WaitKit/Tests/PersistenceTests/LegacyMigrationTests.swift
 git commit -m "feat(persistence): one-time legacy Documents to app group migration
@@ -3565,12 +3743,14 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 ### Task 13: `MarketDataClient` interface, errors and cache policy
 
+> Review fix (2026-11-23): `PartialQuotesError` now carries the `underlying: MarketDataError` (any chunk failure, not only a 429) and keeps `init(quotes:retryAfter:)`; `FakeUpstream` gains `batchError` and `cancelledCalls`.
+
 **Files:**
 - Modify: `Wait/Packages/WaitKit/Package.swift` (add the `MarketDataClient` target and product, and `MarketDataClientTests`)
 - Create: `Wait/Packages/WaitKit/Sources/MarketDataClient/MarketDataClient.swift`, `MarketDataError.swift`, `CachePolicy.swift`
 - Create: `Wait/Packages/WaitKit/Tests/MarketDataClientTests/MarketDataErrorTests.swift`, `Wait/Packages/WaitKit/Tests/MarketDataClientTests/TestSupport.swift`
 
-- [ ] **Step 1: Update `Package.swift`**
+- [x] **Step 1: Update `Package.swift`**
   - Append to `products:`: `.library(name: "MarketDataClient", targets: ["MarketDataClient"]),`
   - Append to `targets:`:
     ```swift
@@ -3595,12 +3775,12 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
     ```
   - Create `Wait/Packages/WaitKit/Sources/MarketDataClient/MarketDataClient.swift` containing only the file header, so the package loads. Step 6 fills it in.
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/MarketDataClientTests/TestSupport.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -3646,16 +3826,24 @@ final class MutableNow: @unchecked Sendable {
 final class FakeUpstream: @unchecked Sendable {
   // MARK: Lifecycle
 
-  /// `batchLimit` imitates a free tier: a request for more symbols returns the first `batchLimit` quotes in a `PartialQuotesError`.
-  init(delay: Duration = .zero, batchLimit: Int? = nil) {
+  /// `batchLimit` imitates a free tier: a request for more symbols returns the first `batchLimit` quotes in a `PartialQuotesError`,
+  /// which carries `batchError` (a 429 by default).
+  init(delay: Duration = .zero, batchLimit: Int? = nil, batchError: MarketDataError = .rateLimited(retryAfter: .seconds(60))) {
     self.delay = delay
     self.batchLimit = batchLimit
+    self.batchError = batchError
   }
 
   // MARK: Internal
 
   let delay: Duration
   let batchLimit: Int?
+  let batchError: MarketDataError
+
+  /// How many upstream calls were cancelled while they slept.
+  var cancelledCalls: Int {
+    lock.withLock { recordedCancellations }
+  }
 
   var quoteCalls: [[String]] {
     lock.withLock { recordedQuoteCalls }
@@ -3672,14 +3860,12 @@ final class FakeUpstream: @unchecked Sendable {
           self.recordedQuoteCalls.append(symbols)
           return self.scriptedError
         }
-        if self.delay > .zero {
-          try await Task.sleep(for: self.delay)
-        }
+        try await self.pause()
         if let error {
           throw error
         }
         if let limit = self.batchLimit, symbols.count > limit {
-          throw PartialQuotesError(quotes: symbols.prefix(limit).map { Quote(symbol: $0, price: 100, asOf: fridayOpen) }, retryAfter: .seconds(60))
+          throw PartialQuotesError(quotes: symbols.prefix(limit).map { Quote(symbol: $0, price: 100, asOf: fridayOpen) }, underlying: self.batchError)
         }
         return symbols.map { Quote(symbol: $0, price: 100, asOf: fridayOpen) }
       },
@@ -3688,9 +3874,7 @@ final class FakeUpstream: @unchecked Sendable {
           self.recordedSeriesCalls += 1
           return self.scriptedError
         }
-        if self.delay > .zero {
-          try await Task.sleep(for: self.delay)
-        }
+        try await self.pause()
         if let error {
           throw error
         }
@@ -3708,16 +3892,29 @@ final class FakeUpstream: @unchecked Sendable {
   // MARK: Private
 
   private let lock = NSLock()
+  private var recordedCancellations = 0
   private var recordedQuoteCalls: [[String]] = []
   private var recordedSeriesCalls = 0
   private var scriptedError: MarketDataError?
+
+  private func pause() async throws {
+    guard delay > .zero else {
+      return
+    }
+    do {
+      try await Task.sleep(for: delay)
+    } catch {
+      lock.withLock { recordedCancellations += 1 }
+      throw error
+    }
+  }
 }
 ```
 
 `Wait/Packages/WaitKit/Tests/MarketDataClientTests/MarketDataErrorTests.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -3738,6 +3935,7 @@ import Testing
       Issue.record("DecodingError should map to .decoding")
     }
     #expect(try MarketDataError(PartialQuotesError(quotes: [], retryAfter: .seconds(30))) == .rateLimited(retryAfter: .seconds(30)))
+    #expect(try MarketDataError(PartialQuotesError(quotes: [], underlying: .network("HTTP 500"))) == .network("HTTP 500"))
   }
 
   @Test func cancellationIsRethrownNotWrapped() {
@@ -3762,12 +3960,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 3: Run the tests and confirm they fail**
+- [ ] **Step 3: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests`
 Expected FAIL: `error: cannot find type 'MarketDataClient' in scope` and `cannot find 'MarketDataError' in scope`.
 
-- [ ] **Step 4: Implement `CachePolicy.swift`**
+- [x] **Step 4: Implement `CachePolicy.swift`**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -3789,10 +3987,10 @@ public enum CachePolicy: Equatable, Sendable {
 }
 ```
 
-- [ ] **Step 5: Implement `MarketDataError.swift`**
+- [x] **Step 5: Implement `MarketDataError.swift`**
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -3801,15 +3999,25 @@ import Foundation
 
 // MARK: - PartialQuotesError
 
-/// An upstream `quotes` call got some quotes before it was rate limited. `CachingMarketDataClient` keeps the quotes and still starts the cooldown.
+/// An upstream `quotes` call got some quotes before a later chunk failed. `CachingMarketDataClient` keeps the quotes,
+/// starts the cooldown when `underlying` is a rate limit, and fills the rest from stale entries.
 public struct PartialQuotesError: Error, Sendable {
-  public init(quotes: [Quote], retryAfter: Duration?) {
+  public init(quotes: [Quote], underlying: MarketDataError) {
     self.quotes = quotes
-    self.retryAfter = retryAfter
+    self.underlying = underlying
+  }
+
+  public init(quotes: [Quote], retryAfter: Duration?) {
+    self.init(quotes: quotes, underlying: .rateLimited(retryAfter: retryAfter))
   }
 
   public let quotes: [Quote]
-  public let retryAfter: Duration?
+  public let underlying: MarketDataError
+
+  /// Non-nil only when `underlying` is a rate limit that carries a retry delay.
+  public var retryAfter: Duration? {
+    if case let .rateLimited(retryAfter) = underlying { retryAfter } else { nil }
+  }
 }
 
 // MARK: - MarketDataError
@@ -3835,7 +4043,7 @@ public enum MarketDataError: Error, Equatable, Sendable {
       case let error as MarketDataError:
         self = error
       case let error as PartialQuotesError:
-        self = .rateLimited(retryAfter: error.retryAfter)
+        self = error.underlying
       case is DecodingError:
         self = .decoding(String(describing: error))
       case let error as URLError:
@@ -3860,7 +4068,7 @@ public enum MarketDataError: Error, Equatable, Sendable {
 }
 ```
 
-- [ ] **Step 6: Replace the contents of `MarketDataClient.swift` with the implementation.** Task 17 adds `liveValue`. Until then the client is a `TestDependencyKey`, and no app code uses it.
+- [x] **Step 6: Replace the contents of `MarketDataClient.swift` with the implementation.** Task 17 adds `liveValue`. Until then the client is a `TestDependencyKey`, and no app code uses it.
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -3912,12 +4120,12 @@ public extension DependencyValues {
 }
 ```
 
-- [ ] **Step 7: Run the tests and confirm they pass**
+- [ ] **Step 7: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests`
 Expected PASS: 4 tests pass.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/MarketDataClient Wait/Packages/WaitKit/Tests/MarketDataClientTests
 git commit -m "feat(marketdata): MarketDataClient dependency, errors and cache policies
@@ -3931,7 +4139,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/MarketDataClient/CacheTTL.swift`
 - Create: `Wait/Packages/WaitKit/Tests/MarketDataClientTests/CacheTTLTests.swift`
 
-- [ ] **Step 1: Write the failing tests.** The instants are from overview §6.3 and were cross-checked in Python.
+- [x] **Step 1: Write the failing tests.** The instants are from overview §6.3 and were cross-checked in Python.
 
 `Wait/Packages/WaitKit/Tests/MarketDataClientTests/CacheTTLTests.swift`:
 ```swift
@@ -3986,12 +4194,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests/CacheTTLTests`
 Expected FAIL: `error: cannot find 'CacheTTL' in scope`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `Wait/Packages/WaitKit/Sources/MarketDataClient/CacheTTL.swift`:
 ```swift
@@ -4045,12 +4253,12 @@ public enum CacheTTL: Sendable {
 }
 ```
 
-- [ ] **Step 4: Run the tests and confirm they pass**
+- [ ] **Step 4: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests/CacheTTLTests`
 Expected PASS: 5 tests pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/MarketDataClient/CacheTTL.swift Wait/Packages/WaitKit/Tests/MarketDataClientTests/CacheTTLTests.swift
 git commit -m "feat(marketdata): market-hours aware cache TTLs
@@ -4064,7 +4272,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/MarketDataClient/DiskCache.swift`
 - Create: `Wait/Packages/WaitKit/Tests/MarketDataClientTests/DiskCacheTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/MarketDataClientTests/DiskCacheTests.swift`:
 ```swift
@@ -4106,12 +4314,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests/DiskCacheTests`
 Expected FAIL: `error: cannot find 'CacheEntry' in scope`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `Wait/Packages/WaitKit/Sources/MarketDataClient/DiskCache.swift`:
 ```swift
@@ -4189,12 +4397,12 @@ public struct DiskCache: Sendable {
 }
 ```
 
-- [ ] **Step 4: Run the tests and confirm they pass**
+- [ ] **Step 4: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests/DiskCacheTests`
 Expected PASS: 3 tests pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/MarketDataClient/DiskCache.swift Wait/Packages/WaitKit/Tests/MarketDataClientTests/DiskCacheTests.swift
 git commit -m "feat(marketdata): sha256-keyed disk cache for market data
@@ -4206,16 +4414,18 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 ### Task 16: Caching decorator (`CachingMarketDataClient`)
 
+> Review fix (2026-11-23): coalescing tracks a waiter per in-flight key (cancelled waiter throws `CancellationError` at once, the last one cancels the shared fetch), and a `PartialQuotesError` of any kind keeps its quotes, with the cooldown only for a 429.
+
 **Files:**
 - Create: `Wait/Packages/WaitKit/Sources/MarketDataClient/CachingMarketDataClient.swift`
 - Create: `Wait/Packages/WaitKit/Tests/MarketDataClientTests/CachingMarketDataClientTests.swift`
 
-- [ ] **Step 1: Write the failing tests.** These cover the 8 behaviors in overview §6.3, plus rotation of long watchlists under a per-call symbol limit.
+- [x] **Step 1: Write the failing tests.** These cover the 8 behaviors in overview §6.3, plus rotation of long watchlists under a per-call symbol limit.
 
 `Wait/Packages/WaitKit/Tests/MarketDataClientTests/CachingMarketDataClientTests.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -4263,7 +4473,7 @@ import Testing
     now.advance(61)
     let quotes = try await client.quotes(["AAPL", "MSFT"], .useCache)
     #expect(quotes.map(\.symbol) == ["AAPL", "MSFT"])
-    #expect(quotes.allSatisfy(\.isStale))
+    #expect(quotes.allSatisfy { $0.isStale })
   }
 
   @Test func reloadBypassesAFreshEntry() async throws {
@@ -4329,6 +4539,47 @@ import Testing
     #expect(second.filter(\.isStale).map(\.symbol) == ["S6", "S7"])
   }
 
+  @Test func nonRateLimitPartialResultKeepsTheQuotesAndSkipsTheCooldown() async throws {
+    let upstream = FakeUpstream(batchLimit: 8, batchError: .network("HTTP 500"))
+    let client = make(upstream, now: MutableNow(fridayOpen))
+    let symbols = (0 ..< 10).map { "S\($0)" }
+    let first = try await client.quotes(symbols, .useCache)
+    #expect(first.map(\.symbol) == Array(symbols.prefix(8)))
+    _ = try await client.quotes(symbols, .reload) // no cooldown: the next call reaches the upstream again
+    #expect(upstream.quoteCalls.count == 2)
+  }
+
+  @Test func cancellingOneOfTwoCoalescedWaitersLeavesTheOtherWithItsValue() async throws {
+    let upstream = FakeUpstream(delay: .milliseconds(400))
+    let client = make(upstream, now: MutableNow(fridayOpen))
+    let first = Task { try await client.series("AAPL", .oneYear, .useCache) }
+    try await Task.sleep(for: .milliseconds(30))
+    let second = Task { try await client.series("AAPL", .oneYear, .useCache) }
+    try await Task.sleep(for: .milliseconds(30))
+    let clock = ContinuousClock()
+    let start = clock.now
+    first.cancel()
+    await #expect(throws: CancellationError.self) { try await first.value }
+    #expect(start.duration(to: clock.now) < .milliseconds(200)) // promptly, not after the 400 ms fetch
+    let series = try await second.value
+    #expect(series.symbol == "AAPL")
+    #expect(upstream.seriesCalls == 1)
+    #expect(upstream.cancelledCalls == 0)
+  }
+
+  @Test func cancellingTheOnlyWaiterCancelsTheUpstreamFetch() async throws {
+    let upstream = FakeUpstream(delay: .seconds(5))
+    let client = make(upstream, now: MutableNow(fridayOpen))
+    let task = Task { try await client.series("AAPL", .oneYear, .useCache) }
+    try await Task.sleep(for: .milliseconds(50))
+    task.cancel()
+    await #expect(throws: CancellationError.self) { try await task.value }
+    for _ in 0 ..< 100 where upstream.cancelledCalls == 0 {
+      try await Task.sleep(for: .milliseconds(10))
+    }
+    #expect(upstream.cancelledCalls == 1)
+  }
+
   @Test func diskEntrySurvivesANewInstance() async throws {
     let directory = FileManager.default.temporaryDirectory.appending(path: "md-\(UUID().uuidString)", directoryHint: .isDirectory)
     let now = MutableNow(fridayOpen)
@@ -4343,17 +4594,17 @@ import Testing
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests/CachingMarketDataClientTests`
 Expected FAIL: `error: type 'MarketDataClient' has no member 'cached'`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `Wait/Packages/WaitKit/Sources/MarketDataClient/CachingMarketDataClient.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -4455,7 +4706,7 @@ actor CachingMarketDataStore {
         try storeFresh(JSONDecoder().decode([Quote].self, from: data), into: &result, fetchedAt: now)
       } catch let partial as PartialQuotesError {
         storeFresh(partial.quotes, into: &result, fetchedAt: now)
-        noteFailure(.rateLimited(retryAfter: partial.retryAfter), at: now)
+        noteFailure(partial.underlying, at: now)
         fillStale(batch, into: &result, now: now)
       } catch {
         let mapped = try MarketDataError(error)
@@ -4512,8 +4763,15 @@ actor CachingMarketDataStore {
   private let ttl: @Sendable (MarketDataKind, Date) -> Date
   private let now: @Sendable () -> Date
   private var memory: [String: CacheEntry] = [:]
-  private var inFlight: [String: Task<Data, any Error>] = [:]
+  private var inFlight: [String: Flight] = [:]
   private var cooldownUntil: Date?
+
+  /// One shared upstream fetch and the callers waiting on it. The fetch is cancelled once the last waiter is gone.
+  private struct Flight {
+    let id = UUID()
+    var task: Task<Void, Never>?
+    var waiters: [UUID: CheckedContinuation<Data, any Error>] = [:]
+  }
 
   private static func quoteKey(_ symbol: String) -> String {
     "quote:\(symbol)"
@@ -4575,14 +4833,71 @@ actor CachingMarketDataStore {
     }
   }
 
+  /// Joins the fetch already running for `key`, or starts it. Each waiter resumes on its own: a cancelled waiter throws
+  /// `CancellationError` at once without disturbing the others, and the last one leaving cancels the shared fetch.
   private func coalesced(key: String, _ work: @escaping @Sendable () async throws -> Data) async throws -> Data {
-    if let running = inFlight[key] {
-      return try await running.value
+    let waiterID = UUID()
+    return try await withTaskCancellationHandler {
+      try await withCheckedThrowingContinuation { continuation in
+        // Checked and registered in one synchronous step, so `onCancel`'s hop into the actor always sees the waiter.
+        if Task.isCancelled {
+          continuation.resume(throwing: CancellationError())
+        } else {
+          join(key: key, waiterID: waiterID, continuation: continuation, work: work)
+        }
+      }
+    } onCancel: {
+      Task { await self.cancelWaiter(key: key, waiterID: waiterID) }
     }
-    let task = Task<Data, any Error> { try await work() }
-    inFlight[key] = task
-    defer { inFlight[key] = nil }
-    return try await task.value
+  }
+
+  private func join(
+    key: String,
+    waiterID: UUID,
+    continuation: CheckedContinuation<Data, any Error>,
+    work: @escaping @Sendable () async throws -> Data
+  ) {
+    if var flight = inFlight[key] {
+      flight.waiters[waiterID] = continuation
+      inFlight[key] = flight
+      return
+    }
+    var flight = Flight()
+    flight.waiters[waiterID] = continuation
+    let flightID = flight.id
+    flight.task = Task {
+      let result: Result<Data, any Error>
+      do {
+        result = try await .success(work())
+      } catch {
+        result = .failure(error)
+      }
+      finish(key: key, flightID: flightID, result: result)
+    }
+    inFlight[key] = flight
+  }
+
+  private func finish(key: String, flightID: UUID, result: Result<Data, any Error>) {
+    guard let flight = inFlight[key], flight.id == flightID else {
+      return // every waiter already left and the fetch was cancelled
+    }
+    inFlight[key] = nil
+    for continuation in flight.waiters.values {
+      continuation.resume(with: result)
+    }
+  }
+
+  private func cancelWaiter(key: String, waiterID: UUID) {
+    guard var flight = inFlight[key], let continuation = flight.waiters.removeValue(forKey: waiterID) else {
+      return // the fetch already finished
+    }
+    continuation.resume(throwing: CancellationError())
+    if flight.waiters.isEmpty {
+      flight.task?.cancel()
+      inFlight[key] = nil
+    } else {
+      inFlight[key] = flight
+    }
   }
 
   private func lookup<T: Decodable>(_: T.Type, key: String) -> (value: T, entry: CacheEntry)? {
@@ -4640,12 +4955,12 @@ actor CachingMarketDataStore {
 }
 ```
 
-- [ ] **Step 4: Run the tests and confirm they pass**
+- [ ] **Step 4: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests`
 Expected PASS: `** TEST SUCCEEDED **`, with all 9 caching tests passing.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/MarketDataClient/CachingMarketDataClient.swift Wait/Packages/WaitKit/Tests/MarketDataClientTests/CachingMarketDataClientTests.swift
 git commit -m "feat(marketdata): caching decorator with coalescing, stale fallback and 429 cooldown
@@ -4659,8 +4974,10 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 ### Task 17: Twelve Data stopgap adapter and `liveValue`
 
+> Review fix (2026-11-23): any later-chunk error throws `PartialQuotesError`, an unknown single-symbol chunk is skipped, `+` is percent-encoded, a quote with no timestamp uses the injected clock, and an unset API key (`TwelveDataAPIKey.isUsable`) gives a client that throws `.unavailable` with no request.
+
 **Files:**
-- Create: `Wait/Packages/WaitKit/Sources/MarketDataClient/TwelveData/TwelveDataMarketData.swift`, `Wait/Packages/WaitKit/Sources/MarketDataClient/TwelveData/TwelveDataDTOs.swift`
+- Create: `Wait/Packages/WaitKit/Sources/MarketDataClient/TwelveData/TwelveDataMarketData.swift`, `Wait/Packages/WaitKit/Sources/MarketDataClient/TwelveData/TwelveDataDTOs.swift`, `Wait/Packages/WaitKit/Sources/MarketDataClient/TwelveData/TwelveDataAPIKey.swift`
 - Modify: `Wait/Packages/WaitKit/Sources/MarketDataClient/MarketDataClient.swift` (add `liveValue`)
 - Create: `Wait/Packages/WaitKit/Tests/MarketDataClientTests/Fixtures/twelvedata-quote-batch.json`, `twelvedata-quote-single.json`, `twelvedata-rate-limited.json`, `twelvedata-time-series-1day.json`, `twelvedata-time-series-5min.json`, `twelvedata-search.json`
 - Create: `Wait/Packages/WaitKit/Tests/MarketDataClientTests/TwelveDataMarketDataTests.swift`
@@ -4668,7 +4985,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 This adapter exists only until plan 04 replaces it with `.backend`. It runs under the free-tier limits: 8 credits per minute, one credit per symbol, and errors reported per symbol.
 
-- [ ] **Step 1: Add the fixture resource.** In `Package.swift`, change the `MarketDataClientTests` target to:
+- [x] **Step 1: Add the fixture resource.** In `Package.swift`, change the `MarketDataClientTests` target to:
 ```swift
 .testTarget(
   name: "MarketDataClientTests",
@@ -4677,7 +4994,7 @@ This adapter exists only until plan 04 replaces it with `.backend`. It runs unde
 ),
 ```
 
-- [ ] **Step 2: Create the fixtures.** All of them are in `Wait/Packages/WaitKit/Tests/MarketDataClientTests/Fixtures/`.
+- [x] **Step 2: Create the fixtures.** All of them are in `Wait/Packages/WaitKit/Tests/MarketDataClientTests/Fixtures/`.
 
 `twelvedata-quote-batch.json` (`XXXX` is an error for one symbol, and `BAD` is garbage that must not fail the batch):
 ```json
@@ -4749,12 +5066,12 @@ This adapter exists only until plan 04 replaces it with `.backend`. It runs unde
 }
 ```
 
-- [ ] **Step 3: Write the failing tests**
+- [x] **Step 3: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/MarketDataClientTests/TwelveDataMarketDataTests.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -4788,6 +5105,7 @@ actor RecordingHTTP {
 }
 
 func fixture(_ name: String) -> Data {
+  // swiftlint:disable:next force_try
   try! Data(contentsOf: Bundle.module.url(forResource: name, withExtension: "json", subdirectory: "Fixtures")!)
 }
 
@@ -4804,9 +5122,11 @@ func query(_ url: URL) -> [String: String] {
 // MARK: - TwelveDataMarketDataTests
 
 @Suite struct TwelveDataMarketDataTests {
-  func client(_ http: RecordingHTTP) -> MarketDataClient {
-    .twelveData(apiKey: "test-key", get: { url in await http.get(url) })
+  func client(_ http: RecordingHTTP, now: @escaping @Sendable () -> Date = { Date() }) -> MarketDataClient {
+    .twelveData(apiKey: "test-key", get: { url in await http.get(url) }, now: now)
   }
+
+  static let notFoundBody = Data(#"{"code": 404, "message": "symbol not found", "status": "error"}"#.utf8)
 
   @Test func batchQuotesSkipErroredAndGarbageSymbols() async throws {
     let http = RecordingHTTP { _ in (fixture("twelvedata-quote-batch"), 200) }
@@ -4848,6 +5168,101 @@ func query(_ url: URL) -> [String: String] {
     }
     #expect(error?.quotes.map(\.symbol) == Array(symbols.prefix(8)))
     #expect(error?.retryAfter == .seconds(60))
+  }
+
+  @Test func midListNetworkErrorKeepsTheEarlierQuotes() async throws {
+    let http = RecordingHTTP { url in
+      let requested = (query(url)["symbol"] ?? "").split(separator: ",").map(String.init)
+      return requested.first == "S1" ? (batchJSON(requested), 200) : (Data(), 500)
+    }
+    let symbols = (1 ... 16).map { "S\($0)" }
+    let error = await #expect(throws: PartialQuotesError.self) {
+      try await client(http).quotes(symbols, .useCache)
+    }
+    #expect(error?.quotes.map(\.symbol) == Array(symbols.prefix(8)))
+    #expect(error?.underlying == .network("HTTP 500"))
+    #expect(error?.retryAfter == nil)
+  }
+
+  @Test func midListUndecodableBodyKeepsTheEarlierQuotes() async throws {
+    let http = RecordingHTTP { url in
+      let requested = (query(url)["symbol"] ?? "").split(separator: ",").map(String.init)
+      return requested.first == "S1" ? (batchJSON(requested), 200) : (Data("[]".utf8), 200)
+    }
+    let symbols = (1 ... 10).map { "S\($0)" }
+    let error = await #expect(throws: PartialQuotesError.self) {
+      try await client(http).quotes(symbols, .useCache)
+    }
+    #expect(error?.quotes.count == 8)
+    if case .decoding = error?.underlying {} else {
+      Issue.record("Expected .decoding, got \(String(describing: error?.underlying))")
+    }
+  }
+
+  @Test func anUnknownSingleSymbolChunkIsSkipped() async throws {
+    let http = RecordingHTTP { url in
+      let requested = (query(url)["symbol"] ?? "").split(separator: ",").map(String.init)
+      return requested.count == 8 ? (batchJSON(requested), 200) : (Self.notFoundBody, 200)
+    }
+    let symbols = (1 ... 9).map { "S\($0)" }
+    let quotes = try await client(http).quotes(symbols, .useCache)
+    #expect(quotes.map(\.symbol) == Array(symbols.prefix(8)))
+    #expect(await http.urls.count == 2)
+  }
+
+  @Test func aSkippedSymbolAfterTwoFullChunksKeepsBoth() async throws {
+    let http = RecordingHTTP { url in
+      let requested = (query(url)["symbol"] ?? "").split(separator: ",").map(String.init)
+      return requested.count == 1 ? (Self.notFoundBody, 200) : (batchJSON(requested), 200)
+    }
+    let symbols = (1 ... 17).map { "S\($0)" }
+    let quotes = try await client(http).quotes(symbols, .useCache)
+    #expect(quotes.map(\.symbol) == Array(symbols.prefix(16)))
+    #expect(await http.urls.count == 3)
+  }
+
+  @Test func aLoneUnknownSymbolStillThrowsNotFound() async {
+    let http = RecordingHTTP { _ in (Self.notFoundBody, 200) }
+    await #expect(throws: MarketDataError.notFound) {
+      try await client(http).quotes(["ZZZZ"], .useCache)
+    }
+  }
+
+  @Test func plusInQueryValuesIsPercentEncoded() async throws {
+    let http = RecordingHTTP { _ in (fixture("twelvedata-search"), 200) }
+    _ = try await client(http).search("A+B")
+    let url = try #require(await http.urls.first)
+    #expect(url.absoluteString.contains("symbol=A%2BB"))
+    #expect(!url.absoluteString.contains("A+B"))
+    #expect(query(url)["symbol"] == "A+B")
+  }
+
+  @Test func aQuoteWithoutATimestampUsesTheInjectedClock() async throws {
+    let injected = Date(timeIntervalSince1970: 1_700_000_000)
+    let http = RecordingHTTP { _ in (Data(#"{"close": "12.50"}"#.utf8), 200) }
+    let quotes = try await client(http, now: { injected }).quotes(["AAPL"], .useCache)
+    #expect(quotes.map(\.asOf) == [injected])
+  }
+
+  @Test func anUnsetKeyThrowsUnavailableWithoutAnyRequest() async {
+    for key in ["", "  ", "$(TWELVE_DATA_API_KEY)", "replace-with-your-twelve-data-key"] {
+      let http = RecordingHTTP { _ in (Data(), 200) }
+      let unset = MarketDataClient.twelveData(apiKey: key, get: { url in await http.get(url) })
+      await #expect(throws: MarketDataError.unavailable) { try await unset.quotes(["AAPL"], .useCache) }
+      await #expect(throws: MarketDataError.unavailable) { try await unset.series("AAPL", .oneYear, .useCache) }
+      await #expect(throws: MarketDataError.unavailable) { try await unset.search("app") }
+      #expect(await http.urls.isEmpty)
+    }
+  }
+
+  @Test func apiKeyUsability() {
+    #expect(TwelveDataAPIKey.isUsable("0123456789abcdef"))
+    #expect(!TwelveDataAPIKey.isUsable(nil))
+    #expect(!TwelveDataAPIKey.isUsable(""))
+    #expect(!TwelveDataAPIKey.isUsable(" \n"))
+    #expect(!TwelveDataAPIKey.isUsable("$(TWELVE_DATA_API_KEY)"))
+    #expect(!TwelveDataAPIKey.isUsable("replace-with-your-twelve-data-key"))
+    #expect(!TwelveDataAPIKey.isUsable(" replace-with-your-twelve-data-key "))
   }
 
   @Test func rateLimitedBodyWithHTTP200Throws() async {
@@ -4895,15 +5310,15 @@ func query(_ url: URL) -> [String: String] {
 }
 ```
 
-- [ ] **Step 4: Run the tests and confirm they fail**
+- [ ] **Step 4: Run the tests and confirm they fail** — NOT RUN (code-only; checked in an out-of-repo harness instead)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests/TwelveDataMarketDataTests`
 Expected FAIL: `error: type 'MarketDataClient' has no member 'twelveData'`.
 
-- [ ] **Step 5: Implement `TwelveDataDTOs.swift`**
+- [x] **Step 5: Implement `TwelveDataDTOs.swift`**
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -4954,7 +5369,7 @@ struct TDQuote: Decodable {
   let percentChange: String?
   let fiftyTwoWeek: Range?
 
-  func quote(symbol: String) -> Quote? {
+  func quote(symbol: String, now: Date) -> Quote? {
     guard code == nil, let price = close.flatMap(DecimalCoding.parse) else {
       return nil
     }
@@ -4970,7 +5385,7 @@ struct TDQuote: Decodable {
       volume: volume.flatMap(Int.init),
       fiftyTwoWeekHigh: fiftyTwoWeek?.high.flatMap(DecimalCoding.parse),
       fiftyTwoWeekLow: fiftyTwoWeek?.low.flatMap(DecimalCoding.parse),
-      asOf: timestamp.map { Date(timeIntervalSince1970: TimeInterval($0)) } ?? Date()
+      asOf: timestamp.map { Date(timeIntervalSince1970: TimeInterval($0)) } ?? now
     )
   }
 }
@@ -5021,14 +5436,15 @@ struct TDSearch: Decodable {
 enum TwelveDataDecoding {
   static let searchableTypes: Set<String> = ["Common Stock", "ETF", "REIT", "Depositary Receipt"]
 
-  static func quotes(from data: Data, requested: [String]) throws -> [Quote] {
+  /// A quote without a timestamp is dated `now`, the injected clock.
+  static func quotes(from data: Data, requested: [String], now: Date) throws -> [Quote] {
     let decoder = JSONDecoder()
     if requested.count == 1 {
-      return try decoder.decode(TDQuote.self, from: data).quote(symbol: requested[0]).map { [$0] } ?? []
+      return try decoder.decode(TDQuote.self, from: data).quote(symbol: requested[0], now: now).map { [$0] } ?? []
     }
     // Lossy per symbol: one garbage entry (wrong type, missing fields) mustn't fail the whole batch.
     let batch = try decoder.decode([String: LossyTDQuote].self, from: data)
-    return requested.compactMap { symbol in (batch[symbol] ?? batch[symbol.uppercased()])?.value?.quote(symbol: symbol) }
+    return requested.compactMap { symbol in (batch[symbol] ?? batch[symbol.uppercased()])?.value?.quote(symbol: symbol, now: now) }
   }
 
   /// `timezone=UTC` is always requested. Date-only bars are anchored at 12:00 UTC so US time zones show the same calendar day.
@@ -5074,10 +5490,10 @@ enum TwelveDataDecoding {
 }
 ```
 
-- [ ] **Step 6: Implement `TwelveDataMarketData.swift`**
+- [x] **Step 6: Implement `TwelveDataMarketData.swift`**
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -5105,9 +5521,19 @@ public extension MarketDataClient {
   static func twelveData(
     apiKey: String,
     baseURL: URL = URL(string: "https://api.twelvedata.com")!,
-    get: @escaping HTTPGet = URLSession.shared.httpGet
+    get: @escaping HTTPGet = URLSession.shared.httpGet,
+    now: @escaping @Sendable () -> Date = { Date() }
   ) -> MarketDataClient {
-    let api = TwelveDataAPI(apiKey: apiKey, baseURL: baseURL, get: get)
+    // An unset key (empty, an unexpanded `$(...)` or the placeholder) would only earn 401s: fail fast with no request.
+    guard TwelveDataAPIKey.isUsable(apiKey) else {
+      return MarketDataClient(
+        quotes: { _, _ in throw MarketDataError.unavailable },
+        series: { _, _, _ in throw MarketDataError.unavailable },
+        search: { _ in throw MarketDataError.unavailable },
+        profile: { _ in throw MarketDataError.unavailable }
+      )
+    }
+    let api = TwelveDataAPI(apiKey: apiKey, baseURL: baseURL, get: get, now: now)
     return MarketDataClient(
       quotes: { symbols, _ in try await api.quotes(symbols) },
       series: { symbol, range, _ in try await api.series(symbol, range: range) },
@@ -5127,6 +5553,7 @@ struct TwelveDataAPI: Sendable {
   let apiKey: String
   let baseURL: URL
   let get: HTTPGet
+  let now: @Sendable () -> Date
 
   static func parameters(for range: ChartRange) -> (interval: String, outputSize: Int) {
     switch range {
@@ -5138,22 +5565,35 @@ struct TwelveDataAPI: Sendable {
     }
   }
 
-  /// One request per 8 symbols (1 credit per symbol). A 429 on the first chunk throws `.rateLimited`.
-  /// A 429 after some chunks succeeded throws `PartialQuotesError`, so the caching decorator keeps those quotes and still cools down.
+  /// One request per 8 symbols (1 credit per symbol).
+  /// - A failure on the first chunk throws the mapped `MarketDataError`.
+  /// - A failure on a later chunk (a 429 or anything else) throws `PartialQuotesError` with the quotes so far and the underlying error,
+  ///   so the caching decorator keeps those quotes and still cools down on a 429.
+  /// - A single-symbol chunk whose body is a top-level `.notFound` error means "no quote for that symbol": it is skipped.
+  ///   If nothing at all came back, the lone `.notFound` is thrown so a search for one unknown symbol still reports it.
   func quotes(_ symbols: [String]) async throws -> [Quote] {
     var result: [Quote] = []
+    var skippedUnknown = false
     for start in stride(from: 0, to: symbols.count, by: Self.batchSize) {
       let chunk = Array(symbols[start ..< min(start + Self.batchSize, symbols.count)])
       do {
         let data = try await fetch("quote", ["symbol": chunk.joined(separator: ","), "timezone": "UTC"])
-        result += try TwelveDataDecoding.quotes(from: data, requested: chunk)
-      } catch let error as MarketDataError {
-        if case let .rateLimited(retryAfter) = error, !result.isEmpty {
-          Log.network.info("Twelve Data rate limited after \(result.count) quotes")
-          throw PartialQuotesError(quotes: result, retryAfter: retryAfter)
+        result += try TwelveDataDecoding.quotes(from: data, requested: chunk, now: now())
+      } catch {
+        let mapped = try MarketDataError(error) // cancellation stays a CancellationError
+        if chunk.count == 1, mapped == .notFound {
+          skippedUnknown = true
+          continue
         }
-        throw error
+        guard !result.isEmpty else {
+          throw mapped
+        }
+        Log.network.info("Twelve Data chunk failed after \(result.count) quotes: \(mapped.userMessage)")
+        throw PartialQuotesError(quotes: result, underlying: mapped)
       }
+    }
+    if result.isEmpty, skippedUnknown {
+      throw MarketDataError.notFound
     }
     return result
   }
@@ -5170,7 +5610,7 @@ struct TwelveDataAPI: Sendable {
     if range == .oneDay {
       points = TwelveDataDecoding.lastSession(points)
     }
-    return PriceSeries(symbol: symbol.uppercased(), range: range, points: points, asOf: points.last?.date ?? Date())
+    return PriceSeries(symbol: symbol.uppercased(), range: range, points: points, asOf: points.last?.date ?? now())
   }
 
   func search(_ query: String) async throws -> [SymbolSearchResult] {
@@ -5184,6 +5624,8 @@ struct TwelveDataAPI: Sendable {
     var components = URLComponents(url: baseURL.appending(path: path), resolvingAgainstBaseURL: false)!
     components.queryItems = parameters.sorted { $0.key < $1.key }.map { URLQueryItem(name: $0.key, value: $0.value) }
       + [URLQueryItem(name: "apikey", value: apiKey)]
+    // URLComponents leaves `+` as is, and a server may read it as a space. Encoded values never contain a literal `+` otherwise.
+    components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
     return components.url!
   }
 
@@ -5204,26 +5646,54 @@ struct TwelveDataAPI: Sendable {
 }
 ```
 
-- [ ] **Step 7: Add `liveValue`.** Append to `Wait/Packages/WaitKit/Sources/MarketDataClient/MarketDataClient.swift`. In plan 04 this is the one line to change, to `.cached(.backend(…))`.
+`Wait/Packages/WaitKit/Sources/MarketDataClient/TwelveData/TwelveDataAPIKey.swift` (review fix: the testable key check):
+```swift
+//
+// Created by: Claude on 2026-11-23.
+// Copyright © 2021 Wait. All rights reserved.
+//
+
+import Foundation
+
+// MARK: - TwelveDataAPIKey
+
+public enum TwelveDataAPIKey {
+  public static let placeholder = "replace-with-your-twelve-data-key"
+
+  /// False for a missing, empty or whitespace-only key, an unexpanded build setting such as `$(TWELVE_DATA_API_KEY)`, and the placeholder.
+  public static func isUsable(_ key: String?) -> Bool {
+    guard let key = key?.trimmingCharacters(in: .whitespacesAndNewlines), !key.isEmpty else {
+      return false
+    }
+    return !key.hasPrefix("$(") && key != placeholder
+  }
+}
+```
+
+- [x] **Step 7: Add `liveValue`.** (The file also imports `Logging`.) Append to `Wait/Packages/WaitKit/Sources/MarketDataClient/MarketDataClient.swift`. In plan 04 this is the one line to change, to `.cached(.backend(…))`.
 ```swift
 // MARK: DependencyKey
 
 extension MarketDataClient: DependencyKey {
   /// Plan 02: Twelve Data stopgap. The key comes from Info.plist `TwelveDataAPIKey`, which is `$(TWELVE_DATA_API_KEY)` from `Secrets.xcconfig`.
-  public static let liveValue = MarketDataClient.cached(
-    .twelveData(apiKey: Bundle.main.object(forInfoDictionaryKey: "TwelveDataAPIKey") as? String ?? ""),
-    disk: .live,
-    now: { Date() }
-  )
+  /// An unset key (empty, an unexpanded `$(...)` or the placeholder) gives a client whose every call throws `.unavailable` with no request.
+  /// A `static let` runs once, so the error is logged once.
+  public static let liveValue: MarketDataClient = {
+    let key = Bundle.main.object(forInfoDictionaryKey: "TwelveDataAPIKey") as? String
+    if !TwelveDataAPIKey.isUsable(key) {
+      Log.network.error("TwelveDataAPIKey is not configured; set TWELVE_DATA_API_KEY in Secrets.xcconfig. Market data is unavailable.")
+    }
+    return MarketDataClient.cached(.twelveData(apiKey: key ?? ""), disk: .live, now: { Date() })
+  }()
 }
 ```
 
-- [ ] **Step 8: Run the tests and confirm they pass**
+- [ ] **Step 8: Run the tests and confirm they pass** — NOT RUN (code-only; checked in an out-of-repo harness instead)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests`
 Expected PASS: `** TEST SUCCEEDED **`. Every suite passes, including the 10 Twelve Data tests.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/MarketDataClient Wait/Packages/WaitKit/Tests/MarketDataClientTests
 git commit -m "feat(marketdata): Twelve Data stopgap adapter (chunked, UTC, 429-in-body) and liveValue
@@ -5243,11 +5713,11 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `Wait/Packages/WaitKit/Package.swift` (`DesignSystem` gains the `Domain` dependency; add `DesignSystemTests`)
 - Create: `Wait/Packages/WaitKit/Tests/DesignSystemTests/DesignSystemTests.swift`
 
-- [ ] **Step 1: Update `Package.swift`**
+- [x] **Step 1: Update `Package.swift`**
   - In the existing `.target(name: "DesignSystem", …)`, add `"Domain"` to `dependencies:` (create `dependencies: ["Domain"]` if the target has none). Keep its `swiftSettings`; it stays Swift 5 until the cutover.
   - Append to `targets:`: `.testTarget(name: "DesignSystemTests", dependencies: ["DesignSystem", "Domain"]),`
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/DesignSystemTests/DesignSystemTests.swift`:
 ```swift
@@ -5287,12 +5757,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 3: Run the tests and confirm they fail**
+- [ ] **Step 3: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DesignSystemTests`
 Expected FAIL: `error: value of type 'LadderStatus' has no member 'symbolName'`, and `cannot find 'TemperatureBadge' in scope`.
 
-- [ ] **Step 4: Remove the shadows of SwiftUI's colors**
+- [x] **Step 4: Remove the shadows of SwiftUI's colors**
 
 Run: `grep -rn "static let primary\|static let orange" Wait/Packages/WaitKit/Sources/DesignSystem`
 Expected: three hits:
@@ -5302,7 +5772,7 @@ Expected: three hits:
 
 Delete those three lines, plus the `// App Theme` comment above `primary`. Once they are gone, `.primary` is SwiftUI's primary label color again and `.orange` is the system orange. Before this change, the legacy `StockCard` text rendered mint.
 
-- [ ] **Step 5: Implement the tokens**
+- [x] **Step 5: Implement the tokens**
 
 `Wait/Packages/WaitKit/Sources/DesignSystem/Palette.swift`:
 ```swift
@@ -5517,7 +5987,7 @@ public struct TemperatureBadge: View {
       .accessibilityLabel(temperature.map { "Temperature \(Int($0.value.rounded())), \($0.band.title)" } ?? "No temperature")
   }
 
-  public static func label(for temperature: Temperature?) -> String {
+  public nonisolated static func label(for temperature: Temperature?) -> String {
     temperature?.formatted ?? "—"
   }
 
@@ -5539,12 +6009,12 @@ public struct TemperatureBadge: View {
 }
 ```
 
-- [ ] **Step 6: Run the tests and confirm they pass, then build the app**
+- [ ] **Step 6: Run the tests and confirm they pass, then build the app** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DesignSystemTests && scripts/build-app.sh`
 Expected: `** TEST SUCCEEDED **` and `** BUILD SUCCEEDED **`. Legacy code still compiles without the shadows.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/DesignSystem Wait/Packages/WaitKit/Tests/DesignSystemTests
 git commit -m "feat(designsystem): semantic palette, spacing, status pill, temperature badge; drop Color.primary/orange shadows
@@ -5559,7 +6029,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/ChecklistFeature/ChecklistFeature.swift`, `ChecklistView.swift`, `ChecklistTemplateFeature.swift`, `ChecklistTemplateView.swift`
 - Create: `Wait/Packages/WaitKit/Tests/ChecklistFeatureTests/ChecklistFeatureTests.swift`
 
-- [ ] **Step 1: Update `Package.swift`**
+- [x] **Step 1: Update `Package.swift`**
   - Append to `products:`: `.library(name: "ChecklistFeature", targets: ["ChecklistFeature"]),`
   - Append to `targets:`:
     ```swift
@@ -5585,7 +6055,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
     ```
   - Create `Wait/Packages/WaitKit/Sources/ChecklistFeature/ChecklistFeature.swift` containing only the file header, so the package loads (SwiftPM rejects a target with no sources). Step 4 fills it in.
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/ChecklistFeatureTests/ChecklistFeatureTests.swift`:
 ```swift
@@ -5686,12 +6156,12 @@ struct ChecklistFeatureTests {
 }
 ```
 
-- [ ] **Step 3: Run the tests and confirm they fail**
+- [ ] **Step 3: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh ChecklistFeatureTests`
 Expected FAIL: `error: cannot find 'ChecklistFeature' in scope`.
 
-- [ ] **Step 4: Implement the reducers** (replace the header-only `ChecklistFeature.swift`)
+- [x] **Step 4: Implement the reducers** (replace the header-only `ChecklistFeature.swift`)
 
 `Wait/Packages/WaitKit/Sources/ChecklistFeature/ChecklistFeature.swift`:
 ```swift
@@ -5848,12 +6318,12 @@ public struct ChecklistTemplateFeature {
 }
 ```
 
-- [ ] **Step 5: Run the tests and confirm they pass**
+- [ ] **Step 5: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh ChecklistFeatureTests`
 Expected PASS: 4 tests pass.
 
-- [ ] **Step 6: Add the views.** Load `swiftui-expert:swiftui-expert-skill` first.
+- [x] **Step 6: Add the views.** Load `swiftui-expert:swiftui-expert-skill` first.
 
 `Wait/Packages/WaitKit/Sources/ChecklistFeature/ChecklistView.swift`:
 ```swift
@@ -5981,12 +6451,12 @@ public struct ChecklistTemplateView: View {
 }
 ```
 
-- [ ] **Step 7: Build the package scheme so the views compile**
+- [ ] **Step 7: Build the package scheme so the views compile** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh ChecklistFeatureTests`
 Expected PASS: `** TEST SUCCEEDED **`. The views compile as part of the target.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/ChecklistFeature Wait/Packages/WaitKit/Tests/ChecklistFeatureTests
 git commit -m "feat(checklist): TCA checklist and template features on shared watchlist state
@@ -6000,12 +6470,14 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 ### Task 20: `StockChartFeature` and `ChartGeometry`
 
+> Review fix (2026-11-23): `load` no longer returns early when the range is already in `loading` (a cancelled `.task` left it stuck; `cancelInFlight` handles duplicates), and `nearestIndex`/`selectionChanged` take a raw `Double?` and round to the nearest point.
+
 **Files:**
 - Modify: `Wait/Packages/WaitKit/Package.swift` (add the `StockChartFeature` target and product, and `StockChartFeatureTests`)
 - Create: `Wait/Packages/WaitKit/Sources/StockChartFeature/ChartGeometry.swift`, `Wait/Packages/WaitKit/Sources/StockChartFeature/StockChartFeature.swift`
 - Create: `Wait/Packages/WaitKit/Tests/StockChartFeatureTests/ChartGeometryTests.swift`, `Wait/Packages/WaitKit/Tests/StockChartFeatureTests/StockChartFeatureTests.swift`
 
-- [ ] **Step 1: Update `Package.swift`**
+- [x] **Step 1: Update `Package.swift`**
   - Append to `products:`: `.library(name: "StockChartFeature", targets: ["StockChartFeature"]),`
   - Append to `targets:`:
     ```swift
@@ -6030,7 +6502,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
     ```
   - Create `Wait/Packages/WaitKit/Sources/StockChartFeature/ChartGeometry.swift` containing only the file header, so the package loads (SwiftPM rejects a target with no sources). Step 4 fills it in.
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/StockChartFeatureTests/ChartGeometryTests.swift`:
 ```swift
@@ -6079,6 +6551,14 @@ func points(_ closes: [String]) -> [PricePoint] {
     #expect(ChartGeometry.nearestIndex(-3, count: 2) == 0)
     #expect(ChartGeometry.nearestIndex(nil, count: 2) == nil)
     #expect(ChartGeometry.nearestIndex(0, count: 0) == nil)
+  }
+
+  @Test func nearestIndexRoundsToTheClosestPoint() {
+    #expect(ChartGeometry.nearestIndex(2.4, count: 5) == 2)
+    #expect(ChartGeometry.nearestIndex(2.6, count: 5) == 3)
+    #expect(ChartGeometry.nearestIndex(-1, count: 5) == 0)
+    #expect(ChartGeometry.nearestIndex(9.7, count: 5) == 4)
+    #expect(ChartGeometry.nearestIndex(.nan, count: 5) == nil)
   }
 
   @Test func trendAndChange() {
@@ -6200,23 +6680,44 @@ let oneYear = PriceSeries(symbol: "AAPL", range: .oneYear, points: points(["10",
     }
   }
 
+  @Test func taskAfterACancelledLoadFetchesAgain() async {
+    // A cancelled `.task` leaves its range in `loading`. The next `.task` must still fetch and clear it.
+    var state = StockChartFeature.State(symbol: "AAPL")
+    state.loading = [.oneYear]
+    let store = TestStore(initialState: state) {
+      StockChartFeature()
+    } withDependencies: {
+      $0.marketData.series = { _, _, policy in
+        if policy == .cacheOnly { throw MarketDataError.notCached }
+        return oneYear
+      }
+    }
+    await store.send(.task)
+    await store.receive(\.seriesLoaded) {
+      $0.loading = []
+      $0.series[.oneYear] = oneYear
+    }
+  }
+
   @Test func selectionSnapsToAValidIndex() async {
     var state = StockChartFeature.State(symbol: "AAPL")
     state.series[.oneYear] = oneYear
     let store = TestStore(initialState: state) { StockChartFeature() }
     await store.send(.selectionChanged(7)) { $0.selectedIndex = 1 }
     #expect(store.state.selectedPoint?.close == 12)
+    await store.send(.selectionChanged(0.4)) { $0.selectedIndex = 0 }
+    await store.send(.selectionChanged(0.6)) { $0.selectedIndex = 1 }
     await store.send(.selectionChanged(nil)) { $0.selectedIndex = nil }
   }
 }
 ```
 
-- [ ] **Step 3: Run the tests and confirm they fail**
+- [ ] **Step 3: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh StockChartFeatureTests`
 Expected FAIL: `error: cannot find 'ChartGeometry' in scope` and `cannot find 'StockChartFeature' in scope`.
 
-- [ ] **Step 4: Replace the contents of `ChartGeometry.swift` with the implementation**
+- [x] **Step 4: Replace the contents of `ChartGeometry.swift` with the implementation**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -6254,11 +6755,12 @@ public enum ChartGeometry {
     return max(0, low - pad) ... (high + pad)
   }
 
-  public static func nearestIndex(_ raw: Int?, count: Int) -> Int? {
-    guard let raw, count > 0 else {
+  /// Rounds the raw x value to the nearest point index and clamps it to `0 ..< count`. Nil for nil, NaN or no points.
+  public static func nearestIndex(_ raw: Double?, count: Int) -> Int? {
+    guard let raw, raw.isFinite, count > 0 else {
       return nil
     }
-    return min(max(raw, 0), count - 1)
+    return Int(min(max(raw.rounded(), 0), Double(count - 1)))
   }
 
   public static func trend(_ points: [PricePoint]) -> ChartTrend {
@@ -6289,7 +6791,7 @@ public enum ChartGeometry {
 }
 ```
 
-- [ ] **Step 5: Implement `StockChartFeature.swift`**
+- [x] **Step 5: Implement `StockChartFeature.swift`**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -6346,7 +6848,8 @@ public struct StockChartFeature {
     case task
     case rangeSelected(ChartRange)
     case retryTapped
-    case selectionChanged(Int?)
+    /// The raw x value from `chartXSelection`; the reducer rounds it to the nearest point.
+    case selectionChanged(Double?)
     /// Cache-first result. It fills the chart but keeps `loading`, because the fresh request is still running.
     case cachedSeriesLoaded(ChartRange, PriceSeries)
     case seriesLoaded(ChartRange, PriceSeries)
@@ -6402,9 +6905,8 @@ public struct StockChartFeature {
 
   /// For `.useCache`, cached data goes out first (`.cachedSeriesLoaded`), then the possibly network-backed result.
   private func load(_ state: inout State, range: ChartRange, policy: CachePolicy) -> Effect<Action> {
-    guard !state.loading.contains(range) else {
-      return .none
-    }
+    // No in-flight guard: a cancelled load (view disappeared) would leave `range` in `loading` and block every later load.
+    // `cancelInFlight` already supersedes a still-running request.
     state.loading.insert(range)
     state.failed[range] = nil
     let symbol = state.symbol
@@ -6423,12 +6925,12 @@ public struct StockChartFeature {
 }
 ```
 
-- [ ] **Step 6: Run the tests and confirm they pass**
+- [ ] **Step 6: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh StockChartFeatureTests`
 Expected PASS: 12 tests pass.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/StockChartFeature Wait/Packages/WaitKit/Tests/StockChartFeatureTests
 git commit -m "feat(chart): StockChartFeature loads one range at a time; ChartGeometry fixes empty/sub-dollar domains
@@ -6438,12 +6940,14 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 ### Task 21: `StockChartView` (Swift Charts on iOS 17)
 
+> Review fix (2026-11-23): the view imports `MarketDataClient` (it uses `.previewValue`/`MarketDataError`), and `chartXSelection` binds a raw `Double?` so a scrub rounds to the nearest point instead of truncating; the feature does the rounding.
+
 **Files:**
 - Create: `Wait/Packages/WaitKit/Sources/StockChartFeature/StockChartView.swift`
 
 Load `swiftui-expert:swiftui-expert-skill`. The view takes the ladder as a parameter, because the rungs belong to the item, not to the chart state.
 
-- [ ] **Step 1: Implement**
+- [x] **Step 1: Implement**
 
 `Wait/Packages/WaitKit/Sources/StockChartFeature/StockChartView.swift`:
 ```swift
@@ -6456,6 +6960,7 @@ import Charts
 import ComposableArchitecture
 import DesignSystem
 import Domain
+import MarketDataClient
 import SwiftUI
 
 // MARK: - StockChartView
@@ -6575,7 +7080,7 @@ public struct StockChartView: View {
         }
       }
       .chartYAxis { AxisMarks(position: .trailing) }
-      .chartXSelection(value: Binding(get: { store.selectedIndex }, set: { store.send(.selectionChanged($0)) }))
+      .chartXSelection(value: Binding<Double?>(get: { store.selectedIndex.map(Double.init) }, set: { store.send(.selectionChanged($0)) }))
       .accessibilityLabel("\(store.symbol) price chart, \(store.range.title)")
     } else if store.loading.contains(store.range) {
       ProgressView()
@@ -6615,18 +7120,18 @@ public struct StockChartView: View {
 }
 ```
 
-- [ ] **Step 2: Build the package so the view compiles**
+- [ ] **Step 2: Build the package so the view compiles** — NOT RUN (code-only; typechecked with swiftc against stubbed `Store`)
 
 Run: `scripts/test-waitkit.sh StockChartFeatureTests`
 Expected PASS: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 3: Check the preview by hand.** Open `StockChartView.swift` in Xcode and confirm:
+- [ ] **Step 3: Check the preview by hand.** — SKIPPED (manual) Open `StockChartView.swift` in Xcode and confirm:
   - The canvas shows a line with a gradient, "Buy high" and "Fair" dashed rules, and a segmented 1D–5Y picker.
   - Dragging across the chart moves the selection rule and updates the header price.
 
   If you're running without Xcode UI, skip this step; it's checked again in Task 29.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/StockChartFeature/StockChartView.swift
 git commit -m "feat(chart): Swift Charts view with area gradient, ladder rungs and chartXSelection
@@ -6643,7 +7148,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/StockDetailsFeature/LadderEditorFeature.swift`, `LadderEditorView.swift`, `NotesEditorFeature.swift`, `NotesEditorView.swift`
 - Create: `Wait/Packages/WaitKit/Tests/StockDetailsFeatureTests/EditorFeatureTests.swift`
 
-- [ ] **Step 1: Update `Package.swift`.** Plan 01 renamed the legacy module to `LegacyStockDetails`, so the name `StockDetailsFeature` is free.
+- [x] **Step 1: Update `Package.swift`.** Plan 01 renamed the legacy module to `LegacyStockDetails`, so the name `StockDetailsFeature` is free.
   - Append to `products:`: `.library(name: "StockDetailsFeature", targets: ["StockDetailsFeature"]),`
   - Append to `targets:`:
     ```swift
@@ -6670,7 +7175,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
     ```
   - Create `Wait/Packages/WaitKit/Sources/StockDetailsFeature/LadderEditorFeature.swift` containing only the file header, so the package loads (SwiftPM rejects a target with no sources). Step 4 fills it in.
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/StockDetailsFeatureTests/EditorFeatureTests.swift`:
 ```swift
@@ -6763,12 +7268,12 @@ func dec(_ string: String) -> Decimal {
 }
 ```
 
-- [ ] **Step 3: Run the tests and confirm they fail**
+- [ ] **Step 3: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh StockDetailsFeatureTests`
 Expected FAIL: `error: cannot find 'LadderEditorFeature' in scope`.
 
-- [ ] **Step 4: Implement the reducers** (replace the header-only `LadderEditorFeature.swift`)
+- [x] **Step 4: Implement the reducers** (replace the header-only `LadderEditorFeature.swift`)
 
 `Wait/Packages/WaitKit/Sources/StockDetailsFeature/LadderEditorFeature.swift`:
 ```swift
@@ -6981,12 +7486,12 @@ public struct NotesEditorFeature {
 }
 ```
 
-- [ ] **Step 5: Run the tests and confirm they pass**
+- [ ] **Step 5: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh StockDetailsFeatureTests`
 Expected PASS: 7 tests pass.
 
-- [ ] **Step 6: Add the views** (`swiftui-expert:swiftui-expert-skill`)
+- [x] **Step 6: Add the views** (`swiftui-expert:swiftui-expert-skill`)
 
 `Wait/Packages/WaitKit/Sources/StockDetailsFeature/LadderEditorView.swift`:
 ```swift
@@ -7110,7 +7615,7 @@ public struct NotesEditorView: View {
   public var body: some View {
     Form {
       TextField("Write some notes…", text: $store.text, axis: .vertical)
-        .lineLimit(6 ...)
+        .lineLimit(6...)
     }
     .navigationTitle("Notes")
     .navigationBarTitleDisplayMode(.inline)
@@ -7130,12 +7635,12 @@ public struct NotesEditorView: View {
 }
 ```
 
-- [ ] **Step 7: Compile**
+- [ ] **Step 7: Compile** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh StockDetailsFeatureTests`
 Expected PASS: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/StockDetailsFeature Wait/Packages/WaitKit/Tests/StockDetailsFeatureTests
 git commit -m "feat(details): ladder and notes editor features with decimal input
@@ -7153,7 +7658,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/StockDetailsFeature/StockDetailsFeature.swift`, `StockDetailsView.swift`, `StatsSection.swift`, `LadderHistoryView.swift`
 - Create: `Wait/Packages/WaitKit/Tests/StockDetailsFeatureTests/StockDetailsFeatureTests.swift`
 
-- [ ] **Step 1: Write the failing tests.** Two of them are regressions for legacy bugs. The legacy price editor rebuilt `Stock` without `memo`, so saving a price erased the note. The legacy star called `StockCache.removeStock`, so un-starring deleted the stock.
+- [x] **Step 1: Write the failing tests.** Two of them are regressions for legacy bugs. The legacy price editor rebuilt `Stock` without `memo`, so saving a price erased the note. The legacy star called `StockCache.removeStock`, so un-starring deleted the stock.
 
 `Wait/Packages/WaitKit/Tests/StockDetailsFeatureTests/StockDetailsFeatureTests.swift`:
 ```swift
@@ -7168,6 +7673,8 @@ import Foundation
 import MarketDataClient
 import StockDetailsFeature
 import Testing
+
+// swiftlint:disable force_try
 
 let detailsNow = Date(timeIntervalSince1970: 1_795_186_800)
 
@@ -7237,7 +7744,9 @@ func detailsItem() -> WatchlistItem {
   @Test func failedRefreshKeepsTheCachedQuote() async {
     let cached = Quote(symbol: "AAPL", price: 140, asOf: detailsNow, isStale: true)
     let store = makeStore { _, policy in
-      if policy == .cacheOnly { return [cached] }
+      if policy == .cacheOnly {
+        return [cached]
+      }
       throw MarketDataError.network("offline")
     }
     await store.send(.task)
@@ -7293,7 +7802,9 @@ func detailsItem() -> WatchlistItem {
   @Test func taskLoadsTheQuoteAndDerivesTheStatus() async {
     let quote = Quote(symbol: "AAPL", price: 140, asOf: detailsNow)
     let store = makeStore { _, policy in
-      if policy == .cacheOnly { throw MarketDataError.notCached }
+      if policy == .cacheOnly {
+        throw MarketDataError.notCached
+      }
       return [quote]
     }
     await store.send(.task)
@@ -7310,12 +7821,12 @@ func detailsItem() -> WatchlistItem {
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh StockDetailsFeatureTests/StockDetailsFeatureTests`
 Expected FAIL: `error: cannot find 'StockDetailsFeature' in scope`.
 
-- [ ] **Step 3: Implement the reducer**
+- [x] **Step 3: Implement the reducer**
 
 `Wait/Packages/WaitKit/Sources/StockDetailsFeature/StockDetailsFeature.swift`:
 ```swift
@@ -7408,7 +7919,7 @@ public struct StockDetailsFeature {
 
   public var body: some ReducerOf<Self> {
     BindingReducer()
-    Scope(state: \.chart, action: \.chart) {
+    Scope(\.chart, action: \.chart) {
       StockChartFeature()
     }
     Reduce { state, action in
@@ -7515,12 +8026,12 @@ public extension AlertState where Action == StockDetailsFeature.Action.Alert {
 }
 ```
 
-- [ ] **Step 4: Run the tests and confirm they pass**
+- [ ] **Step 4: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh StockDetailsFeatureTests`
 Expected PASS: 17 tests pass, counting the editor tests.
 
-- [ ] **Step 5: Add the views** (`swiftui-expert:swiftui-expert-skill`)
+- [x] **Step 5: Add the views** (`swiftui-expert:swiftui-expert-skill`)
 
 `Wait/Packages/WaitKit/Sources/StockDetailsFeature/StatsSection.swift`. Plan 04 adds a `profile` parameter for fundamentals.
 ```swift
@@ -7662,6 +8173,7 @@ struct LadderHistoryView: View {
 import ComposableArchitecture
 import DesignSystem
 import Domain
+import MarketDataClient
 import StockChartFeature
 import SwiftUI
 
@@ -7680,7 +8192,7 @@ public struct StockDetailsView: View {
     ScrollView {
       VStack(alignment: .leading, spacing: Spacing.l) {
         header
-        card { StockChartView(store: store.scope(state: \.chart, action: \.chart), ladder: store.item.ladder) }
+        card { StockChartView(store: store.scope(\.chart, action: \.chart), ladder: store.item.ladder) }
         card { ladderCard }
         card { StatsSection(quote: store.quote) }
         card { checklistRow }
@@ -7713,17 +8225,17 @@ public struct StockDetailsView: View {
       }
     }
     .task { await store.send(.task).finish() }
-    .sheet(item: $store.scope(state: \.destination?.ladderEditor, action: \.destination.ladderEditor)) { editor in
+    .sheet(item: $store.scope(\.$destination, action: \.destination).ladderEditor) { editor in
       NavigationStack { LadderEditorView(store: editor) }
         .presentationDetents([.medium, .large])
     }
-    .sheet(item: $store.scope(state: \.destination?.notesEditor, action: \.destination.notesEditor)) { notes in
+    .sheet(item: $store.scope(\.$destination, action: \.destination).notesEditor) { notes in
       NavigationStack { NotesEditorView(store: notes) }
     }
     .sheet(isPresented: $store.isShowingLadderHistory) {
       NavigationStack { LadderHistoryView(history: store.item.ladderHistory) }
     }
-    .alert($store.scope(state: \.alert, action: \.alert))
+    .alert($store.scope(\.alert, action: \.alert))
   }
 
   // MARK: Private
@@ -7864,7 +8376,7 @@ struct ThermometerBar: View {
 }
 ```
 
-- [ ] **Step 6: Compile and check the preview.** Run the tests (which also compiles the views), then open the preview.
+- [ ] **Step 6: Compile and check the preview.** — NOT RUN (code-only) Run the tests (which also compiles the views), then open the preview.
 
 Run: `scripts/test-waitkit.sh StockDetailsFeatureTests`
 Expected PASS: `** TEST SUCCEEDED **`.
@@ -7875,7 +8387,7 @@ The preview should show:
 - A ladder card with a thermometer and four rungs, each with its % distance.
 - Stats, a "0 / 17" checklist row, and multi-line notes.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/StockDetailsFeature Wait/Packages/WaitKit/Tests/StockDetailsFeatureTests
 git commit -m "feat(details): StockDetailsFeature with ladder card, stats, history; memo/star regressions fixed
@@ -7894,7 +8406,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/WatchlistFeature/AddStockFeature.swift`, `Wait/Packages/WaitKit/Sources/WatchlistFeature/AddStockView.swift`
 - Create: `Wait/Packages/WaitKit/Tests/WatchlistFeatureTests/AddStockFeatureTests.swift`
 
-- [ ] **Step 1: Update `Package.swift`**
+- [x] **Step 1: Update `Package.swift`**
   - Append to `products:`: `.library(name: "WatchlistFeature", targets: ["WatchlistFeature"]),`
   - Append to `targets:`:
     ```swift
@@ -7926,7 +8438,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
     ```
   - Create `Wait/Packages/WaitKit/Sources/WatchlistFeature/AddStockFeature.swift` containing only the file header, so the package loads (SwiftPM rejects a target with no sources). Step 4 fills it in.
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/WatchlistFeatureTests/AddStockFeatureTests.swift`:
 ```swift
@@ -8043,12 +8555,12 @@ struct AddStockFeatureTests {
 }
 ```
 
-- [ ] **Step 3: Run the tests and confirm they fail**
+- [ ] **Step 3: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh WatchlistFeatureTests`
 Expected FAIL: `error: cannot find 'AddStockFeature' in scope`.
 
-- [ ] **Step 4: Implement** (replace the header-only `AddStockFeature.swift`)
+- [x] **Step 4: Implement** (replace the header-only `AddStockFeature.swift`)
 
 `Wait/Packages/WaitKit/Sources/WatchlistFeature/AddStockFeature.swift`:
 ```swift
@@ -8067,6 +8579,7 @@ import StockDetailsFeature
 // MARK: - AddStockFeature
 
 /// Search is debounced 300 ms with the injected clock (the legacy code used `asyncAfter` for 1 s). Tapping a result opens the ladder editor, and saving emits `.delegate(.added)`.
+/// Uses the effect-returning `onChange(of:)`; the reducer-builder overload is deprecated in TCA 1.26.
 @Reducer
 public struct AddStockFeature {
   // MARK: Lifecycle
@@ -8117,28 +8630,26 @@ public struct AddStockFeature {
 
   public var body: some ReducerOf<Self> {
     BindingReducer()
-      .onChange(of: \.query) { _, query in
-        Reduce { state, _ in
-          let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
-          state.errorMessage = nil
-          guard !trimmed.isEmpty else {
-            state.results = []
-            state.isSearching = false
-            return .cancel(id: CancelID.search)
-          }
-          state.isSearching = true
-          return .run { [clock, marketData] send in
-            try await clock.sleep(for: .milliseconds(300))
-            do {
-              try await send(.searchLoaded(query: trimmed, marketData.search(trimmed)))
-            } catch is CancellationError {
-              return
-            } catch {
-              try await send(.searchFailed(MarketDataError(error)))
-            }
-          }
-          .cancellable(id: CancelID.search, cancelInFlight: true)
+      .onChange(of: \.query) { _, state in
+        let trimmed = state.query.trimmingCharacters(in: .whitespacesAndNewlines)
+        state.errorMessage = nil
+        guard !trimmed.isEmpty else {
+          state.results = []
+          state.isSearching = false
+          return .cancel(id: CancelID.search)
         }
+        state.isSearching = true
+        return .run { [clock, marketData] send in
+          try await clock.sleep(for: .milliseconds(300))
+          do {
+            try await send(.searchLoaded(query: trimmed, marketData.search(trimmed)))
+          } catch is CancellationError {
+            return
+          } catch {
+            try await send(.searchFailed(MarketDataError(error))) // rethrows cancellation
+          }
+        }
+        .cancellable(id: CancelID.search, cancelInFlight: true)
       }
     Reduce { state, action in
       switch action {
@@ -8211,12 +8722,12 @@ public struct AddStockFeature {
 extension AddStockFeature.Destination.State: Equatable {}
 ```
 
-- [ ] **Step 5: Run the tests and confirm they pass**
+- [ ] **Step 5: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh WatchlistFeatureTests`
 Expected PASS: 5 tests pass.
 
-- [ ] **Step 6: Add the view** (`swiftui-expert:swiftui-expert-skill`)
+- [x] **Step 6: Add the view** (`swiftui-expert:swiftui-expert-skill`)
 
 `Wait/Packages/WaitKit/Sources/WatchlistFeature/AddStockView.swift`:
 ```swift
@@ -8268,7 +8779,7 @@ public struct AddStockView: View {
       .overlay {
         if store.isSearching, store.results.isEmpty {
           ProgressView()
-        } else if !store.query.isEmpty, !store.isSearching, store.results.isEmpty, store.errorMessage == nil {
+        } else if !store.query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, !store.isSearching, store.results.isEmpty, store.errorMessage == nil {
           ContentUnavailableView.search(text: store.query)
         }
       }
@@ -8282,7 +8793,7 @@ public struct AddStockView: View {
           Button("Cancel") { store.send(.cancelTapped) }
         }
       }
-      .navigationDestination(item: $store.scope(state: \.destination?.ladderEditor, action: \.destination.ladderEditor)) { editor in
+      .navigationDestination(item: $store.scope(\.$destination, action: \.destination).ladderEditor) { editor in
         LadderEditorView(store: editor)
       }
     }
@@ -8294,12 +8805,12 @@ public struct AddStockView: View {
 }
 ```
 
-- [ ] **Step 7: Compile**
+- [ ] **Step 7: Compile** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh WatchlistFeatureTests`
 Expected PASS: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/WatchlistFeature Wait/Packages/WaitKit/Tests/WatchlistFeatureTests
 git commit -m "feat(watchlist): AddStockFeature with clock-debounced search and ladder editor
@@ -8311,18 +8822,22 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 ### Task 25: `WatchlistFeature`, list view and rows
 
+> Review fix (2026-11-23): a one-symbol load after adding a stock no longer resets `quotesStatus` (it was clearing an active rate-limit banner), so it uses its own `symbolQuotesLoaded` action. Also: `AddStockView` checks the trimmed query for the empty-search state, the root `.task` carries a note on the shared `.all` cancel ID, and the test count is 15.
+
 **Files:**
 - Create: `Wait/Packages/WaitKit/Sources/WatchlistFeature/WatchlistFeature.swift`, `Wait/Packages/WaitKit/Sources/WatchlistFeature/WatchlistView.swift`, `Wait/Packages/WaitKit/Sources/WatchlistFeature/WatchlistRow.swift`
 - Create: `Wait/Packages/WaitKit/Tests/WatchlistFeatureTests/WatchlistFeatureTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/WatchlistFeatureTests/WatchlistFeatureTests.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
+
+// swiftlint:disable force_try
 
 import ChecklistFeature
 import ComposableArchitecture
@@ -8475,7 +8990,32 @@ struct WatchlistFeatureTests {
       $0.$items.withLock { $0.append(expected) }
       $0.destination = nil
     }
-    await store.receive(\.quotesLoaded) {
+    await store.receive(\.symbolQuotesLoaded) {
+      $0.quotes = ["MSFT": quote]
+    }
+  }
+
+  @Test func singleSymbolLoadKeepsTheRateLimitBanner() async {
+    seed([listItem("AAPL", 0)])
+    var state = WatchlistFeature.State()
+    state.destination = .addStock(AddStockFeature.State())
+    state.quotesStatus = .delayed("Quotes delayed — rate limited")
+    let added = WatchlistItem(symbol: "MSFT", name: "Microsoft", createdAt: listNow, updatedAt: listNow)
+    let quote = Quote(symbol: "MSFT", price: 300, asOf: listNow)
+    let store = TestStore(initialState: state) {
+      WatchlistFeature()
+    } withDependencies: {
+      $0.date.now = listNow
+      $0.marketData.quotes = { _, _ in [quote] }
+    }
+    await store.send(.destination(.presented(.addStock(.delegate(.added(added)))))) {
+      var expected = added
+      expected.sortIndex = 1
+      $0.$items.withLock { $0.append(expected) }
+      $0.destination = nil
+    }
+    // `quotesStatus` stays `.delayed`: the closure changes only `quotes`.
+    await store.receive(\.symbolQuotesLoaded) {
       $0.quotes = ["MSFT": quote]
     }
   }
@@ -8501,17 +9041,17 @@ struct WatchlistFeatureTests {
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh WatchlistFeatureTests/WatchlistFeatureTests`
 Expected FAIL: `error: cannot find 'WatchlistFeature' in scope`.
 
-- [ ] **Step 3: Implement the reducer**
+- [x] **Step 3: Implement the reducer**
 
 `Wait/Packages/WaitKit/Sources/WatchlistFeature/WatchlistFeature.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -8594,6 +9134,12 @@ public struct WatchlistFeature {
       path.append(.details(StockDetailsFeature.State(item: item, quote: quotes[symbol])))
       return true
     }
+
+    fileprivate mutating func merge(_ loaded: [Quote]) {
+      for quote in loaded {
+        quotes[quote.symbol] = quote
+      }
+    }
   }
 
   public enum Action {
@@ -8601,6 +9147,8 @@ public struct WatchlistFeature {
     case sceneBecameActive
     case refreshPulled
     case quotesLoaded([Quote])
+    /// The one-symbol load after adding a stock. Unlike `quotesLoaded` it leaves `quotesStatus` (e.g. a rate-limit banner) alone.
+    case symbolQuotesLoaded([Quote])
     case quotesFailed(MarketDataError)
     case addTapped
     case rowTapped(symbol: String)
@@ -8628,17 +9176,20 @@ public struct WatchlistFeature {
           return loadQuotes(symbols: state.items.map(\.symbol), policies: [.useCache], id: .all)
 
         case .refreshPulled:
-          state.quotesStatus = .refreshing
+          // With nothing to load there is no completion to clear the spinner state.
+          state.quotesStatus = state.items.isEmpty ? .idle : .refreshing
           return .merge(
             .send(.delegate(.refreshRequested)),
             loadQuotes(symbols: state.items.map(\.symbol), policies: [.reload], id: .all)
           )
 
         case let .quotesLoaded(quotes):
-          for quote in quotes {
-            state.quotes[quote.symbol] = quote
-          }
+          state.merge(quotes)
           state.quotesStatus = quotes.contains(where: \.isStale) ? .delayed("Showing cached prices") : .idle
+          return .none
+
+        case let .symbolQuotesLoaded(quotes):
+          state.merge(quotes)
           return .none
 
         case let .quotesFailed(error):
@@ -8708,10 +9259,13 @@ public struct WatchlistFeature {
     guard !symbols.isEmpty else {
       return .none
     }
+    // Only a full-list load may touch `quotesStatus`; a one-symbol load must not clear a rate-limit banner.
+    let isFullList = id == .all
     return .run { [marketData] send in
       for policy in policies {
         do {
-          try await send(.quotesLoaded(marketData.quotes(symbols, policy)))
+          let quotes = try await marketData.quotes(symbols, policy)
+          await send(isFullList ? .quotesLoaded(quotes) : .symbolQuotesLoaded(quotes))
         } catch {
           let mapped = try MarketDataError(error) // rethrows cancellation
           if mapped != .notCached {
@@ -8733,17 +9287,17 @@ extension WatchlistFeature.Path.State: Equatable {}
 extension WatchlistFeature.Destination.State: Equatable {}
 ```
 
-- [ ] **Step 4: Run the tests and confirm they pass**
+- [ ] **Step 4: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh WatchlistFeatureTests`
-Expected PASS: 14 tests pass.
+Expected PASS: 15 tests pass (5 AddStock and 10 Watchlist, since the target runs both suites).
 
-- [ ] **Step 5: Add the views** (`swiftui-expert:swiftui-expert-skill`)
+- [x] **Step 5: Add the views** (`swiftui-expert:swiftui-expert-skill`)
 
 `Wait/Packages/WaitKit/Sources/WatchlistFeature/WatchlistRow.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -8808,7 +9362,7 @@ struct WatchlistRow: View {
 `Wait/Packages/WaitKit/Sources/WatchlistFeature/WatchlistView.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -8832,7 +9386,7 @@ public struct WatchlistView: View {
   // MARK: Public
 
   public var body: some View {
-    NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
+    NavigationStack(path: $store.scope(\.path, action: \.path)) {
       list
         .navigationTitle("Wait")
         .toolbar {
@@ -8845,9 +9399,10 @@ public struct WatchlistView: View {
             }
           }
         }
-        .sheet(item: $store.scope(state: \.destination?.addStock, action: \.destination.addStock)) { addStore in
+        .sheet(item: $store.scope(\.$destination, action: \.destination).addStock) { addStore in
           AddStockView(store: addStore)
         }
+        // Shares the `.all` cancel ID with scene-active and pull-to-refresh; coalescing makes repeated loads cheap.
         .task { await store.send(.task).finish() }
     } destination: { store in
       switch store.case {
@@ -8929,12 +9484,12 @@ public struct WatchlistView: View {
 }
 ```
 
-- [ ] **Step 6: Compile**
+- [ ] **Step 6: Compile** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh WatchlistFeatureTests`
 Expected PASS: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/WatchlistFeature Wait/Packages/WaitKit/Tests/WatchlistFeatureTests
 git commit -m "feat(watchlist): WatchlistFeature with favorites, swipes, reorder, refresh and stack navigation
@@ -8951,7 +9506,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 The legacy `SettingsTab.SettingsView` (body `Text("haha")`) stays compiled until the cutover. The new type has the same name but lives in a different module, and no file imports both.
 
-- [ ] **Step 1: Update `Package.swift`**
+- [x] **Step 1: Update `Package.swift`**
   - Append to `products:`: `.library(name: "SettingsFeature", targets: ["SettingsFeature"]),`
   - Append to `targets:`:
     ```swift
@@ -8975,12 +9530,12 @@ The legacy `SettingsTab.SettingsView` (body `Text("haha")`) stays compiled until
     ```
   - Create `Wait/Packages/WaitKit/Sources/SettingsFeature/SettingsFeature.swift` containing only the file header, so the package loads (SwiftPM rejects a target with no sources). Step 4 fills it in.
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 `Wait/Packages/WaitKit/Tests/SettingsFeatureTests/SettingsFeatureTests.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -9007,17 +9562,17 @@ struct SettingsFeatureTests {
 }
 ```
 
-- [ ] **Step 3: Run the test and confirm it fails**
+- [ ] **Step 3: Run the test and confirm it fails** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh SettingsFeatureTests`
 Expected FAIL: `error: cannot find 'SettingsFeature' in scope`.
 
-- [ ] **Step 4: Implement**
+- [x] **Step 4: Implement**
 
 `Wait/Packages/WaitKit/Sources/SettingsFeature/SettingsFeature.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -9089,7 +9644,7 @@ extension SettingsFeature.Path.State: Equatable {}
 `Wait/Packages/WaitKit/Sources/SettingsFeature/SettingsView.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -9110,7 +9665,7 @@ public struct SettingsView: View {
   // MARK: Public
 
   public var body: some View {
-    NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
+    NavigationStack(path: $store.scope(\.path, action: \.path)) {
       Form {
         Section("Checklist") {
           Button {
@@ -9151,12 +9706,12 @@ public struct SettingsView: View {
 }
 ```
 
-- [ ] **Step 5: Run the tests and confirm they pass**
+- [ ] **Step 5: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh SettingsFeatureTests`
 Expected PASS: 2 tests pass.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/SettingsFeature Wait/Packages/WaitKit/Tests/SettingsFeatureTests
 git commit -m "feat(settings): SettingsFeature with reachable checklist template editor
@@ -9170,6 +9725,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 ### Task 27: `AppFeature`, `DeepLink`, `AppDelegate`, new `WaitApp`, and the `wait://` scheme
 
+> Review fix (2026-11-23): the background save logs failures per save (`Log.persistence.error`) and publishes the snapshot at once, cancelling the debounce. An unknown deep-link symbol no longer clears `destination` or `path`. `DeepLink` compares the scheme and host case-insensitively. Two new tests, so 8 in total.
+
 **Files:**
 - Modify: `Wait/Packages/WaitKit/Package.swift` (add the `AppFeature` target and product, and `AppFeatureTests`)
 - Create: `Wait/Packages/WaitKit/Sources/AppFeature/AppFeature.swift`, `AppView.swift`, `DeepLink.swift`, `AppDelegateAction.swift`, `AppDelegate.swift`
@@ -9178,7 +9735,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `Wait/Wait/Info.plist` (add the URL scheme)
 - Modify: `Wait/project.yml` (the app target gains the `AppFeature` product)
 
-- [ ] **Step 1: Update `Package.swift`**
+- [x] **Step 1: Update `Package.swift`**
   - Append to `products:`: `.library(name: "AppFeature", targets: ["AppFeature"]),`
   - Append to `targets:`:
     ```swift
@@ -9210,7 +9767,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
     ```
   - Create `Wait/Packages/WaitKit/Sources/AppFeature/DeepLink.swift` containing only the file header, so the package loads (SwiftPM rejects a target with no sources). Step 4 fills it in.
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/AppFeatureTests/AppFeatureTests.swift`:
 ```swift
@@ -9218,6 +9775,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 // Created by: Claude on 2026-11-22.
 // Copyright © 2021 Wait. All rights reserved.
 //
+
+// swiftlint:disable force_try
 
 import AppFeature
 import ComposableArchitecture
@@ -9249,6 +9808,9 @@ struct AppFeatureTests {
     #expect(DeepLink(url: URL(string: "wait://other/AAPL")!) == nil)
     #expect(DeepLink(url: URL(string: "https://stock/AAPL")!) == nil)
     #expect(DeepLink(url: URL(string: "wait://stock/")!) == nil)
+    #expect(DeepLink(url: URL(string: "WAIT://Stock/aapl")!) == .stock("AAPL"))
+    #expect(DeepLink(url: URL(string: "Wait://STOCK/BRK.B")!) == .stock("BRK.B"))
+    #expect(DeepLink(url: URL(string: "HTTPS://stock/AAPL")!) == nil)
     #expect(DeepLink.stock("AAPL").url.absoluteString == "wait://stock/AAPL")
   }
 
@@ -9287,6 +9849,38 @@ struct AppFeatureTests {
     await store.send(.openURL(URL(string: "wait://stock/NOPE")!)) {
       $0.selectedTab = .watchlist
     }
+  }
+
+  @Test func unknownDeepLinkSymbolKeepsTheNavigationStack() async {
+    seedAAPL()
+    var state = AppFeature.State()
+    state.watchlist.showDetails(symbol: "AAPL")
+    let store = TestStore(initialState: state) { AppFeature() }
+    await store.send(.openURL(URL(string: "wait://stock/NOPE")!))
+    #expect(store.state.watchlist.path.count == 1)
+  }
+
+  @Test func backgroundPublishesImmediatelyAndCancelsTheDebouncedPublish() async {
+    seedAAPL()
+    let clock = TestClock()
+    let published = LockIsolated<[WatchlistSnapshot]>([])
+    let quote = Quote(symbol: "AAPL", price: 90, asOf: appNow)
+    let store = TestStore(initialState: AppFeature.State()) {
+      AppFeature()
+    } withDependencies: {
+      $0.continuousClock = clock
+      $0.date.now = appNow
+      $0.snapshotClient.publish = { snapshot in published.withValue { $0.append(snapshot) } }
+    }
+    // The edit starts a 1 s debounced publish; `.background` must not wait for it.
+    await store.send(.watchlist(.quotesLoaded([quote]))) { $0.watchlist.quotes = ["AAPL": quote] }
+    await store.send(.scenePhaseChanged(.background))
+    await store.finish()
+    #expect(published.value.count == 1)
+    #expect(published.value.first?.rows.first?.price == 90)
+    // The cancelled debounce must not publish a second time.
+    await clock.advance(by: .seconds(2))
+    #expect(published.value.count == 1)
   }
 
   @Test func becomingActiveRefreshesQuotesAndPublishesOneSnapshot() async {
@@ -9335,12 +9929,12 @@ struct AppFeatureTests {
 }
 ```
 
-- [ ] **Step 3: Run the tests and confirm they fail**
+- [ ] **Step 3: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh AppFeatureTests`
 Expected FAIL: `error: cannot find 'DeepLink' in scope` and `cannot find 'AppFeature' in scope`.
 
-- [ ] **Step 4: Implement `DeepLink.swift` (replacing the header-only file) and `AppDelegateAction.swift`**
+- [x] **Step 4: Implement `DeepLink.swift` (replacing the header-only file) and `AppDelegateAction.swift`**
 
 `Wait/Packages/WaitKit/Sources/AppFeature/DeepLink.swift`:
 ```swift
@@ -9360,7 +9954,7 @@ public enum DeepLink: Equatable, Sendable {
   // MARK: Lifecycle
 
   public init?(url: URL) {
-    guard url.scheme == "wait", url.host() == "stock" else {
+    guard url.scheme?.lowercased() == "wait", url.host()?.lowercased() == "stock" else {
       return nil
     }
     let symbol = url.pathComponents.dropFirst().first?.uppercased() ?? ""
@@ -9396,11 +9990,11 @@ public enum AppDelegateAction: Equatable, Sendable {
 }
 ```
 
-- [ ] **Step 5: Implement `AppFeature.swift`.**
+- [x] **Step 5: Implement `AppFeature.swift`.**
 
 The whole composition is wrapped in `CombineReducers`, and `.onChange(of: \.watchlist.snapshotInputs)` is attached outside it. That matters: `onChange` only sees mutations made by the reducer it wraps (overview §12.3). Attached to the inner `Reduce`, it would never see the watchlist child's changes. Plan 05 appends a second `.onChange` (the sync debounce on `\.watchlist.items`) to the same `CombineReducers`.
 
-The single `snapshotClient.publish(` call site is in `publishSnapshot(_:)`. It's the debounced effect with `CancelID.publishSnapshot`, used both on launch and on every change. Plan 03 adds `connectivity.send` next to it.
+The single `snapshotClient.publish(` call site is in `publishSnapshot(_:debounced:)`. It's the debounced effect with `CancelID.publishSnapshot`, used both on launch and on every change. On `.background` it runs with `debounced: false`, which publishes at once and cancels the pending debounced publish. Plan 03 adds `connectivity.send` next to it.
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -9410,6 +10004,7 @@ The single `snapshotClient.publish(` call site is in `publishSnapshot(_:)`. It's
 import ComposableArchitecture
 import Domain
 import Foundation
+import Logging
 import Persistence
 import SettingsFeature
 import SwiftUI
@@ -9455,10 +10050,10 @@ public struct AppFeature {
   public var body: some ReducerOf<Self> {
     CombineReducers {
       BindingReducer()
-      Scope(state: \.watchlist, action: \.watchlist) {
+      Scope(\.watchlist, action: \.watchlist) {
         WatchlistFeature()
       }
-      Scope(state: \.settings, action: \.settings) {
+      Scope(\.settings, action: \.settings) {
         SettingsFeature()
       }
       Reduce { state, action in
@@ -9473,11 +10068,25 @@ public struct AppFeature {
                 return .send(.watchlist(.sceneBecameActive))
               case .background:
                 // `@Shared(.fileStorage)` throttles writes, so flush them before the app is suspended (overview risk 5).
+                // The snapshot is published at once, because the debounce might never fire in a suspended app. Starting it also cancels
+                // the pending debounced publish (`cancelInFlight`).
                 @Shared(.checklistTemplate) var template
-                return .run { [items = state.watchlist.$items, template = $template] _ in
-                  try await items.save()
-                  try await template.save()
-                }
+                return .merge(
+                  publishSnapshot(state.watchlist.snapshotInputs, debounced: false),
+                  .run { [items = state.watchlist.$items, template = $template] _ in
+                    // Separate `do`/`catch` blocks, so a failed items save doesn't skip the template save and never reaches `reportIssue`.
+                    do {
+                      try await items.save()
+                    } catch {
+                      Log.persistence.error("Saving the watchlist on background failed: \(error)")
+                    }
+                    do {
+                      try await template.save()
+                    } catch {
+                      Log.persistence.error("Saving the checklist template on background failed: \(error)")
+                    }
+                  }
+                )
               default:
                 return .none
             }
@@ -9489,6 +10098,10 @@ public struct AppFeature {
             switch link {
               case let .stock(symbol):
                 state.selectedTab = .watchlist
+                // An unknown symbol leaves the current screen and stack alone: clear them only once there is something to push.
+                guard state.watchlist.items[id: symbol] != nil else {
+                  return .none
+                }
                 state.watchlist.destination = nil
                 state.watchlist.path.removeAll()
                 state.watchlist.showDetails(symbol: symbol)
@@ -9500,10 +10113,9 @@ public struct AppFeature {
         }
       }
     }
-    .onChange(of: \.watchlist.snapshotInputs) { _, inputs in
-      Reduce { _, _ in
-        publishSnapshot(inputs)
-      }
+    // TCA 1.26.2 `onChange(of:_:)`: `perform: (oldValue, inout State) -> EffectOf<Self>`. The `{ Reducer }` builder form is deprecated.
+    .onChange(of: \.watchlist.snapshotInputs) { _, state in
+      publishSnapshot(state.watchlist.snapshotInputs)
     }
   }
 
@@ -9515,10 +10127,13 @@ public struct AppFeature {
 
   // MARK: Private
 
-  /// The only `snapshotClient.publish` call site: debounced 1 s and cancellable by `CancelID.publishSnapshot`.
-  private func publishSnapshot(_ inputs: WatchlistFeature.SnapshotInputs) -> Effect<Action> {
+  /// The only `snapshotClient.publish` call site: debounced 1 s by default and cancellable by `CancelID.publishSnapshot`.
+  /// With `debounced: false` it publishes at once and cancels any pending debounced publish.
+  private func publishSnapshot(_ inputs: WatchlistFeature.SnapshotInputs, debounced: Bool = true) -> Effect<Action> {
     .run { [clock, date, snapshotClient] _ in
-      try await clock.sleep(for: .seconds(1))
+      if debounced {
+        try await clock.sleep(for: .seconds(1))
+      }
       await snapshotClient.publish(WatchlistSnapshot.make(items: inputs.items, quotes: inputs.quotes, now: date.now))
     }
     .cancellable(id: CancelID.publishSnapshot, cancelInFlight: true)
@@ -9526,12 +10141,12 @@ public struct AppFeature {
 }
 ```
 
-- [ ] **Step 6: Run the tests and confirm they pass**
+- [ ] **Step 6: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh AppFeatureTests`
-Expected PASS: 6 tests pass.
+Expected PASS: 8 tests pass.
 
-- [ ] **Step 7: Implement `AppView.swift` and `AppDelegate.swift`** (`swiftui-expert:swiftui-expert-skill`)
+- [x] **Step 7: Implement `AppView.swift` and `AppDelegate.swift`** (`swiftui-expert:swiftui-expert-skill`)
 
 `Wait/Packages/WaitKit/Sources/AppFeature/AppView.swift`:
 ```swift
@@ -9559,10 +10174,10 @@ public struct AppView: View {
 
   public var body: some View {
     TabView(selection: $store.selectedTab) {
-      WatchlistView(store: store.scope(state: \.watchlist, action: \.watchlist))
+      WatchlistView(store: store.scope(\.watchlist, action: \.watchlist))
         .tabItem { Label("Watchlist", systemImage: "list.bullet.rectangle") }
         .tag(AppFeature.Tab.watchlist)
-      SettingsView(store: store.scope(state: \.settings, action: \.settings))
+      SettingsView(store: store.scope(\.settings, action: \.settings))
         .tabItem { Label("Settings", systemImage: "gearshape") }
         .tag(AppFeature.Tab.settings)
     }
@@ -9623,7 +10238,7 @@ public struct AppView: View {
 #endif
 ```
 
-- [ ] **Step 8: Rewrite the app entry point.** Replace the entire contents of `Wait/Wait/WaitApp.swift`:
+- [x] **Step 8: Rewrite the app entry point.** Replace the entire contents of `Wait/Wait/WaitApp.swift`:
 ```swift
 //
 // Created by: kai_chen on 5/4/21.
@@ -9647,7 +10262,7 @@ struct WaitApp: App {
 }
 ```
 
-- [ ] **Step 9: Register the `wait://` URL scheme in the app's Info.plist**
+- [x] **Step 9: Register the `wait://` URL scheme in the app's Info.plist**
 
 Run:
 ```sh
@@ -9661,7 +10276,7 @@ cd "$(git rev-parse --show-toplevel)/Wait" && /usr/libexec/PlistBuddy \
 ```
 Expected: `Array {` / `wait` / `}`.
 
-- [ ] **Step 10: Link the `AppFeature` product in `project.yml`.** In the `Wait` target's `dependencies:`, add `- package: WaitKit` with `product: AppFeature`. The legacy products stay until the cutover. Then regenerate and build:
+- [ ] **Step 10: Link the `AppFeature` product in `project.yml`.** In the `Wait` target's `dependencies:`, add `- package: WaitKit` with `product: AppFeature`. The legacy products stay until the cutover. Then regenerate and build: — NOT RUN (code-only; `xcodegen generate` ran, the build did not)
 
 Run: `cd "$(git rev-parse --show-toplevel)/Wait" && xcodegen generate && cd .. && scripts/build-app.sh`
 Expected: `** BUILD SUCCEEDED **`
@@ -9669,7 +10284,7 @@ Expected: `** BUILD SUCCEEDED **`
 Run: `R="$(git rev-parse --show-toplevel)"; test -f "$R/Wait/Wait.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved" && echo "Package.resolved present"; git -C "$R" status --short Wait/Wait.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`
 Expected: `Package.resolved present`, and never a ` D` status line.
 
-- [ ] **Step 11: Manual simulator check, including the legacy migration.** Run:
+- [ ] **Step 11: Manual simulator check, including the legacy migration.** Run: — NOT RUN (code-only)
 ```sh
 ROOT="$(git rev-parse --show-toplevel)"
 BUILT=$(xcodebuild -project "$ROOT/Wait/Wait.xcodeproj" -scheme Wait -destination 'platform=iOS Simulator,name=iPhone 17,OS=27.0' -showBuildSettings 2>/dev/null | awk -F' = ' '/ BUILT_PRODUCTS_DIR /{print $2; exit}')
@@ -9689,7 +10304,7 @@ The simulator should show:
 
 Also run `xcrun simctl openurl booted wait://stock/BABA`. It should open BABA's details.
 
-- [ ] **Step 12: Commit**
+- [x] **Step 12: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/AppFeature Wait/Packages/WaitKit/Tests/AppFeatureTests Wait/Wait/WaitApp.swift Wait/Wait/Info.plist Wait/project.yml Wait/Wait.xcodeproj
 git commit -m "feat(app): AppFeature root with tabs, deep links, scene phase refresh and debounced snapshot publishing
@@ -9698,6 +10313,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 
 ### Task 28: Widget rewrite on the app-group snapshot
+
+> Review fix (2026-11-23): a real `getSnapshot` loads the app-group snapshot and shows the empty state when there is none (sample data only for `isPreview`). The quote time includes the date when it is not today. The widget has no `widgetURL`, so a small-widget tap opens the app and the medium rows are the only stock links.
 
 **Files:**
 - Modify: `Wait/WaitWidget/WaitWidget.swift` (full rewrite)
@@ -9708,7 +10325,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 The widget makes no network calls. The app writes the snapshot through `SnapshotClient` and reloads the widget timelines whenever the watchlist or its quotes change (Task 27).
 
-- [ ] **Step 1: Point the widget at the new products.** In `project.yml`, replace the `WaitWidgetExtension` target's `dependencies:` list with the list below. Keep plan 01's `sdk:` framework entries; if plan 01 lists more `sdk:` entries, keep those too.
+- [x] **Step 1: Point the widget at the new products.** In `project.yml`, replace the `WaitWidgetExtension` target's `dependencies:` list with the list below. Keep plan 01's `sdk:` framework entries; if plan 01 lists more `sdk:` entries, keep those too.
 ```yaml
     dependencies:
       - sdk: SwiftUI.framework
@@ -9721,7 +10338,7 @@ The widget makes no network calls. The app writes the snapshot through `Snapshot
         product: Persistence
 ```
 
-- [ ] **Step 2: Rewrite the widget**
+- [x] **Step 2: Rewrite the widget**
 
 `Wait/WaitWidget/WaitWidget.swift`:
 ```swift
@@ -9752,7 +10369,8 @@ struct SnapshotProvider: TimelineProvider {
   }
 
   func getSnapshot(in context: Context, completion: @escaping @Sendable (SnapshotEntry) -> Void) {
-    let snapshot = context.isPreview ? WatchlistSnapshot.sample : (SnapshotStore.appGroup.load() ?? .sample)
+    // Sample data is for the widget gallery only. A real snapshot request shows what is on disk, or the empty state.
+    let snapshot = context.isPreview ? WatchlistSnapshot.sample : SnapshotStore.appGroup.load()
     completion(SnapshotEntry(date: .now, snapshot: snapshot))
   }
 
@@ -9795,6 +10413,15 @@ struct WaitWidgetEntryView: View {
     }
   }
 
+  /// The time for today's quotes, and the date with the time for older ones, so yesterday's data doesn't look current.
+  private static func quoteTime(_ date: Date) -> String {
+    if Calendar.current.isDateInToday(date) {
+      date.formatted(.dateTime.hour().minute())
+    } else {
+      date.formatted(.dateTime.month(.abbreviated).day().hour().minute())
+    }
+  }
+
   private func content(_ snapshot: WatchlistSnapshot) -> some View {
     let rows = Array(snapshot.rows.prefix(maxRows))
     return VStack(alignment: .leading, spacing: Spacing.xs) {
@@ -9802,7 +10429,7 @@ struct WaitWidgetEntryView: View {
         Text("Wait").font(.caption.weight(.bold)).foregroundStyle(Palette.accent)
         Spacer()
         if let asOf = snapshot.quotesAsOf {
-          Text(asOf, style: .time).font(.caption2).foregroundStyle(.secondary)
+          Text(Self.quoteTime(asOf)).font(.caption2).foregroundStyle(.secondary)
         }
       }
       ForEach(rows) { row in
@@ -9816,7 +10443,7 @@ struct WaitWidgetEntryView: View {
       }
       Spacer(minLength: 0)
     }
-    .widgetURL(rows.first.map { Self.stockURL($0.symbol) })
+    // No `widgetURL`: the small widget can't hold `Link`s, so a tap opens the app, and the medium widget's rows are the only stock links.
   }
 
   /// The same format as `AppFeature.DeepLink`, which the widget can't import.
@@ -9902,7 +10529,7 @@ struct WidgetRowView: View {
 }
 ```
 
-- [ ] **Step 3: Remove the old row and the widget's API key**
+- [x] **Step 3: Remove the old row and the widget's API key**
 
 Run:
 ```sh
@@ -9910,7 +10537,7 @@ cd "$(git rev-parse --show-toplevel)" && git rm Wait/WaitWidget/WidgetStockRow.s
   (/usr/libexec/PlistBuddy -c "Delete :TwelveDataAPIKey" Wait/WaitWidget/Info.plist 2>/dev/null || true)
 ```
 
-- [ ] **Step 4: Regenerate and build**
+- [ ] **Step 4: Regenerate and build** — NOT RUN (code-only; xcodegen generate was run)
 
 Run: `cd "$(git rev-parse --show-toplevel)/Wait" && xcodegen generate && cd .. && scripts/build-app.sh`
 Expected: `** BUILD SUCCEEDED **`
@@ -9918,13 +10545,13 @@ Expected: `** BUILD SUCCEEDED **`
 Run: `R="$(git rev-parse --show-toplevel)"; test -f "$R/Wait/Wait.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved" && echo "Package.resolved present"; git -C "$R" status --short Wait/Wait.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`
 Expected: `Package.resolved present`, and never a ` D` status line.
 
-- [ ] **Step 5: Manual check (manual: user, or an agent with simulator UI access).** With the app from Task 27 installed and launched once, so `snapshot.json` exists:
+- [ ] **Step 5: Manual check (manual: user, or an agent with simulator UI access).** — SKIPPED (manual) With the app from Task 27 installed and launched once, so `snapshot.json` exists:
   1. Long-press the home screen, choose **+**, then **Wait**, then **Watchlist (medium)**.
   2. Expected: the widget shows up to four real symbols, with status pills, temperature badges and the quote time.
   3. Tapping a row opens that stock in the app.
   4. A fresh install, before the app has run, shows "Add stocks in Wait".
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 ```bash
 git add Wait/WaitWidget Wait/project.yml Wait/Wait.xcodeproj
 git commit -m "feat(widget): render the app-group watchlist snapshot with deep links (no network)
@@ -9948,12 +10575,12 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Replace: `Wait/Packages/WaitKit/Package.swift` (final content below)
 - Modify: `Wait/project.yml` (the `Wait` target)
 
-- [ ] **Step 1: Confirm nothing new depends on legacy code**
+- [x] **Step 1: Confirm nothing new depends on legacy code**
 
 Run: `cd "$(git rev-parse --show-toplevel)" && grep -rlE "^import (Model|CacheService|Networking|StockCharts|Checklist|ChecklistEditFeature|LegacyStockDetails|SettingsTab|Money|Alamofire|SwiftyJSON|SwiftyBeaver)$" Wait/Wait/WaitApp.swift Wait/WaitWidget Wait/Packages/WaitKit/Sources/{Domain,Logging,DesignSystem,Persistence,MarketDataClient,ChecklistFeature,StockChartFeature,StockDetailsFeature,WatchlistFeature,SettingsFeature,AppFeature} ; echo "exit=$?"`
 Expected: no file paths, then `exit=1` (grep matched nothing).
 
-- [ ] **Step 2: Delete the legacy code**
+- [x] **Step 2: Delete the legacy code**
 
 Run:
 ```sh
@@ -9974,7 +10601,7 @@ Expected:
 
 If `git rm` reports a pathspec that doesn't match (for example, plan 01 named one of these files differently), list the directory, remove the legacy equivalent, and keep going.
 
-- [ ] **Step 3: Replace `Package.swift` with its final plan 02 content.** It has no legacy targets, no Money/Alamofire/SwiftyJSON, and no `legacySettings`, and every target is Swift 6. Plans 03–06 only append to this file.
+- [x] **Step 3: Replace `Package.swift` with its final plan 02 content.** It has no legacy targets, no Money/Alamofire/SwiftyJSON, and no `legacySettings`, and every target is Swift 6. Plans 03–06 only append to this file.
 ```swift
 // swift-tools-version: 6.1
 import PackageDescription
@@ -10050,7 +10677,7 @@ let package = Package(
 )
 ```
 
-- [ ] **Step 4: Update the `Wait` target in `project.yml`**
+- [ ] **Step 4: Update the `Wait` target in `project.yml`** (xcodegen ran; the `xcodebuild -showBuildSettings` checks were NOT RUN (code-only), so the pbxproj was grepped instead) — NOT RUN (code-only)
   - `sources:` must contain only the `Wait` folder. Remove the `Shared` entry. The `WaitWatch` target keeps `Shared/Connectivity.swift` until plan 03 deletes it; under Swift 6 the app could no longer compile its `static let shared`.
   - `dependencies:`:
     - Keep `- package: WaitKit` with `product: AppFeature`.
@@ -10079,7 +10706,7 @@ Expected, in order:
     CODE_SIGN_ENTITLEMENTS = WaitWidget/WaitWidget.entitlements
 ```
 
-- [ ] **Step 5: Run the grep guards**
+- [x] **Step 5: Run the grep guards**
 
 Run:
 ```sh
@@ -10091,7 +10718,7 @@ echo "guards done"
 ```
 Expected: only `guards done`. No line may match.
 
-- [ ] **Step 6: Run the full verification**
+- [ ] **Step 6: Run the full verification** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh && scripts/build-app.sh && scripts/build-app.sh WaitWatch`
 Expected:
@@ -10102,7 +10729,7 @@ Then rerun the independent vectors check from Task 1 Step 2, the second command 
 
 If Swift 6 strict concurrency reports errors, fix them in DesignSystem and the app, using overview §11 item 3. Those are the two places that changed language mode here. The app target now holds only `WaitApp.swift`.
 
-- [ ] **Step 7: Repeat the manual migration and UI check** from Task 27 Step 11. Then also:
+- [ ] **Step 7: Repeat the manual migration and UI check** from Task 27 Step 11. Then also: — SKIPPED (manual)
   - Add a stock through search. Its ladder must have a decimal buy high, such as `12.34`.
   - Pull to refresh.
   - Delete a stock with a swipe.
@@ -10111,7 +10738,7 @@ If Swift 6 strict concurrency reports errors, fix them in DesignSystem and the a
   - Open Settings, then Checklist template, and add a prompt. The next stock you add starts with that prompt.
   - Background the app, then relaunch it. All edits persist.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 ```bash
 git add -A Wait/Packages/WaitKit Wait/Wait Wait/project.yml Wait/Wait.xcodeproj
 git commit -m "refactor!: cut over to WaitKit features; delete legacy modules, Money, Alamofire, SwiftyJSON; app in Swift 6
@@ -10125,7 +10752,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `CLAUDE.md` (repo root; `AGENTS.md` is a symlink to it)
 - Create: `Wait/Packages/WaitKit/README.md`
 
-- [ ] **Step 1: Replace the `## Architecture` section of `CLAUDE.md`** (from `## Architecture` up to, but not including, `## Code style`) with:
+- [x] **Step 1: Replace the `## Architecture` section of `CLAUDE.md`** (from `## Architecture` up to, but not including, `## Code style`) with:
 
 ````markdown
 ## Architecture
@@ -10187,7 +10814,7 @@ AppFeature          -> WatchlistFeature, SettingsFeature, Persistence, DesignSys
 - Tests use Swift Testing with `TestStore`, in `Packages/WaitKit/Tests/<Target>Tests`. Run them with `scripts/test-waitkit.sh`.
 ````
 
-- [ ] **Step 2: Update the test and build lines in the `## Commands` section of `CLAUDE.md`** so they read:
+- [x] **Step 2: Update the test and build lines in the `## Commands` section of `CLAUDE.md`** so they read:
 ```sh
 cd Wait && xcodegen generate                 # after editing Wait/project.yml
 scripts/build-app.sh                         # app + widget (+ embedded watch), iPhone 17 / iOS 27.0
@@ -10197,7 +10824,7 @@ scripts/test-waitkit.sh DomainTests/PriceLadderTemperatureTests   # one suite
 ```
 Also add this line: "`xcodebuild`/`xcodegen` need to run unsandboxed in agent sessions."
 
-- [ ] **Step 3: Create `Wait/Packages/WaitKit/README.md`**
+- [x] **Step 3: Create `Wait/Packages/WaitKit/README.md`**
 ````markdown
 # WaitKit
 
@@ -10225,7 +10852,7 @@ The local Swift package that holds all of Wait's code except the three thin Xcod
 - **Adding a target.** Append its `.target` and `.testTarget` to `Package.swift`. If an Xcode target links it, add a `.library` product and list that product in `Wait/project.yml`.
 ````
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 ```bash
 git add CLAUDE.md Wait/Packages/WaitKit/README.md
 git commit -m "docs: describe WaitKit architecture, data flow and commands after plan 02
@@ -10236,9 +10863,9 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ---
 
 ## Plan 02 done when
-- Every box above is checked.
-- `scripts/test-waitkit.sh && scripts/build-app.sh && scripts/build-app.sh WaitWatch` is green.
-- The manual checks in Tasks 27–29 passed: migrated list, memo kept, star toggles, no crash with an empty chart, widget shows the real watchlist.
-- `Package.swift` has no legacy targets or third-party dependencies apart from Point-Free's.
+- Every box above is checked. — NOT MET: build/test and manual steps in earlier tasks are NOT RUN (code-only) or SKIPPED (manual).
+- `scripts/test-waitkit.sh && scripts/build-app.sh && scripts/build-app.sh WaitWatch` is green. — NOT RUN (code-only).
+- The manual checks in Tasks 27–29 passed: migrated list, memo kept, star toggles, no crash with an empty chart, widget shows the real watchlist. — SKIPPED (manual).
+- `Package.swift` has no legacy targets or third-party dependencies apart from Point-Free's. — VERIFIED by grep of `Package.swift` (no Money, Alamofire, SwiftyJSON or legacy targets; only four Point-Free packages). Also checked: `scripts/check-secrets.sh` exits 0, the `apikey=|clientId:|clientSecret:` git grep (excluding docs and the script) is empty, and `xcodegen generate` leaves no diff.
 
 Then hand off to plan 03 (watch and cleanup) and/or plan 04 (backend). Use superpowers:finishing-a-development-branch.

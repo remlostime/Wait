@@ -579,7 +579,7 @@ public extension Date { var truncatedToMilliseconds: Date { get } }
 - `expectedPrice` becomes `buyHigh`, rounded to 4 decimal places. A value ≤ 0 gives an empty ladder.
 - History entries become `LadderRevision(buyHigh:)`.
 - `isFavorite = false`, because the old star meant "on the watchlist".
-- `sortIndex` is the index in the file.
+- `sortIndex` is the position after skipping and de-duplication.
 - `createdAt` is the first history date, or `now`. `updatedAt = now`.
 - The symbol `"Empty"` is skipped. Duplicates are dropped by symbol, keeping the first occurrence.
 - The per-stock `checklist-<SYMBOL>` file is folded in, or the template is used.
@@ -991,7 +991,7 @@ Plans 04–06 modify files that plan 02 creates. Every plan uses these exact pat
 project.yml                      Config/Base.xcconfig  Config/Secrets.example.xcconfig  (Config/Secrets.xcconfig gitignored)
 Wait/                            app target: WaitApp.swift, Info.plist, Wait.entitlements, WaitRelease.entitlements, Assets.xcassets  (AppDelegate lives in Sources/AppFeature/)
 WaitWidget/                      widget: WaitWidget.swift, WidgetRowView.swift, WaitWidget.entitlements (plan 02), Info.plist
-WaitWatch/                       watch app (renamed from "WaitWatch Watch App" in plan 03): WaitWatchApp.swift, WatchSnapshotStore.swift, WatchlistListView.swift, WatchStockDetailView.swift
+WaitWatch/                       watch app (renamed from "WaitWatch Watch App" in plan 03): WaitWatchApp.swift, WatchlistListView.swift, WatchlistRowView.swift, WatchStockDetailView.swift, WatchFormat.swift (WatchSnapshotStore lives in Sources/Connectivity/)
 Packages/WaitKit/Package.swift
 Packages/WaitKit/Sources/
   Domain/            PriceLadder.swift  PriceLadder+Evaluation.swift  LadderStatus.swift  Temperature.swift  PriceInput.swift

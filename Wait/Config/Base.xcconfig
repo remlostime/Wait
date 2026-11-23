@@ -1,0 +1,7 @@
+// Project-wide build settings for every configuration.
+// Secrets are kept out of git: copy Secrets.example.xcconfig to Secrets.xcconfig and fill it in.
+// The default below keeps builds working when Secrets.xcconfig is missing (quotes won't load).
+
+TWELVE_DATA_API_KEY =
+
+#include? "Secrets.xcconfig"

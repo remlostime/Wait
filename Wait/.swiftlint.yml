@@ -58,6 +58,14 @@ only_rules:
 excluded: # paths to ignore during linting.
   - Pods
   - Wait/Generated
+  - Packages/WaitKit/.build
+  - Packages/WaitKit/.swiftpm
+  - build
+
+deployment_target:
+  iOS_deployment_target: "17.0"
+  iOSApplicationExtension_deployment_target: "17.0"
+  watchOS_deployment_target: "10.0"
 
 colon:
   apply_to_dictionaries: false

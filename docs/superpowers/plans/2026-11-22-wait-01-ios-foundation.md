@@ -1,5 +1,44 @@
 # Wait 01 — iOS Foundation Implementation Plan
 
+## Execution log
+
+**Executed** 2026-11-23 on branch `ck/ios` by Claude Code (subagent-driven). Every task was committed and reviewed against this plan at chunk level, read-only.
+
+**Verification mode: code-only (unverified).**
+- `xcodebuild` cannot run in the agent session: the org AI sandbox blocks SwiftPM's nested `sandbox-exec` with `sandbox_apply: Operation not permitted`. The user chose to skip builds rather than disable Xcode's manifest and plugin sandbox.
+- Every code, config and doc step was done.
+- Build and test steps are marked `NOT RUN (code-only)`.
+- Static checks stood in for them: `xcodegen generate`, `plutil -lint`, `swiftlint`, `bash -n`, `scripts/check-secrets.sh`, `swiftc -typecheck` for files without package dependencies, and reviewer checks against the real TCA 1.26.2 sources. See [baseline log](2026-11-22-wait-01-baseline-log.md).
+
+| Task | Commit |
+|---|---|
+| 1 Baseline log + CLAUDE.md destinations | `6563f07` |
+| 2 XcodeGen parity spec | `d65860c` |
+| 3 iOS 17 / watchOS 10, prune | `bba4f7d` |
+| 4 Fix and embed watch | `e59db9b` |
+| 5 Secrets out of source, drop Shake | `7866be0` |
+| 6 WaitKit + DesignSystem | `eefbb72` |
+| 7 Logging (`os.Logger` shim) | `169054b` |
+| 8 Legacy Model | `85a9edb` |
+| 9 CacheService + Networking | `2ec7323` |
+| 10 StockCharts | `163be0e` |
+| 11 Checklist + ChecklistEditFeature (+ tests) | `3f10216` |
+| 12 LegacyStockDetails + SettingsTab, drop UI | `6b3ebf0` |
+| 13 TCA 1.26.2 + reducer ports | `9758400` |
+| 14 Docs + final static verification | `4ff4577` |
+
+**Deviations:**
+- No worktree: the work happened directly on `ck/ios`, per the user's decision.
+- TCA stayed on 0.31 through Task 11. The baseline couldn't be measured, so the red-baseline rule wasn't applied.
+- Otherwise the code follows the plan verbatim.
+
+**User follow-ups:**
+1. Run commands B, C, D and E locally: the app build, tests, package tests and watch build. Fix anything a real compile finds.
+2. Run `xcodebuild -resolvePackageDependencies` and commit the refreshed `Wait/Wait.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`. It still pins TCA 0.31, Shake and SwiftyBeaver.
+3. Rotate or revoke the leaked keys (overview §10): Twelve Data, Alpha Vantage, Shake, SwiftyBeaver, Bitrise APM and Firebase. Put a new Twelve Data key in `Wait/Config/Secrets.xcconfig`.
+4. Task 1 Step 7, Task 12 and Task 13: seed parity data on the simulator and check the watchlist and checklist by hand.
+5. Task 14 Step 4: apply the Bitrise changes.
+
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 > **Deviations from overview** (three):
@@ -146,14 +185,14 @@ xcodebuild -project /Users/ckai/code/Wait/Wait/Wait.xcodeproj -scheme WaitWatch 
 - Create: `docs/superpowers/plans/2026-11-22-wait-01-baseline-log.md`
 - Modify: `CLAUDE.md` (the `-destination` lines of its three `xcodebuild` commands)
 
-- [ ] **Step 1: Resolve packages with the untouched project**
+- [ ] **Step 1: Resolve packages with the untouched project** — NOT RUN (code-only)
 
 ```sh
 xcodebuild -resolvePackageDependencies -project /Users/ckai/code/Wait/Wait/Wait.xcodeproj -scheme Wait 2>&1 | tail -20
 ```
 Expected: a `Resolved source packages:` list that includes `swift-composable-architecture: … @ 0.31.0`, `Money: … @ 1.3.0`, `shake-ios: … @ 14.4.0`, `SwiftyBeaver: … @ 1.9.5`, `Alamofire: … @ 5.5.0` and `SwiftyJSON: … @ 5.0.1`. If you see `Invalid manifest`, copy the first error line into the log in Step 5.
 
-- [ ] **Step 2: Build the app as it is today**
+- [ ] **Step 2: Build the app as it is today** — NOT RUN (code-only)
 
 ```sh
 xcodebuild -project /Users/ckai/code/Wait/Wait/Wait.xcodeproj -scheme Wait \
@@ -163,7 +202,7 @@ xcodebuild -project /Users/ckai/code/Wait/Wait/Wait.xcodeproj -scheme Wait \
 ```
 Expected, when it works: `** BUILD SUCCEEDED **` and no `error:` lines. If it fails, keep `/tmp/wait-baseline-build.log`, because Task 2 onward compares against it.
 
-- [ ] **Step 3: Run the three real test targets**
+- [ ] **Step 3: Run the three real test targets** — NOT RUN (code-only)
 
 The shared `Wait` scheme also references six deleted test targets, so run the real ones explicitly:
 ```sh
@@ -174,7 +213,7 @@ xcodebuild test -project /Users/ckai/code/Wait/Wait/Wait.xcodeproj -scheme Wait 
 ```
 Expected: `Executed 5 tests, with 0 failures` and `** TEST SUCCEEDED **`.
 
-- [ ] **Step 4: Build the watch target**
+- [ ] **Step 4: Build the watch target** — NOT RUN (code-only)
 
 There is no shared watch scheme yet, so build the target directly:
 ```sh
@@ -183,7 +222,7 @@ cd /Users/ckai/code/Wait/Wait && xcodebuild -project Wait.xcodeproj -target "Wai
 ```
 Expected: `** BUILD SUCCEEDED **`. Record a failure in the log rather than fixing it here.
 
-- [ ] **Step 5: Write the baseline log**
+- [x] **Step 5: Write the baseline log**
 
 Create `docs/superpowers/plans/2026-11-22-wait-01-baseline-log.md`. Fill in every `<…>` from Steps 1–4.
 ```markdown
@@ -203,7 +242,7 @@ Recorded: <YYYY-MM-DD> on <hostname>, Xcode 27.0 (27A266a)
 **Parity data seeded on simulator:** <yes, UDID … / no>
 ```
 
-- [ ] **Step 6: Choose the verification mode for Tasks 2–13**
+- [x] **Step 6: Choose the verification mode for Tasks 2–13**
 
 Use the first rule that matches and write the mode into the log.
 
@@ -230,7 +269,7 @@ Use the first rule that matches and write the mode into the log.
    Failures clear as packages are removed: Shake in Task 5, SwiftyBeaver in Task 7. If the failing projects include `swift-composable-architecture` or any of its dependency projects listed above, run Task 13 Steps 1–7 inside Task 11, right after Task 11 Step 4, and skip them in Task 13. Strict mode resumes no later than the end of Task 13.
 3. **Anything else** means Wait's own sources fail to compile. **Stop and ask the user.** This plan assumes the app code compiles.
 
-- [ ] **Step 7 (manual: user, recommended): Seed parity data on the simulator**
+- [ ] **Step 7 (manual: user, recommended): Seed parity data on the simulator** — SKIPPED (manual)
 
 Skip this step if the baseline build failed. Otherwise, run this as one block:
 ```sh
@@ -247,7 +286,7 @@ Expected: `UDID=<36-char id>`, `** BUILD SUCCEEDED **`, and `com.chenkai.wait: <
 
 Ask the user to add 2–3 stocks in the simulator, each with an expected price and one note, then quit the app. **Keep this simulator (don't erase it) until plan 01 is done.** Tasks 12 and 13 install over it to check that the watchlist is unchanged. Write the UDID into the log.
 
-- [ ] **Step 8: Fix the destinations in CLAUDE.md**
+- [x] **Step 8: Fix the destinations in CLAUDE.md**
 
 ```sh
 cd /Users/ckai/code/Wait && sed -i '' "s/-destination 'platform=iOS Simulator,name=iPhone 15'/-destination 'platform=iOS Simulator,name=iPhone 17,OS=27.0' -skipMacroValidation/" CLAUDE.md \
@@ -255,7 +294,7 @@ cd /Users/ckai/code/Wait && sed -i '' "s/-destination 'platform=iOS Simulator,na
 ```
 Expected: three lines, each ending in `name=iPhone 17,OS=27.0' -skipMacroValidation` (the third keeps its trailing ` \`). None of them mentions `iPhone 15`.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add docs/superpowers/plans/2026-11-22-wait-01-baseline-log.md CLAUDE.md && git commit -m "$(cat <<'EOF'
@@ -276,7 +315,7 @@ This spec reproduces every live target with its bundle id, Info.plist, per-confi
 - Create: `Wait/project.yml`
 - Modify (generated): `Wait/Wait.xcodeproj/project.pbxproj`, `Wait/Wait.xcodeproj/xcshareddata/xcschemes/Wait.xcscheme`, `Wait/Wait.xcodeproj/xcshareddata/xcschemes/Color.xcscheme`
 
-- [ ] **Step 1: Write `Wait/project.yml`**
+- [x] **Step 1: Write `Wait/project.yml`**
 
 ```yaml
 # XcodeGen spec for Wait. Regenerate with `cd Wait && xcodegen generate`.
@@ -568,14 +607,14 @@ schemes:
         Color: all
 ```
 
-- [ ] **Step 2: Generate the project**
+- [x] **Step 2: Generate the project**
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodegen generate
 ```
 Expected: the last line is `Created project at /Users/ckai/code/Wait/Wait/Wait.xcodeproj`.
 
-- [ ] **Step 3: Check that the package pins survived regeneration**
+- [x] **Step 3: Check that the package pins survived regeneration**
 
 ```sh
 cd /Users/ckai/code/Wait && git status --short Wait/Wait.xcodeproj
@@ -586,7 +625,7 @@ cd /Users/ckai/code/Wait && git checkout -- Wait/Wait.xcodeproj/project.xcworksp
 ```
 Then repeat this check after **every** `xcodegen generate` in later tasks.
 
-- [ ] **Step 4: Compare targets and key settings with the old project**
+- [ ] **Step 4: Compare targets and key settings with the old project** — NOT RUN (code-only; xcodebuild cannot resolve packages. Static parity check of the generated pbxproj done instead)
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodebuild -list -project Wait.xcodeproj 2>/dev/null | sed -n '/Targets:/,/Build Configurations:/p'
@@ -602,12 +641,12 @@ Expected:
 - **Debug:** the app shows `com.chenkai.wait`, `Wait/Wait.entitlements`, `Wait/Info.plist` and `1`. The widget shows `com.chenkai.wait.WaitWidget` and **no** `CODE_SIGN_ENTITLEMENTS` line.
 - **Release:** the app shows `Wait/WaitRelease.entitlements`. The widget shows `WaitWidgetExtensionRelease.entitlements`.
 
-- [ ] **Step 5: Build and test**
+- [ ] **Step 5: Build and test** — NOT RUN (code-only)
 
 Run command B, then command C from the Prerequisites.
 Expected in strict mode: `** BUILD SUCCEEDED **`, then `Executed 5 tests, with 0 failures` and `** TEST SUCCEEDED **`. Plain `xcodebuild test` now works without `-only-testing`, because the stale testables are gone. In red-baseline mode, apply Task 1 Step 6 rule 2.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add Wait/project.yml Wait/Wait.xcodeproj && git commit -m "$(cat <<'EOF'
@@ -628,7 +667,7 @@ EOF
 - Modify: `Wait/project.yml`, `Wait/Wait/Info.plist`, generated `Wait/Wait.xcodeproj`
 - Delete (generated): `Wait/Wait.xcodeproj/xcshareddata/xcschemes/Color.xcscheme`
 
-- [ ] **Step 1: Raise the deployment targets in `Wait/project.yml`**
+- [x] **Step 1: Raise the deployment targets in `Wait/project.yml`**
 
 Replace:
 ```yaml
@@ -643,7 +682,7 @@ with:
     watchOS: "10.0"
 ```
 
-- [ ] **Step 2: Remove the aggregate target and the `Color` scheme from `Wait/project.yml`**
+- [x] **Step 2: Remove the aggregate target and the `Color` scheme from `Wait/project.yml`**
 
 Delete this whole block:
 ```yaml
@@ -662,7 +701,7 @@ Then delete the last four lines of `schemes:`:
 ```
 Periphery can still be run by hand (Task 14 documents the command in CLAUDE.md).
 
-- [ ] **Step 3: Require arm64 instead of armv7**
+- [x] **Step 3: Require arm64 instead of armv7**
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && plutil -replace UIRequiredDeviceCapabilities -json '["arm64"]' Wait/Info.plist \
@@ -670,7 +709,7 @@ cd /Users/ckai/code/Wait/Wait && plutil -replace UIRequiredDeviceCapabilities -j
 ```
 Expected: `["arm64"]`
 
-- [ ] **Step 4: Regenerate and check the settings**
+- [ ] **Step 4: Regenerate and check the settings** — NOT RUN (code-only; `xcodegen generate` was run and the pbxproj was grepped for the deployment targets instead of `xcodebuild -showBuildSettings`)
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 \
@@ -689,11 +728,11 @@ Wait.xcscheme
 ```
 Then repeat the Package.resolved check from Task 2 Step 3.
 
-- [ ] **Step 5: Build and test**
+- [ ] **Step 5: Build and test** — NOT RUN (code-only)
 
 Run commands B and C. Expected: `** BUILD SUCCEEDED **` and `Executed 5 tests, with 0 failures`. New iOS 17 deprecation **warnings**, such as `onChange(of:perform:)`, are expected and fine.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add -A Wait/project.yml Wait/Wait/Info.plist Wait/Wait.xcodeproj && git commit -m "$(cat <<'EOF'
@@ -711,7 +750,7 @@ EOF
 **Files:**
 - Modify: `Wait/project.yml`, generated `Wait/Wait.xcodeproj` (adds the `WaitWatch.xcscheme`)
 
-- [ ] **Step 1: Fix the watch bundle ids in `Wait/project.yml`**
+- [x] **Step 1: Fix the watch bundle ids in `Wait/project.yml`**
 
 In the `WaitWatch` target's `settings.base`, replace:
 ```yaml
@@ -732,7 +771,7 @@ with these three lines. They mark the app as a single-target watch app that need
         INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp: NO
 ```
 
-- [ ] **Step 2: Embed the watch app in the iOS app**
+- [x] **Step 2: Embed the watch app in the iOS app**
 
 In the `Wait` target's `dependencies`, add this right after `- target: WaitWidgetExtension`. It is the same copy phase Xcode calls "Embed Watch Content":
 ```yaml
@@ -745,7 +784,7 @@ In the `Wait` target's `dependencies`, add this right after `- target: WaitWidge
           subpath: "$(CONTENTS_FOLDER_PATH)/Watch"
 ```
 
-- [ ] **Step 3: Add a `WaitWatch` scheme**
+- [x] **Step 3: Add a `WaitWatch` scheme**
 
 Append under `schemes:`:
 ```yaml
@@ -759,7 +798,7 @@ Append under `schemes:`:
       config: Release
 ```
 
-- [ ] **Step 4: Regenerate and build the watch scheme**
+- [ ] **Step 4: Regenerate and build the watch scheme** — NOT RUN (code-only; `xcodegen generate` done, watch build not run)
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 && ls Wait.xcodeproj/xcshareddata/xcschemes
@@ -767,7 +806,7 @@ cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 && ls Wait.xcodepro
 Expected: `Created project at …`, then `Wait.xcscheme` and `WaitWatch.xcscheme`. Repeat the Package.resolved check from Task 2 Step 3, then run command E.
 Expected: `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 5: Build the app and confirm the watch app is embedded with the right companion id**
+- [ ] **Step 5: Build the app and confirm the watch app is embedded with the right companion id** — NOT RUN (code-only)
 
 ```sh
 xcodebuild -project /Users/ckai/code/Wait/Wait/Wait.xcodeproj -scheme Wait -destination 'platform=iOS Simulator,name=iPhone 17,OS=27.0' \
@@ -787,11 +826,11 @@ WaitWatch.app
 ```
 From now on, the app build fails if the watch fails to compile. That is intended (overview risk 17).
 
-- [ ] **Step 6: Run the tests**
+- [ ] **Step 6: Run the tests** — NOT RUN (code-only)
 
 Run command C. Expected: `Executed 5 tests, with 0 failures`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add Wait/project.yml Wait/Wait.xcodeproj && git commit -m "$(cat <<'EOF'
@@ -815,7 +854,7 @@ This task removes the hard-coded Twelve Data and Alpha Vantage keys, Shake, the 
 - Modify: `.gitignore`, `Wait/project.yml`, `Wait/Wait/Info.plist`, `Wait/WaitWidget/Info.plist`, `Wait/Networking/URLDomain.swift`, `Wait/WaitWatch Watch App/PriceHistoryNetworkClient.swift`, `Wait/StockDetailsFeature/Network/StockOverviewNetworkClient.swift`, `Wait/StockDetailsFeature/View/StockDetailsView.swift:72`, `Wait/Wait/WaitApp.swift`, `Wait/Logging/Logging.swift`
 - Delete: `Wait/GoogleService-Info.plist`, `Wait/bitrise_configuration.plist`
 
-- [ ] **Step 1: Write the failing check: `scripts/check-secrets.sh`**
+- [x] **Step 1: Write the failing check: `scripts/check-secrets.sh`**
 
 ```bash
 #!/usr/bin/env bash
@@ -859,14 +898,14 @@ exit "$status"
 chmod +x /Users/ckai/code/Wait/scripts/check-secrets.sh
 ```
 
-- [ ] **Step 2: Run it and watch it fail**
+- [x] **Step 2: Run it and watch it fail**
 
 ```sh
 /Users/ckai/code/Wait/scripts/check-secrets.sh; echo "exit=$?"
 ```
 Expected: `file:line` locations (no values) in at least these files: `Wait/Networking/URLDomain.swift`, `Wait/WaitWatch Watch App/PriceHistoryNetworkClient.swift`, `Wait/Wait/WaitApp.swift`, `Wait/Logging/Logging.swift`, `Wait/bitrise_configuration.plist` and `Wait/GoogleService-Info.plist`. Then `check-secrets: possible credentials …` and `exit=1`.
 
-- [ ] **Step 3: Add the xcconfig files and ignore the real one**
+- [x] **Step 3: Add the xcconfig files and ignore the real one**
 
 `Wait/Config/Base.xcconfig`:
 ```
@@ -891,7 +930,7 @@ cd /Users/ckai/code/Wait && cp Wait/Config/Secrets.example.xcconfig Wait/Config/
 ```
 Expected: `.gitignore:<line>:Wait/Config/Secrets.xcconfig	Wait/Config/Secrets.xcconfig`
 
-- [ ] **Step 4: Expose the key through Info.plist for the app, widget and watch**
+- [x] **Step 4: Expose the key through Info.plist for the app, widget and watch**
 
 ```sh
 cd /Users/ckai/code/Wait/Wait \
@@ -911,7 +950,7 @@ plutil -lint "WaitWatch Watch App/Info.plist" Wait/Info.plist WaitWidget/Info.pl
 ```
 Expected: three `: OK` lines.
 
-- [ ] **Step 5: Update `Wait/project.yml`**
+- [x] **Step 5: Update `Wait/project.yml`**
 
 Make these edits:
 1. After the `options:` block, add project-level config files:
@@ -935,7 +974,7 @@ Make these edits:
            INFOPLIST_FILE: "WaitWatch Watch App/Info.plist"
    ```
 
-- [ ] **Step 6: Read the key from Info.plist in `Wait/Networking/URLDomain.swift`**
+- [x] **Step 6: Read the key from Info.plist in `Wait/Networking/URLDomain.swift`**
 
 Replace the whole file with:
 ```swift
@@ -969,7 +1008,7 @@ enum APIKey {
 }
 ```
 
-- [ ] **Step 7: Do the same in the watch copy**
+- [x] **Step 7: Do the same in the watch copy**
 
 In `Wait/WaitWatch Watch App/PriceHistoryNetworkClient.swift`, replace everything from line 94 (`// MARK: - URLDomain`) to the end of the file (line 112) with:
 ```swift
@@ -998,7 +1037,7 @@ enum APIKey {
 }
 ```
 
-- [ ] **Step 8: Replace the Alpha Vantage overview client**
+- [x] **Step 8: Replace the Alpha Vantage overview client**
 
 Replace the whole of `Wait/StockDetailsFeature/Network/StockOverviewNetworkClient.swift` with:
 ```swift
@@ -1038,7 +1077,7 @@ with:
   @ObservedObject var stockOverviewDatSource = StockOverviewDataSource(networkClient: EmptyStockOverviewNetworkClient())
 ```
 
-- [ ] **Step 9: Remove Shake from `Wait/Wait/WaitApp.swift`**
+- [x] **Step 9: Remove Shake from `Wait/Wait/WaitApp.swift`**
 
 Replace the whole file with:
 ```swift
@@ -1080,7 +1119,7 @@ struct WaitApp: App {
 }
 ```
 
-- [ ] **Step 10: Drop the SwiftyBeaver cloud destination**
+- [x] **Step 10: Drop the SwiftyBeaver cloud destination**
 
 Replace the whole of `Wait/Logging/Logging.swift` with this. SwiftyBeaver itself goes in Task 7.
 ```swift
@@ -1102,7 +1141,7 @@ public enum Logger {
 }
 ```
 
-- [ ] **Step 11: Delete the unused credential plists**
+- [x] **Step 11: Delete the unused credential plists**
 
 ```sh
 cd /Users/ckai/code/Wait && git rm -q Wait/GoogleService-Info.plist Wait/bitrise_configuration.plist && git status --short | grep "^D"
@@ -1113,14 +1152,14 @@ D  Wait/GoogleService-Info.plist
 D  Wait/bitrise_configuration.plist
 ```
 
-- [ ] **Step 12: Run the check again and watch it pass**
+- [x] **Step 12: Run the check again and watch it pass**
 
 ```sh
 /Users/ckai/code/Wait/scripts/check-secrets.sh; echo "exit=$?"
 ```
 Expected: `check-secrets: OK` and `exit=0`. If a location is still listed, fix it before continuing.
 
-- [ ] **Step 13: Regenerate, build, test and confirm the key is injected**
+- [ ] **Step 13: Regenerate, build, test and confirm the key is injected** — NOT RUN (code-only)
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1
@@ -1142,7 +1181,7 @@ com.chenkai.wait
 ```
 The placeholder appears until the user adds a real key in Step 14. The last line proves the generated `INFOPLIST_KEY_*` values still merge into the watch plist.
 
-- [ ] **Step 14 (manual: user): Rotate the leaked credentials**
+- [ ] **Step 14 (manual: user): Rotate the leaked credentials** — SKIPPED (manual)
 
 All of these are in git history, and the repo may be public. Rewriting history isn't enough, so revoke or rotate each one:
 1. **Twelve Data** (https://twelvedata.com/account/api-keys): regenerate the key. Put the new key in `Wait/Config/Secrets.xcconfig` as `TWELVE_DATA_API_KEY = <new key>`. Never commit that file.
@@ -1154,7 +1193,7 @@ All of these are in git history, and the repo may be public. Rewriting history i
 
 **This step is non-blocking.** Print the list for the user, then go straight on to Step 15 without waiting. Builds and tests work with the placeholder key, and the user can rotate the keys at any time.
 
-- [ ] **Step 15: Commit**
+- [x] **Step 15: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add .gitignore scripts/check-secrets.sh Wait/Config/Base.xcconfig Wait/Config/Secrets.example.xcconfig \
@@ -1216,7 +1255,7 @@ Expected: the `grep -c` prints `0`, which confirms `Secrets.xcconfig` is not sta
   - `Wait/WaitWidget/WaitWidget.swift`
   - `Wait/WaitWidget/WidgetStockRow.swift`
 
-- [ ] **Step 1: Move the sources**
+- [x] **Step 1: Move the sources**
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/DesignSystem \
@@ -1226,7 +1265,7 @@ cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/DesignSystem 
 ```
 Expected: the five `.swift` files, then `ls: Color: No such file or directory` and `ls: Size: No such file or directory`.
 
-- [ ] **Step 2: Write `Wait/Packages/WaitKit/Package.swift`**
+- [x] **Step 2: Write `Wait/Packages/WaitKit/Package.swift`**
 
 ```swift
 // swift-tools-version: 6.1
@@ -1254,14 +1293,14 @@ let package = Package(
 )
 ```
 
-- [ ] **Step 3: Ignore the package's own build output**
+- [x] **Step 3: Ignore the package's own build output**
 
 ```sh
 cd /Users/ckai/code/Wait && printf '\n# WaitKit standalone builds (the app resolves packages through the Xcode project)\nWait/Packages/WaitKit/.build/\nWait/Packages/WaitKit/.swiftpm/\nWait/Packages/WaitKit/Package.resolved\n' >> .gitignore \
   && tail -4 .gitignore
 ```
 
-- [ ] **Step 4: Point the importers at `DesignSystem`**
+- [x] **Step 4: Point the importers at `DesignSystem`**
 
 ```sh
 cd /Users/ckai/code/Wait/Wait \
@@ -1273,7 +1312,7 @@ cd /Users/ckai/code/Wait/Wait \
 ```
 Expected: the first grep prints nothing, and the count prints `12`. `MainView.swift` imported both modules, and the `awk` keeps only its first `import DesignSystem`. The watch app has its own `Size.swift` copy and no `import Size`, so it isn't touched.
 
-- [ ] **Step 5: Update `Wait/project.yml`**
+- [x] **Step 5: Update `Wait/project.yml`**
 
 1. At the top of `packages:`, add:
    ```yaml
@@ -1297,7 +1336,7 @@ cd /Users/ckai/code/Wait/Wait && grep -nE "target: (Color|Size)$" project.yml; g
 ```
 Expected: nothing from the first grep, then `6`.
 
-- [ ] **Step 6: Regenerate and build the package on its own**
+- [ ] **Step 6: Regenerate and build the package on its own** — NOT RUN (code-only)
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 \
@@ -1306,11 +1345,11 @@ cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 \
 ```
 Expected: `Created project at …`, then `Schemes:` followed by the single scheme `WaitKit`, then `** BUILD SUCCEEDED **`. While the package has one product, Xcode names its only scheme after the package. Once Task 7 adds a second product, the schemes become `DesignSystem`, `Logging` and `WaitKit-Package`. Then repeat the Package.resolved check from Task 2 Step 3.
 
-- [ ] **Step 7: Build and test the app**
+- [ ] **Step 7: Build and test the app** — NOT RUN (code-only)
 
 Run commands B, C and E. Expected: `** BUILD SUCCEEDED **`, `Executed 5 tests, with 0 failures`, and `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add -A .gitignore Wait && git status --short | grep -v '^[RMAD] ' ; git commit -m "$(cat <<'EOF'
@@ -1334,7 +1373,7 @@ The existing call sites use `Logger.shared.verbose(...)` 8 times and `Logger.sha
 - Delete: `Wait/Logging/Info.plist`, `Wait/Logging/Logging.h`
 - Modify: `Wait/Packages/WaitKit/Package.swift`, `Wait/project.yml`, `Wait/Wait/WaitApp.swift`
 
-- [ ] **Step 1: Move the file**
+- [x] **Step 1: Move the file**
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/Logging \
@@ -1342,7 +1381,7 @@ cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/Logging \
   && git rm -q Logging/Info.plist Logging/Logging.h
 ```
 
-- [ ] **Step 2: Replace the contents of `Wait/Packages/WaitKit/Sources/Logging/LegacyLogger.swift`**
+- [x] **Step 2: Replace the contents of `Wait/Packages/WaitKit/Sources/Logging/LegacyLogger.swift`**
 
 ```swift
 //
@@ -1390,7 +1429,7 @@ public struct LegacyLogger: Sendable {
 }
 ```
 
-- [ ] **Step 3: Drop the logger setup from `Wait/Wait/WaitApp.swift`**
+- [x] **Step 3: Drop the logger setup from `Wait/Wait/WaitApp.swift`**
 
 Replace the whole file with:
 ```swift
@@ -1423,7 +1462,7 @@ struct WaitApp: App {
 }
 ```
 
-- [ ] **Step 4: Replace `Wait/Packages/WaitKit/Package.swift` with this version, which adds `Logging` in Swift 6 mode**
+- [x] **Step 4: Replace `Wait/Packages/WaitKit/Package.swift` with this version, which adds `Logging` in Swift 6 mode**
 
 ```swift
 // swift-tools-version: 6.1
@@ -1453,7 +1492,7 @@ let package = Package(
 )
 ```
 
-- [ ] **Step 5: Update `Wait/project.yml`**
+- [x] **Step 5: Update `Wait/project.yml`**
 
 1. Delete the `Logging:` target entry, all four lines:
    ```yaml
@@ -1476,7 +1515,7 @@ cd /Users/ckai/code/Wait/Wait && grep -nE "SwiftyBeaver|target: Logging$" projec
 ```
 Expected: no output from the first and last greps, and `8` in between.
 
-- [ ] **Step 6: Regenerate, then build and test**
+- [ ] **Step 6: Regenerate, then build and test** — NOT RUN (code-only; `xcodegen generate` ran OK, xcodebuild steps not run)
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 \
@@ -1486,7 +1525,7 @@ cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 \
 Expected: `Created project at …`. The schemes list now includes `WaitKit-Package`, `DesignSystem` and `Logging`. Then `** BUILD SUCCEEDED **`.
 Repeat the Package.resolved check from Task 2 Step 3, then run commands B, C and E. Expected: `** BUILD SUCCEEDED **`, `Executed 5 tests, with 0 failures`, and `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add -A Wait && git status --short | grep -v '^[RMAD] ' ; git commit -m "$(cat <<'EOF'
@@ -1506,7 +1545,7 @@ EOF
 - Delete: `Wait/Model/Info.plist`, `Wait/Model/Model.h`
 - Modify: `Wait/Packages/WaitKit/Package.swift`, `Wait/project.yml`
 
-- [ ] **Step 1: Move the sources**
+- [x] **Step 1: Move the sources**
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/Model \
@@ -1516,7 +1555,7 @@ cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/Model \
 ```
 Expected: `11`
 
-- [ ] **Step 2: Replace `Wait/Packages/WaitKit/Package.swift` (adds Money, pinned exactly, and `Model`)**
+- [x] **Step 2: Replace `Wait/Packages/WaitKit/Package.swift` (adds Money, pinned exactly, and `Model`)**
 
 ```swift
 // swift-tools-version: 6.1
@@ -1556,7 +1595,7 @@ let package = Package(
 )
 ```
 
-- [ ] **Step 3: Update `Wait/project.yml`**
+- [x] **Step 3: Update `Wait/project.yml`**
 
 1. Delete the whole `Model:` target entry. After Task 6 it reads:
    ```yaml
@@ -1581,7 +1620,7 @@ cd /Users/ckai/code/Wait/Wait && grep -n "target: Model$" project.yml; grep -c "
 ```
 Expected: no output, then `12`.
 
-- [ ] **Step 4: Regenerate, then build and test**
+- [ ] **Step 4: Regenerate, then build and test** — NOT RUN (code-only)
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 \
@@ -1591,7 +1630,7 @@ Expected: `Created project at …` and `** BUILD SUCCEEDED **`. Repeat the Packa
 
 If Money's manifest is rejected (`Invalid manifest` naming `Money`), stop and ask the user. Plan 02 removes Money, and vendoring it here would be throwaway work.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add -A Wait && git status --short | grep -v '^[RMAD] ' ; git commit -m "$(cat <<'EOF'
@@ -1612,7 +1651,7 @@ EOF
 - Delete: `Wait/Networking/Info.plist`, `Wait/Networking/Networking.h`
 - Modify: `Wait/Packages/WaitKit/Sources/Networking/StockCurrentQuoteNetworkClient.swift` (drop the unused `import Alamofire`), `Wait/Packages/WaitKit/Package.swift`, `Wait/project.yml`
 
-- [ ] **Step 1: Move the sources and drop the unused Alamofire import**
+- [x] **Step 1: Move the sources and drop the unused Alamofire import**
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/CacheService Packages/WaitKit/Sources/Networking \
@@ -1624,7 +1663,7 @@ cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/CacheService 
 ```
 Expected: `4` (Combine, Foundation, Logging, Model).
 
-- [ ] **Step 2: Replace `Wait/Packages/WaitKit/Package.swift`**
+- [x] **Step 2: Replace `Wait/Packages/WaitKit/Package.swift`**
 
 ```swift
 // swift-tools-version: 6.1
@@ -1668,7 +1707,7 @@ let package = Package(
 )
 ```
 
-- [ ] **Step 3: Update `Wait/project.yml`**
+- [x] **Step 3: Update `Wait/project.yml`**
 
 1. Delete the `Networking:` and `CacheService:` target entries completely: name, `templates`, and every dependency line.
 2. Replace every `      - target: CacheService` with the CacheService product entry, in `StockCharts`, `Checklist`, `StockDetailsFeature`, `WaitWidgetExtension` and `Wait`:
@@ -1688,7 +1727,7 @@ cd /Users/ckai/code/Wait/Wait && grep -nE "target: (CacheService|Networking)$" p
 ```
 Expected: no output, then `5`, then `4`.
 
-- [ ] **Step 4: Regenerate, then build and test**
+- [ ] **Step 4: Regenerate, then build and test** — NOT RUN (code-only; xcodegen only)
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 \
@@ -1696,7 +1735,7 @@ cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 \
 ```
 Expected: `Created project at …` and `** BUILD SUCCEEDED **`. Repeat the Package.resolved check from Task 2 Step 3, then run commands B, C and E with the same expectations as Task 7 Step 6.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add -A Wait && git status --short | grep -v '^[RMAD] ' ; git commit -m "$(cat <<'EOF'
@@ -1720,7 +1759,7 @@ EOF
   - `Wait/Wait/Waitlist/View/MainView.swift`: drop the unused `import Alamofire` and `import Money`
   - `Wait/Wait/Waitlist/View/SearchStockView.swift`: drop the unused `import Alamofire`
 
-- [ ] **Step 1: Move the sources and drop the unused app imports**
+- [x] **Step 1: Move the sources and drop the unused app imports**
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/StockCharts \
@@ -1739,7 +1778,7 @@ StockDetailsFeature/View/StockExpectedPriceInputView.swift:<n>:import Money
 ```
 The app and widget no longer import Alamofire, SwiftyJSON or Money. Inside the package, `Model` and `StockCharts` import them. Outside the package, only these three `StockDetailsFeature` files (which still get Money through the `Model` product) and the watch app do. Task 12 moves the three files into `LegacyStockDetails`, which declares `.money` explicitly.
 
-- [ ] **Step 2: Replace `Wait/Packages/WaitKit/Package.swift`**
+- [x] **Step 2: Replace `Wait/Packages/WaitKit/Package.swift`**
 
 ```swift
 // swift-tools-version: 6.1
@@ -1793,7 +1832,7 @@ let package = Package(
 )
 ```
 
-- [ ] **Step 3: Update `Wait/project.yml`**
+- [x] **Step 3: Update `Wait/project.yml`**
 
 1. Delete the `StockCharts:` target entry completely.
 2. Replace every `      - target: StockCharts` with the StockCharts product entry, in `StockDetailsFeature` and `Wait`:
@@ -1811,7 +1850,7 @@ cd /Users/ckai/code/Wait/Wait && grep -n "target: StockCharts$" project.yml; gre
 ```
 Expected: no output from the first grep. The second prints exactly three lines, all inside the `WaitWatch` target.
 
-- [ ] **Step 4: Regenerate, then build and test**
+- [ ] **Step 4: Regenerate, then build and test** — NOT RUN (code-only)
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 \
@@ -1819,7 +1858,7 @@ cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 \
 ```
 Expected: `Created project at …` and `** BUILD SUCCEEDED **`. Repeat the Package.resolved check from Task 2 Step 3, then run commands B, C and E with the same expectations as Task 7 Step 6.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add -A Wait && git status --short | grep -v '^[RMAD] ' ; git commit -m "$(cat <<'EOF'
@@ -1847,7 +1886,7 @@ TCA stays at **0.31.0, pinned exactly**, so this commit only moves files. `Stock
 - Delete: `Wait/Checklist/Checklist.docc` (an unedited template), `Wait/ChecklistEditFeature/ChecklistEditFeature.h`
 - Modify: `Wait/Packages/WaitKit/Package.swift`, `Wait/project.yml`
 
-- [ ] **Step 1: Move the sources and tests**
+- [x] **Step 1: Move the sources and tests**
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/Checklist Packages/WaitKit/Sources/ChecklistEditFeature \
@@ -1864,7 +1903,7 @@ cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/Checklist Pac
 ```
 Expected: `4`
 
-- [ ] **Step 2: Replace `Wait/Packages/WaitKit/Package.swift`**
+- [x] **Step 2: Replace `Wait/Packages/WaitKit/Package.swift`**
 
 This adds TCA 0.31.0, pinned exactly, plus the two modules and their test targets:
 ```swift
@@ -1932,7 +1971,7 @@ let package = Package(
 )
 ```
 
-- [ ] **Step 3: Update `Wait/project.yml`**
+- [x] **Step 3: Update `Wait/project.yml`**
 
 1. Delete the `Checklist:`, `ChecklistEditFeature:`, `ChecklistTests:` and `ChecklistEditFeatureTests:` target entries completely.
 2. In `SettingsTab`, replace `      - target: ChecklistEditFeature` with:
@@ -1954,7 +1993,7 @@ cd /Users/ckai/code/Wait/Wait && grep -nE "target: Checklist(EditFeature)?$|^  C
 ```
 Expected: no output from the first grep, and the `test:` block lists only `- StockDetailsFeatureTests`.
 
-- [ ] **Step 4: Regenerate and run the moved tests from the package**
+- [ ] **Step 4: Regenerate and run the moved tests from the package** — NOT RUN (code-only; `xcodegen generate` run, Package.resolved check clean, package tests not run)
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1
@@ -1964,11 +2003,11 @@ Expected: `Executed 4 tests, with 0 failures` and `** TEST SUCCEEDED **`.
 
 If you're in red-baseline mode, save command D's full output (`… > /tmp/wait-task11-test.log 2>&1`) and run Task 1 Step 6 check (i) on it. If any failing project is `swift-composable-architecture` or one of its dependency projects (`swift-custom-dump`, `swift-case-paths`, `combine-schedulers`, `xctest-dynamic-overlay`, `swift-identified-collections`, `swift-collections`), TCA 0.31.0 can't build here. In that case run Task 13 Steps 1–7 now, then come back to Step 5.
 
-- [ ] **Step 5: Build the app and run the remaining app-scheme test**
+- [ ] **Step 5: Build the app and run the remaining app-scheme test** — NOT RUN (code-only)
 
 Run commands B, C and E. Expected: `** BUILD SUCCEEDED **`, then `Executed 1 test, with 0 failures`, then `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add -A Wait && git status --short | grep -v '^[RMAD] ' ; git commit -m "$(cat <<'EOF'
@@ -1999,7 +2038,7 @@ The module is renamed so that plan 02 can introduce the new `StockDetailsFeature
   - `Wait/project.yml`: full rewrite
   - `Wait/Wait/Waitlist/View/MainView.swift` and `Wait/Wait/Waitlist/View/SearchStockView.swift`: import lines only
 
-- [ ] **Step 1: Move, delete and rename the import**
+- [x] **Step 1: Move, delete and rename the import**
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/LegacyStockDetails Packages/WaitKit/Sources/SettingsTab \
@@ -2012,7 +2051,7 @@ cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/LegacyStockDe
 ```
 Expected: no output from the grep, then `8`.
 
-- [ ] **Step 2: Replace `Wait/Packages/WaitKit/Package.swift`**
+- [x] **Step 2: Replace `Wait/Packages/WaitKit/Package.swift`**
 
 ```swift
 // swift-tools-version: 6.1
@@ -2087,7 +2126,7 @@ let package = Package(
 )
 ```
 
-- [ ] **Step 3: Replace `Wait/project.yml` with the three-target spec**
+- [x] **Step 3: Replace `Wait/project.yml` with the three-target spec**
 
 ```yaml
 # XcodeGen spec for Wait. Regenerate with `cd Wait && xcodegen generate`.
@@ -2254,7 +2293,7 @@ schemes:
 ```
 The `Wait` scheme no longer has a test action. All tests run through `WaitKit-Package` (command D). `bundleIdPrefix` changed to `com.chenkai`, but every target sets its bundle id explicitly, so this changes nothing.
 
-- [ ] **Step 4: Regenerate and confirm the project has three targets**
+- [x] **Step 4: Regenerate and confirm the project has three targets** — xcodegen ran; target list verified by grepping project.pbxproj (xcodebuild -list not run, code-only)
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 \
@@ -2271,11 +2310,11 @@ Created project at /Users/ckai/code/Wait/Wait/Wait.xcodeproj
 ```
 The three target lines may appear in a different order. Then repeat the Package.resolved check from Task 2 Step 3.
 
-- [ ] **Step 5: Build everything and run the package tests**
+- [ ] **Step 5: Build everything and run the package tests** — NOT RUN (code-only)
 
 Run commands D, B and E. Expected, in that order: `Executed 4 tests, with 0 failures` with `** TEST SUCCEEDED **`, then `** BUILD SUCCEEDED **`, then `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 6: Smoke-run the app on the seeded simulator**
+- [ ] **Step 6: Smoke-run the app on the seeded simulator** — NOT RUN (code-only)
 
 Run as one block:
 ```sh
@@ -2295,9 +2334,9 @@ Expected:
 - `1`, meaning the app is still running after 5 s and didn't crash
 - `Wrote screenshot to: /tmp/wait-plan01-task12.png`
 
-(manual: user, if Task 1 Step 7 seeded data) Open the screenshot or the simulator and confirm the watchlist shows the same stocks as before.
+(manual: user, if Task 1 Step 7 seeded data) Open the screenshot or the simulator and confirm the watchlist shows the same stocks as before. — SKIPPED (manual)
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add -A Wait && git status --short | grep -v '^[RMAD] ' ; git commit -m "$(cat <<'EOF'
@@ -2341,14 +2380,14 @@ The reducer names avoid the module names `Checklist` and `ChecklistEditFeature`,
   - `Wait/Packages/WaitKit/Tests/ChecklistTests/ChecklistListTests.swift`
   - `Wait/Packages/WaitKit/Tests/ChecklistEditFeatureTests/ChecklistEditFeatureTests.swift`
 
-- [ ] **Step 1: Confirm the latest TCA 1.x tag**
+- [x] **Step 1: Confirm the latest TCA 1.x tag**
 
 ```sh
 git ls-remote --tags https://github.com/pointfreeco/swift-composable-architecture | awk -F/ '{print $3}' | grep -E '^1\.[0-9]+\.[0-9]+$' | sort -V | tail -1
 ```
 Expected: `1.26.2` or a later 1.x. The `from: "1.26.2"` requirement below accepts any later 1.x. Never move to a 2.x major in this plan.
 
-- [ ] **Step 2: Write the failing tests: replace `Wait/Packages/WaitKit/Tests/ChecklistTests/ChecklistListTests.swift`**
+- [x] **Step 2: Write the failing tests: replace `Wait/Packages/WaitKit/Tests/ChecklistTests/ChecklistListTests.swift`**
 
 ```swift
 //
@@ -2409,7 +2448,7 @@ struct ChecklistListTests {
 }
 ```
 
-- [ ] **Step 3: Write the failing tests: replace `Wait/Packages/WaitKit/Tests/ChecklistEditFeatureTests/ChecklistEditFeatureTests.swift`**
+- [x] **Step 3: Write the failing tests: replace `Wait/Packages/WaitKit/Tests/ChecklistEditFeatureTests/ChecklistEditFeatureTests.swift`**
 
 Keep `MockChecklistDataManager.swift` unchanged.
 ```swift
@@ -2480,7 +2519,7 @@ struct ChecklistEditFeatureTests {
 }
 ```
 
-- [ ] **Step 4: Run the tests and watch them fail**
+- [ ] **Step 4: Run the tests and watch them fail** — NOT RUN (code-only)
 
 Run command D with the full log saved:
 ```sh
@@ -2496,7 +2535,7 @@ Expected: `** TEST FAILED **`, plus compile errors located in the two test files
 
 At least one error must come from each of the two test files.
 
-- [ ] **Step 5: Upgrade TCA in `Wait/Packages/WaitKit/Package.swift`**
+- [ ] **Step 5: Upgrade TCA in `Wait/Packages/WaitKit/Package.swift`** — Package.swift edit done; `xcodebuild -resolvePackageDependencies` NOT RUN (code-only)
 
 Replace these two lines:
 ```swift
@@ -2517,7 +2556,7 @@ xcodebuild -resolvePackageDependencies -project /Users/ckai/code/Wait/Wait/Wait.
 ```
 Expected: lines showing `swift-composable-architecture: … @ 1.26.2` (or the later 1.x from Step 1), plus the new transitive `swift-dependencies` and `swift-sharing`.
 
-- [ ] **Step 6: Port `ChecklistListTCA.swift` and its view**
+- [x] **Step 6: Port `ChecklistListTCA.swift` and its view**
 
 Replace the whole of `Wait/Packages/WaitKit/Sources/Checklist/ChecklistListTCA.swift` with:
 ```swift
@@ -2654,7 +2693,7 @@ struct ChecklistListView_Previews: PreviewProvider {
 }
 ```
 
-- [ ] **Step 7: Port `ChecklistEditTCA.swift` and its view, and the inline store in `StockDetailsView`**
+- [x] **Step 7: Port `ChecklistEditTCA.swift` and its view, and the inline store in `StockDetailsView`**
 
 Replace the whole of `Wait/Packages/WaitKit/Sources/ChecklistEditFeature/ChecklistEditTCA.swift` with:
 ```swift
@@ -2826,11 +2865,11 @@ cd /Users/ckai/code/Wait/Wait && grep -rnE "WithViewStore|ReducerBuilder|Checkli
 ```
 Expected: no output.
 
-- [ ] **Step 8: Run the tests and watch them pass**
+- [ ] **Step 8: Run the tests and watch them pass** — NOT RUN (code-only)
 
 Run command D. Expected: `✔ Test run with 5 tests in 2 suites passed` and `** TEST SUCCEEDED **`.
 
-- [ ] **Step 9: Build the app and the watch, then smoke-run**
+- [ ] **Step 9: Build the app and the watch, then smoke-run** — NOT RUN (code-only); manual simulator checks SKIPPED (manual)
 
 Run commands B and E. Expected: `** BUILD SUCCEEDED **` twice. Then repeat the Task 12 Step 6 block, writing the screenshot to `/tmp/wait-plan01-task13.png`. Expected: the same four results.
 
@@ -2838,7 +2877,7 @@ Run commands B and E. Expected: `** BUILD SUCCEEDED **` twice. Then repeat the T
 1. Open a stock, tap **Let's check**, check two items, go back, and reopen. The two items must still be checked.
 2. The watchlist, expected prices and notes must match what was seeded in Task 1 Step 7.
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add -A Wait && git status --short | grep -v '^[RMAD] ' ; git commit -m "$(cat <<'EOF'
@@ -2861,7 +2900,7 @@ EOF
 - Modify: `CLAUDE.md` (full rewrite below)
 - Create: `Wait/Packages/WaitKit/README.md`
 
-- [ ] **Step 1: Replace `CLAUDE.md` with the post-plan-01 version**
+- [x] **Step 1: Replace `CLAUDE.md` with the post-plan-01 version**
 
 `AGENTS.md` is a symlink to this file and needs no change.
 ````markdown
@@ -3002,7 +3041,7 @@ The tools enforce this style through `Wait/.swiftformat` and `Wait/.swiftlint.ym
   ```
 ````
 
-- [ ] **Step 2: Write `Wait/Packages/WaitKit/README.md`**
+- [x] **Step 2: Write `Wait/Packages/WaitKit/README.md`**
 
 ````markdown
 # WaitKit
@@ -3041,7 +3080,7 @@ cd Wait/Packages/WaitKit && xcodebuild test -scheme WaitKit-Package \
 | ChecklistTests, ChecklistEditFeatureTests | Swift 5 (legacy) | the module under test, Model, TCA |
 ````
 
-- [ ] **Step 3: Run the full definition-of-done check (overview §4.1, plan 01)**
+- [ ] **Step 3: Run the full definition-of-done check (overview §4.1, plan 01)** — PARTIAL (code-only): static checks run; builds and tests NOT RUN
 
 Run commands D, B and E, then:
 ```sh
@@ -3058,7 +3097,7 @@ Expected:
 - no matches and `deps-exit=1`
 - `3` (the three targets)
 
-- [ ] **Step 4 (manual: user): Update Bitrise**
+- [ ] **Step 4 (manual: user): Update Bitrise** — SKIPPED (manual)
 
 The CI config lives in Bitrise, not this repo. In the Bitrise workflow editor for Wait:
 1. **Stack:** choose an Xcode 27 stack (anything ≥ 16.3 works for TCA 1.26, but 27 matches local).
@@ -3073,7 +3112,7 @@ The CI config lives in Bitrise, not this repo. In the Bitrise workflow editor fo
 
 The executor prints this list for the user and continues. It doesn't block the commit.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add CLAUDE.md Wait/Packages/WaitKit/README.md && git commit -m "$(cat <<'EOF'
@@ -3084,6 +3123,6 @@ EOF
 )"
 ```
 
-- [ ] **Step 6: Finish the branch**
+- [ ] **Step 6: Finish the branch** — SKIPPED (session rules: no merge, PR or push)
 
 Use superpowers:finishing-a-development-branch to verify, then offer to merge into or open a PR against `ck/new-version`, never `master`. The next plan is `2026-11-22-wait-02-ios-ladder-and-features.md`.
