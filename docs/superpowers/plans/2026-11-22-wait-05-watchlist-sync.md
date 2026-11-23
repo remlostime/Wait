@@ -151,7 +151,7 @@
 - Test: `server/test/domain/ladder.test.ts`
 - Read only: `shared/ladder-test-vectors.json` (plan 02 created it; don't edit it here, see overview risk 32)
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/domain/ladder.test.ts`:
 ```ts
@@ -275,12 +275,12 @@ describe("ladder edge cases", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test and confirm it fails**
+- [x] **Step 2: Run the test and confirm it fails**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/domain/ladder.test.ts`
 Expected: FAIL. vitest reports `Failed to load url ../../src/domain/ladder.js` (or `Cannot find module`), and 0 tests run.
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation**
 
 Create `server/src/domain/ladder.ts`:
 ```ts
@@ -435,17 +435,17 @@ export function classifyStatus(ladder: LadderInput, price: number): LadderStatus
 }
 ```
 
-- [ ] **Step 4: Run the test and confirm it passes**
+- [x] **Step 4: Run the test and confirm it passes**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/domain/ladder.test.ts`
 Expected: PASS. `Test Files  1 passed (1)` and `Tests  38 passed (38)` (1 version check, 5 validation, 5 knots, 23 evaluations, 4 edge cases).
 
-- [ ] **Step 5: Typecheck**
+- [x] **Step 5: Typecheck**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npm run typecheck`
 Expected: exits 0 with no output from `tsc`.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
