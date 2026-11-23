@@ -38,9 +38,9 @@ targets:
     platform: iOS
     sources:
       - path: Wait
-      - path: Shared/Connectivity.swift
     settings:
       base:
+        SWIFT_VERSION: "6.0"
         PRODUCT_BUNDLE_IDENTIFIER: com.chenkai.wait
         INFOPLIST_FILE: Wait/Info.plist
         TARGETED_DEVICE_FAMILY: "1"
@@ -58,22 +58,6 @@ targets:
         Release:
           CODE_SIGN_ENTITLEMENTS: Wait/WaitRelease.entitlements
     dependencies:
-      - package: WaitKit
-        product: DesignSystem
-      - package: WaitKit
-        product: Logging
-      - package: WaitKit
-        product: Model
-      - package: WaitKit
-        product: CacheService
-      - package: WaitKit
-        product: Networking
-      - package: WaitKit
-        product: StockCharts
-      - package: WaitKit
-        product: LegacyStockDetails
-      - package: WaitKit
-        product: SettingsTab
       - package: WaitKit
         product: AppFeature
       - target: WaitWidgetExtension

@@ -10446,12 +10446,12 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Replace: `Wait/Packages/WaitKit/Package.swift` (final content below)
 - Modify: `Wait/project.yml` (the `Wait` target)
 
-- [ ] **Step 1: Confirm nothing new depends on legacy code**
+- [x] **Step 1: Confirm nothing new depends on legacy code**
 
 Run: `cd "$(git rev-parse --show-toplevel)" && grep -rlE "^import (Model|CacheService|Networking|StockCharts|Checklist|ChecklistEditFeature|LegacyStockDetails|SettingsTab|Money|Alamofire|SwiftyJSON|SwiftyBeaver)$" Wait/Wait/WaitApp.swift Wait/WaitWidget Wait/Packages/WaitKit/Sources/{Domain,Logging,DesignSystem,Persistence,MarketDataClient,ChecklistFeature,StockChartFeature,StockDetailsFeature,WatchlistFeature,SettingsFeature,AppFeature} ; echo "exit=$?"`
 Expected: no file paths, then `exit=1` (grep matched nothing).
 
-- [ ] **Step 2: Delete the legacy code**
+- [x] **Step 2: Delete the legacy code**
 
 Run:
 ```sh
@@ -10472,7 +10472,7 @@ Expected:
 
 If `git rm` reports a pathspec that doesn't match (for example, plan 01 named one of these files differently), list the directory, remove the legacy equivalent, and keep going.
 
-- [ ] **Step 3: Replace `Package.swift` with its final plan 02 content.** It has no legacy targets, no Money/Alamofire/SwiftyJSON, and no `legacySettings`, and every target is Swift 6. Plans 03–06 only append to this file.
+- [x] **Step 3: Replace `Package.swift` with its final plan 02 content.** It has no legacy targets, no Money/Alamofire/SwiftyJSON, and no `legacySettings`, and every target is Swift 6. Plans 03–06 only append to this file.
 ```swift
 // swift-tools-version: 6.1
 import PackageDescription
@@ -10548,7 +10548,7 @@ let package = Package(
 )
 ```
 
-- [ ] **Step 4: Update the `Wait` target in `project.yml`**
+- [x] **Step 4: Update the `Wait` target in `project.yml`** (xcodegen ran; the `xcodebuild -showBuildSettings` checks were NOT RUN (code-only), so the pbxproj was grepped instead)
   - `sources:` must contain only the `Wait` folder. Remove the `Shared` entry. The `WaitWatch` target keeps `Shared/Connectivity.swift` until plan 03 deletes it; under Swift 6 the app could no longer compile its `static let shared`.
   - `dependencies:`:
     - Keep `- package: WaitKit` with `product: AppFeature`.
@@ -10577,7 +10577,7 @@ Expected, in order:
     CODE_SIGN_ENTITLEMENTS = WaitWidget/WaitWidget.entitlements
 ```
 
-- [ ] **Step 5: Run the grep guards**
+- [x] **Step 5: Run the grep guards**
 
 Run:
 ```sh
@@ -10589,7 +10589,7 @@ echo "guards done"
 ```
 Expected: only `guards done`. No line may match.
 
-- [ ] **Step 6: Run the full verification**
+- [ ] **Step 6: Run the full verification** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh && scripts/build-app.sh && scripts/build-app.sh WaitWatch`
 Expected:
@@ -10600,7 +10600,7 @@ Then rerun the independent vectors check from Task 1 Step 2, the second command 
 
 If Swift 6 strict concurrency reports errors, fix them in DesignSystem and the app, using overview §11 item 3. Those are the two places that changed language mode here. The app target now holds only `WaitApp.swift`.
 
-- [ ] **Step 7: Repeat the manual migration and UI check** from Task 27 Step 11. Then also:
+- [ ] **Step 7: Repeat the manual migration and UI check** from Task 27 Step 11. Then also: — SKIPPED (manual)
   - Add a stock through search. Its ladder must have a decimal buy high, such as `12.34`.
   - Pull to refresh.
   - Delete a stock with a swipe.
@@ -10609,7 +10609,7 @@ If Swift 6 strict concurrency reports errors, fix them in DesignSystem and the a
   - Open Settings, then Checklist template, and add a prompt. The next stock you add starts with that prompt.
   - Background the app, then relaunch it. All edits persist.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 ```bash
 git add -A Wait/Packages/WaitKit Wait/Wait Wait/project.yml Wait/Wait.xcodeproj
 git commit -m "refactor!: cut over to WaitKit features; delete legacy modules, Money, Alamofire, SwiftyJSON; app in Swift 6

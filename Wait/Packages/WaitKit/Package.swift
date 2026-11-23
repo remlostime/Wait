@@ -1,19 +1,13 @@
 // swift-tools-version: 6.1
-//
-// WaitKit holds every Wait module except the three Xcode targets (app, widget, watch app).
-// Plan 01 moves the legacy framework targets in here unchanged (Swift 5 language mode);
-// plan 02 replaces them with Swift 6 modules. See docs/superpowers/plans/.
-//
 import PackageDescription
 
-/// Legacy modules moved from framework targets keep Swift 5 language mode until the plan 02 cutover.
-let legacySettings: [SwiftSetting] = [.swiftLanguageMode(.v5)]
-
 extension Target.Dependency {
-  static let alamofire = Self.product(name: "Alamofire", package: "Alamofire")
-  static let money = Self.product(name: "Money", package: "Money")
-  static let swiftyJSON = Self.product(name: "SwiftyJSON", package: "SwiftyJSON")
   static let tca = Self.product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+  static let dependencies = Self.product(name: "Dependencies", package: "swift-dependencies")
+  static let dependenciesMacros = Self.product(name: "DependenciesMacros", package: "swift-dependencies")
+  static let dependenciesTestSupport = Self.product(name: "DependenciesTestSupport", package: "swift-dependencies")
+  static let sharing = Self.product(name: "Sharing", package: "swift-sharing")
+  static let identifiedCollections = Self.product(name: "IdentifiedCollections", package: "swift-identified-collections")
 }
 
 let package = Package(
@@ -21,233 +15,58 @@ let package = Package(
   defaultLocalization: "en",
   platforms: [.iOS(.v17), .watchOS(.v10)],
   products: [
-    .library(name: "Domain", targets: ["Domain"]),
-    .library(name: "DesignSystem", targets: ["DesignSystem"]),
-    .library(name: "Logging", targets: ["Logging"]),
-    .library(name: "Model", targets: ["Model"]),
-    .library(name: "CacheService", targets: ["CacheService"]),
-    .library(name: "Networking", targets: ["Networking"]),
-    .library(name: "StockCharts", targets: ["StockCharts"]),
-    .library(name: "Checklist", targets: ["Checklist"]),
-    .library(name: "ChecklistEditFeature", targets: ["ChecklistEditFeature"]),
-    .library(name: "LegacyStockDetails", targets: ["LegacyStockDetails"]),
-    .library(name: "SettingsTab", targets: ["SettingsTab"]),
-    .library(name: "Persistence", targets: ["Persistence"]),
-    .library(name: "MarketDataClient", targets: ["MarketDataClient"]),
+    .library(name: "AppFeature", targets: ["AppFeature"]),
     .library(name: "ChecklistFeature", targets: ["ChecklistFeature"]),
+    .library(name: "DesignSystem", targets: ["DesignSystem"]),
+    .library(name: "Domain", targets: ["Domain"]),
+    .library(name: "Logging", targets: ["Logging"]),
+    .library(name: "MarketDataClient", targets: ["MarketDataClient"]),
+    .library(name: "Persistence", targets: ["Persistence"]),
+    .library(name: "SettingsFeature", targets: ["SettingsFeature"]),
     .library(name: "StockChartFeature", targets: ["StockChartFeature"]),
     .library(name: "StockDetailsFeature", targets: ["StockDetailsFeature"]),
     .library(name: "WatchlistFeature", targets: ["WatchlistFeature"]),
-    .library(name: "SettingsFeature", targets: ["SettingsFeature"]),
-    .library(name: "AppFeature", targets: ["AppFeature"]),
   ],
   dependencies: [
-    .package(
-      url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "1.26.2",
-      traits: ["ComposableArchitecture2Deprecations"]
-    ),
+    .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.26.2", traits: ["ComposableArchitecture2Deprecations"]),
     .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.17.0"),
     .package(url: "https://github.com/pointfreeco/swift-sharing", from: "2.10.0"),
     .package(url: "https://github.com/pointfreeco/swift-identified-collections", from: "1.1.0"),
-    // Legacy only — removed at the plan 02 cutover.
-    .package(url: "https://github.com/Flight-School/Money", exact: "1.3.0"),
-    .package(url: "https://github.com/Alamofire/Alamofire", exact: "5.5.0"),
-    .package(url: "https://github.com/SwiftyJSON/SwiftyJSON", exact: "5.0.1"),
   ],
   targets: [
+    // Core (Domain, Logging, DesignSystem and Persistence also build for watchOS)
     .target(name: "Domain"),
-    .target(name: "DesignSystem", dependencies: ["Domain"], swiftSettings: legacySettings),
     .target(name: "Logging"),
-    .target(name: "Model", dependencies: ["DesignSystem", .money], swiftSettings: legacySettings),
-    .target(name: "CacheService", dependencies: ["Model", "Logging"], swiftSettings: legacySettings),
-    .target(name: "Networking", dependencies: ["Model", "Logging"], swiftSettings: legacySettings),
-    .target(
-      name: "StockCharts",
-      dependencies: ["CacheService", "Networking", "Model", "DesignSystem", "Logging", .money, .alamofire, .swiftyJSON],
-      swiftSettings: legacySettings
-    ),
-    .target(
-      name: "Checklist",
-      dependencies: ["CacheService", "DesignSystem", "Model", "Logging", .tca],
-      swiftSettings: legacySettings
-    ),
-    .target(name: "ChecklistEditFeature", dependencies: ["Logging", "Model", .tca], swiftSettings: legacySettings),
-    .target(
-      name: "LegacyStockDetails",
-      dependencies: ["CacheService", "Networking", "Logging", "Checklist", "DesignSystem", "Model", "StockCharts", .money, .tca],
-      swiftSettings: legacySettings
-    ),
-    .target(name: "SettingsTab", dependencies: ["ChecklistEditFeature", "Model", .tca], swiftSettings: legacySettings),
-    .target(
-      name: "Persistence",
-      dependencies: [
-        "Domain",
-        "Logging",
-        .product(name: "Sharing", package: "swift-sharing"),
-        .product(name: "IdentifiedCollections", package: "swift-identified-collections"),
-        .product(name: "Dependencies", package: "swift-dependencies"),
-        .product(name: "DependenciesMacros", package: "swift-dependencies"),
-      ]
-    ),
-    .target(
-      name: "MarketDataClient",
-      dependencies: [
-        "Domain",
-        "Logging",
-        .product(name: "Dependencies", package: "swift-dependencies"),
-        .product(name: "DependenciesMacros", package: "swift-dependencies"),
-      ]
-    ),
-    .target(
-      name: "ChecklistFeature",
-      dependencies: [
-        "Domain",
-        "Persistence",
-        "DesignSystem",
-        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-      ]
-    ),
-    .target(
-      name: "StockChartFeature",
-      dependencies: [
-        "Domain",
-        "MarketDataClient",
-        "DesignSystem",
-        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-      ]
-    ),
-    .target(
-      name: "StockDetailsFeature",
-      dependencies: [
-        "Domain",
-        "Persistence",
-        "MarketDataClient",
-        "StockChartFeature",
-        "DesignSystem",
-        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-      ]
-    ),
-    .target(
-      name: "WatchlistFeature",
-      dependencies: [
-        "Domain",
-        "Persistence",
-        "MarketDataClient",
-        "StockDetailsFeature",
-        "ChecklistFeature",
-        "DesignSystem",
-        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-      ]
-    ),
-    .target(
-      name: "SettingsFeature",
-      dependencies: [
-        "ChecklistFeature",
-        "DesignSystem",
-        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-      ]
-    ),
-    .target(
-      name: "AppFeature",
-      dependencies: [
-        "Domain",
-        "DesignSystem",
-        "Logging",
-        "Persistence",
-        "SettingsFeature",
-        "WatchlistFeature",
-        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-      ]
-    ),
+    .target(name: "DesignSystem", dependencies: ["Domain"]),
+    .target(name: "Persistence", dependencies: ["Domain", "Logging", .sharing, .identifiedCollections, .dependencies, .dependenciesMacros]),
+    .target(name: "MarketDataClient", dependencies: ["Domain", "Logging", .dependencies, .dependenciesMacros]),
+
+    // Features
+    .target(name: "ChecklistFeature", dependencies: ["Domain", "Persistence", "DesignSystem", .tca]),
+    .target(name: "StockChartFeature", dependencies: ["Domain", "MarketDataClient", "DesignSystem", .tca]),
+    .target(name: "StockDetailsFeature", dependencies: ["Domain", "Persistence", "MarketDataClient", "StockChartFeature", "DesignSystem", .tca]),
+    .target(name: "WatchlistFeature", dependencies: ["Domain", "Persistence", "MarketDataClient", "StockDetailsFeature", "ChecklistFeature", "DesignSystem", .tca]),
+    .target(name: "SettingsFeature", dependencies: ["ChecklistFeature", "DesignSystem", .tca]),
+    .target(name: "AppFeature", dependencies: ["Domain", "DesignSystem", "Logging", "Persistence", "SettingsFeature", "WatchlistFeature", .tca]),
+
+    // Tests
     .testTarget(name: "DomainTests", dependencies: ["Domain"], resources: [.copy("Fixtures")]),
     .testTarget(name: "LoggingTests", dependencies: ["Logging"]),
     .testTarget(name: "DesignSystemTests", dependencies: ["DesignSystem", "Domain"]),
-    .testTarget(
-      name: "PersistenceTests",
-      dependencies: [
-        "Persistence",
-        "Domain",
-        .product(name: "Sharing", package: "swift-sharing"),
-        .product(name: "IdentifiedCollections", package: "swift-identified-collections"),
-        .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
-      ]
-    ),
-    .testTarget(
-      name: "MarketDataClientTests",
-      dependencies: [
-        "MarketDataClient",
-        "Domain",
-        .product(name: "Dependencies", package: "swift-dependencies"),
-        .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
-      ],
-      resources: [.copy("Fixtures")]
-    ),
-    .testTarget(
-      name: "ChecklistFeatureTests",
-      dependencies: [
-        "ChecklistFeature",
-        "Domain",
-        "Persistence",
-        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-        .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
-      ]
-    ),
-    .testTarget(
-      name: "StockChartFeatureTests",
-      dependencies: [
-        "StockChartFeature",
-        "Domain",
-        "MarketDataClient",
-        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-      ]
-    ),
-    .testTarget(
-      name: "StockDetailsFeatureTests",
-      dependencies: [
-        "StockDetailsFeature",
-        "Domain",
-        "MarketDataClient",
-        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-      ]
-    ),
+    .testTarget(name: "PersistenceTests", dependencies: ["Persistence", "Domain", .sharing, .identifiedCollections, .dependenciesTestSupport]),
+    .testTarget(name: "MarketDataClientTests", dependencies: ["MarketDataClient", "Domain", .dependencies, .dependenciesTestSupport], resources: [.copy("Fixtures")]),
+    .testTarget(name: "ChecklistFeatureTests", dependencies: ["ChecklistFeature", "Domain", "Persistence", .tca, .dependenciesTestSupport]),
+    .testTarget(name: "StockChartFeatureTests", dependencies: ["StockChartFeature", "Domain", "MarketDataClient", .tca]),
+    .testTarget(name: "StockDetailsFeatureTests", dependencies: ["StockDetailsFeature", "Domain", "MarketDataClient", .tca]),
     .testTarget(
       name: "WatchlistFeatureTests",
-      dependencies: [
-        "WatchlistFeature",
-        "ChecklistFeature",
-        "Domain",
-        "MarketDataClient",
-        "Persistence",
-        "StockDetailsFeature",
-        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-        .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
-      ]
+      dependencies: ["WatchlistFeature", "ChecklistFeature", "Domain", "MarketDataClient", "Persistence", "StockDetailsFeature", .tca, .dependenciesTestSupport]
     ),
-    .testTarget(
-      name: "SettingsFeatureTests",
-      dependencies: [
-        "SettingsFeature",
-        "ChecklistFeature",
-        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-        .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
-      ]
-    ),
+    .testTarget(name: "SettingsFeatureTests", dependencies: ["SettingsFeature", "ChecklistFeature", .tca, .dependenciesTestSupport]),
     .testTarget(
       name: "AppFeatureTests",
-      dependencies: [
-        "AppFeature",
-        "Domain",
-        "MarketDataClient",
-        "Persistence",
-        "StockDetailsFeature",
-        "WatchlistFeature",
-        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-        .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
-      ]
+      dependencies: ["AppFeature", "Domain", "MarketDataClient", "Persistence", "StockDetailsFeature", "WatchlistFeature", .tca, .dependenciesTestSupport]
     ),
-    .testTarget(name: "ChecklistTests", dependencies: ["Checklist", "Model", .tca], swiftSettings: legacySettings),
-    .testTarget(name: "ChecklistEditFeatureTests", dependencies: ["ChecklistEditFeature", "Model", .tca], swiftSettings: legacySettings),
   ],
   swiftLanguageModes: [.v6]
 )
