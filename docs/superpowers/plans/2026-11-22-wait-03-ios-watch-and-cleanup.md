@@ -1220,7 +1220,7 @@ EOF
 - Create: `Wait/Packages/WaitKit/Sources/Connectivity/WatchSnapshotStore.swift`
 - Test: `Wait/Packages/WaitKit/Tests/ConnectivityTests/WatchSnapshotStoreTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `Wait/Packages/WaitKit/Tests/ConnectivityTests/WatchSnapshotStoreTests.swift`:
 
@@ -1323,7 +1323,7 @@ struct WatchSnapshotStoreTests {
 }
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [ ] **Step 2: Run the tests to verify they fail** — NOT RUN (code-only)
 
 Run:
 ```bash
@@ -1333,7 +1333,7 @@ cd /Users/ckai/code/Wait/Wait/Packages/WaitKit && xcodebuild test -scheme WaitKi
 ```
 Expected: FAIL with compile error `cannot find 'WatchSnapshotStore' in scope`.
 
-- [ ] **Step 3: Implement the store**
+- [x] **Step 3: Implement the store**
 
 Create `Wait/Packages/WaitKit/Sources/Connectivity/WatchSnapshotStore.swift`:
 
@@ -1404,7 +1404,7 @@ public final class WatchSnapshotStore {
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [ ] **Step 4: Run the tests to verify they pass** — NOT RUN (code-only)
 
 Run:
 ```bash
@@ -1414,7 +1414,7 @@ cd /Users/ckai/code/Wait/Wait/Packages/WaitKit && xcodebuild test -scheme WaitKi
 ```
 Expected: PASS. `** TEST SUCCEEDED **`, with 23 tests passing across the four suites.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
