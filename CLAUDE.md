@@ -55,9 +55,9 @@ cd Wait && swiftformat .
 - **Sandbox:** run `xcodebuild`, `xcodegen` and the helper scripts outside any agent sandbox. SwiftPM's manifest sandbox can't nest, and it fails with `sandbox_apply: Operation not permitted`.
 - **Macros:** `-skipMacroValidation` is required on the command line for the TCA and swift-dependencies macros.
 - **No `swift test`:** it doesn't work, because the feature targets use iOS-only SwiftUI. Always use the `WaitKit-Package` scheme.
-- **Test style:** new tests use Swift Testing. TCA tests are `@MainActor` and use `TestStore`. Where a target has fixtures, they live in `Tests/<Target>Tests/Fixtures/` (today `DomainTests` and `MarketDataClientTests`).
+- **Test style:** new tests use Swift Testing. TCA tests are `@MainActor` and use `TestStore`. Where a target has fixtures, they live in `Tests/<Target>Tests/Fixtures/` (today `DomainTests` and `APIClientTests`).
 - **Package pins:** `Wait/Packages/WaitKit/Package.resolved` is gitignored. The committed pins are in `Wait/Wait.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`. They are **stale**: they still list TCA 0.31, Money, Alamofire, SwiftyJSON, Shake and SwiftyBeaver. Run `xcodebuild -resolvePackageDependencies` locally and commit the refreshed file. After each `xcodegen generate`, check that the file still exists.
-- **Secrets:** keys go in `Wait/Config/Secrets.xcconfig`, which is gitignored; copy `Wait/Config/Secrets.example.xcconfig` to create it. `Wait/Config/Base.xcconfig` includes it (`#include?`, so builds work without it). Never commit a key.
+- **Config:** `Wait/Config/Base.xcconfig` sets `WAIT_API_BASE_URL` (the Wait backend) and includes the gitignored `Wait/Config/Secrets.xcconfig` for local overrides (copy `Secrets.example.xcconfig`). The app has no provider keys; never commit a secret.
 
 ## Architecture
 
@@ -70,9 +70,9 @@ cd Wait && swiftformat .
 - **WaitKit library targets** (Swift 6 language mode; dependency graph in `Wait/Packages/WaitKit/README.md`):
   - Core: `Domain` (value types and ladder math), `Logging`, `DesignSystem`.
   - `Persistence`: `@Shared` files in the app group, mutation helpers, `SnapshotStore`, `SnapshotClient`, `LegacyMigration`.
-  - Clients: `MarketDataClient` (caching decorator plus upstream adapter) and `Connectivity` (WCSession).
+  - Clients: `APIClient` (Wait backend session, Keychain identity, DTOs), `MarketDataClient` (caching decorator plus the backend adapter) and `Connectivity` (WCSession).
   - Features: `ChecklistFeature`, `StockChartFeature`, `StockDetailsFeature`, `WatchlistFeature`, `SettingsFeature`, `AppFeature`.
-  - Plans 04–06 add `APIClient`, `SyncClient` and `NotificationClient`.
+  - Plans 05–06 add `SyncClient` and `NotificationClient`.
 
 ### Data flow
 - **Watchlist:** the source of truth is `@Shared(.watchlist)`, an `IdentifiedArrayOf<WatchlistItem>` stored as `watchlist.json` in the app group `group.chenkai.wait.contents`.
@@ -81,10 +81,9 @@ cd Wait && swiftformat .
 - **Upgrade migration:** `LegacyMigration` runs on the first launch after the upgrade, from the lazy store of the `AppDelegate` in `Sources/AppFeature/AppDelegate.swift`.
   - It converts the old Documents files (`stocks`, `checklist-<SYMBOL>`, `checklist-items.json`) and writes `migration-v1.done`. If `stocks` can't be read, no marker is written and it retries on the next launch.
   - Old files are left in place.
-- **Market data:** `\.marketData` is `MarketDataClient.cached(.twelveData(...))`, a caching decorator around the Twelve Data stopgap adapter in `Sources/MarketDataClient/TwelveData/`. Plan 04 replaces this adapter with the backend.
-  - The key comes from the Info.plist key `TwelveDataAPIKey`, filled from the build setting `TWELVE_DATA_API_KEY` in `Secrets.xcconfig`. `TwelveDataAPIKey.isUsable` rejects a missing, blank, unexpanded `$(...)` or placeholder key. The client then logs one error and every call throws `.unavailable` without making a request.
-  - The decorator applies market-hours TTLs (`CacheTTL`, `MarketCalendar`, NYSE hours), coalesces requests, falls back to stale data, and cools down after a 429 by serving from cache.
-  - Screens read `.cacheOnly`, then `.useCache`. Pull-to-refresh uses `.reload`. A chart fetches only its selected range (1Y on appear).
+- **Market data:** `\.marketData` is `MarketDataClient.cached(.backend(.liveValue), disk: .live, now:)`, a caching decorator around `Sources/MarketDataClient/Backend/BackendMarketData.swift`, which calls the Wait backend through `APIClient`. Only the server holds provider keys; the app holds none.
+  - The decorator applies market-hours TTLs, coalesces requests, falls back to stale data, and cools down after a 429.
+  - Screens read `.cacheOnly`, then `.useCache`. Pull-to-refresh uses `.reload`. A chart fetches only its selected range.
 - **Snapshot fan-out:** `AppFeature` publishes a `WatchlistSnapshot` through `snapshotClient.alsoSending(to: connectivity)`.
   - The publish is debounced by 1 s after a change to `watchlist.snapshotInputs` (items or quotes) and once after launch. Going to the background publishes at once and cancels the pending debounced publish.
   - Each publish:
@@ -117,7 +116,16 @@ cd Wait && swiftformat .
 - **`.onChange(of:)`:** use the effect-returning form `{ oldValue, state in Effect }` (see `AddStockFeature`, `AppFeature`). The reducer-builder overload is deprecated. It only sees mutations made by the reducer it wraps, so `AppFeature` attaches it outside `CombineReducers`.
 - **Effects:** report results through success/failure action pairs, never `Result<_, any Error>`. A load that must not touch screen-level state sends its own action: `WatchlistFeature` sends `symbolQuotesLoaded` after adding one stock, so a rate-limit banner from the full-list load stays.
 - **Debounce:** `continuousClock.sleep` plus `.cancellable(id:cancelInFlight:)`.
-- **Dependency keys:** `\.marketData`, `\.snapshotClient`, `\.connectivity`, and later `\.apiClient`, `\.identity`, `\.keychain`, `\.syncClient`, `\.notifications`. Every client is a `@DependencyClient` with an unimplemented `testValue`. Tests override what they use; use `.noop` where one exists (today `ConnectivityClient.noop`).
+- **Dependency keys:** `\.marketData`, `\.snapshotClient`, `\.connectivity`, `\.apiClient`, `\.identity`, `\.keychain`, and later `\.syncClient`, `\.notifications`. Every client is a `@DependencyClient` with an unimplemented `testValue`. Tests override what they use; use `.noop` where one exists (today `ConnectivityClient.noop`).
+
+## Backend (`server/`)
+
+- Fastify 5 + TypeBox, TypeScript ESM, Neon Postgres via raw SQL, vitest + PGlite, and Vercel (Root Directory `server`). See `server/README.md` and overview §8.
+- Composition root: `server/src/container.ts`. Every repository is an interface with `Neon*` (SQL) and `Mock*` (in-memory) implementations. Route plugins stay thin and call services.
+- Market data: Finnhub (quotes, search, profile, metrics), Tiingo (daily history, 1M/1Y/5Y derived from one `daily5y` pull) and Alpaca (1D/1W bars, 15 min delayed). Results are cached in Postgres per symbol, and a Postgres token bucket enforces each provider's free quota.
+- Auth: an anonymous UUID from the iCloud Keychain is exchanged at `POST /api/auth/register` for a 7-day HS256 JWT. `HTTPSession` re-registers once on a 401.
+- Commands: `cd server && npm test`, `npm run typecheck`, `npm run dev`, `npm run migrate`.
+- Guard: `scripts/check-client-has-no-provider-keys.sh` must pass. The iOS app never contains provider hosts or keys.
 
 ## Code style
 

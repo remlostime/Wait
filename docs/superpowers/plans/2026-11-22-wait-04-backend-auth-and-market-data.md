@@ -7246,7 +7246,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 **Files:**
 - Modify: `/Users/ckai/code/Wait/CLAUDE.md`, `Packages/WaitKit/README.md`
 
-- [ ] **Step 1: Update `CLAUDE.md`**
+- [x] **Step 1: Update `CLAUDE.md`**
 
 Make these exact replacements in `/Users/ckai/code/Wait/CLAUDE.md`. Plan 03 wrote the first two, and plan 02 may have left the third.
 
@@ -7284,7 +7284,7 @@ Then add this section after the iOS architecture section:
 - Guard: `scripts/check-client-has-no-provider-keys.sh` must pass. The iOS app never contains provider hosts or keys.
 ```
 
-- [ ] **Step 2: Update `Packages/WaitKit/README.md`**
+- [x] **Step 2: Update `Packages/WaitKit/README.md`**
 
 Append:
 ```markdown
@@ -7296,7 +7296,7 @@ Append:
 - `MarketDataClient.backend(_:)` maps DTOs to Domain types. The live value is `.cached(.backend(.liveValue), disk: .live, now:)`.
 ```
 
-- [ ] **Step 3: Run the end-to-end check on the simulator `(manual: user)` for the steps that need eyes**
+- [ ] **Step 3: Run the end-to-end check on the simulator `(manual: user)` for the steps that need eyes** — items 1–2 done locally (server 320/320 tests, typecheck clean, both guards ok, DoD grep empty); items 3–5 SKIPPED (manual)
 
 1. `cd /Users/ckai/code/Wait/server && npm test && npm run typecheck`. Expected: all green.
 2. `cd /Users/ckai/code/Wait && scripts/check-client-has-no-provider-keys.sh && scripts/check-secrets.sh`. Expected: both print ok.
@@ -7312,7 +7312,7 @@ Append:
 4. In Settings, tap **Delete Account** and confirm. The ID row shows "Created on next sync". Pull to refresh the watchlist: quotes load again, which means the session re-registered with a new ID.
 5. Physical device, iCloud Keychain on: note the Anonymous ID, delete the app, reinstall from Xcode, and open Settings. The same ID is shown (overview §4.1 DoD for plan 04, risk 9).
 
-- [ ] **Step 4: CI notes for the user `(manual: user)`**
+- [ ] **Step 4: CI notes for the user `(manual: user)`** — SKIPPED (manual); `docs/ci/bitrise-checklist.md` already updated in Task 29
 
 Tell the user to update Bitrise (overview risk 19):
 1. Remove the step that writes `TWELVE_DATA_API_KEY` into `Secrets.xcconfig` (it was added in plan 03), and delete that secret.
@@ -7320,7 +7320,7 @@ Tell the user to update Bitrise (overview risk 19):
 3. Add `scripts/check-client-has-no-provider-keys.sh`.
 4. Add `cd server && npm ci && npm run typecheck && npm test`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait

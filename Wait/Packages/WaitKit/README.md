@@ -18,13 +18,13 @@ All of Wait's code except the three thin Xcode targets (`Wait`, `WaitWidgetExten
 | `StockChartFeature` | Price-history chart: loads one range at a time, chart geometry and view | Domain, MarketDataClient, DesignSystem, TCA | – | StockDetailsFeature |
 | `StockDetailsFeature` | The stock detail screen: quote, stats, chart, ladder editor, notes editor, ladder history | Domain, Persistence, MarketDataClient, StockChartFeature, DesignSystem, TCA | – | WatchlistFeature |
 | `WatchlistFeature` | The watchlist screen, add-stock sheet, and navigation to details and checklist | Domain, Persistence, MarketDataClient, StockDetailsFeature, ChecklistFeature, DesignSystem, TCA | – | AppFeature |
-| `SettingsFeature` | The settings tab (hosts the checklist template editor) | ChecklistFeature, DesignSystem, TCA | – | AppFeature |
+| `SettingsFeature` | The settings tab: checklist template editor, account section (anonymous ID, Delete Account), data attribution | APIClient, ChecklistFeature, DesignSystem, TCA | – | AppFeature |
 | `AppFeature` | Root feature and `AppView`, deep links, `AppDelegate` (owns the store and runs the legacy migration), snapshot publishing to the widget and the watch | Domain, DesignSystem, Logging, Persistence, Connectivity, SettingsFeature, WatchlistFeature, TCA | – | app |
-| `APIClient` (plan 04) | Backend client | Domain, Dependencies, DependenciesMacros | – | MarketDataClient, SyncClient |
+| `APIClient` | Wait backend client: `HTTPSession` actor, `APIClient` endpoints and DTOs, `KeychainClient`, `IdentityClient` | Domain, Dependencies, DependenciesMacros | – | MarketDataClient, SettingsFeature, SyncClient |
 | `SyncClient` (plan 05) | Watchlist sync | Domain, Persistence, APIClient, Logging, Dependencies | – | AppFeature, SettingsFeature |
 | `NotificationClient` (plan 06) | Push registration | Logging, Dependencies, DependenciesMacros | – | AppFeature, SettingsFeature |
 
-The last three rows exist only after their plan has run. Each target has a matching `<Target>Tests` test target.
+The last two rows exist only after their plan has run. Each target has a matching `<Target>Tests` test target.
 
 ## Conventions
 - **Mutations.** Mutate the watchlist only through the `Persistence` helpers. They stamp `updatedAt` truncated to milliseconds, which sync (plan 05) relies on.
@@ -50,7 +50,7 @@ Or `scripts/test-waitkit.sh [Target[/Suite]]` from the repo root.
 - **No `swift test`:** it doesn't work, because the feature targets use iOS-only SwiftUI.
 - **Test style:** Swift Testing (`@Suite`, `@Test`, `#expect`). TCA tests are `@MainActor` `TestStore` tests that override every dependency they touch. Suites that touch `@Shared` use `@Suite(.dependencies { $0.defaultFileStorage = .inMemory })`.
 - **Fixtures:**
-  - Per-target fixtures live in `Tests/<Target>Tests/Fixtures/` (today `DomainTests` and `MarketDataClientTests`).
+  - Per-target fixtures live in `Tests/<Target>Tests/Fixtures/` (today `DomainTests` and `APIClientTests`).
   - The ladder vectors live outside the package, at `shared/ladder-test-vectors.json`. Tests find them through `#filePath` because the server reads the same file.
 - **Not yet compiled by Xcode:** these tests were written in code-only mode. The `Connectivity` suites were additionally run in a throwaway harness (30 tests), but `xcodebuild test` hasn't run on the package. See the repo's `CLAUDE.md`.
 
@@ -60,3 +60,10 @@ Or `scripts/test-waitkit.sh [Target[/Suite]]` from the repo root.
 2. If an Xcode target links it, add `- package: WaitKit` / `product: <Name>` to that target's `dependencies` in `Wait/project.yml`, then run `cd Wait && xcodegen generate`.
 3. Clients are `@DependencyClient` structs. Give each one an unimplemented `testValue`, a `previewValue`, and a `DependencyValues` accessor.
 4. Keep watchOS-compatible targets free of UIKit and iOS-only APIs.
+
+## APIClient (plan 04)
+
+- `HTTPSession` is an actor. It sends the JWT from memory, registers on first use with `IdentityClient.anonymousID()`, re-registers once on a 401, and maps every non-2xx response to `APIError`.
+- `APIClient` (`@Dependency(\.apiClient)`) exposes the market endpoints plus `deleteAccount`. Plans 05 and 06 add sync and device endpoints.
+- `KeychainClient` and `IdentityClient` store the anonymous ID under service `com.chenkai.wait`, account `anonymous-id`, synchronizable. Tests always use `KeychainClient.inMemory()`.
+- `MarketDataClient.backend(_:)` maps DTOs to Domain types. The live value is `.cached(.backend(.liveValue), disk: .live, now:)`.
