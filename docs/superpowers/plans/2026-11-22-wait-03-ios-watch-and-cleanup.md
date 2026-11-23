@@ -920,7 +920,7 @@ EOF
 - Create: `Wait/Packages/WaitKit/Tests/ConnectivityTests/Support/CallRecorder.swift`
 - Test: `Wait/Packages/WaitKit/Tests/ConnectivityTests/ConnectivityClientTests.swift`
 
-- [ ] **Step 1: Write the call recorder**
+- [x] **Step 1: Write the call recorder**
 
 Create `Wait/Packages/WaitKit/Tests/ConnectivityTests/Support/CallRecorder.swift`:
 
@@ -941,7 +941,7 @@ actor CallRecorder {
 }
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `Wait/Packages/WaitKit/Tests/ConnectivityTests/ConnectivityClientTests.swift`:
 
@@ -985,7 +985,7 @@ struct ConnectivityClientTests {
 }
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [ ] **Step 3: Run the tests to verify they fail** — NOT RUN (code-only)
 
 Run:
 ```bash
@@ -995,7 +995,7 @@ cd /Users/ckai/code/Wait/Wait/Packages/WaitKit && xcodebuild test -scheme WaitKi
 ```
 Expected: FAIL with compile error `cannot find 'ConnectivityClient' in scope`.
 
-- [ ] **Step 4: Implement the live adapter**
+- [x] **Step 4: Implement the live adapter**
 
 Create `Wait/Packages/WaitKit/Sources/Connectivity/LiveWCSessionAdapter.swift`:
 
@@ -1120,7 +1120,7 @@ extension LiveWCSessionAdapter: WCSessionDelegate {
 }
 ```
 
-- [ ] **Step 5: Implement the client**
+- [x] **Step 5: Implement the client**
 
 Create `Wait/Packages/WaitKit/Sources/Connectivity/ConnectivityClient.swift`:
 
@@ -1184,12 +1184,12 @@ public extension DependencyValues {
 }
 ```
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [ ] **Step 6: Run the tests to verify they pass** — NOT RUN (code-only)
 
 Run: the same command as Step 3.
 Expected: PASS. `** TEST SUCCEEDED **`, with 2 `ConnectivityClientTests` passing plus the 16 tests from Tasks 2–3.
 
-- [ ] **Step 7: Build for watchOS to prove the target compiles there**
+- [ ] **Step 7: Build for watchOS to prove the target compiles there** — NOT RUN (code-only)
 
 Run:
 ```bash
@@ -1199,7 +1199,7 @@ cd /Users/ckai/code/Wait/Wait/Packages/WaitKit && xcodebuild build -scheme Conne
 ```
 Expected: `** BUILD SUCCEEDED **`. If Xcode reports `scheme Connectivity not found`, run `xcodebuild -list` in the same directory and use the scheme it lists for the `Connectivity` library. The scheme is auto-generated per product.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
