@@ -276,7 +276,7 @@ This spec reproduces every live target with its bundle id, Info.plist, per-confi
 - Create: `Wait/project.yml`
 - Modify (generated): `Wait/Wait.xcodeproj/project.pbxproj`, `Wait/Wait.xcodeproj/xcshareddata/xcschemes/Wait.xcscheme`, `Wait/Wait.xcodeproj/xcshareddata/xcschemes/Color.xcscheme`
 
-- [ ] **Step 1: Write `Wait/project.yml`**
+- [x] **Step 1: Write `Wait/project.yml`**
 
 ```yaml
 # XcodeGen spec for Wait. Regenerate with `cd Wait && xcodegen generate`.
@@ -568,14 +568,14 @@ schemes:
         Color: all
 ```
 
-- [ ] **Step 2: Generate the project**
+- [x] **Step 2: Generate the project**
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodegen generate
 ```
 Expected: the last line is `Created project at /Users/ckai/code/Wait/Wait/Wait.xcodeproj`.
 
-- [ ] **Step 3: Check that the package pins survived regeneration**
+- [x] **Step 3: Check that the package pins survived regeneration**
 
 ```sh
 cd /Users/ckai/code/Wait && git status --short Wait/Wait.xcodeproj
@@ -586,7 +586,7 @@ cd /Users/ckai/code/Wait && git checkout -- Wait/Wait.xcodeproj/project.xcworksp
 ```
 Then repeat this check after **every** `xcodegen generate` in later tasks.
 
-- [ ] **Step 4: Compare targets and key settings with the old project**
+- [ ] **Step 4: Compare targets and key settings with the old project** — NOT RUN (code-only; xcodebuild cannot resolve packages. Static parity check of the generated pbxproj done instead)
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodebuild -list -project Wait.xcodeproj 2>/dev/null | sed -n '/Targets:/,/Build Configurations:/p'
@@ -602,12 +602,12 @@ Expected:
 - **Debug:** the app shows `com.chenkai.wait`, `Wait/Wait.entitlements`, `Wait/Info.plist` and `1`. The widget shows `com.chenkai.wait.WaitWidget` and **no** `CODE_SIGN_ENTITLEMENTS` line.
 - **Release:** the app shows `Wait/WaitRelease.entitlements`. The widget shows `WaitWidgetExtensionRelease.entitlements`.
 
-- [ ] **Step 5: Build and test**
+- [ ] **Step 5: Build and test** — NOT RUN (code-only)
 
 Run command B, then command C from the Prerequisites.
 Expected in strict mode: `** BUILD SUCCEEDED **`, then `Executed 5 tests, with 0 failures` and `** TEST SUCCEEDED **`. Plain `xcodebuild test` now works without `-only-testing`, because the stale testables are gone. In red-baseline mode, apply Task 1 Step 6 rule 2.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add Wait/project.yml Wait/Wait.xcodeproj && git commit -m "$(cat <<'EOF'

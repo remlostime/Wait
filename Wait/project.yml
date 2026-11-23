@@ -1,0 +1,287 @@
+# XcodeGen spec for Wait. Regenerate with `cd Wait && xcodegen generate`.
+# Never hand-edit Wait.xcodeproj/project.pbxproj; edit this file instead.
+name: Wait
+options:
+  bundleIdPrefix: com.ck
+  deploymentTarget:
+    iOS: "16.0"
+    watchOS: "9.0"
+  createIntermediateGroups: true
+  developmentLanguage: en
+settings:
+  base:
+    DEVELOPMENT_TEAM: 5WDN96EM72
+    CODE_SIGN_STYLE: Automatic
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+packages:
+  Alamofire:
+    url: https://github.com/Alamofire/Alamofire
+    from: 5.4.3
+  ComposableArchitecture:
+    url: https://github.com/pointfreeco/swift-composable-architecture
+    from: 0.9.0
+  Money:
+    url: https://github.com/Flight-School/Money
+    from: 1.3.0
+  Shake:
+    url: https://github.com/shakebugs/shake-ios
+    from: 14.2.1
+  SnapshotTesting:
+    url: https://github.com/pointfreeco/swift-snapshot-testing
+    from: 1.0.0
+  SwiftyBeaver:
+    url: https://github.com/SwiftyBeaver/SwiftyBeaver
+    from: 1.9.4
+  SwiftyJSON:
+    url: https://github.com/SwiftyJSON/SwiftyJSON
+    from: 5.0.1
+targetTemplates:
+  Framework:
+    type: framework
+    platform: iOS
+    sources:
+      - path: ${target_name}
+        excludes:
+          - "Info.plist"
+          - "*.h"
+          - "*.docc"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ck.${target_name}
+        PRODUCT_NAME: "$(TARGET_NAME:c99extidentifier)"
+        GENERATE_INFOPLIST_FILE: YES
+        DEFINES_MODULE: YES
+        SKIP_INSTALL: YES
+        TARGETED_DEVICE_FAMILY: "1,2"
+  UnitTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: ${target_name}
+        excludes:
+          - "__Snapshots__"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ck.${target_name}
+        GENERATE_INFOPLIST_FILE: YES
+        TARGETED_DEVICE_FAMILY: "1,2"
+targets:
+  Color:
+    templates: [Framework]
+  Size:
+    templates: [Framework]
+  UI:
+    templates: [Framework]
+    dependencies:
+      - target: Color
+  Logging:
+    templates: [Framework]
+    dependencies:
+      - package: SwiftyBeaver
+  Model:
+    templates: [Framework]
+    dependencies:
+      - target: Color
+      - package: Money
+  Networking:
+    templates: [Framework]
+    dependencies:
+      - target: Model
+      - target: Logging
+      - package: Alamofire
+  CacheService:
+    templates: [Framework]
+    dependencies:
+      - target: Model
+      - target: Logging
+  StockCharts:
+    templates: [Framework]
+    dependencies:
+      - target: CacheService
+      - target: Networking
+      - target: Model
+      - target: Color
+      - target: Logging
+      - package: Money
+      - package: Alamofire
+      - package: SwiftyJSON
+  Checklist:
+    templates: [Framework]
+    dependencies:
+      - target: CacheService
+      - target: Size
+      - target: Model
+      - target: Logging
+      - package: ComposableArchitecture
+  ChecklistEditFeature:
+    templates: [Framework]
+    dependencies:
+      - target: Logging
+      - target: Model
+      - package: ComposableArchitecture
+  SettingsTab:
+    templates: [Framework]
+    dependencies:
+      - target: ChecklistEditFeature
+      - target: Model
+      - package: ComposableArchitecture
+  StockDetailsFeature:
+    templates: [Framework]
+    dependencies:
+      - target: CacheService
+      - target: Networking
+      - target: Logging
+      - target: Checklist
+      - target: Size
+      - target: Model
+      - target: StockCharts
+      - package: ComposableArchitecture
+      - package: Alamofire
+  ChecklistTests:
+    templates: [UnitTests]
+    settings:
+      base:
+        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
+    dependencies:
+      - target: Checklist
+  ChecklistEditFeatureTests:
+    templates: [UnitTests]
+    dependencies:
+      - target: ChecklistEditFeature
+      - target: Model
+      - package: ComposableArchitecture
+  StockDetailsFeatureTests:
+    templates: [UnitTests]
+    dependencies:
+      - target: StockDetailsFeature
+      - package: SnapshotTesting
+  WaitWidgetExtension:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: WaitWidget
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.chenkai.wait.WaitWidget
+        INFOPLIST_FILE: WaitWidget/Info.plist
+        TARGETED_DEVICE_FAMILY: "1,2"
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME: WidgetBackground
+        SKIP_INSTALL: YES
+      configs:
+        Release:
+          CODE_SIGN_ENTITLEMENTS: WaitWidgetExtensionRelease.entitlements
+    dependencies:
+      - target: Model
+      - target: Logging
+      - target: Size
+      - target: Networking
+      - target: CacheService
+      - package: Alamofire
+      - package: SwiftyJSON
+      - sdk: SwiftUI.framework
+      - sdk: WidgetKit.framework
+  WaitWatch:
+    type: application
+    platform: watchOS
+    sources:
+      - path: "WaitWatch Watch App"
+      - path: Shared/Connectivity.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: .watchkitapp
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: WaitWatch
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown
+        INFOPLIST_KEY_WKCompanionAppBundleIdentifier: ""
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        DEVELOPMENT_ASSET_PATHS: '"WaitWatch Watch App/Preview Content"'
+        ENABLE_PREVIEWS: YES
+        SKIP_INSTALL: YES
+        TARGETED_DEVICE_FAMILY: "4"
+        LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/Frameworks"
+    dependencies:
+      - package: Money
+      - package: SwiftyJSON
+      - package: Alamofire
+  Wait:
+    type: application
+    platform: iOS
+    sources:
+      - path: Wait
+      - path: Shared/Connectivity.swift
+      - path: GoogleService-Info.plist
+        buildPhase: resources
+      - path: bitrise_configuration.plist
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.chenkai.wait
+        INFOPLIST_FILE: Wait/Info.plist
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        DEVELOPMENT_ASSET_PATHS: '"Wait/Preview Content"'
+        ENABLE_PREVIEWS: YES
+        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
+        SUPPORTED_PLATFORMS: iphoneos iphonesimulator
+        SUPPORTS_MACCATALYST: NO
+        SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
+        OTHER_LDFLAGS: ["-ObjC", "-l", "z", "-l", "c++"]
+      configs:
+        Debug:
+          CODE_SIGN_ENTITLEMENTS: Wait/Wait.entitlements
+        Release:
+          CODE_SIGN_ENTITLEMENTS: Wait/WaitRelease.entitlements
+    dependencies:
+      - target: Color
+      - target: UI
+      - target: Model
+      - target: Networking
+      - target: Size
+      - target: Logging
+      - target: Checklist
+      - target: ChecklistEditFeature
+      - target: StockCharts
+      - target: SettingsTab
+      - target: StockDetailsFeature
+      - target: CacheService
+      - target: WaitWidgetExtension
+      - package: Alamofire
+      - package: SwiftyBeaver
+      - package: SwiftyJSON
+      - package: Shake
+      - package: Money
+      - package: ComposableArchitecture
+aggregateTargets:
+  Unused Code:
+    buildScripts:
+      - name: Periphery
+        script: periphery scan --project Wait.xcodeproj --schemes Wait --targets Wait --format xcode
+schemes:
+  Wait:
+    build:
+      targets:
+        Wait: all
+    test:
+      config: Debug
+      gatherCoverageData: true
+      targets:
+        - ChecklistTests
+        - ChecklistEditFeatureTests
+        - StockDetailsFeatureTests
+    run:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
+  Color:
+    build:
+      targets:
+        Color: all
