@@ -114,7 +114,7 @@ export class AlertJobService implements AlertJob {
       if (close === undefined) continue
       const next = classifyStatus(item.ladder, Number(close))
       if (next === "NO_ANCHORS") continue
-      updates.push({ userId: item.userId, symbol: item.symbol, previousStatus: item.lastStatus, status: next, price: close })
+      updates.push({ userId: item.userId, symbol: item.symbol, previousStatus: item.lastStatus, ladder: item.ladder, status: next, price: close })
       if (item.lastStatus === null || item.lastStatus === next) continue
       transitions += 1
       if (!shouldAlert(item.lastStatus, next)) continue

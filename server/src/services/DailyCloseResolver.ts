@@ -1,6 +1,6 @@
 import { mapLimit } from "../lib/concurrency.js"
 import { easternDate } from "../domain/tradingDate.js"
-import { ProviderError, type DailyClose, type GroupedDailyProvider, type QuoteProvider } from "../providers/types.js"
+import { ProviderError, type DailyClose, type GroupedDailyProvider, type ProviderQuote, type QuoteProvider } from "../providers/types.js"
 import { silentLog, type LogSink } from "../lib/logSink.js"
 import { PROVIDER_BUCKETS, type RateLimiter } from "./RateLimiter.js"
 
@@ -20,7 +20,7 @@ export type DailyCloseResolverDependencies = { grouped: GroupedDailyProvider; qu
 
 const { massive: MASSIVE, finnhub: FINNHUB } = PROVIDER_BUCKETS
 
-/** Overview §8.6 steps 4–6: one grouped call, a holiday check when it is empty, then ≤ 25 same-day Finnhub quotes. */
+/** Overview §8.6 steps 4–6: one grouped call, a holiday check when it is empty, then ≤ 25 same-day Finnhub quotes (a different 25 each day when more are missing). */
 export class DailyCloseResolver implements CloseResolver {
   private readonly deps: DailyCloseResolverDependencies
 
@@ -31,8 +31,7 @@ export class DailyCloseResolver implements CloseResolver {
   async resolve(tradingDate: string, symbols: string[], log: LogSink = silentLog): Promise<CloseResolution> {
     const grouped = await this.fetchGrouped(tradingDate, log)
     if (grouped.size === 0) {
-      const probe = await this.closeOn(HOLIDAY_PROBE, tradingDate, true)
-      if (probe === null) return { kind: "holiday" }
+      if (await this.isHoliday(tradingDate)) return { kind: "holiday" }
     }
 
     const closes = new Map<string, string>()
@@ -43,9 +42,13 @@ export class DailyCloseResolver implements CloseResolver {
       else closes.set(symbol, hit.close)
     }
 
-    const fallback = needed.slice(0, FALLBACK_LIMIT)
-    const missing = needed.slice(FALLBACK_LIMIT)
-    const fallbackCloses = await mapLimit(fallback, FALLBACK_CONCURRENCY, (symbol) => this.closeOn(symbol, tradingDate, false))
+    // Over the limit, start at a date-derived offset so a symbol that missed today's 25 is likely covered tomorrow
+    // (same date, same set: a rerun or the catch-up run must not change it).
+    const start = needed.length > FALLBACK_LIMIT ? fnv1a(tradingDate) % needed.length : 0
+    const ordered = [...needed.slice(start), ...needed.slice(0, start)]
+    const fallback = ordered.slice(0, FALLBACK_LIMIT)
+    const missing = ordered.slice(FALLBACK_LIMIT)
+    const fallbackCloses = await mapLimit(fallback, FALLBACK_CONCURRENCY, (symbol) => this.closeOn(symbol, tradingDate))
     let fallbackCount = 0
     fallback.forEach((symbol, index) => {
       const close = fallbackCloses[index] ?? null
@@ -78,16 +81,34 @@ export class DailyCloseResolver implements CloseResolver {
     }
   }
 
-  /** The symbol's price if Finnhub's latest quote is from `tradingDate` (ET), else null. Throws only when `strict`. */
-  private async closeOn(symbol: string, tradingDate: string, strict: boolean): Promise<string | null> {
+  /**
+   * A holiday only when SPY's latest quote is dated strictly before `tradingDate`. A missing or undated quote (or a failed
+   * call) proves nothing, so it throws and the run stays unfinished for the catch-up cron instead of being recorded as a holiday for good.
+   */
+  private async isHoliday(tradingDate: string): Promise<boolean> {
+    const quote = await this.fetchQuote(HOLIDAY_PROBE, true)
+    if (quote === null) throw new ProviderError("finnhub", "bad_response")
+    const at = new Date(quote.asOf)
+    if (Number.isNaN(at.getTime())) throw new ProviderError("finnhub", "bad_response")
+    return easternDate(at) < tradingDate
+  }
+
+  /** The symbol's price if Finnhub's latest quote is from `tradingDate` (ET), else null. */
+  private async closeOn(symbol: string, tradingDate: string): Promise<string | null> {
+    const quote = await this.fetchQuote(symbol, false)
+    if (quote === null) return null
+    const at = new Date(quote.asOf)
+    return !Number.isNaN(at.getTime()) && easternDate(at) === tradingDate ? quote.price : null
+  }
+
+  /** The Finnhub quote, or null on a miss. Provider failures return null unless `strict`, which rethrows them (and throws when the bucket is empty). */
+  private async fetchQuote(symbol: string, strict: boolean): Promise<ProviderQuote | null> {
     try {
       if (!(await this.deps.rateLimiter.tryTake(FINNHUB.key, FINNHUB.policy))) {
         if (strict) throw new Error(`Finnhub bucket exhausted while checking ${symbol}`)
         return null
       }
-      const quote = await this.deps.quotes.getQuote(symbol)
-      if (quote === null) return null
-      return easternDate(new Date(quote.asOf)) === tradingDate ? quote.price : null
+      return await this.deps.quotes.getQuote(symbol)
     } catch (error) {
       if (error instanceof ProviderError && error.kind === "rate_limited") {
         await this.deps.rateLimiter.block(FINNHUB.key, error.retryAfterSec ?? 60)
@@ -96,4 +117,14 @@ export class DailyCloseResolver implements CloseResolver {
       return null
     }
   }
+}
+
+/** FNV-1a over the date string: a stable, well-spread offset without any state. */
+function fnv1a(text: string): number {
+  let hash = 0x811c9dc5
+  for (let index = 0; index < text.length; index += 1) {
+    hash ^= text.charCodeAt(index)
+    hash = Math.imul(hash, 0x01000193) >>> 0
+  }
+  return hash
 }

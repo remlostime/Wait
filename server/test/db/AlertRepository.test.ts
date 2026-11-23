@@ -58,6 +58,9 @@ function event(overrides: Partial<NewAlertEvent> & Pick<NewAlertEvent, "id">): N
   return { userId: "user-1", symbol: "AAPL", tradingDate: "2026-11-20", status: "BUY_ZONE", previousStatus: "WATCH", price: "172.1", ...overrides }
 }
 
+const AAPL_USER_1 = { buyLow: "150", buyHigh: "175", fair: "210", trim: null, sell: null }
+const AAPL_USER_2 = { buyLow: null, buyHigh: "160", fair: null, trim: null, sell: null }
+
 const SEED: ItemFixture[] = [
   { userId: "user-1", symbol: "AAPL", buyLow: "150", buyHigh: "175", fair: "210", lastStatus: "WATCH", lastEvaluatedPrice: "180.5" },
   { userId: "user-2", symbol: "AAPL", buyHigh: "160" },
@@ -105,8 +108,8 @@ describe.each(harnesses)("%s", (_name, makeHarness) => {
   it("applies evaluated statuses and prices", async () => {
     await harness.repo.applyEvaluations(
       [
-        { userId: "user-1", symbol: "AAPL", previousStatus: "WATCH", status: "BUY_ZONE", price: "172.1" },
-        { userId: "user-2", symbol: "AAPL", previousStatus: null, status: "BUY_ZONE", price: "158" },
+        { userId: "user-1", symbol: "AAPL", previousStatus: "WATCH", ladder: AAPL_USER_1, status: "BUY_ZONE", price: "172.1" },
+        { userId: "user-2", symbol: "AAPL", previousStatus: null, ladder: AAPL_USER_2, status: "BUY_ZONE", price: "158" },
       ],
       NOW,
     )
@@ -116,8 +119,23 @@ describe.each(harnesses)("%s", (_name, makeHarness) => {
   })
 
   it("leaves a row alone when its status changed since the job read it (e.g. sync reset it to NULL)", async () => {
-    await harness.repo.applyEvaluations([{ userId: "user-1", symbol: "AAPL", previousStatus: null, status: "BUY_ZONE", price: "172.1" }], NOW)
+    await harness.repo.applyEvaluations([{ userId: "user-1", symbol: "AAPL", previousStatus: null, ladder: AAPL_USER_1, status: "BUY_ZONE", price: "172.1" }], NOW)
     expect(await harness.statusOf("user-1", "AAPL")).toEqual({ lastStatus: "WATCH", lastEvaluatedPrice: "180.5" })
+  })
+
+  it("leaves a row alone when its anchors changed since the job read them, even if last_status still matches (the unseeded NULL case)", async () => {
+    const editedAnchors = { ...AAPL_USER_2, buyHigh: "175" } // the job read 175; the row says 160
+    await harness.repo.applyEvaluations([{ userId: "user-2", symbol: "AAPL", previousStatus: null, ladder: editedAnchors, status: "BUY_ZONE", price: "170" }], NOW)
+    expect(await harness.statusOf("user-2", "AAPL")).toEqual({ lastStatus: null, lastEvaluatedPrice: null })
+
+    // Numerically equal anchors written with different scale still match.
+    await harness.repo.applyEvaluations([{ userId: "user-2", symbol: "AAPL", previousStatus: null, ladder: { ...AAPL_USER_2, buyHigh: "160.000" }, status: "BUY_ZONE", price: "158" }], NOW)
+    expect(await harness.statusOf("user-2", "AAPL")).toEqual({ lastStatus: "BUY_ZONE", lastEvaluatedPrice: "158" })
+  })
+
+  it("does not list events of a deleted watchlist item for delivery", async () => {
+    await harness.repo.insertEvents([event({ id: "live" }), event({ id: "gone", symbol: "TSLA", status: "TRIM", previousStatus: "WATCH" })], NOW)
+    expect((await harness.repo.listPendingEvents("2026-11-20", 3)).map((pending) => pending.id)).toEqual(["live"])
   })
 
   it("lists only unsent events of the day under the attempt limit, with the item's ladder", async () => {
@@ -177,7 +195,7 @@ describe("NeonAlertRepository (PGlite only)", () => {
     const sql: Sql = created.sql
     await insertItem(sql, { userId: "user-1", symbol: "AAPL", buyHigh: "175", version: 7 })
     const [before] = await sql`SELECT version, server_updated_at FROM watchlist_items WHERE symbol = 'AAPL'`
-    await new NeonAlertRepository(sql).applyEvaluations([{ userId: "user-1", symbol: "AAPL", previousStatus: null, status: "BUY_ZONE", price: "170" }], NOW)
+    await new NeonAlertRepository(sql).applyEvaluations([{ userId: "user-1", symbol: "AAPL", previousStatus: null, ladder: { buyLow: null, buyHigh: "175", fair: null, trim: null, sell: null }, status: "BUY_ZONE", price: "170" }], NOW)
     const [after] = await sql`SELECT version, server_updated_at, last_status_at FROM watchlist_items WHERE symbol = 'AAPL'`
     expect(String(after?.version)).toBe("7")
     expect(after?.server_updated_at).toEqual(before?.server_updated_at)

@@ -24,6 +24,13 @@ function compare(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0
 }
 
+/** Same anchor, compared as numbers like the SQL `numeric` columns ("160" equals "160.000"; null only equals null). */
+function sameAnchors(a: LadderInput, b: LadderInput): boolean {
+  const same = (x: string | null | undefined, y: string | null | undefined): boolean =>
+    x === null || x === undefined || y === null || y === undefined ? (x ?? null) === (y ?? null) : Number(x) === Number(y)
+  return same(a.buyLow, b.buyLow) && same(a.buyHigh, b.buyHigh) && same(a.fair, b.fair) && same(a.trim, b.trim) && same(a.sell, b.sell)
+}
+
 function hasAnchor(ladder: LadderInput): boolean {
   return [ladder.buyLow, ladder.buyHigh, ladder.fair, ladder.trim, ladder.sell].some((value) => value !== null && value !== undefined)
 }
@@ -85,7 +92,7 @@ export class MockAlertRepository implements AlertRepository {
   async applyEvaluations(updates: EvaluationUpdate[]): Promise<void> {
     for (const update of updates) {
       const stored = this.items.get(key(update.userId, update.symbol))
-      if (stored === undefined || stored.lastStatus !== update.previousStatus) continue
+      if (stored === undefined || stored.deleted || stored.lastStatus !== update.previousStatus || !sameAnchors(stored.ladder, update.ladder)) continue
       this.items.set(key(update.userId, update.symbol), { ...stored, lastStatus: update.status, lastEvaluatedPrice: update.price })
     }
   }
@@ -98,7 +105,10 @@ export class MockAlertRepository implements AlertRepository {
 
   async listPendingEvents(tradingDate: string, maxAttempts: number): Promise<PendingAlertEvent[]> {
     return this.events
-      .filter((event) => event.sentAt === null && event.tradingDate === tradingDate && event.attempts < maxAttempts)
+      .filter((event) => {
+        const item = this.items.get(key(event.userId, event.symbol))
+        return event.sentAt === null && event.tradingDate === tradingDate && event.attempts < maxAttempts && item !== undefined && !item.deleted
+      })
       .map(({ createdAt: _createdAt, sentAt: _sentAt, ...event }) => ({
         ...event,
         ladder: { ...(this.items.get(key(event.userId, event.symbol))?.ladder ?? EMPTY_LADDER) },

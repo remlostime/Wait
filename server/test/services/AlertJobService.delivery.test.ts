@@ -90,6 +90,14 @@ describe("AlertJobService delivery", () => {
     expect(await job.run(NOW)).toMatchObject({ status: "resent", alertsSent: 1 })
   })
 
+  it("does not push for an item the user deleted after the event was created", async () => {
+    const { job, alerts, sender } = await pendingDay(2)
+    alerts.seedItems([{ userId: "user-1", symbol: "AAPL", ladder: { buyLow: null, buyHigh: "175", fair: null, trim: null, sell: null }, lastStatus: "BUY_ZONE", lastEvaluatedPrice: "172", deleted: true }])
+    expect(await job.run(NOW)).toMatchObject({ status: "resent", alertsSent: 1 })
+    expect(sender.sentTo).toEqual(["token-2"])
+    expect(await job.run(NOW)).toMatchObject({ status: "resent", alertsSent: 0 }) // and it is not retried forever
+  })
+
   it("closes the sender's connections after every run, including one that throws", async () => {
     const { job, alerts, sender } = await pendingDay(1)
     await job.run(NOW)

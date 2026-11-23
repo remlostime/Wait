@@ -97,14 +97,24 @@ export class NeonAlertRepository implements AlertRepository {
       user_id: update.userId,
       symbol: update.symbol,
       prev_status: update.previousStatus,
+      buy_low: update.ladder.buyLow ?? null,
+      buy_high: update.ladder.buyHigh ?? null,
+      fair: update.ladder.fair ?? null,
+      trim_value: update.ladder.trim ?? null,
+      sell: update.ladder.sell ?? null,
       status: update.status,
       price: update.price,
     }))
     await this.sql`
       UPDATE watchlist_items AS w
       SET last_status = u.status, last_status_at = ${now.toISOString()}::timestamptz, last_evaluated_price = u.price::numeric
-      FROM jsonb_to_recordset(${JSON.stringify(records)}::jsonb) AS u(user_id text, symbol text, prev_status text, status text, price text)
-      WHERE w.user_id = u.user_id AND w.symbol = u.symbol AND w.last_status IS NOT DISTINCT FROM u.prev_status`
+      FROM jsonb_to_recordset(${JSON.stringify(records)}::jsonb) AS u(
+        user_id text, symbol text, prev_status text, buy_low text, buy_high text, fair text, trim_value text, sell text, status text, price text)
+      WHERE w.user_id = u.user_id AND w.symbol = u.symbol AND w.deleted_at IS NULL
+        AND w.last_status IS NOT DISTINCT FROM u.prev_status
+        AND w.buy_low IS NOT DISTINCT FROM u.buy_low::numeric AND w.buy_high IS NOT DISTINCT FROM u.buy_high::numeric
+        AND w.fair IS NOT DISTINCT FROM u.fair::numeric AND w."trim" IS NOT DISTINCT FROM u.trim_value::numeric
+        AND w.sell IS NOT DISTINCT FROM u.sell::numeric`
   }
 
   async listPendingEvents(tradingDate: string, maxAttempts: number): Promise<PendingAlertEvent[]> {
@@ -114,7 +124,7 @@ export class NeonAlertRepository implements AlertRepository {
         trim_scale(w.buy_low)::text AS buy_low, trim_scale(w.buy_high)::text AS buy_high, trim_scale(w.fair)::text AS fair,
         trim_scale(w."trim")::text AS trim_value, trim_scale(w.sell)::text AS sell
       FROM alert_events e
-      LEFT JOIN watchlist_items w ON w.user_id = e.user_id AND w.symbol = e.symbol
+      JOIN watchlist_items w ON w.user_id = e.user_id AND w.symbol = e.symbol AND w.deleted_at IS NULL
       WHERE e.sent_at IS NULL AND e.trading_date = ${tradingDate}::date AND e.attempts < ${maxAttempts}
       ORDER BY e.created_at, e.id`
     return rows.map((raw) => {

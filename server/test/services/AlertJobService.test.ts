@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest"
 import { ApnsSender } from "../../src/apns/ApnsSender.js"
 import { MockApnsTransport } from "../../src/apns/MockApnsTransport.js"
-import type { AlertRepository } from "../../src/db/AlertRepository.js"
+import type { AlertRepository, EvaluableItem } from "../../src/db/AlertRepository.js"
 import { MockAlertRepository } from "../../src/db/MockAlertRepository.js"
 import { MockDeviceTokenRepository } from "../../src/db/MockDeviceTokenRepository.js"
+import { ProviderError } from "../../src/providers/types.js"
 import { AlertJobService } from "../../src/services/AlertJobService.js"
-import type { CloseResolution } from "../../src/services/DailyCloseResolver.js"
+import type { CloseResolution, CloseResolver } from "../../src/services/DailyCloseResolver.js"
 import { RecordingLogger } from "../support/alertFakes.js"
 import { FakeCloseResolver, SCENARIO_RESOLUTION, scenarioItems } from "../support/alertScenario.js"
 
@@ -48,7 +49,24 @@ function resetBeforeApply(target: MockAlertRepository, userId: string, symbol: s
   })
 }
 
-function makeJob(options: { resolution?: CloseResolution; wrap?: (repo: MockAlertRepository) => AlertRepository } = {}) {
+/** Simulates plan 05's sync editing the anchors (and resetting `last_status`) between the job's read and its write. */
+function editAnchorsBeforeApply(target: MockAlertRepository, userId: string, symbol: string): AlertRepository {
+  return new Proxy(target, {
+    get(object, property, receiver) {
+      const value = Reflect.get(object, property, receiver)
+      if (typeof value !== "function") return value
+      if (property === "applyEvaluations") {
+        return async (...args: Parameters<MockAlertRepository["applyEvaluations"]>) => {
+          object.seedItems([{ ...(object.item(userId, symbol) as EvaluableItem), ladder: { buyLow: null, buyHigh: "250", fair: null, trim: "500", sell: null }, lastStatus: null }])
+          return object.applyEvaluations(...args)
+        }
+      }
+      return value.bind(object)
+    },
+  })
+}
+
+function makeJob(options: { resolution?: CloseResolution; closes?: CloseResolver; wrap?: (repo: MockAlertRepository) => AlertRepository } = {}) {
   const alertsRepo = new MockAlertRepository()
   alertsRepo.seedItems(scenarioItems())
   const devices = new MockDeviceTokenRepository()
@@ -62,7 +80,7 @@ function makeJob(options: { resolution?: CloseResolution; wrap?: (repo: MockAler
     clock: { now: () => NOW },
     sleep: async () => {},
   })
-  const closes = new FakeCloseResolver(options.resolution ?? SCENARIO_RESOLUTION)
+  const closes = options.closes ?? new FakeCloseResolver(options.resolution ?? SCENARIO_RESOLUTION)
   let counter = 0
   const job = new AlertJobService({
     alerts: options.wrap ? options.wrap(alertsRepo) : alertsRepo,
@@ -71,7 +89,7 @@ function makeJob(options: { resolution?: CloseResolution; wrap?: (repo: MockAler
     sender,
     newId: () => `event-${(counter += 1)}`,
   })
-  return { job, alertsRepo, devices, transport, closes }
+  return { job, alertsRepo, devices, transport, closes: closes as FakeCloseResolver }
 }
 
 const statuses = (repo: MockAlertRepository) =>
@@ -139,6 +157,30 @@ describe("AlertJobService", () => {
     const { job, alertsRepo } = makeJob({ wrap: (repo) => resetBeforeApply(repo, "user-1", "AAPL") })
     await job.run(NOW)
     expect(alertsRepo.item("user-1", "AAPL")?.lastStatus).toBeNull()
+  })
+
+  it("does not overwrite a freshly seeded status when the anchors changed while the job was running", async () => {
+    // MSFT is unseeded (last_status NULL), so the status guard alone cannot tell that sync edited its anchors mid-run.
+    const { job, alertsRepo } = makeJob({ wrap: (repo) => editAnchorsBeforeApply(repo, "user-1", "MSFT") })
+    await job.run(NOW)
+    expect(alertsRepo.item("user-1", "MSFT")).toMatchObject({ lastStatus: null, lastEvaluatedPrice: null })
+    expect(alertsRepo.item("user-1", "AMD")?.lastStatus).toBe("BUY_ZONE")
+  })
+
+  it("does not record a holiday, or finish the run, when the holiday check could not be answered", async () => {
+    let calls = 0
+    const closes: CloseResolver = {
+      resolve: async () => {
+        calls += 1
+        if (calls === 1) throw new ProviderError("finnhub", "bad_response")
+        return SCENARIO_RESOLUTION
+      },
+    }
+    const { job, alertsRepo } = makeJob({ closes })
+    await expect(job.run(NOW)).rejects.toThrow("finnhub:bad_response")
+    expect(alertsRepo.runStatus("2026-11-20")).toBe("running")
+    // The catch-up cron: the stale claim is taken over and the day is evaluated for real.
+    expect(await job.run(ELEVEN_MINUTES_LATER)).toMatchObject({ status: "completed", evaluated: 5, alertsSent: 1 })
   })
 
   it("skips weekends without touching the database", async () => {

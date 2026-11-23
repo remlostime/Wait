@@ -50,4 +50,34 @@ describe("AlertJobService on PGlite", () => {
     expect(transport.calls).toHaveLength(1)
     await close()
   })
+
+  it("does not seed a status over anchors that sync edited between the job's read and its write", async () => {
+    const { sql, close } = await createTestDb()
+    await insertItem(sql, { userId: "user-1", symbol: "MSFT", buyHigh: "300", trim: "450" }) // never evaluated: last_status NULL
+    const devices = new NeonDeviceTokenRepository(sql)
+    const repo = new NeonAlertRepository(sql)
+    const racing = new Proxy(repo, {
+      get(target, property) {
+        if (property === "applyEvaluations") {
+          return async (...args: Parameters<NeonAlertRepository["applyEvaluations"]>) => {
+            await sql`UPDATE watchlist_items SET buy_high = 250, last_status = NULL WHERE symbol = 'MSFT'` // plan 05's sync, mid-run
+            return target.applyEvaluations(...args)
+          }
+        }
+        const value = Reflect.get(target, property)
+        return typeof value === "function" ? value.bind(target) : value
+      },
+    })
+    const job = new AlertJobService({
+      alerts: racing,
+      devices,
+      closes: new FakeCloseResolver(SCENARIO_RESOLUTION),
+      sender: new ApnsSender({ transport: new MockApnsTransport(), tokens: { token: () => "jwt", invalidate: () => {} }, topic: "com.chenkai.wait", devices, clock: { now: () => NOW } }),
+    })
+
+    await job.run(NOW)
+
+    expect(await sql`SELECT last_status, last_evaluated_price FROM watchlist_items WHERE symbol = 'MSFT'`).toEqual([{ last_status: null, last_evaluated_price: null }])
+    await close()
+  })
 })

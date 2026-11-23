@@ -9,8 +9,18 @@ export type EvaluableItem = {
   lastEvaluatedPrice: string | null
 }
 
-/** `previousStatus` is the `last_status` the job read; the update applies only if the row still has it. */
-export type EvaluationUpdate = { userId: string; symbol: string; previousStatus: LadderStatus | null; status: LadderStatus; price: string }
+/**
+ * `previousStatus` and `ladder` are what the job read; the update applies only if the row still has both. The status alone is not
+ * enough: sync resets `last_status` to NULL when anchors change, so a seed computed from the old anchors would still match NULL.
+ */
+export type EvaluationUpdate = {
+  userId: string
+  symbol: string
+  previousStatus: LadderStatus | null
+  ladder: LadderInput
+  status: LadderStatus
+  price: string
+}
 
 export type NewAlertEvent = {
   id: string
@@ -36,8 +46,9 @@ export interface AlertRepository {
   listEvaluableItems(): Promise<EvaluableItem[]>
   /** Inserts with ON CONFLICT DO NOTHING; returns the ids that were actually inserted. */
   insertEvents(events: NewAlertEvent[], now: Date): Promise<string[]>
-  /** Sets last_status / last_status_at / last_evaluated_price where last_status is still `previousStatus`. Never touches version. */
+  /** Sets last_status / last_status_at / last_evaluated_price where last_status and the anchors are still what the job read. Never touches version. */
   applyEvaluations(updates: EvaluationUpdate[], now: Date): Promise<void>
+  /** Unsent events of the day under the attempt limit whose watchlist item is still live (a deleted item never alerts). */
   listPendingEvents(tradingDate: string, maxAttempts: number): Promise<PendingAlertEvent[]>
   markSent(eventId: string, now: Date): Promise<void>
   /**
