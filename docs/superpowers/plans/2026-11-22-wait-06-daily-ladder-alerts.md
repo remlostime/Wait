@@ -594,7 +594,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/test/support/alertFixtures.ts`
 - Test: `server/test/db/DeviceTokenRepository.test.ts`
 
-- [ ] **Step 1: Write the fixture helpers**
+- [x] **Step 1: Write the fixture helpers**
 
 Create `server/test/support/alertFixtures.ts`:
 ```ts
@@ -632,7 +632,7 @@ export async function insertItem(sql: Sql, item: ItemFixture): Promise<void> {
 }
 ```
 
-- [ ] **Step 2: Write the failing contract test**
+- [x] **Step 2: Write the failing contract test**
 
 Create `server/test/db/DeviceTokenRepository.test.ts`. The same suite runs against the Neon implementation (on PGlite) and against the Mock:
 ```ts
@@ -728,12 +728,12 @@ describe.each(harnesses)("%s", (_name, makeHarness) => {
 })
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run: `npx vitest run test/db/DeviceTokenRepository.test.ts`
 Expected: FAIL with `Failed to load url ../../src/db/MockDeviceTokenRepository.js`.
 
-- [ ] **Step 4: Write the interface**
+- [x] **Step 4: Write the interface**
 
 Create `server/src/db/DeviceTokenRepository.ts`:
 ```ts
@@ -764,7 +764,7 @@ export interface DeviceTokenRepository {
 }
 ```
 
-- [ ] **Step 5: Write the Neon implementation**
+- [x] **Step 5: Write the Neon implementation**
 
 Create `server/src/db/NeonDeviceTokenRepository.ts`:
 ```ts
@@ -841,7 +841,7 @@ export class NeonDeviceTokenRepository implements DeviceTokenRepository {
 }
 ```
 
-- [ ] **Step 6: Write the Mock implementation**
+- [x] **Step 6: Write the Mock implementation**
 
 Create `server/src/db/MockDeviceTokenRepository.ts`:
 ```ts
@@ -898,12 +898,12 @@ export class MockDeviceTokenRepository implements DeviceTokenRepository {
 }
 ```
 
-- [ ] **Step 7: Run the tests to verify they pass**
+- [x] **Step 7: Run the tests to verify they pass**
 
 Run: `npx vitest run test/db/DeviceTokenRepository.test.ts && npm run typecheck`
 Expected: PASS (`Tests  14 passed (14)`: 7 tests × 2 implementations).
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add server/src/db/DeviceTokenRepository.ts server/src/db/NeonDeviceTokenRepository.ts server/src/db/MockDeviceTokenRepository.ts \
