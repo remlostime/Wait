@@ -4620,7 +4620,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `Packages/WaitKit/Sources/APIClient/APIClient.swift`
 - Test: `Packages/WaitKit/Tests/APIClientTests/DeviceEndpointTests.swift`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `Tests/APIClientTests/DeviceEndpointTests.swift`. It uses its own `URLProtocol` stub, so it doesn't depend on plan 04's test helpers:
 ```swift
@@ -4742,12 +4742,14 @@ struct DeviceEndpointTests {
 ```
 The two endpoint tests go through plan 04's real `HTTPSession`: register, then a JWT, then a 204 with an empty body. That covers the empty-response `post` overload and `delete` against 204s.
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [ ] **Step 2: Run the test to verify it fails** — NOT RUN (code-only)
+
+> Result (2026-11-23): red confirmed in the `/tmp` harness: `value of type 'APIClient' has no member 'registerDevice'` / `'unregisterDevice'`.
 
 Run: `scripts/test-waitkit.sh APIClientTests/DeviceEndpointTests`
 Expected: the build fails with `cannot find 'APNsToken' in scope` and `value of type 'APIClient' has no member 'registerDevice'`.
 
-- [ ] **Step 3: Write the DTO**
+- [x] **Step 3: Write the DTO**
 
 Create `Sources/APIClient/DTOs/DeviceRegistrationDTO.swift`:
 ```swift
@@ -4801,7 +4803,7 @@ public enum APNsToken {
 }
 ```
 
-- [ ] **Step 4: Add the endpoints**
+- [x] **Step 4: Add the endpoints**
 
 Plan 04's `HTTPSession` already has the two primitives this needs, so it isn't changed:
 - `post<Body>(_ path:, body:) async throws`, the no-response overload documented "For endpoints that answer 204". It sends the body and ignores the empty response.
@@ -4832,12 +4834,14 @@ The closure's `Void` return type selects the no-response `post` overload.
     unregisterDevice: { _ in throw APIError.misconfigured }
 ```
 
-- [ ] **Step 5: Run the test to verify it passes**
+- [ ] **Step 5: Run the test to verify it passes** — NOT RUN (code-only)
+
+> Result (2026-11-23): `/tmp` macOS harness (real `HTTPSession`, `WireDates`, DTOs, `DeviceEndpointTests` and `APIClient.swift` minus the `@DependencyClient` macro and `DependencyKey` parts, built with `-DDEBUG`): 5 of 5 `DeviceEndpointTests` passed. Not run: the rest of `APIClientTests`. `swiftlint`: 0 violations. Server contract checked against `server/src/schemas/devices.ts` and `routes/api/devices.ts` (body `token`/`environment`/`bundleId`, 204 on both routes, token path param `^[0-9a-f]{64,200}$`).
 
 Run: `scripts/test-waitkit.sh APIClientTests`
 Expected: `** TEST SUCCEEDED **`, with the 5 new tests and the existing plan 04/05 `APIClientTests` all passing.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait

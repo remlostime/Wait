@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - APIClient
 
-/// Typed endpoints of the Wait backend. Plans 05 and 06 add sync and device endpoints here.
+/// Typed endpoints of the Wait backend (market data, account, watchlist sync and device registration).
 @DependencyClient
 public struct APIClient: Sendable {
   public var quotes: @Sendable (_ symbols: [String]) async throws -> QuotesResponseDTO
@@ -20,6 +20,10 @@ public struct APIClient: Sendable {
   public var deleteAccount: @Sendable () async throws -> Void
   /// `POST /api/watchlist/sync` (overview §8.4–§8.5).
   public var syncWatchlist: @Sendable (_ request: SyncRequestDTO) async throws -> SyncResponseDTO
+  /// `POST /api/devices` (overview §8.4). Idempotent: a repeated token is refreshed.
+  public var registerDevice: @Sendable (_ registration: DeviceRegistrationDTO) async throws -> Void
+  /// `DELETE /api/devices/:token`. The token is the lowercase hex from `APNsToken.hexString`.
+  public var unregisterDevice: @Sendable (_ token: String) async throws -> Void
 }
 
 extension APIClient {
@@ -42,6 +46,12 @@ extension APIClient {
       },
       syncWatchlist: { request in
         try await session.post("/api/watchlist/sync", body: request)
+      },
+      registerDevice: { registration in
+        try await session.post("/api/devices", body: registration)
+      },
+      unregisterDevice: { token in
+        try await session.delete("/api/devices/\(token)")
       }
     )
   }
@@ -65,7 +75,9 @@ extension APIClient {
     search: { _ in throw APIError.misconfigured },
     profile: { _ in throw APIError.misconfigured },
     deleteAccount: { throw APIError.misconfigured },
-    syncWatchlist: { _ in throw APIError.misconfigured }
+    syncWatchlist: { _ in throw APIError.misconfigured },
+    registerDevice: { _ in throw APIError.misconfigured },
+    unregisterDevice: { _ in throw APIError.misconfigured }
   )
 }
 
