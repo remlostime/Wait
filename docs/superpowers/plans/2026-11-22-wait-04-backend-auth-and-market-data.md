@@ -4451,7 +4451,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `server/src/container.ts` (whole file below), `server/src/app.ts` (register the market routes)
 - Test: `server/test/routes/market.test.ts`
 
-- [ ] **Step 1: Write the failing route tests**
+- [x] **Step 1: Write the failing route tests**
 
 Create `server/test/routes/market.test.ts`:
 ```ts
@@ -4549,12 +4549,12 @@ describe("GET /api/market/history, /search, /profile", () => {
 })
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `npx vitest run test/routes/market.test.ts`
 Expected: FAIL. `Container` has no `marketData` yet (typecheck error), and the market routes return 404.
 
-- [ ] **Step 3: Implement the schemas**
+- [x] **Step 3: Implement the schemas**
 
 Create `server/src/schemas/market.ts`:
 ```ts
@@ -4629,7 +4629,7 @@ export const ProfileResponseSchema = Type.Object({
 })
 ```
 
-- [ ] **Step 4: Implement the route plugin**
+- [x] **Step 4: Implement the route plugin**
 
 Create `server/src/routes/api/market.ts`:
 ```ts
@@ -4690,7 +4690,7 @@ const marketRoutes: FastifyPluginAsync<RouteOptions> = async (server, { containe
 export default marketRoutes
 ```
 
-- [ ] **Step 5: Wire the container and the app**
+- [x] **Step 5: Wire the container and the app**
 
 Replace `server/src/container.ts` with:
 ```ts
@@ -4805,12 +4805,12 @@ In `server/src/app.ts`, add `import marketRoutes from "./routes/api/market.js"` 
   await app.register(marketRoutes, { prefix: "/api/market", container })
 ```
 
-- [ ] **Step 6: Run the tests and typecheck**
+- [x] **Step 6: Run the tests and typecheck**
 
 Run: `npm test && npm run typecheck`
 Expected: every test file passes, including `8 passed` in `test/routes/market.test.ts`. Typecheck exits 0.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
