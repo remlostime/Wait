@@ -43,6 +43,7 @@ let package = Package(
     .target(name: "Connectivity", dependencies: ["Domain", .dependencies, .dependenciesMacros]),
     .target(name: "MarketDataClient", dependencies: ["Domain", "Logging", "APIClient", .dependencies, .dependenciesMacros]),
     .target(name: "APIClient", dependencies: ["Domain", .dependencies, .dependenciesMacros]),
+    .target(name: "NotificationClient", dependencies: ["Logging", .dependencies, .dependenciesMacros]),
     .target(
       name: "SyncClient",
       dependencies: ["Domain", "Persistence", "APIClient", "Logging", .dependencies, .dependenciesMacros, .sharing, .identifiedCollections]
@@ -71,6 +72,7 @@ let package = Package(
       name: "SyncClientTests",
       dependencies: ["SyncClient", "Domain", "Persistence", "APIClient", .dependencies, .dependenciesTestSupport, .sharing, .identifiedCollections]
     ),
+    .testTarget(name: "NotificationClientTests", dependencies: ["NotificationClient"]),
     .testTarget(name: "ChecklistFeatureTests", dependencies: ["ChecklistFeature", "Domain", "Persistence", .tca, .dependenciesTestSupport]),
     .testTarget(name: "StockChartFeatureTests", dependencies: ["StockChartFeature", "Domain", "MarketDataClient", .tca]),
     .testTarget(name: "StockDetailsFeatureTests", dependencies: ["StockDetailsFeature", "Domain", "MarketDataClient", .tca]),

@@ -233,7 +233,7 @@ Expected: one line for each of the three files.
 - [x] **Step 2: Check the iOS names this plan depends on**
 
 > Result (2026-11-23), verified now: `scripts/test-waitkit.sh` (executable), the `.dependenciesTestSupport` helper (and `.tca`, `.dependencies`, `.dependenciesMacros`, `.sharing`), `Log.push`, `HTTPSession.post` (no-response overload), `HTTPSession.delete`, `APIClient.live(session:)`, `APIClient.misconfigured`, `HTTPSession.init(baseURL:session:anonymousID:)`, `AppDelegate` `lazy var store`, `AppFeature` `case .appDelegate(.didFinishLaunching):`, `ConnectivityClient.noop`, and `aps-environment` in both `Wait.entitlements` and `WaitRelease.entitlements` (not in `project.yml`, which only references the entitlement files). No substitutions.
-> Pending, verify before Chunk 7 (code not written yet): `Sources/SyncClient` with `SyncReport(pushed: Int = 0 …)` (plan 05); `SettingsFeature` `case task` and `syncNowTapped` (plan 05; today `SettingsFeature.Action` has only `checklistTemplateTapped` and `path`).
+> Verified before Chunk 7 (2026-11-23, plan 05 code-complete): `Sources/SyncClient/SyncChange.swift` has `public struct SyncReport` with `public init(pushed: Int = 0, pulled: Int = 0, applied: Int = 0, rounds: Int = 0)` and `static let empty`; `SyncClient.swift` has `\.syncClient` (`sync: () async throws -> SyncReport`, `reset: () async -> Void`); `SettingsFeature.Action` has `case task` and `case syncNowTapped` (plus `syncFinished(SyncReport)` and `syncFailed(String)`). No substitutions.
 
 Run each line from `/Users/ckai/code/Wait`. Each `grep -c` must print `1` or more:
 ```bash
@@ -4307,7 +4307,7 @@ Source paths below are relative to `Wait/Packages/WaitKit/` unless they start wi
 - Create: `Packages/WaitKit/Sources/NotificationClient/NotificationClient+Live.swift`
 - Test: `Packages/WaitKit/Tests/NotificationClientTests/NotificationPayloadTests.swift`
 
-- [ ] **Step 1: Declare the targets**
+- [x] **Step 1: Declare the targets**
 
 In `Package.swift`, add the following to `targets:`, next to the other client targets:
 ```swift
@@ -4319,7 +4319,7 @@ and the following next to the other test targets:
 ```
 `Logging` is used by the live delegate (plan 02's `Log.push` channel).
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `Tests/NotificationClientTests/NotificationPayloadTests.swift`:
 ```swift
@@ -4390,12 +4390,12 @@ struct NotificationPayloadTests {
 }
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [ ] **Step 3: Run the test to verify it fails** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh NotificationClientTests`
 Expected: the build fails with `cannot find 'NotificationPayload' in scope` (or "no such module 'NotificationClient'").
 
-- [ ] **Step 4: Write the interface**
+- [x] **Step 4: Write the interface**
 
 Create `Sources/NotificationClient/NotificationClient.swift`:
 ```swift
@@ -4445,7 +4445,7 @@ public extension DependencyValues {
 }
 ```
 
-- [ ] **Step 5: Write the payload parser**
+- [x] **Step 5: Write the payload parser**
 
 Create `Sources/NotificationClient/NotificationPayload.swift`:
 ```swift
@@ -4488,7 +4488,7 @@ public enum NotificationPayload {
 }
 ```
 
-- [ ] **Step 6: Write the live implementation**
+- [x] **Step 6: Write the live implementation**
 
 Create `Sources/NotificationClient/NotificationClient+Live.swift`:
 ```swift
@@ -4593,13 +4593,15 @@ extension NotificationAuthorization {
 #endif
 ```
 
-- [ ] **Step 7: Run the test to verify it passes**
+- [ ] **Step 7: Run the test to verify it passes** — NOT RUN (code-only)
+
+> Result (2026-11-23): `/tmp` harness on macOS (the real `NotificationPayload.swift` and test file, hand-written `NotificationClient` stand-in): 7 of 7 payload tests passed; the iOS-only `mapsSystemAuthorizationStatuses` was typechecked, not run. The live delegate file typechecks clean under `-swift-version 6` for `arm64-apple-ios17.0-simulator` (no `@preconcurrency` needed); `swiftlint`: 0 violations.
 
 Run: `scripts/test-waitkit.sh NotificationClientTests`
 Expected: `** TEST SUCCEEDED **` with 8 tests.
 If Swift 6 reports that the delegate methods have a non-`Sendable` parameter crossing an isolation boundary, keep them `nonisolated` (the default for this class). Annotate the protocol conformance as `@preconcurrency UNUserNotificationCenterDelegate`. Don't make the class `@MainActor`, because `liveValue` must stay usable from any context.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
