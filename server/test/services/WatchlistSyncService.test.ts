@@ -120,6 +120,15 @@ describe("WatchlistSyncService.sync", () => {
     await expect(service.sync("u1", { cursor: null, changes }, now)).rejects.toMatchObject({ code: "INVALID_INPUT" })
   })
 
+  it.each([
+    ["an impossible clientUpdatedAt", makeChange({ symbol: "AAPL", clientUpdatedAt: new Date("2026-13-01T00:00:00Z") }), "AAPL: clientUpdatedAt is not a valid timestamp"],
+    ["a pre-1970 clientUpdatedAt", makeChange({ symbol: "AAPL", clientUpdatedAt: new Date("0000-01-01T00:00:00Z") }), "AAPL: clientUpdatedAt is not a valid timestamp"],
+    ["an impossible history date", makeChange({ symbol: "AAPL", ladderHistory: [{ date: "2026-11-20T25:00:00Z", ladder: {} }] }), "AAPL: ladderHistory has an invalid date"],
+    ["a NUL in the memo", makeChange({ symbol: "AAPL", memo: "a\u0000b" }), "AAPL: text fields must not contain NUL characters"],
+  ])("rejects %s with INVALID_INPUT instead of a 500", async (_label, change, message) => {
+    await expect(service.sync("u1", { cursor: null, changes: [change] }, now)).rejects.toMatchObject({ code: "INVALID_INPUT", statusCode: 400, message })
+  })
+
   it("rejects a malformed cursor", async () => {
     await expect(service.sync("u1", { cursor: "nope", changes: [] }, now)).rejects.toMatchObject({
       code: "INVALID_INPUT",
@@ -129,6 +138,18 @@ describe("WatchlistSyncService.sync", () => {
 })
 
 describe("WatchlistSyncService.list", () => {
+  it("pages past the 5,000-row page so the cursor never skips rows", async () => {
+    const repository = new MockWatchlistRepository()
+    repository.seedUser("u1")
+    const service = new WatchlistSyncService(repository)
+    for (let batch = 0; batch < 26; batch += 1) {
+      const changes = Array.from({ length: 200 }, (_, index) => makeChange({ symbol: `S${batch * 200 + index}` }))
+      await service.sync("u1", { cursor: null, changes }, now)
+    }
+    const result = await service.list("u1")
+    expect(result.items).toHaveLength(5_200)
+  })
+
   it("returns live items only, with the cursor of the newest row", async () => {
     const repository = new MockWatchlistRepository()
     repository.seedUser("u1")

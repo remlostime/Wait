@@ -45,6 +45,19 @@ function validateChange(change: WatchlistChange): void {
   if (change.ladderHistory.length > MAX_LADDER_HISTORY) {
     throw invalidInput(`${symbol}: ladderHistory has more than ${MAX_LADDER_HISTORY} entries`)
   }
+  // The pattern only checks the shape: "2026-13-01T…" or year 0000 would otherwise reach toISOString()/Postgres as a 500.
+  if (!isSaneTimestamp(change.clientUpdatedAt.getTime())) throw invalidInput(`${symbol}: clientUpdatedAt is not a valid timestamp`)
+  if (change.ladderHistory.some((entry) => !isSaneTimestamp(Date.parse(entry.date)))) {
+    throw invalidInput(`${symbol}: ladderHistory has an invalid date`)
+  }
+  // Postgres jsonb/text reject U+0000; a 500 here would make the client retry the batch forever.
+  const texts = [change.name, change.memo, ...change.checklist.flatMap((entry) => [entry.id, entry.name])]
+  if (texts.some((text) => text.includes("\u0000"))) throw invalidInput(`${symbol}: text fields must not contain NUL characters`)
+}
+
+
+function isSaneTimestamp(ms: number): boolean {
+  return Number.isFinite(ms) && ms >= 0
 }
 
 function clamp(change: WatchlistChange, now: Date): WatchlistChange {
@@ -92,8 +105,16 @@ export class WatchlistSyncService {
     }
   }
 
+  /** Pages through every row (tombstones included) so the returned cursor never skips anything. */
   async list(userId: string): Promise<ListResult> {
-    const rows = await this.repository.pull(userId, START_CURSOR, LIST_LIMIT)
+    const rows: WatchlistRow[] = []
+    let cursor: SyncCursor = START_CURSOR
+    for (;;) {
+      const page = await this.repository.pull(userId, cursor, LIST_LIMIT)
+      rows.push(...page)
+      if (page.length < LIST_LIMIT) break
+      cursor = { version: page[page.length - 1]!.version, symbol: page[page.length - 1]!.symbol }
+    }
     return { items: rows.filter((row) => !row.deleted), cursor: cursorOf(rows.at(-1), START_CURSOR) }
   }
 }
