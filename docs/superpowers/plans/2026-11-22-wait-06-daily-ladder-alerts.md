@@ -3096,7 +3096,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `server/src/app.ts` (register the route)
 - Test: `server/test/routes/devices.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/routes/devices.test.ts`. It goes through `buildTestApp`, so it exercises the real JWT middleware, error handler and Ajv options (overview §8.1):
 ```ts
@@ -3187,12 +3187,12 @@ describe("devices routes", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/routes/devices.test.ts`
 Expected: FAIL. `POST /api/devices` returns 404 `NOT_FOUND`, and `tsc` reports that `container.deviceTokens` doesn't exist.
 
-- [ ] **Step 3: Write the schemas**
+- [x] **Step 3: Write the schemas**
 
 Create `server/src/schemas/devices.ts`:
 ```ts
@@ -3214,7 +3214,7 @@ export type RegisterDeviceBody = Static<typeof RegisterDeviceBodySchema>
 export const DeviceTokenParamsSchema = Type.Object({ token: Type.String({ pattern: DEVICE_TOKEN_PATTERN }) }, { additionalProperties: false })
 ```
 
-- [ ] **Step 4: Write the route plugin**
+- [x] **Step 4: Write the route plugin**
 
 Create `server/src/routes/api/devices.ts`. It follows plan 04's `RouteOptions` convention (see `routes/api/auth.ts`):
 ```ts
@@ -3258,7 +3258,7 @@ const deviceRoutes: FastifyPluginAsync<RouteOptions> = async (server, { containe
 export default deviceRoutes
 ```
 
-- [ ] **Step 5: Wire it into the container and app**
+- [x] **Step 5: Wire it into the container and app**
 
 In `server/src/container.ts`:
 
@@ -3280,12 +3280,12 @@ In `server/src/app.ts`, add `import deviceRoutes from "./routes/api/devices.js"`
   await app.register(deviceRoutes, { prefix: "/api/devices", container })
 ```
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [x] **Step 6: Run the tests to verify they pass**
 
 Run: `npx vitest run test/routes/devices.test.ts && npm test && npm run typecheck`
 Expected: PASS (`Tests  10 passed (10)` in `devices.test.ts`), and the whole suite stays green.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add server/src/schemas/devices.ts server/src/routes/api/devices.ts server/src/container.ts server/src/app.ts server/test/routes/devices.test.ts

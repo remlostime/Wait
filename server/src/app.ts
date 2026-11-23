@@ -5,6 +5,7 @@ import type { Container } from "./container.js"
 import { AppError, sendAppError, sendError } from "./lib/errors.js"
 import jwtPlugin from "./plugins/jwt.js"
 import authRoutes from "./routes/api/auth.js"
+import deviceRoutes from "./routes/api/devices.js"
 import marketRoutes from "./routes/api/market.js"
 import watchlistRoutes from "./routes/api/watchlist.js"
 import healthRoutes from "./routes/health.js"
@@ -50,6 +51,7 @@ export async function buildApp({ config, container }: BuildAppOptions) {
   await app.register(authRoutes, { prefix: "/api/auth", container })
   await app.register(marketRoutes, { prefix: "/api/market", container })
   await app.register(watchlistRoutes, { prefix: "/api/watchlist", container })
+  await app.register(deviceRoutes, { prefix: "/api/devices", container })
 
   return app
 }

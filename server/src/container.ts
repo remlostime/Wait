@@ -1,8 +1,11 @@
 import type { Config } from "./config.js"
+import type { DeviceTokenRepository } from "./db/DeviceTokenRepository.js"
 import type { MarketCacheRepository } from "./db/MarketCacheRepository.js"
+import { MockDeviceTokenRepository } from "./db/MockDeviceTokenRepository.js"
 import { MockMarketCacheRepository } from "./db/MockMarketCacheRepository.js"
 import { MockUserRepository } from "./db/MockUserRepository.js"
 import { MockWatchlistRepository } from "./db/MockWatchlistRepository.js"
+import { NeonDeviceTokenRepository } from "./db/NeonDeviceTokenRepository.js"
 import { NeonMarketCacheRepository } from "./db/NeonMarketCacheRepository.js"
 import { NeonUserRepository } from "./db/NeonUserRepository.js"
 import { NeonWatchlistRepository } from "./db/NeonWatchlistRepository.js"
@@ -34,6 +37,7 @@ export interface Container {
   marketData: MarketDataService
   watchlist: WatchlistRepository
   watchlistSync: WatchlistSyncService
+  deviceTokens: DeviceTokenRepository
 }
 
 /** Options every route plugin receives. */
@@ -70,6 +74,7 @@ export function createContainer(config: Config): Container {
     marketData: new MarketDataService({ cache: marketCache, limiter: rateLimiter, providers, clock, logger: logger.child({ component: "market" }) }),
     watchlist,
     watchlistSync: new WatchlistSyncService(watchlist),
+    deviceTokens: new NeonDeviceTokenRepository(sql),
   }
 }
 
@@ -112,5 +117,6 @@ export function createMockContainer(overrides: Partial<Container> = {}): Contain
     marketData: overrides.marketData ?? new MarketDataService({ cache: marketCache, limiter: rateLimiter, providers: unavailableProviders(), clock, logger }),
     watchlist,
     watchlistSync: overrides.watchlistSync ?? new WatchlistSyncService(watchlist),
+    deviceTokens: overrides.deviceTokens ?? new MockDeviceTokenRepository(),
   }
 }
