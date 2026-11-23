@@ -70,9 +70,8 @@ cd Wait && swiftformat .
 - **WaitKit library targets** (Swift 6 language mode; dependency graph in `Wait/Packages/WaitKit/README.md`):
   - Core: `Domain` (value types and ladder math), `Logging`, `DesignSystem`.
   - `Persistence`: `@Shared` files in the app group, mutation helpers, `SnapshotStore`, `SnapshotClient`, `LegacyMigration`.
-  - Clients: `APIClient` (Wait backend session, Keychain identity, DTOs), `MarketDataClient` (caching decorator plus the backend adapter), `SyncClient` (watchlist sync) and `Connectivity` (WCSession).
-  - Features: `ChecklistFeature`, `StockChartFeature`, `StockDetailsFeature`, `WatchlistFeature`, `SettingsFeature`, `AppFeature`.
-  - Plan 06 adds `NotificationClient`.
+  - Clients: `APIClient` (Wait backend session, Keychain identity, DTOs), `MarketDataClient` (caching decorator plus the backend adapter), `SyncClient` (watchlist sync), `NotificationClient` (notification permission, APNs registration, push taps) and `Connectivity` (WCSession).
+  - Features: `ChecklistFeature`, `StockChartFeature`, `StockDetailsFeature`, `WatchlistFeature`, `SettingsFeature`, `AppFeature` (which scopes `PushFeature`).
 
 ### Data flow
 - **Watchlist:** the source of truth is `@Shared(.watchlist)`, an `IdentifiedArrayOf<WatchlistItem>` stored as `watchlist.json` in the app group `group.chenkai.wait.contents`.
@@ -97,6 +96,7 @@ cd Wait && swiftformat .
   - The watch never touches the network and holds no keys. Its sources are the five files in `Wait/WaitWatch/`.
   - On simulators, pair the watch and iPhone first: `xcrun simctl pair <watch> <phone>`.
 - **Watchlist sync:** see the next subsection.
+- **Daily ladder alerts:** see the subsection after it.
 - **Logging and credentials:** log through `Log.<channel>` (subsystem `com.chenkai.wait`). No credentials live in source: `scripts/check-secrets.sh` fails on anything that looks like a hard-coded key.
 
 ### Watchlist sync
@@ -106,6 +106,29 @@ cd Wait && swiftformat .
 - Triggers live in `AppFeature`: scene becomes active, a 2 s debounce after any watchlist change, and pull-to-refresh. Settings → Sync shows "Last synced" and has a "Sync now" button. Account deletion calls `syncClient.reset()`, which bumps a generation counter so an in-flight run discards its merge. The local list is kept and re-uploads under the new identity.
 - Stamps are compared as whole milliseconds (`SyncStamp`), and sync DTOs carry them as pre-formatted ISO strings. Never route them through `JSONEncoder` date strategies.
 - Server: `server/src/services/WatchlistSyncService.ts` and `server/src/db/NeonWatchlistRepository.ts` (one CTE for push, `(version, symbol)` cursor for pull). The server's ladder logic in `server/src/domain/ladder.ts` must keep passing `shared/ladder-test-vectors.json`.
+
+### Daily ladder alerts
+- **Trigger:** Vercel Cron calls `GET /api/internal/daily-alerts` with `Authorization: Bearer $CRON_SECRET`. `server/vercel.json` has two entries for the path:
+  - `0 22 * * 1-5` (UTC) is the run.
+  - `30 23 * * 1-5` is the catch-up. It takes over a crashed run, or delivers events the first call left unsent.
+- **Function budget:** the function needs `maxDuration` of at least 60 s. See the cron section of `server/README.md`.
+- **Job:** `server/src/services/AlertJobService.ts` follows overview §8.6. It runs per New York trading date, and only one caller runs a day at a time (`alert_job_runs`).
+  1. `DailyCloseResolver` gets the closes: one Massive grouped-daily call, then at most 25 same-day Finnhub quotes for symbols the grouped call missed. When more than 25 are missing, the start offset rotates by trading date, so a symbol missed today is likely covered tomorrow.
+  2. An empty grouped result is a holiday only when SPY's Finnhub quote is dated strictly before the trading date. A null or undated quote throws instead, so the run stays unfinished and the catch-up retries it.
+  3. Each live item (not deleted, US-market symbol) is classified with `domain/ladder.ts`.
+  4. `alert_events` rows are inserted (ON CONFLICT DO NOTHING), and the server-owned `watchlist_items.last_status` is updated. That never bumps the sync version.
+  5. Pending events go out through `apns/ApnsSender.ts`. Events for a deleted item are never selected for delivery. Each event is claimed atomically (`claimForSend`, `attempts + 1 WHERE attempts = <read value>`), so overlapping calls never push one alert twice.
+- **Delivery:** pushes go out 5 at a time (`mapLimit`). No new send starts 45 s after the run began, and the rest stay pending for the catch-up. Each APNs request times out after 3 s, with one retry after 1 s. `apns-expiration` is the next market open, so a stale signal is dropped. A `BadDeviceToken` retries on the other APNs environment before the token is pruned. `410` prunes the token.
+- **Alert rule:** push only when moving *down* into BUY_ZONE/DEEP_BUY or *up* into TRIM/SELL (`shouldAlert`). A stock's first evaluation is stored without a push. Changing a stock's anchors resets `last_status` to NULL, so the next evaluation is again stored without a push. A close more than 50% away from the last evaluated price (likely a split) never pushes.
+- **Server routes:** `POST /api/devices` (token, environment, optional bundleId) and `DELETE /api/devices/:token` need the user's bearer token. The cron route needs `CRON_SECRET`.
+- **iOS:**
+  - `NotificationClient` (`\.notifications`) handles permission, APNs registration and the push-tap stream. `AppDelegate` installs its `UNUserNotificationCenter` delegate.
+  - `AppFeature` scopes the child `PushFeature`. At launch it registers with APNs when `@Shared(.alertsEnabled)` is on and permission was granted. It uploads the hex token to `POST /api/devices` (`sandbox` in Debug, `production` otherwise).
+  - When alerts are off but a token is still stored (`@Shared(.apnsDeviceToken)`), launch retries the `DELETE /api/devices/:token` that Settings started.
+  - A tap becomes `wait://stock/<SYMBOL>` through `.openURL`. Settings has an Alerts section with the toggle.
+- **Manual checks:**
+  - `xcrun simctl push booted com.chenkai.wait /tmp/wait-push.apns` tests tap handling without APNs.
+  - `cd server && npm run send-test-push -- --token <hex> --env sandbox` sends a real push.
 
 ### Ladder
 - `PriceLadder` (in `Domain`): validates that anchors are positive and non-decreasing.
@@ -125,13 +148,14 @@ cd Wait && swiftformat .
 - **`.onChange(of:)`:** use the effect-returning form `{ oldValue, state in Effect }` (see `AddStockFeature`, `AppFeature`). The reducer-builder overload is deprecated. It only sees mutations made by the reducer it wraps, so `AppFeature` attaches it outside `CombineReducers`.
 - **Effects:** report results through success/failure action pairs, never `Result<_, any Error>`. A load that must not touch screen-level state sends its own action: `WatchlistFeature` sends `symbolQuotesLoaded` after adding one stock, so a rate-limit banner from the full-list load stays.
 - **Debounce:** `continuousClock.sleep` plus `.cancellable(id:cancelInFlight:)`.
-- **Dependency keys:** `\.marketData`, `\.snapshotClient`, `\.connectivity`, `\.apiClient`, `\.identity`, `\.keychain`, `\.syncClient`, and later `\.notifications`. Every client is a `@DependencyClient` with an unimplemented `testValue`. Tests override what they use; use `.noop` where one exists (today `ConnectivityClient.noop`).
+- **Dependency keys:** `\.marketData`, `\.snapshotClient`, `\.connectivity`, `\.apiClient`, `\.identity`, `\.keychain`, `\.syncClient`, `\.notifications`. Every client is a `@DependencyClient` with an unimplemented `testValue`. Tests override what they use; use `.noop` where one exists (today `ConnectivityClient.noop`).
 
 ## Backend (`server/`)
 
 - Fastify 5 + TypeBox, TypeScript ESM, Neon Postgres via raw SQL, vitest + PGlite, and Vercel (Root Directory `server`). See `server/README.md` and overview §8.
 - Composition root: `server/src/container.ts`. Every repository is an interface with `Neon*` (SQL) and `Mock*` (in-memory) implementations. Route plugins stay thin and call services.
 - Market data: Finnhub (quotes, search, profile, metrics), Tiingo (daily history, 1M/1Y/5Y derived from one `daily5y` pull) and Alpaca (1D/1W bars, 15 min delayed). Results are cached in Postgres per symbol, and a Postgres token bucket enforces each provider's free quota.
+- Daily alerts: Massive (grouped daily closes), Finnhub (holiday probe and fallback quotes) and APNs (HTTP/2, ES256 provider token). See the Daily ladder alerts subsection above.
 - Auth: an anonymous UUID from the iCloud Keychain is exchanged at `POST /api/auth/register` for a 7-day HS256 JWT. `HTTPSession` re-registers once on a 401.
 - Commands: `cd server && npm test`, `npm run typecheck`, `npm run dev`, `npm run migrate`.
 - Guard: `scripts/check-client-has-no-provider-keys.sh` must pass. The iOS app never contains provider hosts or keys.

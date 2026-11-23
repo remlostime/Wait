@@ -18,13 +18,15 @@ All of Wait's code except the three thin Xcode targets (`Wait`, `WaitWidgetExten
 | `StockChartFeature` | Price-history chart: loads one range at a time, chart geometry and view | Domain, MarketDataClient, DesignSystem, TCA | – | StockDetailsFeature |
 | `StockDetailsFeature` | The stock detail screen: quote, stats, chart, ladder editor, notes editor, ladder history | Domain, Persistence, MarketDataClient, StockChartFeature, DesignSystem, TCA | – | WatchlistFeature |
 | `WatchlistFeature` | The watchlist screen, add-stock sheet, and navigation to details and checklist | Domain, Persistence, MarketDataClient, StockDetailsFeature, ChecklistFeature, DesignSystem, TCA | – | AppFeature |
-| `SettingsFeature` | The settings tab: checklist template editor, account section (anonymous ID, Delete Account), sync section ("Last synced", "Sync now"), data attribution | APIClient, ChecklistFeature, DesignSystem, Persistence, SyncClient, TCA | – | AppFeature |
-| `AppFeature` | Root feature and `AppView`, deep links, `AppDelegate` (owns the store and runs the legacy migration), snapshot publishing to the widget and the watch, sync triggers | Domain, DesignSystem, Logging, Persistence, Connectivity, SyncClient, SettingsFeature, WatchlistFeature, TCA | – | app |
+| `SettingsFeature` | The settings tab: checklist template editor, account section (anonymous ID, Delete Account), sync section ("Last synced", "Sync now"), alerts section ("Daily alerts" toggle, permission, Open Settings), data attribution | APIClient, ChecklistFeature, DesignSystem, Persistence, SyncClient, TCA | – | AppFeature |
+| `AppFeature` | Root feature and `AppView`, deep links, `AppDelegate` (owns the store, runs the legacy migration, forwards the APNs callbacks), `PushFeature`, snapshot publishing to the widget and the watch, sync triggers | Domain, DesignSystem, Logging, Persistence, Connectivity, SyncClient, SettingsFeature, WatchlistFeature, TCA | – | app |
 | `APIClient` | Wait backend client: `HTTPSession` actor, `APIClient` endpoints and DTOs, `KeychainClient`, `IdentityClient` | Domain, Dependencies, DependenciesMacros | – | MarketDataClient, SettingsFeature, SyncClient |
 | `SyncClient` | `\.syncClient` dependency: watchlist sync (single-flight `SyncEngine`, pure `SyncPlanner` and `SyncMerger`, DTO mapping) | Domain, Persistence, APIClient, Logging, Sharing, IdentifiedCollections, Dependencies, DependenciesMacros | – | AppFeature, SettingsFeature |
-| `NotificationClient` (plan 06) | Push registration | Logging, Dependencies, DependenciesMacros | – | AppFeature, SettingsFeature |
+| `NotificationClient` | `\.notifications` dependency: notification permission, APNs registration, and the stream of tapped pushes (`NotificationPayload` parses the symbol). Its live `UNUserNotificationCenter` delegate is installed by `AppDelegate` | Logging, Dependencies, DependenciesMacros | – | AppFeature, SettingsFeature |
 
-The `NotificationClient` row exists only after plan 06 has run. Each target has a matching `<Target>Tests` test target.
+Each target has a matching `<Target>Tests` test target.
+
+Plan 06 added `NotificationClient`, `AppFeature`'s child `PushFeature` and the Alerts section of `SettingsFeature`; see the NotificationClient section below.
 
 ## Conventions
 - **Mutations.** Mutate the watchlist only through the `Persistence` helpers. They stamp `updatedAt` truncated to milliseconds, which sync relies on.
@@ -64,7 +66,7 @@ Or `scripts/test-waitkit.sh [Target[/Suite]]` from the repo root.
 ## APIClient (plan 04)
 
 - `HTTPSession` is an actor. It sends the JWT from memory, registers on first use with `IdentityClient.anonymousID()`, re-registers once on a 401, and maps every non-2xx response to `APIError`.
-- `APIClient` (`@Dependency(\.apiClient)`) exposes the market endpoints plus `deleteAccount`. `syncWatchlist` is the sync endpoint. Plan 06 adds device endpoints.
+- `APIClient` (`@Dependency(\.apiClient)`) exposes the market endpoints plus `deleteAccount`. `syncWatchlist` is the sync endpoint. `registerDevice` and `unregisterDevice` are the push-token endpoints (`POST /api/devices`, `DELETE /api/devices/:token`).
 - `KeychainClient` and `IdentityClient` store the anonymous ID under service `com.chenkai.wait`, account `anonymous-id`, synchronizable. Tests always use `KeychainClient.inMemory()`.
 - `MarketDataClient.backend(_:)` maps DTOs to Domain types. The live value is `.cached(.backend(.liveValue), disk: .live, now:)`.
 
@@ -81,3 +83,19 @@ Or `scripts/test-waitkit.sh [Target[/Suite]]` from the repo root.
 | `SyncClient.swift` | `@DependencyClient` (`sync`, `reset`); `\.syncClient` |
 
 Tests: `xcodebuild test -scheme WaitKit-Package … -only-testing:SyncClientTests`.
+
+## NotificationClient (plan 06)
+
+| File | Role |
+|---|---|
+| `NotificationClient.swift` | `@DependencyClient`: `authorizationStatus`, `requestAuthorization`, `registerForRemoteNotifications`, `unregisterForRemoteNotifications`, and `tappedSymbols()` (an `AsyncStream<String>` with a single consumer). `\.notifications` |
+| `NotificationClient+Live.swift` | `liveValue` over `UNUserNotificationCenter` and `UIApplication`. `NotificationClient.installDelegate()` sets the center's delegate; `AppDelegate` calls it from `didFinishLaunching` |
+| `NotificationPayload.swift` | Pure: reads the `symbol` from a push's `userInfo`, and validates it |
+
+`PushFeature` (in `AppFeature`, scoped as `state.push`) does the rest:
+- On `.launched` it subscribes to `tappedSymbols()`, loads the authorization status and registers with APNs when `@Shared(.alertsEnabled)` is on and permission is `authorized`.
+- On `AppDelegate`'s token callback it stores the hex token in `@Shared(.apnsDeviceToken)` and uploads it through `apiClient.registerDevice`. The environment is `sandbox` in Debug and `production` otherwise.
+- When alerts are off but a token is still stored, launch retries `apiClient.unregisterDevice`, then clears the token. Settings starts the same call when the user turns the toggle off, and keeps the token until the server confirms.
+- A tap becomes `delegate(.openStock(symbol))`. `AppFeature` turns it into `wait://stock/<SYMBOL>` and sends `.openURL`.
+
+Tests: `-only-testing:NotificationClientTests`, `AppFeatureTests/PushFeatureTests`, `AppFeatureTests/AppFeaturePushRoutingTests`, `SettingsFeatureTests/SettingsAlertsTests`, `APIClientTests/DeviceEndpointTests`.

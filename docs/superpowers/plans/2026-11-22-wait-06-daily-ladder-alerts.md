@@ -5823,7 +5823,7 @@ No commit for this task.
 - Modify: `/Users/ckai/code/Wait/server/README.md`
 - Modify: `/Users/ckai/code/Wait/Wait/Packages/WaitKit/README.md`
 
-- [ ] **Step 1: Update `CLAUDE.md`**
+- [x] **Step 1: Update `CLAUDE.md`**
 
 Append this section after the data-flow sections that plan 05 left:
 ```markdown
@@ -5849,7 +5849,7 @@ Append this section after the data-flow sections that plan 05 left:
   - `cd server && npm run send-test-push -- --token <hex> --env sandbox` sends a real push.
 ```
 
-- [ ] **Step 2: Update `server/README.md`**
+- [x] **Step 2: Update `server/README.md`**
 
 First, replace plan 04's stale `## Environment` line, `See .env.example. Required: DATABASE_URL, … Optional: LOG_LEVEL (default info). …`, with:
 ```markdown
@@ -5880,7 +5880,7 @@ Then append:
 - **Re-run a day from scratch** (debugging only): delete that day's row from `alert_job_runs`.
 ~~~
 
-- [ ] **Step 3: Update `Packages/WaitKit/README.md`**
+- [x] **Step 3: Update `Packages/WaitKit/README.md`**
 
 Plan 03 already wrote the 4-column module table (`Target | Depends on | watchOS | Linked by`), including a `NotificationClient (plan 06)` row. Don't add a row. Edit the existing cells:
 - `NotificationClient (plan 06)`: set "Depends on" to `Logging, Dependencies, DependenciesMacros` and "Linked by" to `AppFeature, SettingsFeature`. Change nothing if they already read that way.
@@ -5892,7 +5892,7 @@ Below the table, after the sentence "The last three rows exist only after their 
 Plan 06: `NotificationClient` handles permission, APNs registration and the push-tap stream; its live delegate is installed by `AppDelegate`. `AppFeature` scopes `PushFeature` (launch registration, pending unregistration, device-token upload, tap → `openURL`). `SettingsFeature` has the Alerts section (`@Shared(.alertsEnabled)`, permission, Open Settings).
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
