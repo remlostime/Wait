@@ -553,7 +553,7 @@ MSG
 - Create: `server/src/db/watchlistTypes.ts`
 - Test: `server/test/db/watchlistTypes.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/db/watchlistTypes.test.ts`:
 ```ts
@@ -597,12 +597,12 @@ describe("normalizeDecimal", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test and confirm it fails**
+- [x] **Step 2: Run the test and confirm it fails**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/db/watchlistTypes.test.ts`
 Expected: FAIL with `Failed to load url ../../src/db/watchlistTypes.js`.
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation**
 
 Create `server/src/db/watchlistTypes.ts`:
 ```ts
@@ -680,12 +680,12 @@ export function normalizeLadder(ladder: Partial<LadderValues>): LadderValues {
 }
 ```
 
-- [ ] **Step 4: Run the test and confirm it passes**
+- [x] **Step 4: Run the test and confirm it passes**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/db/watchlistTypes.test.ts`
 Expected: PASS, `Tests  5 passed (5)`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
