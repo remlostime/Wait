@@ -66,13 +66,70 @@ struct HTTPSessionTests {
   }
 
   @Test
-  func registersAgainAfterTheTokenIsForgotten() async throws {
+  func registersAgainAfterTheSessionIsReset() async throws {
     let (session, _, registers) = makeSession(tokens: ["t1", "t2"]) { $0 == "t1" || $0 == "t2" }
     let _: OK = try await session.get("/api/x")
     #expect(registers.value == 1)
-    await session.forgetToken()
+    await session.reset()
     let _: OK = try await session.get("/api/x")
     #expect(registers.value == 2)
+  }
+
+  @Test
+  func aTokenIssuedForOneIDIsNotReusedAfterTheIdentityChanges() async throws {
+    let current = LockIsolated(anonymousID)
+    let newID = UUID(uuidString: "AAAAAAAA-BBBB-4CCC-8DDD-EEEEEEEEEEEE")!
+    let registeredIDs = LockIsolated<[String]>([])
+    let base = StubURLProtocol.stub { request in
+      switch request.url?.path() {
+        case "/api/auth/register":
+          let body = request.httpBody.map { String(decoding: $0, as: UTF8.self) } ?? ""
+          registeredIDs.withValue { $0.append(body) }
+          return jsonReply(200, #"{"token":"t\#(registeredIDs.value.count)","user":{"id":"u1"}}"#)
+        default:
+          return jsonReply(200, #"{"ok":true}"#)
+      }
+    }
+    let session = HTTPSession(baseURL: base, session: StubURLProtocol.makeSession(), anonymousID: { current.value })
+    let _: OK = try await session.get("/api/x")
+    let _: OK = try await session.get("/api/x")
+    #expect(registeredIDs.value.count == 1)
+
+    current.setValue(newID)
+    let _: OK = try await session.get("/api/x")
+    #expect(registeredIDs.value.count == 2)
+    #expect(registeredIDs.value[1] == #"{"anonymousId":"AAAAAAAA-BBBB-4CCC-8DDD-EEEEEEEEEEEE"}"#)
+    let bearer = StubURLProtocol.requests(for: base).last?.value(forHTTPHeaderField: "Authorization")
+    #expect(bearer == "Bearer t2")
+
+    // The new token is reused while the ID stays the same.
+    let _: OK = try await session.get("/api/x")
+    #expect(registeredIDs.value.count == 2)
+  }
+
+  @Test
+  func aTokenForTheOldIDIsReplacedWhenTheIdentityFlipsDuringRegistration() async throws {
+    let current = LockIsolated(anonymousID)
+    let newID = UUID(uuidString: "AAAAAAAA-BBBB-4CCC-8DDD-EEEEEEEEEEEE")!
+    let registeredIDs = LockIsolated<[String]>([])
+    let base = StubURLProtocol.stub { request in
+      switch request.url?.path() {
+        case "/api/auth/register":
+          let body = request.httpBody.map { String(decoding: $0, as: UTF8.self) } ?? ""
+          registeredIDs.withValue { $0.append(body) }
+          // The identity flips while the first registration is on the wire.
+          current.setValue(newID)
+          return jsonReply(200, #"{"token":"t\#(registeredIDs.value.count)","user":{"id":"u1"}}"#)
+        default:
+          let token = request.value(forHTTPHeaderField: "Authorization") ?? ""
+          return token == "Bearer t2" ? jsonReply(200, #"{"ok":true}"#) : jsonReply(401, #"{"error":{"code":"UNAUTHORIZED","message":"no"}}"#)
+      }
+    }
+    let session = HTTPSession(baseURL: base, session: StubURLProtocol.makeSession(), anonymousID: { current.value })
+    let result: OK = try await session.get("/api/x")
+    #expect(result == OK(ok: true))
+    #expect(registeredIDs.value.count == 2)
+    #expect(registeredIDs.value[1].contains("AAAAAAAA-BBBB-4CCC-8DDD-EEEEEEEEEEEE"))
   }
 
   @Test

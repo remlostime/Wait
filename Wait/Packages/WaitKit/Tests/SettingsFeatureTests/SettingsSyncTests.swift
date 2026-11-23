@@ -66,7 +66,9 @@ struct SettingsSyncTests {
     } withDependencies: {
       $0.apiClient.deleteAccount = {}
       $0.identity.reset = {}
+      $0.apiClient.resetSession = {}
       $0.syncClient.reset = { resets.withValue { $0 += 1 } }
+      $0.syncClient.sync = { .empty }
     }
     store.exhaustivity = .off(showSkippedAssertions: false)
 
@@ -88,6 +90,7 @@ struct SettingsSyncTests {
     } withDependencies: {
       $0.apiClient.deleteAccount = {}
       $0.identity.reset = { throw KeychainFailure() }
+      $0.apiClient.resetSession = {}
       $0.syncClient.reset = { resets.withValue { $0 += 1 } }
     }
     store.exhaustivity = .off(showSkippedAssertions: false)

@@ -32,6 +32,8 @@ public struct APIRequest: Sendable {
 /// The one connection to the Wait backend (overview §9). The JWT lives in memory only.
 /// The first authenticated call registers with the anonymous ID. A 401 re-registers once and retries once.
 /// Concurrent callers share a single in-flight registration.
+/// A token (and an in-flight registration) is bound to the anonymous ID it was issued for. When the identity returns another ID,
+/// for instance after the account was deleted and the ID reset, the old token is never sent again and a fresh registration starts.
 public actor HTTPSession {
   // MARK: Lifecycle
 
@@ -67,19 +69,37 @@ public actor HTTPSession {
     try await sendWithStatus(request).data
   }
 
-  /// Drops the cached JWT, so the next authenticated call registers again with whatever the anonymous ID is by then.
-  /// Called after the account is deleted: the token belongs to an account that no longer exists.
-  public func forgetToken() {
-    token = nil
+  /// Drops the cached JWT and ignores any in-flight registration (its result is never published), so the next authenticated
+  /// call registers again with whatever the anonymous ID is by then. Called after the identity was reset.
+  public func reset() {
+    credential = nil
+    registration = nil
   }
 
   // MARK: Private
 
+  /// A JWT and the anonymous ID it was issued for.
+  private struct Credential {
+    let token: String
+    let anonymousID: UUID
+  }
+
+  /// A registration in flight. `serial` tells a newer registration or a `reset()` apart from this one.
+  private struct Registration {
+    let serial: Int
+    let anonymousID: UUID
+    let task: Task<String, any Error>
+  }
+
+  /// Enough for a reset or identity change to land while a registration is awaited, never an endless loop.
+  private static let maxRegistrationAttempts = 3
+
   private let baseURL: URL
   private let session: URLSession
   private let anonymousID: @Sendable () throws -> UUID
-  private var token: String?
-  private var registration: Task<String, any Error>?
+  private var credential: Credential?
+  private var registration: Registration?
+  private var registrationCount = 0
 
   private func sendWithStatus(_ request: APIRequest) async throws -> (data: Data, status: Int) {
     var token = request.requiresAuth ? try await validToken() : nil
@@ -94,34 +114,63 @@ public actor HTTPSession {
     return (data, response.statusCode)
   }
 
-  /// Returns the cached token unless it is `stale` (the one that just got a 401). Concurrent 401s for the
-  /// same stale token share one registration; a caller holding an older token gets the newer one directly.
+  /// Returns the cached token unless it is `stale` (the one that just got a 401) or was issued for another anonymous ID.
+  /// Concurrent 401s for the same stale token share one registration; a caller holding an older token gets the newer one directly.
   private func validToken(replacing stale: String? = nil) async throws -> String {
-    if let token, token != stale {
-      return token
+    for _ in 0 ..< Self.maxRegistrationAttempts {
+      let id = try currentAnonymousID()
+      if let credential, credential.anonymousID != id {
+        self.credential = nil
+      }
+      if let credential, credential.token != stale {
+        return credential.token
+      }
+      let token = try await pendingRegistration(for: id).task.value
+      // A `reset()` or an identity change while we waited discards that registration: ask again with the current ID.
+      if let credential, credential.token == token, credential.anonymousID == id {
+        return token
+      }
     }
-    if let registration {
-      return try await registration.value
-    }
-    // The task runs on this actor, so it publishes the token (and clears `registration`) itself. Every waiter,
-    // including a caller that was cancelled while waiting, then sees the token without depending on the first caller.
-    let task = Task { [self] in
-      defer { registration = nil }
-      let fresh = try await register()
-      token = fresh
-      return fresh
-    }
-    registration = task
-    return try await task.value
+    throw CancellationError()
   }
 
-  private func register() async throws -> String {
-    let id: UUID
+  /// The registration in flight for `id`, or a new one. A registration for another ID is ignored: its result is never published.
+  private func pendingRegistration(for id: UUID) -> Registration {
+    if let registration, registration.anonymousID == id {
+      return registration
+    }
+    registrationCount += 1
+    let serial = registrationCount
+    // The task runs on this actor, so it publishes the credential (and clears `registration`) itself. Every waiter,
+    // including a caller that was cancelled while waiting, then sees the token without depending on the first caller.
+    let task = Task { [self] in
+      defer { finishRegistration(serial: serial) }
+      let fresh = try await register(anonymousID: id)
+      if registration?.serial == serial {
+        credential = Credential(token: fresh, anonymousID: id)
+      }
+      return fresh
+    }
+    let pending = Registration(serial: serial, anonymousID: id, task: task)
+    registration = pending
+    return pending
+  }
+
+  private func finishRegistration(serial: Int) {
+    if registration?.serial == serial {
+      registration = nil
+    }
+  }
+
+  private func currentAnonymousID() throws -> UUID {
     do {
-      id = try anonymousID()
+      return try anonymousID()
     } catch {
       throw APIError(status: 0, code: APIError.identityCode, message: "Could not read the anonymous ID: \(error)")
     }
+  }
+
+  private func register(anonymousID id: UUID) async throws -> String {
     let body = try encode(RegisterRequestDTO(anonymousId: id.uuidString))
     let (data, response) = try await perform(APIRequest(method: "POST", path: "/api/auth/register", body: body, requiresAuth: false), token: nil)
     guard (200 ..< 300).contains(response.statusCode) else {

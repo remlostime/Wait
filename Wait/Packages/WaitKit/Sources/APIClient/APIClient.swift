@@ -18,6 +18,9 @@ public struct APIClient: Sendable {
   public var search: @Sendable (_ query: String) async throws -> SearchResponseDTO
   public var profile: @Sendable (_ symbol: String) async throws -> ProfileDTO
   public var deleteAccount: @Sendable () async throws -> Void
+  /// Forgets the cached token and any registration in flight. Call it after `IdentityClient.reset()`, so the next request
+  /// registers with the new anonymous ID instead of the deleted account's.
+  public var resetSession: @Sendable () async -> Void
   /// `POST /api/watchlist/sync` (overview §8.4–§8.5).
   public var syncWatchlist: @Sendable (_ request: SyncRequestDTO) async throws -> SyncResponseDTO
   /// `POST /api/devices` (overview §8.4). Idempotent: a repeated token is refreshed.
@@ -42,8 +45,11 @@ extension APIClient {
         try await session.get("/api/market/profile", query: [URLQueryItem(name: "symbol", value: symbol)])
       },
       deleteAccount: {
+        // The token dies with the account; `HTTPSession` binds it to the anonymous ID, so it is never reused once the ID is reset.
         try await session.delete("/api/auth/account")
-        await session.forgetToken()
+      },
+      resetSession: {
+        await session.reset()
       },
       syncWatchlist: { request in
         try await session.post("/api/watchlist/sync", body: request)
@@ -76,6 +82,7 @@ extension APIClient {
     search: { _ in throw APIError.misconfigured },
     profile: { _ in throw APIError.misconfigured },
     deleteAccount: { throw APIError.misconfigured },
+    resetSession: {},
     syncWatchlist: { _ in throw APIError.misconfigured },
     registerDevice: { _ in throw APIError.misconfigured },
     unregisterDevice: { _ in throw APIError.misconfigured }

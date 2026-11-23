@@ -116,16 +116,19 @@ public struct SettingsFeature {
           return .run { [apiClient, identity, syncClient] send in
             do {
               try await apiClient.deleteAccount()
-              // The identity goes first, so a sync that starts from here on can't authenticate as the deleted account. The sync
-              // bookkeeping goes second: it bumps the sync generation, so a run that is mid-request drops its result, and it forgets
-              // the old account's cursor and acknowledgements (which would otherwise stop the new account from receiving the items).
-              // The local watchlist stays and re-uploads under the new identity. The reset runs even when the identity reset fails.
+              // The identity goes first, so a request that starts from here on can't authenticate as the deleted account. The API
+              // session goes second: it drops the old token and any registration in flight (`HTTPSession` also binds every token to its
+              // anonymous ID, so a request that raced the reset can't keep the old account's session). The sync bookkeeping goes last:
+              // it bumps the sync generation, so a run that is mid-request drops its result, and it forgets the old account's cursor and
+              // acknowledgements (which would otherwise stop the new account from receiving the items). The local watchlist stays and
+              // re-uploads under the new identity. Both resets run even when the identity reset fails.
               var identityError: (any Error)?
               do {
                 try identity.reset()
               } catch {
                 identityError = error
               }
+              await apiClient.resetSession()
               await syncClient.reset()
               if let identityError {
                 throw identityError
@@ -142,14 +145,21 @@ public struct SettingsFeature {
         case .accountDeleted:
           state.account.isDeleting = false
           state.account.anonymousID = nil
+          // The local watchlist re-uploads under the new identity at once, instead of waiting for the next edit or launch.
+          state.isSyncing = true
+          state.syncError = nil
+          let sync = syncEffect()
           // The server dropped this device with the account. APNs hands the token back through `AppDelegate` and `PushFeature`
           // uploads it under the new identity.
           guard state.alertsEnabled else {
-            return .none
+            return sync
           }
-          return .run { [notifications] _ in
-            await notifications.registerForRemoteNotifications()
-          }
+          return .merge(
+            sync,
+            .run { [notifications] _ in
+              await notifications.registerForRemoteNotifications()
+            }
+          )
 
         case let .accountDeletionFailed(message):
           state.account.isDeleting = false
@@ -162,13 +172,7 @@ public struct SettingsFeature {
           }
           state.isSyncing = true
           state.syncError = nil
-          return .run { [syncClient] send in
-            do {
-              await send(.syncFinished(try await syncClient.sync()))
-            } catch {
-              await send(.syncFailed(error.localizedDescription))
-            }
-          }
+          return syncEffect()
 
         case .syncFinished:
           state.isSyncing = false
@@ -256,6 +260,16 @@ public struct SettingsFeature {
   @Dependency(\.syncClient) var syncClient
 
   // MARK: Private
+
+  private func syncEffect() -> Effect<Action> {
+    .run { [syncClient] send in
+      do {
+        await send(.syncFinished(try await syncClient.sync()))
+      } catch {
+        await send(.syncFailed(error.localizedDescription))
+      }
+    }
+  }
 
   private func loadAuthorizationStatus() -> Effect<Action> {
     .run { [notifications] send in
