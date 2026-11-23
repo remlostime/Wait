@@ -1,5 +1,90 @@
 # Daily Ladder Alerts Implementation Plan (Plan 06)
 
+## Execution log
+
+**Executed:** 2026-11-23 on `ck/sever` with subagents. The server chunks ran in parallel with plan 05's iOS chunks.
+
+**Server (Tasks 1–18): fully verified.**
+- Real TDD with vitest and PGlite. Final `npm run typecheck` is clean, and `npm test` passes **396/396** across 46 files.
+- Nothing contacts Apple. The APNs tests use a generated P-256 key, a mock transport, and a local `node:http2` server.
+
+**iOS (Tasks 19–23): code-only.** Nothing has been built or tested in Xcode. What was checked instead:
+- The pure parts ran in `/tmp` Swift Testing harnesses:
+  - `NotificationPayload` and `TapBroadcaster`: 13/13
+  - APIClient device endpoints and session: 52/52, after the final fixes
+- The TCA code (`PushFeature`, `AppFeature`, `SettingsFeature`) was checked against the TCA 1.26.2 sources.
+- `swiftlint` reports 0 errors (one existing warning in `PriceInputTests.swift`). `plutil -lint` passes.
+
+| Task | Commit |
+|---|---|
+| 1 Interface check | (no commit; verified, notes in Task 1) |
+| 2 `shouldAlert` | `3ce3cb4` |
+| 3 Trading date | `a54bdc0` |
+| 4 Migration 004 | `6179645` |
+| 5 DeviceTokenRepository | `118d8cf` |
+| 6 AlertRepository | `2c8ff9e` |
+| 7 Massive adapter | `3e9f931` |
+| 8 DailyCloseResolver | `bdb5945` |
+| 9 ApnsTokenProvider | `1970dac` |
+| 10 Payload | `788e94d` |
+| 11 Transports | `386770a` |
+| 12 ApnsSender | `2675876` |
+| 13 Config | `faf80b1` |
+| 14 Devices routes | `ee47351` |
+| 15 AlertJobService | `7d3395c` |
+| 16 Cron route and wiring | `61f165f` |
+| 17 Vercel cron | `9f9734d` |
+| 18 `send-test-push` | `c7a1d5c` |
+| 19 NotificationClient | `63f0f17` |
+| 20 Device endpoints in APIClient | `5374a9c` |
+| 21 PushFeature | `1e5dc49` |
+| 22 Settings "Daily alerts" | `6008f5a` |
+| 23 Entitlement and verification | `f4bacaf` |
+| 24 Deploy and end-to-end check | `374684d` (SKIPPED, manual) |
+| 25 Docs | `641ae5a` |
+
+**Review fixes.** The code differs from this plan's text in these places, and the docs describe the code:
+- **Request logging:** `ee47351` adds a pino `req` serializer that redacts device tokens in logged URLs (`DELETE /api/devices/:token`).
+- **`1a3f212` (APNs sending):**
+  - APNs timeout is 3 s.
+  - Environment repair updates only that user's row.
+  - Pruning requires a matching environment and honours the 410 `timestamp`.
+  - `apns-expiration` is set to the next market open.
+  - A stream that closes without a response rejects at once.
+- **`f498067` (job resilience):**
+  - A second catch-up cron runs at `30 23 * * 1-5`.
+  - Delivery uses `mapLimit(5)` with a 45 s deadline.
+  - Each event is claimed atomically with `claimForSend`.
+  - The transport closes after each run.
+  - The function needs `maxDuration` ≥ 60 s.
+- **`f311696` (job correctness):**
+  - A day is a holiday only when SPY's date is strictly earlier than the target date. A missing SPY quote is retryable.
+  - The Finnhub fallback rotates by trading date.
+  - The seeding update also checks the anchors.
+  - Events for deleted items are skipped.
+- **`1d96543` (iOS push):**
+  - `NotificationClient.noop` is used in tests. `@DependencyClient` reports defaulted endpoints too.
+  - Delete Account re-registers for push.
+  - The token-keyed `deviceUnregistered` fixes an off/on toggle race, and `registered` ignores the token while alerts are off.
+  - Each tap subscriber gets its own stream.
+  - Authorization status reloads on scene active.
+  - `unregisterForRemoteNotifications` is no longer called.
+  - The Settings link goes to the notification settings page.
+- **`4ad508a`, `d5682e3`, `bc91931` (final integration review, plans 04–06):**
+  - `HTTPSession` binds each token to its anonymous ID. `APIClient.resetSession` runs after `identity.reset()`. Together these stop a deleted account from coming back.
+  - The app syncs right after Delete Account.
+  - Non-US symbols get `.notFound` for charts and profiles.
+  - The search query is trimmed by UTF-16 length.
+  - Opening a push or deep link for a symbol not yet on the device syncs and retries once.
+  - README dependency rows and the list of auth routes are corrected.
+
+**User follow-ups**
+1. Run the real Xcode build and tests (`scripts/test-waitkit.sh`, `scripts/build-app.sh`, `scripts/build-app.sh WaitWatch`). The likeliest surprises are TCA test exhaustivity, the `.noop` initializer order, and `Sendable` on the notification delegate.
+2. Set up the Massive account, the APNs `.p8` key, and `CRON_SECRET`, and enable the Push capability on `com.chenkai.wait`. Set the plan 06 env vars for Production and Preview.
+3. Apply migration 004 and deploy. Check that Vercel accepts both cron entries on the same path, and that the function's `maxDuration` is at least 60 s (Fluid compute).
+4. Run Task 24's end-to-end check with `npm run send-test-push` and a real device.
+5. `WaitRelease.entitlements` keeps `aps-environment = development`, as planned, because distribution signing swaps in production. The server retries the other APNs host on `BadDeviceToken`.
+
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** After every US trading day, the server checks each synced watchlist item's price ladder against the closing price. It sends an APNs push when a stock moves down into BUY_ZONE/DEEP_BUY or up into TRIM/SELL. Tapping the push opens that stock in the app.
