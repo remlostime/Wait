@@ -27,9 +27,19 @@ public extension MarketDataClient {
   static func twelveData(
     apiKey: String,
     baseURL: URL = URL(string: "https://api.twelvedata.com")!,
-    get: @escaping HTTPGet = URLSession.shared.httpGet
+    get: @escaping HTTPGet = URLSession.shared.httpGet,
+    now: @escaping @Sendable () -> Date = { Date() }
   ) -> MarketDataClient {
-    let api = TwelveDataAPI(apiKey: apiKey, baseURL: baseURL, get: get)
+    // An unset key (empty, an unexpanded `$(...)` or the placeholder) would only earn 401s: fail fast with no request.
+    guard TwelveDataAPIKey.isUsable(apiKey) else {
+      return MarketDataClient(
+        quotes: { _, _ in throw MarketDataError.unavailable },
+        series: { _, _, _ in throw MarketDataError.unavailable },
+        search: { _ in throw MarketDataError.unavailable },
+        profile: { _ in throw MarketDataError.unavailable }
+      )
+    }
+    let api = TwelveDataAPI(apiKey: apiKey, baseURL: baseURL, get: get, now: now)
     return MarketDataClient(
       quotes: { symbols, _ in try await api.quotes(symbols) },
       series: { symbol, range, _ in try await api.series(symbol, range: range) },
@@ -49,6 +59,7 @@ struct TwelveDataAPI: Sendable {
   let apiKey: String
   let baseURL: URL
   let get: HTTPGet
+  let now: @Sendable () -> Date
 
   static func parameters(for range: ChartRange) -> (interval: String, outputSize: Int) {
     switch range {
@@ -60,22 +71,35 @@ struct TwelveDataAPI: Sendable {
     }
   }
 
-  /// One request per 8 symbols (1 credit per symbol). A 429 on the first chunk throws `.rateLimited`.
-  /// A 429 after some chunks succeeded throws `PartialQuotesError`, so the caching decorator keeps those quotes and still cools down.
+  /// One request per 8 symbols (1 credit per symbol).
+  /// - A failure on the first chunk throws the mapped `MarketDataError`.
+  /// - A failure on a later chunk (a 429 or anything else) throws `PartialQuotesError` with the quotes so far and the underlying error,
+  ///   so the caching decorator keeps those quotes and still cools down on a 429.
+  /// - A single-symbol chunk whose body is a top-level `.notFound` error means "no quote for that symbol": it is skipped.
+  ///   If nothing at all came back, the lone `.notFound` is thrown so a search for one unknown symbol still reports it.
   func quotes(_ symbols: [String]) async throws -> [Quote] {
     var result: [Quote] = []
+    var skippedUnknown = false
     for start in stride(from: 0, to: symbols.count, by: Self.batchSize) {
       let chunk = Array(symbols[start ..< min(start + Self.batchSize, symbols.count)])
       do {
         let data = try await fetch("quote", ["symbol": chunk.joined(separator: ","), "timezone": "UTC"])
-        result += try TwelveDataDecoding.quotes(from: data, requested: chunk)
-      } catch let error as MarketDataError {
-        if case let .rateLimited(retryAfter) = error, !result.isEmpty {
-          Log.network.info("Twelve Data rate limited after \(result.count) quotes")
-          throw PartialQuotesError(quotes: result, retryAfter: retryAfter)
+        result += try TwelveDataDecoding.quotes(from: data, requested: chunk, now: now())
+      } catch {
+        let mapped = try MarketDataError(error) // cancellation stays a CancellationError
+        if chunk.count == 1, mapped == .notFound {
+          skippedUnknown = true
+          continue
         }
-        throw error
+        guard !result.isEmpty else {
+          throw mapped
+        }
+        Log.network.info("Twelve Data chunk failed after \(result.count) quotes: \(mapped.userMessage)")
+        throw PartialQuotesError(quotes: result, underlying: mapped)
       }
+    }
+    if result.isEmpty, skippedUnknown {
+      throw MarketDataError.notFound
     }
     return result
   }
@@ -92,7 +116,7 @@ struct TwelveDataAPI: Sendable {
     if range == .oneDay {
       points = TwelveDataDecoding.lastSession(points)
     }
-    return PriceSeries(symbol: symbol.uppercased(), range: range, points: points, asOf: points.last?.date ?? Date())
+    return PriceSeries(symbol: symbol.uppercased(), range: range, points: points, asOf: points.last?.date ?? now())
   }
 
   func search(_ query: String) async throws -> [SymbolSearchResult] {
@@ -106,6 +130,8 @@ struct TwelveDataAPI: Sendable {
     var components = URLComponents(url: baseURL.appending(path: path), resolvingAgainstBaseURL: false)!
     components.queryItems = parameters.sorted { $0.key < $1.key }.map { URLQueryItem(name: $0.key, value: $0.value) }
       + [URLQueryItem(name: "apikey", value: apiKey)]
+    // URLComponents leaves `+` as is, and a server may read it as a space. Encoded values never contain a literal `+` otherwise.
+    components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
     return components.url!
   }
 

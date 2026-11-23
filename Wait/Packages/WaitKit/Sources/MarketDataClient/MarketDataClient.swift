@@ -7,6 +7,7 @@ import Dependencies
 import DependenciesMacros
 import Domain
 import Foundation
+import Logging
 
 // MARK: - MarketDataClient
 
@@ -51,9 +52,13 @@ public extension DependencyValues {
 
 extension MarketDataClient: DependencyKey {
   /// Plan 02: Twelve Data stopgap. The key comes from Info.plist `TwelveDataAPIKey`, which is `$(TWELVE_DATA_API_KEY)` from `Secrets.xcconfig`.
-  public static let liveValue = MarketDataClient.cached(
-    .twelveData(apiKey: Bundle.main.object(forInfoDictionaryKey: "TwelveDataAPIKey") as? String ?? ""),
-    disk: .live,
-    now: { Date() }
-  )
+  /// An unset key (empty, an unexpanded `$(...)` or the placeholder) gives a client whose every call throws `.unavailable` with no request.
+  /// A `static let` runs once, so the error is logged once.
+  public static let liveValue: MarketDataClient = {
+    let key = Bundle.main.object(forInfoDictionaryKey: "TwelveDataAPIKey") as? String
+    if !TwelveDataAPIKey.isUsable(key) {
+      Log.network.error("TwelveDataAPIKey is not configured; set TWELVE_DATA_API_KEY in Secrets.xcconfig. Market data is unavailable.")
+    }
+    return MarketDataClient.cached(.twelveData(apiKey: key ?? ""), disk: .live, now: { Date() })
+  }()
 }

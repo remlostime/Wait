@@ -20,6 +20,7 @@ import Testing
       Issue.record("DecodingError should map to .decoding")
     }
     #expect(try MarketDataError(PartialQuotesError(quotes: [], retryAfter: .seconds(30))) == .rateLimited(retryAfter: .seconds(30)))
+    #expect(try MarketDataError(PartialQuotesError(quotes: [], underlying: .network("HTTP 500"))) == .network("HTTP 500"))
   }
 
   @Test func cancellationIsRethrownNotWrapped() {

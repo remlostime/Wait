@@ -50,9 +50,11 @@ func query(_ url: URL) -> [String: String] {
 // MARK: - TwelveDataMarketDataTests
 
 @Suite struct TwelveDataMarketDataTests {
-  func client(_ http: RecordingHTTP) -> MarketDataClient {
-    .twelveData(apiKey: "test-key", get: { url in await http.get(url) })
+  func client(_ http: RecordingHTTP, now: @escaping @Sendable () -> Date = { Date() }) -> MarketDataClient {
+    .twelveData(apiKey: "test-key", get: { url in await http.get(url) }, now: now)
   }
+
+  static let notFoundBody = Data(#"{"code": 404, "message": "symbol not found", "status": "error"}"#.utf8)
 
   @Test func batchQuotesSkipErroredAndGarbageSymbols() async throws {
     let http = RecordingHTTP { _ in (fixture("twelvedata-quote-batch"), 200) }
@@ -94,6 +96,101 @@ func query(_ url: URL) -> [String: String] {
     }
     #expect(error?.quotes.map(\.symbol) == Array(symbols.prefix(8)))
     #expect(error?.retryAfter == .seconds(60))
+  }
+
+  @Test func midListNetworkErrorKeepsTheEarlierQuotes() async throws {
+    let http = RecordingHTTP { url in
+      let requested = (query(url)["symbol"] ?? "").split(separator: ",").map(String.init)
+      return requested.first == "S1" ? (batchJSON(requested), 200) : (Data(), 500)
+    }
+    let symbols = (1 ... 16).map { "S\($0)" }
+    let error = await #expect(throws: PartialQuotesError.self) {
+      try await client(http).quotes(symbols, .useCache)
+    }
+    #expect(error?.quotes.map(\.symbol) == Array(symbols.prefix(8)))
+    #expect(error?.underlying == .network("HTTP 500"))
+    #expect(error?.retryAfter == nil)
+  }
+
+  @Test func midListUndecodableBodyKeepsTheEarlierQuotes() async throws {
+    let http = RecordingHTTP { url in
+      let requested = (query(url)["symbol"] ?? "").split(separator: ",").map(String.init)
+      return requested.first == "S1" ? (batchJSON(requested), 200) : (Data("[]".utf8), 200)
+    }
+    let symbols = (1 ... 10).map { "S\($0)" }
+    let error = await #expect(throws: PartialQuotesError.self) {
+      try await client(http).quotes(symbols, .useCache)
+    }
+    #expect(error?.quotes.count == 8)
+    if case .decoding = error?.underlying {} else {
+      Issue.record("Expected .decoding, got \(String(describing: error?.underlying))")
+    }
+  }
+
+  @Test func anUnknownSingleSymbolChunkIsSkipped() async throws {
+    let http = RecordingHTTP { url in
+      let requested = (query(url)["symbol"] ?? "").split(separator: ",").map(String.init)
+      return requested.count == 8 ? (batchJSON(requested), 200) : (Self.notFoundBody, 200)
+    }
+    let symbols = (1 ... 9).map { "S\($0)" }
+    let quotes = try await client(http).quotes(symbols, .useCache)
+    #expect(quotes.map(\.symbol) == Array(symbols.prefix(8)))
+    #expect(await http.urls.count == 2)
+  }
+
+  @Test func aSkippedSymbolAfterTwoFullChunksKeepsBoth() async throws {
+    let http = RecordingHTTP { url in
+      let requested = (query(url)["symbol"] ?? "").split(separator: ",").map(String.init)
+      return requested.count == 1 ? (Self.notFoundBody, 200) : (batchJSON(requested), 200)
+    }
+    let symbols = (1 ... 17).map { "S\($0)" }
+    let quotes = try await client(http).quotes(symbols, .useCache)
+    #expect(quotes.map(\.symbol) == Array(symbols.prefix(16)))
+    #expect(await http.urls.count == 3)
+  }
+
+  @Test func aLoneUnknownSymbolStillThrowsNotFound() async {
+    let http = RecordingHTTP { _ in (Self.notFoundBody, 200) }
+    await #expect(throws: MarketDataError.notFound) {
+      try await client(http).quotes(["ZZZZ"], .useCache)
+    }
+  }
+
+  @Test func plusInQueryValuesIsPercentEncoded() async throws {
+    let http = RecordingHTTP { _ in (fixture("twelvedata-search"), 200) }
+    _ = try await client(http).search("A+B")
+    let url = try #require(await http.urls.first)
+    #expect(url.absoluteString.contains("symbol=A%2BB"))
+    #expect(!url.absoluteString.contains("A+B"))
+    #expect(query(url)["symbol"] == "A+B")
+  }
+
+  @Test func aQuoteWithoutATimestampUsesTheInjectedClock() async throws {
+    let injected = Date(timeIntervalSince1970: 1_700_000_000)
+    let http = RecordingHTTP { _ in (Data(#"{"close": "12.50"}"#.utf8), 200) }
+    let quotes = try await client(http, now: { injected }).quotes(["AAPL"], .useCache)
+    #expect(quotes.map(\.asOf) == [injected])
+  }
+
+  @Test func anUnsetKeyThrowsUnavailableWithoutAnyRequest() async {
+    for key in ["", "  ", "$(TWELVE_DATA_API_KEY)", "replace-with-your-twelve-data-key"] {
+      let http = RecordingHTTP { _ in (Data(), 200) }
+      let unset = MarketDataClient.twelveData(apiKey: key, get: { url in await http.get(url) })
+      await #expect(throws: MarketDataError.unavailable) { try await unset.quotes(["AAPL"], .useCache) }
+      await #expect(throws: MarketDataError.unavailable) { try await unset.series("AAPL", .oneYear, .useCache) }
+      await #expect(throws: MarketDataError.unavailable) { try await unset.search("app") }
+      #expect(await http.urls.isEmpty)
+    }
+  }
+
+  @Test func apiKeyUsability() {
+    #expect(TwelveDataAPIKey.isUsable("0123456789abcdef"))
+    #expect(!TwelveDataAPIKey.isUsable(nil))
+    #expect(!TwelveDataAPIKey.isUsable(""))
+    #expect(!TwelveDataAPIKey.isUsable(" \n"))
+    #expect(!TwelveDataAPIKey.isUsable("$(TWELVE_DATA_API_KEY)"))
+    #expect(!TwelveDataAPIKey.isUsable("replace-with-your-twelve-data-key"))
+    #expect(!TwelveDataAPIKey.isUsable(" replace-with-your-twelve-data-key "))
   }
 
   @Test func rateLimitedBodyWithHTTP200Throws() async {

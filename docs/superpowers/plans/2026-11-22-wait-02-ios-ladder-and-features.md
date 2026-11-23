@@ -3685,6 +3685,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 ### Task 13: `MarketDataClient` interface, errors and cache policy
 
+> Review fix (2026-11-23): `PartialQuotesError` now carries the `underlying: MarketDataError` (any chunk failure, not only a 429) and keeps `init(quotes:retryAfter:)`; `FakeUpstream` gains `batchError` and `cancelledCalls`.
+
 **Files:**
 - Modify: `Wait/Packages/WaitKit/Package.swift` (add the `MarketDataClient` target and product, and `MarketDataClientTests`)
 - Create: `Wait/Packages/WaitKit/Sources/MarketDataClient/MarketDataClient.swift`, `MarketDataError.swift`, `CachePolicy.swift`
@@ -3720,7 +3722,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 `Wait/Packages/WaitKit/Tests/MarketDataClientTests/TestSupport.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -3766,16 +3768,24 @@ final class MutableNow: @unchecked Sendable {
 final class FakeUpstream: @unchecked Sendable {
   // MARK: Lifecycle
 
-  /// `batchLimit` imitates a free tier: a request for more symbols returns the first `batchLimit` quotes in a `PartialQuotesError`.
-  init(delay: Duration = .zero, batchLimit: Int? = nil) {
+  /// `batchLimit` imitates a free tier: a request for more symbols returns the first `batchLimit` quotes in a `PartialQuotesError`,
+  /// which carries `batchError` (a 429 by default).
+  init(delay: Duration = .zero, batchLimit: Int? = nil, batchError: MarketDataError = .rateLimited(retryAfter: .seconds(60))) {
     self.delay = delay
     self.batchLimit = batchLimit
+    self.batchError = batchError
   }
 
   // MARK: Internal
 
   let delay: Duration
   let batchLimit: Int?
+  let batchError: MarketDataError
+
+  /// How many upstream calls were cancelled while they slept.
+  var cancelledCalls: Int {
+    lock.withLock { recordedCancellations }
+  }
 
   var quoteCalls: [[String]] {
     lock.withLock { recordedQuoteCalls }
@@ -3792,14 +3802,12 @@ final class FakeUpstream: @unchecked Sendable {
           self.recordedQuoteCalls.append(symbols)
           return self.scriptedError
         }
-        if self.delay > .zero {
-          try await Task.sleep(for: self.delay)
-        }
+        try await self.pause()
         if let error {
           throw error
         }
         if let limit = self.batchLimit, symbols.count > limit {
-          throw PartialQuotesError(quotes: symbols.prefix(limit).map { Quote(symbol: $0, price: 100, asOf: fridayOpen) }, retryAfter: .seconds(60))
+          throw PartialQuotesError(quotes: symbols.prefix(limit).map { Quote(symbol: $0, price: 100, asOf: fridayOpen) }, underlying: self.batchError)
         }
         return symbols.map { Quote(symbol: $0, price: 100, asOf: fridayOpen) }
       },
@@ -3808,9 +3816,7 @@ final class FakeUpstream: @unchecked Sendable {
           self.recordedSeriesCalls += 1
           return self.scriptedError
         }
-        if self.delay > .zero {
-          try await Task.sleep(for: self.delay)
-        }
+        try await self.pause()
         if let error {
           throw error
         }
@@ -3828,16 +3834,29 @@ final class FakeUpstream: @unchecked Sendable {
   // MARK: Private
 
   private let lock = NSLock()
+  private var recordedCancellations = 0
   private var recordedQuoteCalls: [[String]] = []
   private var recordedSeriesCalls = 0
   private var scriptedError: MarketDataError?
+
+  private func pause() async throws {
+    guard delay > .zero else {
+      return
+    }
+    do {
+      try await Task.sleep(for: delay)
+    } catch {
+      lock.withLock { recordedCancellations += 1 }
+      throw error
+    }
+  }
 }
 ```
 
 `Wait/Packages/WaitKit/Tests/MarketDataClientTests/MarketDataErrorTests.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -3858,6 +3877,7 @@ import Testing
       Issue.record("DecodingError should map to .decoding")
     }
     #expect(try MarketDataError(PartialQuotesError(quotes: [], retryAfter: .seconds(30))) == .rateLimited(retryAfter: .seconds(30)))
+    #expect(try MarketDataError(PartialQuotesError(quotes: [], underlying: .network("HTTP 500"))) == .network("HTTP 500"))
   }
 
   @Test func cancellationIsRethrownNotWrapped() {
@@ -3912,7 +3932,7 @@ public enum CachePolicy: Equatable, Sendable {
 - [x] **Step 5: Implement `MarketDataError.swift`**
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -3921,15 +3941,25 @@ import Foundation
 
 // MARK: - PartialQuotesError
 
-/// An upstream `quotes` call got some quotes before it was rate limited. `CachingMarketDataClient` keeps the quotes and still starts the cooldown.
+/// An upstream `quotes` call got some quotes before a later chunk failed. `CachingMarketDataClient` keeps the quotes,
+/// starts the cooldown when `underlying` is a rate limit, and fills the rest from stale entries.
 public struct PartialQuotesError: Error, Sendable {
-  public init(quotes: [Quote], retryAfter: Duration?) {
+  public init(quotes: [Quote], underlying: MarketDataError) {
     self.quotes = quotes
-    self.retryAfter = retryAfter
+    self.underlying = underlying
+  }
+
+  public init(quotes: [Quote], retryAfter: Duration?) {
+    self.init(quotes: quotes, underlying: .rateLimited(retryAfter: retryAfter))
   }
 
   public let quotes: [Quote]
-  public let retryAfter: Duration?
+  public let underlying: MarketDataError
+
+  /// Non-nil only when `underlying` is a rate limit that carries a retry delay.
+  public var retryAfter: Duration? {
+    if case let .rateLimited(retryAfter) = underlying { retryAfter } else { nil }
+  }
 }
 
 // MARK: - MarketDataError
@@ -3955,7 +3985,7 @@ public enum MarketDataError: Error, Equatable, Sendable {
       case let error as MarketDataError:
         self = error
       case let error as PartialQuotesError:
-        self = .rateLimited(retryAfter: error.retryAfter)
+        self = error.underlying
       case is DecodingError:
         self = .decoding(String(describing: error))
       case let error as URLError:
@@ -4326,6 +4356,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 ### Task 16: Caching decorator (`CachingMarketDataClient`)
 
+> Review fix (2026-11-23): coalescing tracks a waiter per in-flight key (cancelled waiter throws `CancellationError` at once, the last one cancels the shared fetch), and a `PartialQuotesError` of any kind keeps its quotes, with the cooldown only for a 429.
+
 **Files:**
 - Create: `Wait/Packages/WaitKit/Sources/MarketDataClient/CachingMarketDataClient.swift`
 - Create: `Wait/Packages/WaitKit/Tests/MarketDataClientTests/CachingMarketDataClientTests.swift`
@@ -4335,7 +4367,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 `Wait/Packages/WaitKit/Tests/MarketDataClientTests/CachingMarketDataClientTests.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -4449,6 +4481,47 @@ import Testing
     #expect(second.filter(\.isStale).map(\.symbol) == ["S6", "S7"])
   }
 
+  @Test func nonRateLimitPartialResultKeepsTheQuotesAndSkipsTheCooldown() async throws {
+    let upstream = FakeUpstream(batchLimit: 8, batchError: .network("HTTP 500"))
+    let client = make(upstream, now: MutableNow(fridayOpen))
+    let symbols = (0 ..< 10).map { "S\($0)" }
+    let first = try await client.quotes(symbols, .useCache)
+    #expect(first.map(\.symbol) == Array(symbols.prefix(8)))
+    _ = try await client.quotes(symbols, .reload) // no cooldown: the next call reaches the upstream again
+    #expect(upstream.quoteCalls.count == 2)
+  }
+
+  @Test func cancellingOneOfTwoCoalescedWaitersLeavesTheOtherWithItsValue() async throws {
+    let upstream = FakeUpstream(delay: .milliseconds(400))
+    let client = make(upstream, now: MutableNow(fridayOpen))
+    let first = Task { try await client.series("AAPL", .oneYear, .useCache) }
+    try await Task.sleep(for: .milliseconds(30))
+    let second = Task { try await client.series("AAPL", .oneYear, .useCache) }
+    try await Task.sleep(for: .milliseconds(30))
+    let clock = ContinuousClock()
+    let start = clock.now
+    first.cancel()
+    await #expect(throws: CancellationError.self) { try await first.value }
+    #expect(start.duration(to: clock.now) < .milliseconds(200)) // promptly, not after the 400 ms fetch
+    let series = try await second.value
+    #expect(series.symbol == "AAPL")
+    #expect(upstream.seriesCalls == 1)
+    #expect(upstream.cancelledCalls == 0)
+  }
+
+  @Test func cancellingTheOnlyWaiterCancelsTheUpstreamFetch() async throws {
+    let upstream = FakeUpstream(delay: .seconds(5))
+    let client = make(upstream, now: MutableNow(fridayOpen))
+    let task = Task { try await client.series("AAPL", .oneYear, .useCache) }
+    try await Task.sleep(for: .milliseconds(50))
+    task.cancel()
+    await #expect(throws: CancellationError.self) { try await task.value }
+    for _ in 0 ..< 100 where upstream.cancelledCalls == 0 {
+      try await Task.sleep(for: .milliseconds(10))
+    }
+    #expect(upstream.cancelledCalls == 1)
+  }
+
   @Test func diskEntrySurvivesANewInstance() async throws {
     let directory = FileManager.default.temporaryDirectory.appending(path: "md-\(UUID().uuidString)", directoryHint: .isDirectory)
     let now = MutableNow(fridayOpen)
@@ -4473,7 +4546,7 @@ Expected FAIL: `error: type 'MarketDataClient' has no member 'cached'`.
 `Wait/Packages/WaitKit/Sources/MarketDataClient/CachingMarketDataClient.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -4575,7 +4648,7 @@ actor CachingMarketDataStore {
         try storeFresh(JSONDecoder().decode([Quote].self, from: data), into: &result, fetchedAt: now)
       } catch let partial as PartialQuotesError {
         storeFresh(partial.quotes, into: &result, fetchedAt: now)
-        noteFailure(.rateLimited(retryAfter: partial.retryAfter), at: now)
+        noteFailure(partial.underlying, at: now)
         fillStale(batch, into: &result, now: now)
       } catch {
         let mapped = try MarketDataError(error)
@@ -4632,8 +4705,15 @@ actor CachingMarketDataStore {
   private let ttl: @Sendable (MarketDataKind, Date) -> Date
   private let now: @Sendable () -> Date
   private var memory: [String: CacheEntry] = [:]
-  private var inFlight: [String: Task<Data, any Error>] = [:]
+  private var inFlight: [String: Flight] = [:]
   private var cooldownUntil: Date?
+
+  /// One shared upstream fetch and the callers waiting on it. The fetch is cancelled once the last waiter is gone.
+  private struct Flight {
+    let id = UUID()
+    var task: Task<Void, Never>?
+    var waiters: [UUID: CheckedContinuation<Data, any Error>] = [:]
+  }
 
   private static func quoteKey(_ symbol: String) -> String {
     "quote:\(symbol)"
@@ -4695,14 +4775,71 @@ actor CachingMarketDataStore {
     }
   }
 
+  /// Joins the fetch already running for `key`, or starts it. Each waiter resumes on its own: a cancelled waiter throws
+  /// `CancellationError` at once without disturbing the others, and the last one leaving cancels the shared fetch.
   private func coalesced(key: String, _ work: @escaping @Sendable () async throws -> Data) async throws -> Data {
-    if let running = inFlight[key] {
-      return try await running.value
+    let waiterID = UUID()
+    return try await withTaskCancellationHandler {
+      try await withCheckedThrowingContinuation { continuation in
+        // Checked and registered in one synchronous step, so `onCancel`'s hop into the actor always sees the waiter.
+        if Task.isCancelled {
+          continuation.resume(throwing: CancellationError())
+        } else {
+          join(key: key, waiterID: waiterID, continuation: continuation, work: work)
+        }
+      }
+    } onCancel: {
+      Task { await self.cancelWaiter(key: key, waiterID: waiterID) }
     }
-    let task = Task<Data, any Error> { try await work() }
-    inFlight[key] = task
-    defer { inFlight[key] = nil }
-    return try await task.value
+  }
+
+  private func join(
+    key: String,
+    waiterID: UUID,
+    continuation: CheckedContinuation<Data, any Error>,
+    work: @escaping @Sendable () async throws -> Data
+  ) {
+    if var flight = inFlight[key] {
+      flight.waiters[waiterID] = continuation
+      inFlight[key] = flight
+      return
+    }
+    var flight = Flight()
+    flight.waiters[waiterID] = continuation
+    let flightID = flight.id
+    flight.task = Task {
+      let result: Result<Data, any Error>
+      do {
+        result = try await .success(work())
+      } catch {
+        result = .failure(error)
+      }
+      finish(key: key, flightID: flightID, result: result)
+    }
+    inFlight[key] = flight
+  }
+
+  private func finish(key: String, flightID: UUID, result: Result<Data, any Error>) {
+    guard let flight = inFlight[key], flight.id == flightID else {
+      return // every waiter already left and the fetch was cancelled
+    }
+    inFlight[key] = nil
+    for continuation in flight.waiters.values {
+      continuation.resume(with: result)
+    }
+  }
+
+  private func cancelWaiter(key: String, waiterID: UUID) {
+    guard var flight = inFlight[key], let continuation = flight.waiters.removeValue(forKey: waiterID) else {
+      return // the fetch already finished
+    }
+    continuation.resume(throwing: CancellationError())
+    if flight.waiters.isEmpty {
+      flight.task?.cancel()
+      inFlight[key] = nil
+    } else {
+      inFlight[key] = flight
+    }
   }
 
   private func lookup<T: Decodable>(_: T.Type, key: String) -> (value: T, entry: CacheEntry)? {
@@ -4779,8 +4916,10 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 ### Task 17: Twelve Data stopgap adapter and `liveValue`
 
+> Review fix (2026-11-23): any later-chunk error throws `PartialQuotesError`, an unknown single-symbol chunk is skipped, `+` is percent-encoded, a quote with no timestamp uses the injected clock, and an unset API key (`TwelveDataAPIKey.isUsable`) gives a client that throws `.unavailable` with no request.
+
 **Files:**
-- Create: `Wait/Packages/WaitKit/Sources/MarketDataClient/TwelveData/TwelveDataMarketData.swift`, `Wait/Packages/WaitKit/Sources/MarketDataClient/TwelveData/TwelveDataDTOs.swift`
+- Create: `Wait/Packages/WaitKit/Sources/MarketDataClient/TwelveData/TwelveDataMarketData.swift`, `Wait/Packages/WaitKit/Sources/MarketDataClient/TwelveData/TwelveDataDTOs.swift`, `Wait/Packages/WaitKit/Sources/MarketDataClient/TwelveData/TwelveDataAPIKey.swift`
 - Modify: `Wait/Packages/WaitKit/Sources/MarketDataClient/MarketDataClient.swift` (add `liveValue`)
 - Create: `Wait/Packages/WaitKit/Tests/MarketDataClientTests/Fixtures/twelvedata-quote-batch.json`, `twelvedata-quote-single.json`, `twelvedata-rate-limited.json`, `twelvedata-time-series-1day.json`, `twelvedata-time-series-5min.json`, `twelvedata-search.json`
 - Create: `Wait/Packages/WaitKit/Tests/MarketDataClientTests/TwelveDataMarketDataTests.swift`
@@ -4874,7 +5013,7 @@ This adapter exists only until plan 04 replaces it with `.backend`. It runs unde
 `Wait/Packages/WaitKit/Tests/MarketDataClientTests/TwelveDataMarketDataTests.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -4908,6 +5047,7 @@ actor RecordingHTTP {
 }
 
 func fixture(_ name: String) -> Data {
+  // swiftlint:disable:next force_try
   try! Data(contentsOf: Bundle.module.url(forResource: name, withExtension: "json", subdirectory: "Fixtures")!)
 }
 
@@ -4924,9 +5064,11 @@ func query(_ url: URL) -> [String: String] {
 // MARK: - TwelveDataMarketDataTests
 
 @Suite struct TwelveDataMarketDataTests {
-  func client(_ http: RecordingHTTP) -> MarketDataClient {
-    .twelveData(apiKey: "test-key", get: { url in await http.get(url) })
+  func client(_ http: RecordingHTTP, now: @escaping @Sendable () -> Date = { Date() }) -> MarketDataClient {
+    .twelveData(apiKey: "test-key", get: { url in await http.get(url) }, now: now)
   }
+
+  static let notFoundBody = Data(#"{"code": 404, "message": "symbol not found", "status": "error"}"#.utf8)
 
   @Test func batchQuotesSkipErroredAndGarbageSymbols() async throws {
     let http = RecordingHTTP { _ in (fixture("twelvedata-quote-batch"), 200) }
@@ -4968,6 +5110,101 @@ func query(_ url: URL) -> [String: String] {
     }
     #expect(error?.quotes.map(\.symbol) == Array(symbols.prefix(8)))
     #expect(error?.retryAfter == .seconds(60))
+  }
+
+  @Test func midListNetworkErrorKeepsTheEarlierQuotes() async throws {
+    let http = RecordingHTTP { url in
+      let requested = (query(url)["symbol"] ?? "").split(separator: ",").map(String.init)
+      return requested.first == "S1" ? (batchJSON(requested), 200) : (Data(), 500)
+    }
+    let symbols = (1 ... 16).map { "S\($0)" }
+    let error = await #expect(throws: PartialQuotesError.self) {
+      try await client(http).quotes(symbols, .useCache)
+    }
+    #expect(error?.quotes.map(\.symbol) == Array(symbols.prefix(8)))
+    #expect(error?.underlying == .network("HTTP 500"))
+    #expect(error?.retryAfter == nil)
+  }
+
+  @Test func midListUndecodableBodyKeepsTheEarlierQuotes() async throws {
+    let http = RecordingHTTP { url in
+      let requested = (query(url)["symbol"] ?? "").split(separator: ",").map(String.init)
+      return requested.first == "S1" ? (batchJSON(requested), 200) : (Data("[]".utf8), 200)
+    }
+    let symbols = (1 ... 10).map { "S\($0)" }
+    let error = await #expect(throws: PartialQuotesError.self) {
+      try await client(http).quotes(symbols, .useCache)
+    }
+    #expect(error?.quotes.count == 8)
+    if case .decoding = error?.underlying {} else {
+      Issue.record("Expected .decoding, got \(String(describing: error?.underlying))")
+    }
+  }
+
+  @Test func anUnknownSingleSymbolChunkIsSkipped() async throws {
+    let http = RecordingHTTP { url in
+      let requested = (query(url)["symbol"] ?? "").split(separator: ",").map(String.init)
+      return requested.count == 8 ? (batchJSON(requested), 200) : (Self.notFoundBody, 200)
+    }
+    let symbols = (1 ... 9).map { "S\($0)" }
+    let quotes = try await client(http).quotes(symbols, .useCache)
+    #expect(quotes.map(\.symbol) == Array(symbols.prefix(8)))
+    #expect(await http.urls.count == 2)
+  }
+
+  @Test func aSkippedSymbolAfterTwoFullChunksKeepsBoth() async throws {
+    let http = RecordingHTTP { url in
+      let requested = (query(url)["symbol"] ?? "").split(separator: ",").map(String.init)
+      return requested.count == 1 ? (Self.notFoundBody, 200) : (batchJSON(requested), 200)
+    }
+    let symbols = (1 ... 17).map { "S\($0)" }
+    let quotes = try await client(http).quotes(symbols, .useCache)
+    #expect(quotes.map(\.symbol) == Array(symbols.prefix(16)))
+    #expect(await http.urls.count == 3)
+  }
+
+  @Test func aLoneUnknownSymbolStillThrowsNotFound() async {
+    let http = RecordingHTTP { _ in (Self.notFoundBody, 200) }
+    await #expect(throws: MarketDataError.notFound) {
+      try await client(http).quotes(["ZZZZ"], .useCache)
+    }
+  }
+
+  @Test func plusInQueryValuesIsPercentEncoded() async throws {
+    let http = RecordingHTTP { _ in (fixture("twelvedata-search"), 200) }
+    _ = try await client(http).search("A+B")
+    let url = try #require(await http.urls.first)
+    #expect(url.absoluteString.contains("symbol=A%2BB"))
+    #expect(!url.absoluteString.contains("A+B"))
+    #expect(query(url)["symbol"] == "A+B")
+  }
+
+  @Test func aQuoteWithoutATimestampUsesTheInjectedClock() async throws {
+    let injected = Date(timeIntervalSince1970: 1_700_000_000)
+    let http = RecordingHTTP { _ in (Data(#"{"close": "12.50"}"#.utf8), 200) }
+    let quotes = try await client(http, now: { injected }).quotes(["AAPL"], .useCache)
+    #expect(quotes.map(\.asOf) == [injected])
+  }
+
+  @Test func anUnsetKeyThrowsUnavailableWithoutAnyRequest() async {
+    for key in ["", "  ", "$(TWELVE_DATA_API_KEY)", "replace-with-your-twelve-data-key"] {
+      let http = RecordingHTTP { _ in (Data(), 200) }
+      let unset = MarketDataClient.twelveData(apiKey: key, get: { url in await http.get(url) })
+      await #expect(throws: MarketDataError.unavailable) { try await unset.quotes(["AAPL"], .useCache) }
+      await #expect(throws: MarketDataError.unavailable) { try await unset.series("AAPL", .oneYear, .useCache) }
+      await #expect(throws: MarketDataError.unavailable) { try await unset.search("app") }
+      #expect(await http.urls.isEmpty)
+    }
+  }
+
+  @Test func apiKeyUsability() {
+    #expect(TwelveDataAPIKey.isUsable("0123456789abcdef"))
+    #expect(!TwelveDataAPIKey.isUsable(nil))
+    #expect(!TwelveDataAPIKey.isUsable(""))
+    #expect(!TwelveDataAPIKey.isUsable(" \n"))
+    #expect(!TwelveDataAPIKey.isUsable("$(TWELVE_DATA_API_KEY)"))
+    #expect(!TwelveDataAPIKey.isUsable("replace-with-your-twelve-data-key"))
+    #expect(!TwelveDataAPIKey.isUsable(" replace-with-your-twelve-data-key "))
   }
 
   @Test func rateLimitedBodyWithHTTP200Throws() async {
@@ -5023,7 +5260,7 @@ Expected FAIL: `error: type 'MarketDataClient' has no member 'twelveData'`.
 - [x] **Step 5: Implement `TwelveDataDTOs.swift`**
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -5074,7 +5311,7 @@ struct TDQuote: Decodable {
   let percentChange: String?
   let fiftyTwoWeek: Range?
 
-  func quote(symbol: String) -> Quote? {
+  func quote(symbol: String, now: Date) -> Quote? {
     guard code == nil, let price = close.flatMap(DecimalCoding.parse) else {
       return nil
     }
@@ -5090,7 +5327,7 @@ struct TDQuote: Decodable {
       volume: volume.flatMap(Int.init),
       fiftyTwoWeekHigh: fiftyTwoWeek?.high.flatMap(DecimalCoding.parse),
       fiftyTwoWeekLow: fiftyTwoWeek?.low.flatMap(DecimalCoding.parse),
-      asOf: timestamp.map { Date(timeIntervalSince1970: TimeInterval($0)) } ?? Date()
+      asOf: timestamp.map { Date(timeIntervalSince1970: TimeInterval($0)) } ?? now
     )
   }
 }
@@ -5141,14 +5378,15 @@ struct TDSearch: Decodable {
 enum TwelveDataDecoding {
   static let searchableTypes: Set<String> = ["Common Stock", "ETF", "REIT", "Depositary Receipt"]
 
-  static func quotes(from data: Data, requested: [String]) throws -> [Quote] {
+  /// A quote without a timestamp is dated `now`, the injected clock.
+  static func quotes(from data: Data, requested: [String], now: Date) throws -> [Quote] {
     let decoder = JSONDecoder()
     if requested.count == 1 {
-      return try decoder.decode(TDQuote.self, from: data).quote(symbol: requested[0]).map { [$0] } ?? []
+      return try decoder.decode(TDQuote.self, from: data).quote(symbol: requested[0], now: now).map { [$0] } ?? []
     }
     // Lossy per symbol: one garbage entry (wrong type, missing fields) mustn't fail the whole batch.
     let batch = try decoder.decode([String: LossyTDQuote].self, from: data)
-    return requested.compactMap { symbol in (batch[symbol] ?? batch[symbol.uppercased()])?.value?.quote(symbol: symbol) }
+    return requested.compactMap { symbol in (batch[symbol] ?? batch[symbol.uppercased()])?.value?.quote(symbol: symbol, now: now) }
   }
 
   /// `timezone=UTC` is always requested. Date-only bars are anchored at 12:00 UTC so US time zones show the same calendar day.
@@ -5197,7 +5435,7 @@ enum TwelveDataDecoding {
 - [x] **Step 6: Implement `TwelveDataMarketData.swift`**
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -5225,9 +5463,19 @@ public extension MarketDataClient {
   static func twelveData(
     apiKey: String,
     baseURL: URL = URL(string: "https://api.twelvedata.com")!,
-    get: @escaping HTTPGet = URLSession.shared.httpGet
+    get: @escaping HTTPGet = URLSession.shared.httpGet,
+    now: @escaping @Sendable () -> Date = { Date() }
   ) -> MarketDataClient {
-    let api = TwelveDataAPI(apiKey: apiKey, baseURL: baseURL, get: get)
+    // An unset key (empty, an unexpanded `$(...)` or the placeholder) would only earn 401s: fail fast with no request.
+    guard TwelveDataAPIKey.isUsable(apiKey) else {
+      return MarketDataClient(
+        quotes: { _, _ in throw MarketDataError.unavailable },
+        series: { _, _, _ in throw MarketDataError.unavailable },
+        search: { _ in throw MarketDataError.unavailable },
+        profile: { _ in throw MarketDataError.unavailable }
+      )
+    }
+    let api = TwelveDataAPI(apiKey: apiKey, baseURL: baseURL, get: get, now: now)
     return MarketDataClient(
       quotes: { symbols, _ in try await api.quotes(symbols) },
       series: { symbol, range, _ in try await api.series(symbol, range: range) },
@@ -5247,6 +5495,7 @@ struct TwelveDataAPI: Sendable {
   let apiKey: String
   let baseURL: URL
   let get: HTTPGet
+  let now: @Sendable () -> Date
 
   static func parameters(for range: ChartRange) -> (interval: String, outputSize: Int) {
     switch range {
@@ -5258,22 +5507,35 @@ struct TwelveDataAPI: Sendable {
     }
   }
 
-  /// One request per 8 symbols (1 credit per symbol). A 429 on the first chunk throws `.rateLimited`.
-  /// A 429 after some chunks succeeded throws `PartialQuotesError`, so the caching decorator keeps those quotes and still cools down.
+  /// One request per 8 symbols (1 credit per symbol).
+  /// - A failure on the first chunk throws the mapped `MarketDataError`.
+  /// - A failure on a later chunk (a 429 or anything else) throws `PartialQuotesError` with the quotes so far and the underlying error,
+  ///   so the caching decorator keeps those quotes and still cools down on a 429.
+  /// - A single-symbol chunk whose body is a top-level `.notFound` error means "no quote for that symbol": it is skipped.
+  ///   If nothing at all came back, the lone `.notFound` is thrown so a search for one unknown symbol still reports it.
   func quotes(_ symbols: [String]) async throws -> [Quote] {
     var result: [Quote] = []
+    var skippedUnknown = false
     for start in stride(from: 0, to: symbols.count, by: Self.batchSize) {
       let chunk = Array(symbols[start ..< min(start + Self.batchSize, symbols.count)])
       do {
         let data = try await fetch("quote", ["symbol": chunk.joined(separator: ","), "timezone": "UTC"])
-        result += try TwelveDataDecoding.quotes(from: data, requested: chunk)
-      } catch let error as MarketDataError {
-        if case let .rateLimited(retryAfter) = error, !result.isEmpty {
-          Log.network.info("Twelve Data rate limited after \(result.count) quotes")
-          throw PartialQuotesError(quotes: result, retryAfter: retryAfter)
+        result += try TwelveDataDecoding.quotes(from: data, requested: chunk, now: now())
+      } catch {
+        let mapped = try MarketDataError(error) // cancellation stays a CancellationError
+        if chunk.count == 1, mapped == .notFound {
+          skippedUnknown = true
+          continue
         }
-        throw error
+        guard !result.isEmpty else {
+          throw mapped
+        }
+        Log.network.info("Twelve Data chunk failed after \(result.count) quotes: \(mapped.userMessage)")
+        throw PartialQuotesError(quotes: result, underlying: mapped)
       }
+    }
+    if result.isEmpty, skippedUnknown {
+      throw MarketDataError.notFound
     }
     return result
   }
@@ -5290,7 +5552,7 @@ struct TwelveDataAPI: Sendable {
     if range == .oneDay {
       points = TwelveDataDecoding.lastSession(points)
     }
-    return PriceSeries(symbol: symbol.uppercased(), range: range, points: points, asOf: points.last?.date ?? Date())
+    return PriceSeries(symbol: symbol.uppercased(), range: range, points: points, asOf: points.last?.date ?? now())
   }
 
   func search(_ query: String) async throws -> [SymbolSearchResult] {
@@ -5304,6 +5566,8 @@ struct TwelveDataAPI: Sendable {
     var components = URLComponents(url: baseURL.appending(path: path), resolvingAgainstBaseURL: false)!
     components.queryItems = parameters.sorted { $0.key < $1.key }.map { URLQueryItem(name: $0.key, value: $0.value) }
       + [URLQueryItem(name: "apikey", value: apiKey)]
+    // URLComponents leaves `+` as is, and a server may read it as a space. Encoded values never contain a literal `+` otherwise.
+    components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
     return components.url!
   }
 
@@ -5324,17 +5588,45 @@ struct TwelveDataAPI: Sendable {
 }
 ```
 
-- [x] **Step 7: Add `liveValue`.** Append to `Wait/Packages/WaitKit/Sources/MarketDataClient/MarketDataClient.swift`. In plan 04 this is the one line to change, to `.cached(.backend(…))`.
+`Wait/Packages/WaitKit/Sources/MarketDataClient/TwelveData/TwelveDataAPIKey.swift` (review fix: the testable key check):
+```swift
+//
+// Created by: Claude on 2026-11-23.
+// Copyright © 2021 Wait. All rights reserved.
+//
+
+import Foundation
+
+// MARK: - TwelveDataAPIKey
+
+public enum TwelveDataAPIKey {
+  public static let placeholder = "replace-with-your-twelve-data-key"
+
+  /// False for a missing, empty or whitespace-only key, an unexpanded build setting such as `$(TWELVE_DATA_API_KEY)`, and the placeholder.
+  public static func isUsable(_ key: String?) -> Bool {
+    guard let key = key?.trimmingCharacters(in: .whitespacesAndNewlines), !key.isEmpty else {
+      return false
+    }
+    return !key.hasPrefix("$(") && key != placeholder
+  }
+}
+```
+
+- [x] **Step 7: Add `liveValue`.** (The file also imports `Logging`.) Append to `Wait/Packages/WaitKit/Sources/MarketDataClient/MarketDataClient.swift`. In plan 04 this is the one line to change, to `.cached(.backend(…))`.
 ```swift
 // MARK: DependencyKey
 
 extension MarketDataClient: DependencyKey {
   /// Plan 02: Twelve Data stopgap. The key comes from Info.plist `TwelveDataAPIKey`, which is `$(TWELVE_DATA_API_KEY)` from `Secrets.xcconfig`.
-  public static let liveValue = MarketDataClient.cached(
-    .twelveData(apiKey: Bundle.main.object(forInfoDictionaryKey: "TwelveDataAPIKey") as? String ?? ""),
-    disk: .live,
-    now: { Date() }
-  )
+  /// An unset key (empty, an unexpanded `$(...)` or the placeholder) gives a client whose every call throws `.unavailable` with no request.
+  /// A `static let` runs once, so the error is logged once.
+  public static let liveValue: MarketDataClient = {
+    let key = Bundle.main.object(forInfoDictionaryKey: "TwelveDataAPIKey") as? String
+    if !TwelveDataAPIKey.isUsable(key) {
+      Log.network.error("TwelveDataAPIKey is not configured; set TWELVE_DATA_API_KEY in Secrets.xcconfig. Market data is unavailable.")
+    }
+    return MarketDataClient.cached(.twelveData(apiKey: key ?? ""), disk: .live, now: { Date() })
+  }()
 }
 ```
 
@@ -5806,12 +6098,12 @@ struct ChecklistFeatureTests {
 }
 ```
 
-- [ ] **Step 3: Run the tests and confirm they fail** — NOT RUN (code-only)
+- [ ] **Step 3: Run the tests and confirm they fail**
 
 Run: `scripts/test-waitkit.sh ChecklistFeatureTests`
 Expected FAIL: `error: cannot find 'ChecklistFeature' in scope`.
 
-- [x] **Step 4: Implement the reducers** (replace the header-only `ChecklistFeature.swift`)
+- [ ] **Step 4: Implement the reducers** (replace the header-only `ChecklistFeature.swift`)
 
 `Wait/Packages/WaitKit/Sources/ChecklistFeature/ChecklistFeature.swift`:
 ```swift
@@ -5968,12 +6260,12 @@ public struct ChecklistTemplateFeature {
 }
 ```
 
-- [ ] **Step 5: Run the tests and confirm they pass** — NOT RUN (code-only)
+- [ ] **Step 5: Run the tests and confirm they pass**
 
 Run: `scripts/test-waitkit.sh ChecklistFeatureTests`
 Expected PASS: 4 tests pass.
 
-- [x] **Step 6: Add the views.** Load `swiftui-expert:swiftui-expert-skill` first.
+- [ ] **Step 6: Add the views.** Load `swiftui-expert:swiftui-expert-skill` first.
 
 `Wait/Packages/WaitKit/Sources/ChecklistFeature/ChecklistView.swift`:
 ```swift
@@ -6101,12 +6393,12 @@ public struct ChecklistTemplateView: View {
 }
 ```
 
-- [ ] **Step 7: Build the package scheme so the views compile** — NOT RUN (code-only)
+- [ ] **Step 7: Build the package scheme so the views compile**
 
 Run: `scripts/test-waitkit.sh ChecklistFeatureTests`
 Expected PASS: `** TEST SUCCEEDED **`. The views compile as part of the target.
 
-- [x] **Step 8: Commit**
+- [ ] **Step 8: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/ChecklistFeature Wait/Packages/WaitKit/Tests/ChecklistFeatureTests
 git commit -m "feat(checklist): TCA checklist and template features on shared watchlist state
@@ -6125,7 +6417,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/StockChartFeature/ChartGeometry.swift`, `Wait/Packages/WaitKit/Sources/StockChartFeature/StockChartFeature.swift`
 - Create: `Wait/Packages/WaitKit/Tests/StockChartFeatureTests/ChartGeometryTests.swift`, `Wait/Packages/WaitKit/Tests/StockChartFeatureTests/StockChartFeatureTests.swift`
 
-- [x] **Step 1: Update `Package.swift`**
+- [ ] **Step 1: Update `Package.swift`**
   - Append to `products:`: `.library(name: "StockChartFeature", targets: ["StockChartFeature"]),`
   - Append to `targets:`:
     ```swift
@@ -6150,7 +6442,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
     ```
   - Create `Wait/Packages/WaitKit/Sources/StockChartFeature/ChartGeometry.swift` containing only the file header, so the package loads (SwiftPM rejects a target with no sources). Step 4 fills it in.
 
-- [x] **Step 2: Write the failing tests**
+- [ ] **Step 2: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/StockChartFeatureTests/ChartGeometryTests.swift`:
 ```swift

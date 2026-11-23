@@ -113,6 +113,47 @@ import Testing
     #expect(second.filter(\.isStale).map(\.symbol) == ["S6", "S7"])
   }
 
+  @Test func nonRateLimitPartialResultKeepsTheQuotesAndSkipsTheCooldown() async throws {
+    let upstream = FakeUpstream(batchLimit: 8, batchError: .network("HTTP 500"))
+    let client = make(upstream, now: MutableNow(fridayOpen))
+    let symbols = (0 ..< 10).map { "S\($0)" }
+    let first = try await client.quotes(symbols, .useCache)
+    #expect(first.map(\.symbol) == Array(symbols.prefix(8)))
+    _ = try await client.quotes(symbols, .reload) // no cooldown: the next call reaches the upstream again
+    #expect(upstream.quoteCalls.count == 2)
+  }
+
+  @Test func cancellingOneOfTwoCoalescedWaitersLeavesTheOtherWithItsValue() async throws {
+    let upstream = FakeUpstream(delay: .milliseconds(400))
+    let client = make(upstream, now: MutableNow(fridayOpen))
+    let first = Task { try await client.series("AAPL", .oneYear, .useCache) }
+    try await Task.sleep(for: .milliseconds(30))
+    let second = Task { try await client.series("AAPL", .oneYear, .useCache) }
+    try await Task.sleep(for: .milliseconds(30))
+    let clock = ContinuousClock()
+    let start = clock.now
+    first.cancel()
+    await #expect(throws: CancellationError.self) { try await first.value }
+    #expect(start.duration(to: clock.now) < .milliseconds(200)) // promptly, not after the 400 ms fetch
+    let series = try await second.value
+    #expect(series.symbol == "AAPL")
+    #expect(upstream.seriesCalls == 1)
+    #expect(upstream.cancelledCalls == 0)
+  }
+
+  @Test func cancellingTheOnlyWaiterCancelsTheUpstreamFetch() async throws {
+    let upstream = FakeUpstream(delay: .seconds(5))
+    let client = make(upstream, now: MutableNow(fridayOpen))
+    let task = Task { try await client.series("AAPL", .oneYear, .useCache) }
+    try await Task.sleep(for: .milliseconds(50))
+    task.cancel()
+    await #expect(throws: CancellationError.self) { try await task.value }
+    for _ in 0 ..< 100 where upstream.cancelledCalls == 0 {
+      try await Task.sleep(for: .milliseconds(10))
+    }
+    #expect(upstream.cancelledCalls == 1)
+  }
+
   @Test func diskEntrySurvivesANewInstance() async throws {
     let directory = FileManager.default.temporaryDirectory.appending(path: "md-\(UUID().uuidString)", directoryHint: .isDirectory)
     let now = MutableNow(fridayOpen)

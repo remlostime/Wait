@@ -8,15 +8,25 @@ import Foundation
 
 // MARK: - PartialQuotesError
 
-/// An upstream `quotes` call got some quotes before it was rate limited. `CachingMarketDataClient` keeps the quotes and still starts the cooldown.
+/// An upstream `quotes` call got some quotes before a later chunk failed. `CachingMarketDataClient` keeps the quotes,
+/// starts the cooldown when `underlying` is a rate limit, and fills the rest from stale entries.
 public struct PartialQuotesError: Error, Sendable {
-  public init(quotes: [Quote], retryAfter: Duration?) {
+  public init(quotes: [Quote], underlying: MarketDataError) {
     self.quotes = quotes
-    self.retryAfter = retryAfter
+    self.underlying = underlying
+  }
+
+  public init(quotes: [Quote], retryAfter: Duration?) {
+    self.init(quotes: quotes, underlying: .rateLimited(retryAfter: retryAfter))
   }
 
   public let quotes: [Quote]
-  public let retryAfter: Duration?
+  public let underlying: MarketDataError
+
+  /// Non-nil only when `underlying` is a rate limit that carries a retry delay.
+  public var retryAfter: Duration? {
+    if case let .rateLimited(retryAfter) = underlying { retryAfter } else { nil }
+  }
 }
 
 // MARK: - MarketDataError
@@ -42,7 +52,7 @@ public enum MarketDataError: Error, Equatable, Sendable {
       case let error as MarketDataError:
         self = error
       case let error as PartialQuotesError:
-        self = .rateLimited(retryAfter: error.retryAfter)
+        self = error.underlying
       case is DecodingError:
         self = .decoding(String(describing: error))
       case let error as URLError:

@@ -45,16 +45,24 @@ final class MutableNow: @unchecked Sendable {
 final class FakeUpstream: @unchecked Sendable {
   // MARK: Lifecycle
 
-  /// `batchLimit` imitates a free tier: a request for more symbols returns the first `batchLimit` quotes in a `PartialQuotesError`.
-  init(delay: Duration = .zero, batchLimit: Int? = nil) {
+  /// `batchLimit` imitates a free tier: a request for more symbols returns the first `batchLimit` quotes in a `PartialQuotesError`,
+  /// which carries `batchError` (a 429 by default).
+  init(delay: Duration = .zero, batchLimit: Int? = nil, batchError: MarketDataError = .rateLimited(retryAfter: .seconds(60))) {
     self.delay = delay
     self.batchLimit = batchLimit
+    self.batchError = batchError
   }
 
   // MARK: Internal
 
   let delay: Duration
   let batchLimit: Int?
+  let batchError: MarketDataError
+
+  /// How many upstream calls were cancelled while they slept.
+  var cancelledCalls: Int {
+    lock.withLock { recordedCancellations }
+  }
 
   var quoteCalls: [[String]] {
     lock.withLock { recordedQuoteCalls }
@@ -71,14 +79,12 @@ final class FakeUpstream: @unchecked Sendable {
           self.recordedQuoteCalls.append(symbols)
           return self.scriptedError
         }
-        if self.delay > .zero {
-          try await Task.sleep(for: self.delay)
-        }
+        try await self.pause()
         if let error {
           throw error
         }
         if let limit = self.batchLimit, symbols.count > limit {
-          throw PartialQuotesError(quotes: symbols.prefix(limit).map { Quote(symbol: $0, price: 100, asOf: fridayOpen) }, retryAfter: .seconds(60))
+          throw PartialQuotesError(quotes: symbols.prefix(limit).map { Quote(symbol: $0, price: 100, asOf: fridayOpen) }, underlying: self.batchError)
         }
         return symbols.map { Quote(symbol: $0, price: 100, asOf: fridayOpen) }
       },
@@ -87,9 +93,7 @@ final class FakeUpstream: @unchecked Sendable {
           self.recordedSeriesCalls += 1
           return self.scriptedError
         }
-        if self.delay > .zero {
-          try await Task.sleep(for: self.delay)
-        }
+        try await self.pause()
         if let error {
           throw error
         }
@@ -107,7 +111,20 @@ final class FakeUpstream: @unchecked Sendable {
   // MARK: Private
 
   private let lock = NSLock()
+  private var recordedCancellations = 0
   private var recordedQuoteCalls: [[String]] = []
   private var recordedSeriesCalls = 0
   private var scriptedError: MarketDataError?
+
+  private func pause() async throws {
+    guard delay > .zero else {
+      return
+    }
+    do {
+      try await Task.sleep(for: delay)
+    } catch {
+      lock.withLock { recordedCancellations += 1 }
+      throw error
+    }
+  }
 }

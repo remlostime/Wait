@@ -101,7 +101,7 @@ actor CachingMarketDataStore {
         try storeFresh(JSONDecoder().decode([Quote].self, from: data), into: &result, fetchedAt: now)
       } catch let partial as PartialQuotesError {
         storeFresh(partial.quotes, into: &result, fetchedAt: now)
-        noteFailure(.rateLimited(retryAfter: partial.retryAfter), at: now)
+        noteFailure(partial.underlying, at: now)
         fillStale(batch, into: &result, now: now)
       } catch {
         let mapped = try MarketDataError(error)
@@ -158,8 +158,15 @@ actor CachingMarketDataStore {
   private let ttl: @Sendable (MarketDataKind, Date) -> Date
   private let now: @Sendable () -> Date
   private var memory: [String: CacheEntry] = [:]
-  private var inFlight: [String: Task<Data, any Error>] = [:]
+  private var inFlight: [String: Flight] = [:]
   private var cooldownUntil: Date?
+
+  /// One shared upstream fetch and the callers waiting on it. The fetch is cancelled once the last waiter is gone.
+  private struct Flight {
+    let id = UUID()
+    var task: Task<Void, Never>?
+    var waiters: [UUID: CheckedContinuation<Data, any Error>] = [:]
+  }
 
   private static func quoteKey(_ symbol: String) -> String {
     "quote:\(symbol)"
@@ -221,14 +228,71 @@ actor CachingMarketDataStore {
     }
   }
 
+  /// Joins the fetch already running for `key`, or starts it. Each waiter resumes on its own: a cancelled waiter throws
+  /// `CancellationError` at once without disturbing the others, and the last one leaving cancels the shared fetch.
   private func coalesced(key: String, _ work: @escaping @Sendable () async throws -> Data) async throws -> Data {
-    if let running = inFlight[key] {
-      return try await running.value
+    let waiterID = UUID()
+    return try await withTaskCancellationHandler {
+      try await withCheckedThrowingContinuation { continuation in
+        // Checked and registered in one synchronous step, so `onCancel`'s hop into the actor always sees the waiter.
+        if Task.isCancelled {
+          continuation.resume(throwing: CancellationError())
+        } else {
+          join(key: key, waiterID: waiterID, continuation: continuation, work: work)
+        }
+      }
+    } onCancel: {
+      Task { await self.cancelWaiter(key: key, waiterID: waiterID) }
     }
-    let task = Task<Data, any Error> { try await work() }
-    inFlight[key] = task
-    defer { inFlight[key] = nil }
-    return try await task.value
+  }
+
+  private func join(
+    key: String,
+    waiterID: UUID,
+    continuation: CheckedContinuation<Data, any Error>,
+    work: @escaping @Sendable () async throws -> Data
+  ) {
+    if var flight = inFlight[key] {
+      flight.waiters[waiterID] = continuation
+      inFlight[key] = flight
+      return
+    }
+    var flight = Flight()
+    flight.waiters[waiterID] = continuation
+    let flightID = flight.id
+    flight.task = Task {
+      let result: Result<Data, any Error>
+      do {
+        result = try await .success(work())
+      } catch {
+        result = .failure(error)
+      }
+      finish(key: key, flightID: flightID, result: result)
+    }
+    inFlight[key] = flight
+  }
+
+  private func finish(key: String, flightID: UUID, result: Result<Data, any Error>) {
+    guard let flight = inFlight[key], flight.id == flightID else {
+      return // every waiter already left and the fetch was cancelled
+    }
+    inFlight[key] = nil
+    for continuation in flight.waiters.values {
+      continuation.resume(with: result)
+    }
+  }
+
+  private func cancelWaiter(key: String, waiterID: UUID) {
+    guard var flight = inFlight[key], let continuation = flight.waiters.removeValue(forKey: waiterID) else {
+      return // the fetch already finished
+    }
+    continuation.resume(throwing: CancellationError())
+    if flight.waiters.isEmpty {
+      flight.task?.cancel()
+      inFlight[key] = nil
+    } else {
+      inFlight[key] = flight
+    }
   }
 
   private func lookup<T: Decodable>(_: T.Type, key: String) -> (value: T, entry: CacheEntry)? {

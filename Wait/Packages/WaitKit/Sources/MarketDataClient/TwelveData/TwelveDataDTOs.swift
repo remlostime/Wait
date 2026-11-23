@@ -50,7 +50,7 @@ struct TDQuote: Decodable {
   let percentChange: String?
   let fiftyTwoWeek: Range?
 
-  func quote(symbol: String) -> Quote? {
+  func quote(symbol: String, now: Date) -> Quote? {
     guard code == nil, let price = close.flatMap(DecimalCoding.parse) else {
       return nil
     }
@@ -66,7 +66,7 @@ struct TDQuote: Decodable {
       volume: volume.flatMap(Int.init),
       fiftyTwoWeekHigh: fiftyTwoWeek?.high.flatMap(DecimalCoding.parse),
       fiftyTwoWeekLow: fiftyTwoWeek?.low.flatMap(DecimalCoding.parse),
-      asOf: timestamp.map { Date(timeIntervalSince1970: TimeInterval($0)) } ?? Date()
+      asOf: timestamp.map { Date(timeIntervalSince1970: TimeInterval($0)) } ?? now
     )
   }
 }
@@ -117,14 +117,15 @@ struct TDSearch: Decodable {
 enum TwelveDataDecoding {
   static let searchableTypes: Set<String> = ["Common Stock", "ETF", "REIT", "Depositary Receipt"]
 
-  static func quotes(from data: Data, requested: [String]) throws -> [Quote] {
+  /// A quote without a timestamp is dated `now`, the injected clock.
+  static func quotes(from data: Data, requested: [String], now: Date) throws -> [Quote] {
     let decoder = JSONDecoder()
     if requested.count == 1 {
-      return try decoder.decode(TDQuote.self, from: data).quote(symbol: requested[0]).map { [$0] } ?? []
+      return try decoder.decode(TDQuote.self, from: data).quote(symbol: requested[0], now: now).map { [$0] } ?? []
     }
     // Lossy per symbol: one garbage entry (wrong type, missing fields) mustn't fail the whole batch.
     let batch = try decoder.decode([String: LossyTDQuote].self, from: data)
-    return requested.compactMap { symbol in (batch[symbol] ?? batch[symbol.uppercased()])?.value?.quote(symbol: symbol) }
+    return requested.compactMap { symbol in (batch[symbol] ?? batch[symbol.uppercased()])?.value?.quote(symbol: symbol, now: now) }
   }
 
   /// `timezone=UTC` is always requested. Date-only bars are anchored at 12:00 UTC so US time zones show the same calendar day.
