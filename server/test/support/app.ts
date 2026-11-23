@@ -13,9 +13,20 @@ export const testConfig: Config = {
   alpacaSecretKey: "alpaca-test-secret",
 }
 
-/** Builds the app over `createMockContainer(overrides)`. Task 8 extends it with a default user and `authHeaders`. */
+export const TEST_ANONYMOUS_ID = "00000000-0000-4000-8000-000000000001"
+
+/**
+ * Builds the app over `createMockContainer(overrides)` and seeds one default user.
+ * `authHeaders(userId?)` signs a token exactly like /api/auth/register (default: the seeded user).
+ * `app.jwt` exists as soon as `buildApp` resolves (the fp-wrapped plugin was awaited), so tests may
+ * still add ad-hoc routes before the first `inject`.
+ */
 export async function buildTestApp(overrides: Partial<Container> = {}) {
   const container = createMockContainer(overrides)
   const app = await buildApp({ config: testConfig, container })
-  return { app, container }
+  const user = await container.users.findOrCreateByAnonymousId(TEST_ANONYMOUS_ID, container.clock.now())
+  const authHeaders = (userId: string = user.id): Record<string, string> => ({
+    authorization: `Bearer ${app.jwt.sign({ userId })}`,
+  })
+  return { app, container, user, authHeaders }
 }

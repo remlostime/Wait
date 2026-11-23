@@ -3,6 +3,8 @@ import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox"
 import type { Config } from "./config.js"
 import type { Container } from "./container.js"
 import { AppError, sendAppError, sendError } from "./lib/errors.js"
+import jwtPlugin from "./plugins/jwt.js"
+import authRoutes from "./routes/api/auth.js"
 import healthRoutes from "./routes/health.js"
 
 export interface BuildAppOptions {
@@ -38,7 +40,9 @@ export async function buildApp({ config, container }: BuildAppOptions) {
 
   app.setNotFoundHandler((_request, reply) => sendError(reply, 404, "NOT_FOUND", "The requested resource was not found"))
 
+  await app.register(jwtPlugin, { secret: config.jwtSecret })
   await app.register(healthRoutes, { container })
+  await app.register(authRoutes, { prefix: "/api/auth", container })
 
   return app
 }

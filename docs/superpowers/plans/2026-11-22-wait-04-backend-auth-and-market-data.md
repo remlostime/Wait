@@ -1846,7 +1846,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `server/src/container.ts` (whole file below), `server/src/app.ts` (register the JWT plugin and auth routes), `server/test/support/app.ts` (whole file below)
 - Test: `server/test/routes/auth.test.ts`
 
-- [ ] **Step 1: Write the failing route tests**
+- [x] **Step 1: Write the failing route tests**
 
 Create `server/test/routes/auth.test.ts`:
 ```ts
@@ -1910,12 +1910,12 @@ describe("POST /api/auth/register", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/routes/auth.test.ts`
 Expected: FAIL. `POST /api/auth/register` returns 404, so `app.jwt.verify` throws `TypeError: Cannot read properties of undefined` because the JWT plugin isn't registered yet.
 
-- [ ] **Step 3: Implement the JWT plugin and auth middleware**
+- [x] **Step 3: Implement the JWT plugin and auth middleware**
 
 Create `server/src/plugins/jwt.ts`:
 ```ts
@@ -1980,7 +1980,7 @@ export function buildAuthMiddleware(users: UserRepository) {
 }
 ```
 
-- [ ] **Step 4: Implement `AuthService`, the schemas and the route**
+- [x] **Step 4: Implement `AuthService`, the schemas and the route**
 
 Create `server/src/services/AuthService.ts`:
 ```ts
@@ -2058,7 +2058,7 @@ const authRoutes: FastifyPluginAsync<RouteOptions> = async (server, { container 
 export default authRoutes
 ```
 
-- [ ] **Step 5: Wire the container and the app**
+- [x] **Step 5: Wire the container and the app**
 
 Replace `server/src/container.ts` with:
 ```ts
@@ -2167,12 +2167,12 @@ export async function buildTestApp(overrides: Partial<Container> = {}) {
 }
 ```
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [x] **Step 6: Run the tests to verify they pass**
 
 Run: `npx vitest run test/routes/auth.test.ts test/app.test.ts test/server.test.ts && npm run typecheck`
 Expected: all pass (`4 passed` in auth.test.ts). Typecheck exits 0. `server.test.ts` still passes because `neonSql` makes no connection until the first query.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
