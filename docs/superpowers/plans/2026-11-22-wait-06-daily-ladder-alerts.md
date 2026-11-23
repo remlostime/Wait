@@ -3898,7 +3898,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `server/src/app.ts` (register the route)
 - Test: `server/test/routes/dailyAlerts.test.ts`
 
-- [ ] **Step 1: Write the failing route test**
+- [x] **Step 1: Write the failing route test**
 
 Create `server/test/routes/dailyAlerts.test.ts`. It runs through `buildTestApp` and overrides only `alertJob`. The secret is `testConfig.cronSecret` (Task 13).
 ```ts
@@ -3972,12 +3972,12 @@ describe("GET /api/internal/daily-alerts", () => {
 ```
 The mock container's clock is plan 04's fixed Friday 2026-11-20 15:00 UTC, and its default close resolver reports a holiday (Step 5), so the last test expects `holiday`.
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/routes/dailyAlerts.test.ts`
 Expected: FAIL. `tsc` reports that `alertJob` isn't a `Container` member, and the route answers 404.
 
-- [ ] **Step 3: Write the schema**
+- [x] **Step 3: Write the schema**
 
 Create `server/src/schemas/alerts.ts`:
 ```ts
@@ -3999,7 +3999,7 @@ export const DailyAlertsResponseSchema = Type.Object(
 )
 ```
 
-- [ ] **Step 4: Write the route**
+- [x] **Step 4: Write the route**
 
 Create `server/src/routes/api/internal/dailyAlerts.ts`:
 ```ts
@@ -4034,7 +4034,7 @@ const dailyAlertsRoutes: FastifyPluginAsync<DailyAlertsRouteOptions> = async (se
 export default dailyAlertsRoutes
 ```
 
-- [ ] **Step 5: Wire the job into the container**
+- [x] **Step 5: Wire the job into the container**
 
 In `server/src/container.ts`:
 
@@ -4112,12 +4112,12 @@ In `server/src/app.ts`, add `import dailyAlertsRoutes from "./routes/api/interna
   await app.register(dailyAlertsRoutes, { prefix: "/api/internal", container, cronSecret: config.cronSecret })
 ```
 
-- [ ] **Step 6: Run everything**
+- [x] **Step 6: Run everything**
 
 Run: `npx vitest run test/routes && npm test && npm run typecheck`
 Expected: PASS. `dailyAlerts.test.ts` reports `Tests  5 passed (5)`, and the whole suite stays green, including `server.test.ts`, which builds the real container from `process.env`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add server/src/schemas/alerts.ts server/src/routes/api/internal/dailyAlerts.ts server/src/container.ts server/src/app.ts \

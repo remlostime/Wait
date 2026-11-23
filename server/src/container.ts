@@ -1,10 +1,17 @@
+import { ApnsSender } from "./apns/ApnsSender.js"
+import { ApnsTokenProvider } from "./apns/ApnsTokenProvider.js"
+import { Http2ApnsTransport } from "./apns/Http2ApnsTransport.js"
+import { MockApnsTransport } from "./apns/MockApnsTransport.js"
 import type { Config } from "./config.js"
+import type { AlertRepository } from "./db/AlertRepository.js"
 import type { DeviceTokenRepository } from "./db/DeviceTokenRepository.js"
 import type { MarketCacheRepository } from "./db/MarketCacheRepository.js"
+import { MockAlertRepository } from "./db/MockAlertRepository.js"
 import { MockDeviceTokenRepository } from "./db/MockDeviceTokenRepository.js"
 import { MockMarketCacheRepository } from "./db/MockMarketCacheRepository.js"
 import { MockUserRepository } from "./db/MockUserRepository.js"
 import { MockWatchlistRepository } from "./db/MockWatchlistRepository.js"
+import { NeonAlertRepository } from "./db/NeonAlertRepository.js"
 import { NeonDeviceTokenRepository } from "./db/NeonDeviceTokenRepository.js"
 import { NeonMarketCacheRepository } from "./db/NeonMarketCacheRepository.js"
 import { NeonUserRepository } from "./db/NeonUserRepository.js"
@@ -17,9 +24,12 @@ import { fixedClock, systemClock, type Clock } from "./lib/clock.js"
 import { createLogger } from "./lib/logger.js"
 import { AlpacaProvider } from "./providers/alpaca.js"
 import { FinnhubProvider } from "./providers/finnhub.js"
+import { createMassiveProvider } from "./providers/massive.js"
 import { TiingoProvider } from "./providers/tiingo.js"
 import { ProviderError, type ProviderName } from "./providers/types.js"
+import { AlertJobService, type AlertJob } from "./services/AlertJobService.js"
 import { AuthService } from "./services/AuthService.js"
+import { DailyCloseResolver } from "./services/DailyCloseResolver.js"
 import { MarketDataService, type MarketProviders } from "./services/MarketDataService.js"
 import { MockRateLimiter, PostgresRateLimiter, type RateLimiter } from "./services/RateLimiter.js"
 import { WatchlistSyncService } from "./services/WatchlistSyncService.js"
@@ -38,6 +48,8 @@ export interface Container {
   watchlist: WatchlistRepository
   watchlistSync: WatchlistSyncService
   deviceTokens: DeviceTokenRepository
+  alerts: AlertRepository
+  alertJob: AlertJob
 }
 
 /** Options every route plugin receives. */
@@ -62,6 +74,24 @@ export function createContainer(config: Config): Container {
     daily: new TiingoProvider(config.tiingoApiKey),
     intraday: new AlpacaProvider(config.alpacaKeyId, config.alpacaSecretKey, clock),
   }
+  const deviceTokens = new NeonDeviceTokenRepository(sql)
+  const alerts = new NeonAlertRepository(sql)
+  const alertJob = new AlertJobService({
+    alerts,
+    devices: deviceTokens,
+    closes: new DailyCloseResolver({
+      grouped: createMassiveProvider({ apiKey: config.massive.apiKey, baseUrl: config.massive.baseUrl }),
+      quotes: finnhub,
+      rateLimiter,
+    }),
+    sender: new ApnsSender({
+      transport: new Http2ApnsTransport(),
+      tokens: new ApnsTokenProvider({ key: config.apns.key, keyId: config.apns.keyId, teamId: config.apns.teamId }, clock),
+      topic: config.apns.topic,
+      devices: deviceTokens,
+      clock,
+    }),
+  })
   return {
     clock,
     logger,
@@ -74,7 +104,9 @@ export function createContainer(config: Config): Container {
     marketData: new MarketDataService({ cache: marketCache, limiter: rateLimiter, providers, clock, logger: logger.child({ component: "market" }) }),
     watchlist,
     watchlistSync: new WatchlistSyncService(watchlist),
-    deviceTokens: new NeonDeviceTokenRepository(sql),
+    deviceTokens,
+    alerts,
+    alertJob,
   }
 }
 
@@ -106,6 +138,22 @@ export function createMockContainer(overrides: Partial<Container> = {}): Contain
   const marketCache = overrides.marketCache ?? new MockMarketCacheRepository()
   const logger = overrides.logger ?? createLogger("silent")
   const watchlist = overrides.watchlist ?? new MockWatchlistRepository()
+  const deviceTokens = overrides.deviceTokens ?? new MockDeviceTokenRepository()
+  const alerts = overrides.alerts ?? new MockAlertRepository()
+  const alertJob =
+    overrides.alertJob ??
+    new AlertJobService({
+      alerts,
+      devices: deviceTokens,
+      closes: { resolve: async () => ({ kind: "holiday" as const }) },
+      sender: new ApnsSender({
+        transport: new MockApnsTransport(),
+        tokens: { token: () => "mock-provider-token", invalidate: () => {} },
+        topic: "com.chenkai.wait",
+        devices: deviceTokens,
+        clock,
+      }),
+    })
   return {
     clock,
     logger,
@@ -117,6 +165,8 @@ export function createMockContainer(overrides: Partial<Container> = {}): Contain
     marketData: overrides.marketData ?? new MarketDataService({ cache: marketCache, limiter: rateLimiter, providers: unavailableProviders(), clock, logger }),
     watchlist,
     watchlistSync: overrides.watchlistSync ?? new WatchlistSyncService(watchlist),
-    deviceTokens: overrides.deviceTokens ?? new MockDeviceTokenRepository(),
+    deviceTokens,
+    alerts,
+    alertJob,
   }
 }
