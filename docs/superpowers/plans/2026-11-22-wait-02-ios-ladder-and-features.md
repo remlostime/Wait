@@ -1078,7 +1078,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/Domain/PriceInput.swift`
 - Create: `Wait/Packages/WaitKit/Tests/DomainTests/PriceInputTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/DomainTests/PriceInputTests.swift`:
 ```swift
@@ -1127,12 +1127,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests/PriceInputTests`
 Expected FAIL: `error: cannot find 'PriceInput' in scope`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `Wait/Packages/WaitKit/Sources/Domain/PriceInput.swift`:
 ```swift
@@ -1186,12 +1186,12 @@ public enum PriceInput {
 }
 ```
 
-- [ ] **Step 4: Run the tests and confirm they pass**
+- [ ] **Step 4: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests/PriceInputTests`
 Expected PASS: 5 tests pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/Domain/PriceInput.swift Wait/Packages/WaitKit/Tests/DomainTests/PriceInputTests.swift
 git commit -m "feat(domain): locale-aware PriceInput parse and format
