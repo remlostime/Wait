@@ -7167,7 +7167,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Delete: `Packages/WaitKit/Sources/MarketDataClient/TwelveData/`, `Packages/WaitKit/Tests/MarketDataClientTests/Fixtures/twelvedata-*.json`, `Packages/WaitKit/Tests/MarketDataClientTests/TwelveDataMarketDataTests.swift`
 - Modify: `Packages/WaitKit/Package.swift` (the `MarketDataClientTests` resources), `Config/Base.xcconfig`, `Config/Secrets.example.xcconfig`, every `Info.plist` that still has `TwelveDataAPIKey`
 
-- [ ] **Step 1: Write the guard first**
+- [x] **Step 1: Write the guard first**
 
 Create `/Users/ckai/code/Wait/scripts/check-client-has-no-provider-keys.sh`:
 ```bash
@@ -7186,7 +7186,7 @@ echo "check-client-has-no-provider-keys: ok"
 Run: `chmod +x scripts/check-client-has-no-provider-keys.sh && scripts/check-client-has-no-provider-keys.sh; echo "exit=$?"`
 Expected: it fails, listing the remaining matches. These include `TwelveData/TwelveDataMarketData.swift` (`api.twelvedata.com`), the xcconfig `TWELVE_DATA_API_KEY` lines and `Info.plist` `TwelveDataAPIKey`. The last line is `exit=1`.
 
-- [ ] **Step 2: Delete the adapter, its tests and fixtures**
+- [x] **Step 2: Delete the adapter, its tests and fixtures**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -7200,7 +7200,7 @@ Expected: `Fixtures folder is gone`. Plan 02 only put Twelve Data fixtures there
 ```
 If other fixtures remain, keep the `resources` line.
 
-- [ ] **Step 3: Remove the key from build settings and plists**
+- [x] **Step 3: Remove the key from build settings and plists** — local `Secrets.xcconfig` cleanup and Twelve Data key revocation SKIPPED (manual: user)
 
 ```bash
 cd /Users/ckai/code/Wait/Wait
@@ -7213,7 +7213,7 @@ Expected: one `removed from …/Info.plist` line per plist that had the key (at 
 - Delete the `TWELVE_DATA_API_KEY` line from your local, gitignored `Wait/Config/Secrets.xcconfig`.
 - Revoke the Twelve Data key in the Twelve Data dashboard.
 
-- [ ] **Step 4: Scrub stale Twelve Data comments from plan 02 code**
+- [x] **Step 4: Scrub stale Twelve Data comments from plan 02 code**
 
 In `Wait/Packages/WaitKit/Sources/Domain/MarketTypes.swift`, replace the `CompanyProfile` doc comment
 `/// Fundamentals. Plan 02 has no source for these (Twelve Data stopgap). Plan 04 fills them from the backend.`
@@ -7225,12 +7225,12 @@ In `Wait/Packages/WaitKit/Sources/MarketDataClient/CachingMarketDataClient.swift
 Run: `git grep -niE "twelve ?data|stopgap" -- Wait/Packages/WaitKit/Sources Wait/Packages/WaitKit/Tests`
 Expected: no output. If anything remains, it's a comment: rewrite it to describe the backend, and keep the code unchanged.
 
-- [ ] **Step 5: Run every package test and build both apps**
+- [ ] **Step 5: Run every package test and build both apps** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh && scripts/build-app.sh && scripts/build-app.sh WaitWatch`
 Expected: `** TEST SUCCEEDED **`, then `** BUILD SUCCEEDED **` twice.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait

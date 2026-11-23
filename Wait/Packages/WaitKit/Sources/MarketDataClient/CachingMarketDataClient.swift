@@ -88,7 +88,7 @@ actor CachingMarketDataStore {
     }
 
     if !toFetch.isEmpty {
-      // Never-cached symbols first, then the oldest. A rate-limited upstream (8 symbols/min on Twelve Data) then
+      // Never-cached symbols first, then the oldest. A rate-limited upstream (for example a provider quota) then
       // rotates through a long watchlist instead of refetching the same first symbols forever.
       let batch = toFetch.enumerated()
         .sorted { ((lastFetched[$0.element] ?? .distantPast), $0.offset) < ((lastFetched[$1.element] ?? .distantPast), $1.offset) }

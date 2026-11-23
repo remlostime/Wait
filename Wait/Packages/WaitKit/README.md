@@ -12,7 +12,7 @@ All of Wait's code except the three thin Xcode targets (`Wait`, `WaitWidgetExten
 | `Logging` | `Log.<channel>` on `os.Logger` | – (os) | ✓ | Persistence, MarketDataClient, AppFeature |
 | `DesignSystem` | `Palette`, `Spacing`, `StatusPill`, `TemperatureBadge` | Domain | ✓ | widget, watch, features |
 | `Persistence` | App-group files, `@Shared(.watchlist)` and `@Shared(.checklistTemplate)`, mutation helpers, `SnapshotStore`, `SnapshotClient`, `LegacyMigration` | Domain, Logging, Sharing, IdentifiedCollections, Dependencies | ✓ | widget, ChecklistFeature, StockDetailsFeature, WatchlistFeature, AppFeature |
-| `MarketDataClient` | `\.marketData` dependency: caching decorator (TTL, disk, coalescing, 429 cooldown) around the Twelve Data stopgap adapter | Domain, Logging, Dependencies, DependenciesMacros | – | StockChartFeature, StockDetailsFeature, WatchlistFeature |
+| `MarketDataClient` | `\.marketData` dependency: caching decorator (TTL, disk, coalescing, 429 cooldown) around `MarketDataClient.backend`, which reads the Wait backend through `APIClient` | Domain, Logging, APIClient, Dependencies, DependenciesMacros | – | StockChartFeature, StockDetailsFeature, WatchlistFeature |
 | `Connectivity` | `\.connectivity` dependency: `WCSession` behind the `WCSessionAdapter` protocol, `ConnectivityEngine` (latest-wins send and receive), snapshot coding, and the watch's `WatchSnapshotStore` | Domain, Dependencies, DependenciesMacros | ✓ | watch, AppFeature |
 | `ChecklistFeature` | Per-stock checklist and the checklist template editor (TCA) | Domain, Persistence, DesignSystem, TCA | – | WatchlistFeature, SettingsFeature |
 | `StockChartFeature` | Price-history chart: loads one range at a time, chart geometry and view | Domain, MarketDataClient, DesignSystem, TCA | – | StockDetailsFeature |
@@ -34,7 +34,7 @@ The last three rows exist only after their plan has run. Each target has a match
   - Use the canonical scope forms (`Scope(\.child, action: \.child)`, `store.scope(\.child, action: \.child)`, `$store.scope(\.$destination, action: \.destination).case`), because the package enables the `ComposableArchitecture2Deprecations` trait.
   - Use the effect-returning `.onChange(of:) { oldValue, state in Effect }`. It only sees mutations made by the reducer it wraps, so attach it outside `CombineReducers` when it watches child state.
 - **watchOS.** Keep watchOS-compatible targets (see the table) free of UIKit and iOS-only APIs. `DesignSystem` guards its UIKit-backed dynamic colors with `#if os(iOS)`; watchOS uses the dark variants.
-- **Market data key.** `MarketDataClient.liveValue` reads `TwelveDataAPIKey` from Info.plist and checks it with `TwelveDataAPIKey.isUsable`. An unset key (blank, an unexpanded `$(...)` or the placeholder) makes every call throw `.unavailable` without a request.
+- **Backend URL.** `APIClient.liveValue` reads `WaitAPIBaseURL` from Info.plist (filled from `WAIT_API_BASE_URL` in `Config/*.xcconfig`). If it is missing, every call throws `APIError.misconfigured` without a request. The app holds no provider keys; `scripts/check-client-has-no-provider-keys.sh` enforces it.
 - **Price input.** `PriceInput.parse` accepts a grouping separator only in a well-formed position (`1,234.5`), so `12.50` in `de_DE` is invalid, not 1250.
 
 ## Testing

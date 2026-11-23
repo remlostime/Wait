@@ -1,7 +1,0 @@
-{
-  "symbol": "MSFT", "name": "Microsoft Corp", "exchange": "NASDAQ", "currency": "USD",
-  "datetime": "2026-11-20", "timestamp": 1795208400,
-  "open": "410.00000", "high": "415.00000", "low": "409.00000", "close": "414.25000", "volume": "20000000",
-  "previous_close": "411.00000", "change": "3.25000", "percent_change": "0.79075", "is_market_open": false,
-  "fifty_two_week": { "low": "350.00000", "high": "450.00000" }
-}
