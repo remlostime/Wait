@@ -119,7 +119,11 @@ public actor HTTPSession {
     guard var components = URLComponents(url: baseURL.appending(path: request.path), resolvingAgainstBaseURL: false) else {
       throw APIError.misconfigured
     }
-    if !request.query.isEmpty { components.queryItems = request.query }
+    if !request.query.isEmpty {
+      components.queryItems = request.query
+      // URLComponents leaves `+` as is, and the server decodes a literal `+` in a query as a space.
+      components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+    }
     guard let url = components.url else { throw APIError.misconfigured }
     var urlRequest = URLRequest(url: url, timeoutInterval: 15)
     urlRequest.httpMethod = request.method

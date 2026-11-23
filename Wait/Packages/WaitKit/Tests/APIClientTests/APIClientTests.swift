@@ -55,6 +55,13 @@ struct APIClientTests {
   }
 
   @Test
+  func searchPercentEncodesPlusSoTheServerDoesNotReadItAsASpace() async throws {
+    let (api, base) = client(path: "/api/market/search", json: try fixture("search"))
+    _ = try await api.search("a+b c")
+    #expect(lastRequest(base)?.url?.query() == "q=a%2Bb%20c")
+  }
+
+  @Test
   func searchAndProfileDecode() async throws {
     let (searchAPI, _) = client(path: "/api/market/search", json: try fixture("search"))
     #expect(try await searchAPI.search("app").results.map(\.symbol) == ["AAPL"])

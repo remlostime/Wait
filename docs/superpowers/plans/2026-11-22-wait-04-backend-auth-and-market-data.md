@@ -6222,11 +6222,11 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `Config/Base.xcconfig`, `Config/Secrets.example.xcconfig`, `Wait/Info.plist`, `project.yml` (a Debug-only ATS build phase) and the regenerated `Wait.xcodeproj`
 - Test: `Packages/WaitKit/Tests/MarketDataClientTests/BackendMarketDataTests.swift`
 
-- [ ] **Step 1: Add the dependency**
+- [x] **Step 1: Add the dependency**
 
 In `Package.swift`, add `"APIClient"` to the `dependencies` of the `MarketDataClient` target and of the `MarketDataClientTests` test target. The test target then reads `["MarketDataClient", "Domain", "APIClient", .dependencies, .dependenciesTestSupport]`, plus plan 02's `resources:`.
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `Packages/WaitKit/Tests/MarketDataClientTests/BackendMarketDataTests.swift`:
 ```swift
@@ -6377,12 +6377,12 @@ struct BackendMarketDataTests {
 }
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [ ] **Step 3: Run the tests to verify they fail** — NOT RUN (code-only; the /tmp harness build failed with `type 'MarketDataClient' has no member 'backend'`)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests/BackendMarketDataTests`
 Expected: the build fails with `type 'MarketDataClient' has no member 'backend'`.
 
-- [ ] **Step 4: Implement the adapter**
+- [x] **Step 4: Implement the adapter**
 
 Create `Packages/WaitKit/Sources/MarketDataClient/Backend/BackendMarketData.swift`:
 ```swift
@@ -6540,12 +6540,12 @@ extension CompanyProfile {
 }
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [ ] **Step 5: Run the tests to verify they pass** — NOT RUN (code-only; /tmp Swift Testing harness: 8/8 BackendMarketDataTests pass)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests`
 Expected: `** TEST SUCCEEDED **`. The 8 new tests pass, and so do all of plan 02's MarketDataClient suites.
 
-- [ ] **Step 6: Swap the live value to the backend**
+- [x] **Step 6: Swap the live value to the backend**
 
 In `Packages/WaitKit/Sources/MarketDataClient/MarketDataClient.swift`:
 1. Add `import APIClient` with the other imports.
@@ -6561,7 +6561,7 @@ extension MarketDataClient: DependencyKey {
 }
 ```
 
-- [ ] **Step 7: Point the app at the backend `(manual: user)` for the host**
+- [ ] **Step 7: Point the app at the backend `(manual: user)` for the host** — SKIPPED (manual): host unknown until Task 21. Done without it: `WaitAPIBaseURL` in Info.plist, an empty `WAIT_API_BASE_URL =` default in `Base.xcconfig`, the local override line in `Secrets.example.xcconfig`. Still to do: set `WAIT_API_BASE_URL = https:/$()/<host>` in `Base.xcconfig`.
 
 Ask the user for the production host from Task 21 Step 6, for example `wait-server.vercel.app`. Then run:
 ```bash
@@ -6585,7 +6585,7 @@ Expected:
 - The default line `WAIT_API_BASE_URL = https:/$()/<host>` comes **above** the `#include?` line, so a local `Secrets.xcconfig` can override it.
 - `plutil -p` shows `"WaitAPIBaseURL" => "$(WAIT_API_BASE_URL)"`.
 
-- [ ] **Step 8: Allow local networking in Debug builds only (risk 27)**
+- [ ] **Step 8: Allow local networking in Debug builds only (risk 27)** — PARTLY DONE: Debug-only ATS `postBuildScripts` added to `project.yml` and `xcodegen generate` run; the Debug/Release `xcodebuild` plist check and `scripts/build-app.sh` are NOT RUN (code-only)
 
 `Wait/Info.plist` is shared by every configuration, and ATS keys are booleans inside a dictionary, which build-setting substitution can't express. So the Debug-only key is added to the **built** Info.plist by a build phase:
 - The phase runs before code signing.
@@ -6624,7 +6624,7 @@ Expected:
 Then run: `cd /Users/ckai/code/Wait && scripts/build-app.sh`
 Expected: `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
