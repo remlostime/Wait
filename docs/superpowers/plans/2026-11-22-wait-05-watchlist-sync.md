@@ -466,7 +466,7 @@ MSG
 - Create: `server/migrations/003_watchlist.sql`
 - Test: `server/test/db/migration003.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/db/migration003.test.ts`:
 ```ts
@@ -503,14 +503,14 @@ describe("003_watchlist.sql", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test and confirm it fails**
+- [x] **Step 2: Run the test and confirm it fails**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/db/migration003.test.ts`
 Expected: FAIL.
 - The first test reports `expected [] to deeply equal [ 'user_id', … ]`.
 - The second reports `relation "watchlist_items" does not exist`.
 
-- [ ] **Step 3: Write the migration**
+- [x] **Step 3: Write the migration**
 
 Create `server/migrations/003_watchlist.sql`. The SQL is copied verbatim from overview §8.3:
 ```sql
@@ -529,12 +529,12 @@ CREATE INDEX IF NOT EXISTS idx_watchlist_live_symbol ON watchlist_items(symbol) 
 ```
 `trim` is a Postgres column-name keyword. It's legal as a column name. Every query in this plan quotes it as `"trim"` to be safe in every position.
 
-- [ ] **Step 4: Run the test and confirm it passes**
+- [x] **Step 4: Run the test and confirm it passes**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/db/migration003.test.ts`
 Expected: PASS, `Tests  2 passed (2)`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
