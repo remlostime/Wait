@@ -1612,7 +1612,7 @@ EOF
 - Delete: `Wait/Networking/Info.plist`, `Wait/Networking/Networking.h`
 - Modify: `Wait/Packages/WaitKit/Sources/Networking/StockCurrentQuoteNetworkClient.swift` (drop the unused `import Alamofire`), `Wait/Packages/WaitKit/Package.swift`, `Wait/project.yml`
 
-- [ ] **Step 1: Move the sources and drop the unused Alamofire import**
+- [x] **Step 1: Move the sources and drop the unused Alamofire import**
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/CacheService Packages/WaitKit/Sources/Networking \
@@ -1624,7 +1624,7 @@ cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/CacheService 
 ```
 Expected: `4` (Combine, Foundation, Logging, Model).
 
-- [ ] **Step 2: Replace `Wait/Packages/WaitKit/Package.swift`**
+- [x] **Step 2: Replace `Wait/Packages/WaitKit/Package.swift`**
 
 ```swift
 // swift-tools-version: 6.1
@@ -1668,7 +1668,7 @@ let package = Package(
 )
 ```
 
-- [ ] **Step 3: Update `Wait/project.yml`**
+- [x] **Step 3: Update `Wait/project.yml`**
 
 1. Delete the `Networking:` and `CacheService:` target entries completely: name, `templates`, and every dependency line.
 2. Replace every `      - target: CacheService` with the CacheService product entry, in `StockCharts`, `Checklist`, `StockDetailsFeature`, `WaitWidgetExtension` and `Wait`:
@@ -1688,7 +1688,7 @@ cd /Users/ckai/code/Wait/Wait && grep -nE "target: (CacheService|Networking)$" p
 ```
 Expected: no output, then `5`, then `4`.
 
-- [ ] **Step 4: Regenerate, then build and test**
+- [ ] **Step 4: Regenerate, then build and test** — NOT RUN (code-only; xcodegen only)
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 \
@@ -1696,7 +1696,7 @@ cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 \
 ```
 Expected: `Created project at …` and `** BUILD SUCCEEDED **`. Repeat the Package.resolved check from Task 2 Step 3, then run commands B, C and E with the same expectations as Task 7 Step 6.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add -A Wait && git status --short | grep -v '^[RMAD] ' ; git commit -m "$(cat <<'EOF'

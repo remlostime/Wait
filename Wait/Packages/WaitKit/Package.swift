@@ -21,6 +21,8 @@ let package = Package(
     .library(name: "DesignSystem", targets: ["DesignSystem"]),
     .library(name: "Logging", targets: ["Logging"]),
     .library(name: "Model", targets: ["Model"]),
+    .library(name: "CacheService", targets: ["CacheService"]),
+    .library(name: "Networking", targets: ["Networking"]),
   ],
   dependencies: [
     // Legacy only — removed at the plan 02 cutover.
@@ -30,6 +32,8 @@ let package = Package(
     .target(name: "DesignSystem", swiftSettings: legacySettings),
     .target(name: "Logging"),
     .target(name: "Model", dependencies: ["DesignSystem", .money], swiftSettings: legacySettings),
+    .target(name: "CacheService", dependencies: ["Model", "Logging"], swiftSettings: legacySettings),
+    .target(name: "Networking", dependencies: ["Model", "Logging"], swiftSettings: legacySettings),
   ],
   swiftLanguageModes: [.v6]
 )

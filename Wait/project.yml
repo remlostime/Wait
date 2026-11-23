@@ -69,26 +69,13 @@ targetTemplates:
 targets:
   UI:
     templates: [Framework]
-  Networking:
-    templates: [Framework]
-    dependencies:
-      - package: WaitKit
-        product: Model
-      - package: WaitKit
-        product: Logging
-      - package: Alamofire
-  CacheService:
-    templates: [Framework]
-    dependencies:
-      - package: WaitKit
-        product: Model
-      - package: WaitKit
-        product: Logging
   StockCharts:
     templates: [Framework]
     dependencies:
-      - target: CacheService
-      - target: Networking
+      - package: WaitKit
+        product: CacheService
+      - package: WaitKit
+        product: Networking
       - package: WaitKit
         product: Model
       - package: WaitKit
@@ -101,7 +88,8 @@ targets:
   Checklist:
     templates: [Framework]
     dependencies:
-      - target: CacheService
+      - package: WaitKit
+        product: CacheService
       - package: WaitKit
         product: DesignSystem
       - package: WaitKit
@@ -127,8 +115,10 @@ targets:
   StockDetailsFeature:
     templates: [Framework]
     dependencies:
-      - target: CacheService
-      - target: Networking
+      - package: WaitKit
+        product: CacheService
+      - package: WaitKit
+        product: Networking
       - package: WaitKit
         product: Logging
       - target: Checklist
@@ -185,8 +175,10 @@ targets:
         product: Logging
       - package: WaitKit
         product: DesignSystem
-      - target: Networking
-      - target: CacheService
+      - package: WaitKit
+        product: Networking
+      - package: WaitKit
+        product: CacheService
       - package: Alamofire
       - package: SwiftyJSON
       - sdk: SwiftUI.framework
@@ -246,7 +238,8 @@ targets:
       - target: UI
       - package: WaitKit
         product: Model
-      - target: Networking
+      - package: WaitKit
+        product: Networking
       - package: WaitKit
         product: DesignSystem
       - package: WaitKit
@@ -256,7 +249,8 @@ targets:
       - target: StockCharts
       - target: SettingsTab
       - target: StockDetailsFeature
-      - target: CacheService
+      - package: WaitKit
+        product: CacheService
       - target: WaitWidgetExtension
       - target: WaitWatch
         embed: true
