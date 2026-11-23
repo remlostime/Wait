@@ -402,7 +402,7 @@ EOF
 - Create: `Wait/Packages/WaitKit/Tests/ConnectivityTests/Support/FakeSessionAdapter.swift`
 - Test: `Wait/Packages/WaitKit/Tests/ConnectivityTests/ConnectivityEngineTests.swift`
 
-- [ ] **Step 1: Write the fake session**
+- [x] **Step 1: Write the fake session**
 
 Create `Wait/Packages/WaitKit/Tests/ConnectivityTests/Support/FakeSessionAdapter.swift`:
 
@@ -505,7 +505,7 @@ final class FakeSessionAdapter: WCSessionAdapter, Sendable {
 }
 ```
 
-- [ ] **Step 2: Write the failing engine tests**
+- [x] **Step 2: Write the failing engine tests**
 
 Create `Wait/Packages/WaitKit/Tests/ConnectivityTests/ConnectivityEngineTests.swift`:
 
@@ -691,7 +691,7 @@ struct ConnectivityEngineTests {
 }
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [ ] **Step 3: Run the tests to verify they fail** — NOT RUN (code-only; checked in the /tmp harness instead: RED = `cannot find 'ConnectivityEngine' in scope`)
 
 Run:
 ```bash
@@ -701,7 +701,7 @@ cd /Users/ckai/code/Wait/Wait/Packages/WaitKit && xcodebuild test -scheme WaitKi
 ```
 Expected: FAIL with compile errors `cannot find type 'WCSessionAdapter' in scope` and `cannot find 'ConnectivityEngine' in scope`.
 
-- [ ] **Step 4: Write the adapter protocol**
+- [x] **Step 4: Write the adapter protocol**
 
 Create `Wait/Packages/WaitKit/Sources/Connectivity/WCSessionAdapter.swift`:
 
@@ -741,7 +741,7 @@ public protocol WCSessionAdapter: AnyObject, Sendable {
 }
 ```
 
-- [ ] **Step 5: Implement the engine**
+- [x] **Step 5: Implement the engine**
 
 Create `Wait/Packages/WaitKit/Sources/Connectivity/ConnectivityEngine.swift`:
 
@@ -890,12 +890,12 @@ public final class ConnectivityEngine: Sendable {
 }
 ```
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [ ] **Step 6: Run the tests to verify they pass** — NOT RUN (code-only; checked in the /tmp harness instead: GREEN = 16 of 16 pass, 11 engine + 5 coding, stable over 31 runs)
 
 Run: the same command as Step 3.
 Expected: PASS. `** TEST SUCCEEDED **`, with all 11 `ConnectivityEngineTests` passing plus the 5 `SnapshotCodingTests`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
