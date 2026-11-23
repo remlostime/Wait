@@ -1439,7 +1439,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/db/types.ts`, `server/src/db/UserRepository.ts`, `server/src/db/NeonUserRepository.ts`, `server/src/db/MockUserRepository.ts`
 - Test: `server/test/db/UserRepository.test.ts`
 
-- [ ] **Step 1: Write the failing contract test, which runs against both implementations**
+- [x] **Step 1: Write the failing contract test, which runs against both implementations**
 
 Create `server/test/db/UserRepository.test.ts`:
 ```ts
@@ -1501,12 +1501,12 @@ describe.each(implementations)("%s", (_name, make) => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/db/UserRepository.test.ts`
 Expected: FAIL with `Failed to load url ../../src/db/MockUserRepository.js`.
 
-- [ ] **Step 3: Implement the types, the interface and both repositories**
+- [x] **Step 3: Implement the types, the interface and both repositories**
 
 Create `server/src/db/types.ts`:
 ```ts
@@ -1613,12 +1613,12 @@ export class MockUserRepository implements UserRepository {
 }
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 Run: `npx vitest run test/db/UserRepository.test.ts && npm run typecheck`
 Expected: `8 passed` (4 cases × 2 implementations). Typecheck exits 0.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
