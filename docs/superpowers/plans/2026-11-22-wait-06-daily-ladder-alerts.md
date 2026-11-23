@@ -2666,7 +2666,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/apns/ApnsSender.ts`
 - Test: `server/test/apns/ApnsSender.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/apns/ApnsSender.test.ts`:
 ```ts
@@ -2812,12 +2812,12 @@ describe("ApnsSender", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/apns/ApnsSender.test.ts`
 Expected: FAIL with `Failed to load url ../../src/apns/ApnsSender.js`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 Create `server/src/apns/ApnsSender.ts`:
 ```ts
@@ -2943,12 +2943,12 @@ function describe(result: Attempt): { environment: ApnsEnvironment; status: numb
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `npx vitest run test/apns && npm run typecheck`
 Expected: PASS (all four `test/apns/*.test.ts` files; `Tests  27 passed (27)`).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add server/src/apns/ApnsSender.ts server/test/apns/ApnsSender.test.ts
