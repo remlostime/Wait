@@ -934,7 +934,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/test/support/pglite.ts`
 - Test: `server/test/db/sql.test.ts`, `server/test/db/migrations.test.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `server/test/db/sql.test.ts`:
 ```ts
@@ -1027,12 +1027,12 @@ describe("applyMigrations", () => {
 })
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `npx vitest run test/db`
 Expected: FAIL with `Failed to load url ../../src/db/sql.js` and `../support/pglite.js`.
 
-- [ ] **Step 3: Implement the `Sql` adapter**
+- [x] **Step 3: Implement the `Sql` adapter**
 
 Create `server/src/db/sql.ts`:
 ```ts
@@ -1073,7 +1073,7 @@ export function pgliteSql(db: QueryableDb): Sql {
 }
 ```
 
-- [ ] **Step 4: Implement the migration runner and migration 001**
+- [x] **Step 4: Implement the migration runner and migration 001**
 
 Create `server/src/db/migrations.ts`:
 ```ts
@@ -1180,7 +1180,7 @@ CREATE TABLE IF NOT EXISTS rate_buckets (
 );
 ```
 
-- [ ] **Step 5: Implement the test database helper**
+- [x] **Step 5: Implement the test database helper**
 
 Create `server/test/support/pglite.ts`:
 ```ts
@@ -1259,12 +1259,12 @@ export async function createTestDb(): Promise<TestDb> {
 }
 ```
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [x] **Step 6: Run the tests to verify they pass**
 
 Run: `npx vitest run test/db && npm run typecheck`
 Expected: `6 passed` (2 in `sql.test.ts`, 4 in `migrations.test.ts`). Typecheck exits 0.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
