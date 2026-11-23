@@ -7055,7 +7055,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/StockDetailsFeature/LadderEditorFeature.swift`, `LadderEditorView.swift`, `NotesEditorFeature.swift`, `NotesEditorView.swift`
 - Create: `Wait/Packages/WaitKit/Tests/StockDetailsFeatureTests/EditorFeatureTests.swift`
 
-- [ ] **Step 1: Update `Package.swift`.** Plan 01 renamed the legacy module to `LegacyStockDetails`, so the name `StockDetailsFeature` is free.
+- [x] **Step 1: Update `Package.swift`.** Plan 01 renamed the legacy module to `LegacyStockDetails`, so the name `StockDetailsFeature` is free.
   - Append to `products:`: `.library(name: "StockDetailsFeature", targets: ["StockDetailsFeature"]),`
   - Append to `targets:`:
     ```swift
@@ -7082,7 +7082,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
     ```
   - Create `Wait/Packages/WaitKit/Sources/StockDetailsFeature/LadderEditorFeature.swift` containing only the file header, so the package loads (SwiftPM rejects a target with no sources). Step 4 fills it in.
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/StockDetailsFeatureTests/EditorFeatureTests.swift`:
 ```swift
@@ -7175,12 +7175,12 @@ func dec(_ string: String) -> Decimal {
 }
 ```
 
-- [ ] **Step 3: Run the tests and confirm they fail**
+- [ ] **Step 3: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh StockDetailsFeatureTests`
 Expected FAIL: `error: cannot find 'LadderEditorFeature' in scope`.
 
-- [ ] **Step 4: Implement the reducers** (replace the header-only `LadderEditorFeature.swift`)
+- [x] **Step 4: Implement the reducers** (replace the header-only `LadderEditorFeature.swift`)
 
 `Wait/Packages/WaitKit/Sources/StockDetailsFeature/LadderEditorFeature.swift`:
 ```swift
@@ -7393,12 +7393,12 @@ public struct NotesEditorFeature {
 }
 ```
 
-- [ ] **Step 5: Run the tests and confirm they pass**
+- [ ] **Step 5: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh StockDetailsFeatureTests`
 Expected PASS: 7 tests pass.
 
-- [ ] **Step 6: Add the views** (`swiftui-expert:swiftui-expert-skill`)
+- [x] **Step 6: Add the views** (`swiftui-expert:swiftui-expert-skill`)
 
 `Wait/Packages/WaitKit/Sources/StockDetailsFeature/LadderEditorView.swift`:
 ```swift
@@ -7522,7 +7522,7 @@ public struct NotesEditorView: View {
   public var body: some View {
     Form {
       TextField("Write some notes…", text: $store.text, axis: .vertical)
-        .lineLimit(6 ...)
+        .lineLimit(6...)
     }
     .navigationTitle("Notes")
     .navigationBarTitleDisplayMode(.inline)
@@ -7542,12 +7542,12 @@ public struct NotesEditorView: View {
 }
 ```
 
-- [ ] **Step 7: Compile**
+- [ ] **Step 7: Compile** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh StockDetailsFeatureTests`
 Expected PASS: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/StockDetailsFeature Wait/Packages/WaitKit/Tests/StockDetailsFeatureTests
 git commit -m "feat(details): ladder and notes editor features with decimal input

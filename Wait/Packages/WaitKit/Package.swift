@@ -36,6 +36,7 @@ let package = Package(
     .library(name: "MarketDataClient", targets: ["MarketDataClient"]),
     .library(name: "ChecklistFeature", targets: ["ChecklistFeature"]),
     .library(name: "StockChartFeature", targets: ["StockChartFeature"]),
+    .library(name: "StockDetailsFeature", targets: ["StockDetailsFeature"]),
   ],
   dependencies: [
     .package(
@@ -113,6 +114,17 @@ let package = Package(
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
       ]
     ),
+    .target(
+      name: "StockDetailsFeature",
+      dependencies: [
+        "Domain",
+        "Persistence",
+        "MarketDataClient",
+        "StockChartFeature",
+        "DesignSystem",
+        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+      ]
+    ),
     .testTarget(name: "DomainTests", dependencies: ["Domain"], resources: [.copy("Fixtures")]),
     .testTarget(name: "LoggingTests", dependencies: ["Logging"]),
     .testTarget(name: "DesignSystemTests", dependencies: ["DesignSystem", "Domain"]),
@@ -150,6 +162,15 @@ let package = Package(
       name: "StockChartFeatureTests",
       dependencies: [
         "StockChartFeature",
+        "Domain",
+        "MarketDataClient",
+        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+      ]
+    ),
+    .testTarget(
+      name: "StockDetailsFeatureTests",
+      dependencies: [
+        "StockDetailsFeature",
         "Domain",
         "MarketDataClient",
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
