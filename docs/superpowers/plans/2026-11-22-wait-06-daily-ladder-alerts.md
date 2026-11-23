@@ -3319,7 +3319,7 @@ Expected result: evaluated 5, transitions 3 (AAPL, NVDA, TSLA), alertsCreated 2,
 
 AAPL's temperature: 10 + (172.1 − 150) / 25 × 20 = 27.68, so the push body ends in `· 28°`.
 
-- [ ] **Step 1: Write the shared scenario**
+- [x] **Step 1: Write the shared scenario**
 
 Create `server/test/support/alertScenario.ts`:
 ```ts
@@ -3366,7 +3366,7 @@ export class FakeCloseResolver implements CloseResolver {
 }
 ```
 
-- [ ] **Step 2: Write the failing unit test (Mock repositories)**
+- [x] **Step 2: Write the failing unit test (Mock repositories)**
 
 Create `server/test/services/AlertJobService.test.ts`:
 ```ts
@@ -3597,12 +3597,12 @@ describe("AlertJobService", () => {
 })
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run: `npx vitest run test/services/AlertJobService.test.ts`
 Expected: FAIL with `Failed to load url ../../src/services/AlertJobService.js`.
 
-- [ ] **Step 4: Implement the job**
+- [x] **Step 4: Implement the job**
 
 Create `server/src/services/AlertJobService.ts`:
 ```ts
@@ -3807,12 +3807,12 @@ function groupByUser(devices: DeviceToken[]): Map<string, DeviceToken[]> {
 }
 ```
 
-- [ ] **Step 5: Run the unit test to verify it passes**
+- [x] **Step 5: Run the unit test to verify it passes**
 
 Run: `npx vitest run test/services/AlertJobService.test.ts`
 Expected: PASS (`Tests  12 passed (12)`).
 
-- [ ] **Step 6: Write the PGlite integration test**
+- [x] **Step 6: Write the PGlite integration test**
 
 Create `server/test/services/AlertJobService.pglite.test.ts`. It runs the same scenario through the real SQL repositories:
 ```ts
@@ -3871,12 +3871,12 @@ describe("AlertJobService on PGlite", () => {
 })
 ```
 
-- [ ] **Step 7: Run the integration test and the full suite**
+- [x] **Step 7: Run the integration test and the full suite**
 
 Run: `npx vitest run test/services && npm test && npm run typecheck`
 Expected: PASS (`Tests  13 passed (13)` for the two job files), and the whole suite stays green.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add server/src/services/AlertJobService.ts server/test/support/alertScenario.ts server/test/services/AlertJobService.test.ts server/test/services/AlertJobService.pglite.test.ts
