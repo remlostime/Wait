@@ -33,9 +33,6 @@ packages:
   SnapshotTesting:
     url: https://github.com/pointfreeco/swift-snapshot-testing
     from: 1.0.0
-  SwiftyBeaver:
-    url: https://github.com/SwiftyBeaver/SwiftyBeaver
-    from: 1.9.4
   SwiftyJSON:
     url: https://github.com/SwiftyJSON/SwiftyJSON
     from: 5.0.1
@@ -72,10 +69,6 @@ targetTemplates:
 targets:
   UI:
     templates: [Framework]
-  Logging:
-    templates: [Framework]
-    dependencies:
-      - package: SwiftyBeaver
   Model:
     templates: [Framework]
     dependencies:
@@ -86,13 +79,15 @@ targets:
     templates: [Framework]
     dependencies:
       - target: Model
-      - target: Logging
+      - package: WaitKit
+        product: Logging
       - package: Alamofire
   CacheService:
     templates: [Framework]
     dependencies:
       - target: Model
-      - target: Logging
+      - package: WaitKit
+        product: Logging
   StockCharts:
     templates: [Framework]
     dependencies:
@@ -101,7 +96,8 @@ targets:
       - target: Model
       - package: WaitKit
         product: DesignSystem
-      - target: Logging
+      - package: WaitKit
+        product: Logging
       - package: Money
       - package: Alamofire
       - package: SwiftyJSON
@@ -112,12 +108,14 @@ targets:
       - package: WaitKit
         product: DesignSystem
       - target: Model
-      - target: Logging
+      - package: WaitKit
+        product: Logging
       - package: ComposableArchitecture
   ChecklistEditFeature:
     templates: [Framework]
     dependencies:
-      - target: Logging
+      - package: WaitKit
+        product: Logging
       - target: Model
       - package: ComposableArchitecture
   SettingsTab:
@@ -131,7 +129,8 @@ targets:
     dependencies:
       - target: CacheService
       - target: Networking
-      - target: Logging
+      - package: WaitKit
+        product: Logging
       - target: Checklist
       - package: WaitKit
         product: DesignSystem
@@ -175,7 +174,8 @@ targets:
           CODE_SIGN_ENTITLEMENTS: WaitWidgetExtensionRelease.entitlements
     dependencies:
       - target: Model
-      - target: Logging
+      - package: WaitKit
+        product: Logging
       - package: WaitKit
         product: DesignSystem
       - target: Networking
@@ -241,7 +241,8 @@ targets:
       - target: Networking
       - package: WaitKit
         product: DesignSystem
-      - target: Logging
+      - package: WaitKit
+        product: Logging
       - target: Checklist
       - target: ChecklistEditFeature
       - target: StockCharts
@@ -257,7 +258,6 @@ targets:
           destination: productsDirectory
           subpath: "$(CONTENTS_FOLDER_PATH)/Watch"
       - package: Alamofire
-      - package: SwiftyBeaver
       - package: SwiftyJSON
       - package: Money
       - package: ComposableArchitecture

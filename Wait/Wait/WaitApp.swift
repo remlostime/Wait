@@ -1,7 +1,6 @@
 // Created by kai_chen on 5/4/21.
 
 import DesignSystem
-import Logging
 import SettingsTab
 import SwiftUI
 
@@ -9,14 +8,6 @@ import SwiftUI
 
 @main
 struct WaitApp: App {
-  // MARK: Lifecycle
-
-  init() {
-    Logger.setupLogger()
-  }
-
-  // MARK: Internal
-
   var body: some Scene {
     WindowGroup {
       TabView {

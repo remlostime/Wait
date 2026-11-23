@@ -1334,7 +1334,7 @@ The existing call sites use `Logger.shared.verbose(...)` 8 times and `Logger.sha
 - Delete: `Wait/Logging/Info.plist`, `Wait/Logging/Logging.h`
 - Modify: `Wait/Packages/WaitKit/Package.swift`, `Wait/project.yml`, `Wait/Wait/WaitApp.swift`
 
-- [ ] **Step 1: Move the file**
+- [x] **Step 1: Move the file**
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/Logging \
@@ -1342,7 +1342,7 @@ cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/Logging \
   && git rm -q Logging/Info.plist Logging/Logging.h
 ```
 
-- [ ] **Step 2: Replace the contents of `Wait/Packages/WaitKit/Sources/Logging/LegacyLogger.swift`**
+- [x] **Step 2: Replace the contents of `Wait/Packages/WaitKit/Sources/Logging/LegacyLogger.swift`**
 
 ```swift
 //
@@ -1390,7 +1390,7 @@ public struct LegacyLogger: Sendable {
 }
 ```
 
-- [ ] **Step 3: Drop the logger setup from `Wait/Wait/WaitApp.swift`**
+- [x] **Step 3: Drop the logger setup from `Wait/Wait/WaitApp.swift`**
 
 Replace the whole file with:
 ```swift
@@ -1423,7 +1423,7 @@ struct WaitApp: App {
 }
 ```
 
-- [ ] **Step 4: Replace `Wait/Packages/WaitKit/Package.swift` with this version, which adds `Logging` in Swift 6 mode**
+- [x] **Step 4: Replace `Wait/Packages/WaitKit/Package.swift` with this version, which adds `Logging` in Swift 6 mode**
 
 ```swift
 // swift-tools-version: 6.1
@@ -1453,7 +1453,7 @@ let package = Package(
 )
 ```
 
-- [ ] **Step 5: Update `Wait/project.yml`**
+- [x] **Step 5: Update `Wait/project.yml`**
 
 1. Delete the `Logging:` target entry, all four lines:
    ```yaml
@@ -1476,7 +1476,7 @@ cd /Users/ckai/code/Wait/Wait && grep -nE "SwiftyBeaver|target: Logging$" projec
 ```
 Expected: no output from the first and last greps, and `8` in between.
 
-- [ ] **Step 6: Regenerate, then build and test**
+- [ ] **Step 6: Regenerate, then build and test** — NOT RUN (code-only; `xcodegen generate` ran OK, xcodebuild steps not run)
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 \
@@ -1486,7 +1486,7 @@ cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 \
 Expected: `Created project at …`. The schemes list now includes `WaitKit-Package`, `DesignSystem` and `Logging`. Then `** BUILD SUCCEEDED **`.
 Repeat the Package.resolved check from Task 2 Step 3, then run commands B, C and E. Expected: `** BUILD SUCCEEDED **`, `Executed 5 tests, with 0 failures`, and `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add -A Wait && git status --short | grep -v '^[RMAD] ' ; git commit -m "$(cat <<'EOF'

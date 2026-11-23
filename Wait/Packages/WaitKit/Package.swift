@@ -15,9 +15,11 @@ let package = Package(
   platforms: [.iOS(.v17), .watchOS(.v10)],
   products: [
     .library(name: "DesignSystem", targets: ["DesignSystem"]),
+    .library(name: "Logging", targets: ["Logging"]),
   ],
   targets: [
     .target(name: "DesignSystem", swiftSettings: legacySettings),
+    .target(name: "Logging"),
   ],
   swiftLanguageModes: [.v6]
 )
