@@ -3383,7 +3383,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/providers/tiingo.ts`, `server/test/support/fixtures/tiingo-daily-aapl.json`
 - Test: `server/test/providers/tiingo.test.ts`
 
-- [ ] **Step 1: Add the fixture**
+- [x] **Step 1: Add the fixture**
 
 Create `server/test/support/fixtures/tiingo-daily-aapl.json`:
 ```json
@@ -3394,7 +3394,7 @@ Create `server/test/support/fixtures/tiingo-daily-aapl.json`:
 ]
 ```
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `server/test/providers/tiingo.test.ts`:
 ```ts
@@ -3436,12 +3436,12 @@ describe("TiingoProvider", () => {
 })
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run: `npx vitest run test/providers/tiingo.test.ts`
 Expected: FAIL with `Failed to load url ../../src/providers/tiingo.js`.
 
-- [ ] **Step 4: Implement the adapter**
+- [x] **Step 4: Implement the adapter**
 
 Create `server/src/providers/tiingo.ts`:
 ```ts
@@ -3487,12 +3487,12 @@ export class TiingoProvider implements DailyBarsProvider {
 }
 ```
 
-- [ ] **Step 5: Run the test to verify it passes**
+- [x] **Step 5: Run the test to verify it passes**
 
 Run: `npx vitest run test/providers/tiingo.test.ts && npm run typecheck`
 Expected: `3 passed`, and typecheck exits 0.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
