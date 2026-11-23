@@ -1776,7 +1776,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/Domain/Date+Milliseconds.swift`, `ChecklistItem.swift`, `ChecklistTemplate.swift`, `LadderRevision.swift`, `WatchlistItem.swift`, `WatchlistSnapshot.swift`. All of these go under `Sources/Domain/`.
 - Create: `Wait/Packages/WaitKit/Tests/DomainTests/WatchlistModelTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/DomainTests/WatchlistModelTests.swift`:
 ```swift
@@ -1869,12 +1869,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests/WatchlistModelTests`
 Expected FAIL: `error: cannot find 'WatchlistItem' in scope`, along with `truncatedToMilliseconds`, `ChecklistItem` and `WatchlistSnapshot`.
 
-- [ ] **Step 3: Implement `Date+Milliseconds.swift`**
+- [x] **Step 3: Implement `Date+Milliseconds.swift`**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -1901,7 +1901,7 @@ public extension Date {
 }
 ```
 
-- [ ] **Step 4: Implement `ChecklistItem.swift`**
+- [x] **Step 4: Implement `ChecklistItem.swift`**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -1943,7 +1943,7 @@ public struct ChecklistItem: Codable, Equatable, Hashable, Identifiable, Sendabl
 }
 ```
 
-- [ ] **Step 5: Implement `ChecklistTemplate.swift`.** The prompts are copied verbatim from legacy `Model/ChecklistItem.swift` `allItems`.
+- [x] **Step 5: Implement `ChecklistTemplate.swift`.** The prompts are copied verbatim from legacy `Model/ChecklistItem.swift` `allItems`.
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -1984,7 +1984,7 @@ public enum ChecklistTemplate {
 }
 ```
 
-- [ ] **Step 6: Implement `LadderRevision.swift`**
+- [x] **Step 6: Implement `LadderRevision.swift`**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -2014,7 +2014,7 @@ public struct LadderRevision: Codable, Equatable, Sendable {
 }
 ```
 
-- [ ] **Step 7: Implement `WatchlistItem.swift`**
+- [x] **Step 7: Implement `WatchlistItem.swift`**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -2124,7 +2124,7 @@ extension WatchlistItem: Codable {
 }
 ```
 
-- [ ] **Step 8: Implement `WatchlistSnapshot.swift`**
+- [x] **Step 8: Implement `WatchlistSnapshot.swift`**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -2253,12 +2253,12 @@ extension WatchlistSnapshot.Row: Codable {
 }
 ```
 
-- [ ] **Step 9: Run the tests and confirm they pass**
+- [ ] **Step 9: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests`
 Expected PASS: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/Domain Wait/Packages/WaitKit/Tests/DomainTests
 git commit -m "feat(domain): watchlist item, checklist template, snapshot and ms timestamps
