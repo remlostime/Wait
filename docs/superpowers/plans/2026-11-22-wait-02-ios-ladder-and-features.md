@@ -2577,11 +2577,11 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 `LegacyLogger.swift` from plan 01 stays until the cutover (Task 29). Legacy code keeps calling `Logger.shared`, and new code uses `Log.<channel>`.
 
-- [ ] **Step 1: Update `Package.swift`**
+- [x] **Step 1: Update `Package.swift`**
   - Add `.testTarget(name: "LoggingTests", dependencies: ["Logging"]),` to `targets:`.
   - If `products:` has no `Logging` library, add `.library(name: "Logging", targets: ["Logging"]),`.
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 `Wait/Packages/WaitKit/Tests/LoggingTests/LogTests.swift`:
 ```swift
@@ -2604,12 +2604,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 3: Run the test and confirm it fails**
+- [ ] **Step 3: Run the test and confirm it fails** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh LoggingTests`
 Expected FAIL: `error: cannot find 'Log' in scope`.
 
-- [ ] **Step 4: Implement.** The legacy shim in this module may define its own `Logger` type, so always write `os.Logger` with its module prefix.
+- [x] **Step 4: Implement.** The legacy shim in this module may define its own `Logger` type, so always write `os.Logger` with its module prefix.
 
 `Wait/Packages/WaitKit/Sources/Logging/Log.swift`:
 ```swift
@@ -2667,12 +2667,12 @@ public enum Log {
 }
 ```
 
-- [ ] **Step 5: Run the test and confirm it passes**
+- [ ] **Step 5: Run the test and confirm it passes** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh LoggingTests`
 Expected PASS: 1 test passes.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/Logging/Log.swift Wait/Packages/WaitKit/Tests/LoggingTests
 git commit -m "feat(logging): os.Logger channels for new targets
