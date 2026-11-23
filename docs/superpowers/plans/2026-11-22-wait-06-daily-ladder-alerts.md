@@ -1741,7 +1741,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/services/DailyCloseResolver.ts`
 - Test: `server/test/services/DailyCloseResolver.test.ts`
 
-- [ ] **Step 1: Write the shared fakes**
+- [x] **Step 1: Write the shared fakes**
 
 Create `server/test/support/alertFakes.ts`:
 ```ts
@@ -1819,7 +1819,7 @@ export class RecordingLogger {
 ```
 Tests use plan 04's `fixedClock(new Date(…))` from `src/lib/clock.ts` wherever they need a clock they can move.
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `server/test/services/DailyCloseResolver.test.ts`:
 ```ts
@@ -1928,12 +1928,12 @@ describe("DailyCloseResolver", () => {
 })
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run: `npx vitest run test/services/DailyCloseResolver.test.ts`
 Expected: FAIL with `Failed to load url ../../src/services/DailyCloseResolver.js`.
 
-- [ ] **Step 4: Implement the resolver**
+- [x] **Step 4: Implement the resolver**
 
 Create `server/src/lib/logSink.ts`, the logger shape that the alert job, resolver and sender accept:
 ```ts
@@ -2059,12 +2059,12 @@ async function mapWithConcurrency<T, R>(items: T[], limit: number, work: (item: 
 }
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `npx vitest run test/services/DailyCloseResolver.test.ts && npm run typecheck`
 Expected: PASS (`Tests  9 passed (9)`).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add server/src/lib/logSink.ts server/src/services/DailyCloseResolver.ts server/test/services/DailyCloseResolver.test.ts server/test/support/alertFakes.ts
