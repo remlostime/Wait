@@ -2188,7 +2188,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `server/src/routes/api/auth.ts`
 - Test: `server/test/routes/account.test.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `server/test/routes/account.test.ts`:
 ```ts
@@ -2241,12 +2241,12 @@ describe("DELETE /api/auth/account", () => {
 })
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `npx vitest run test/routes/account.test.ts`
 Expected: FAIL. All 3 tests get `404` / `NOT_FOUND` where they expect `401` or `204`, because the route doesn't exist yet.
 
-- [ ] **Step 3: Add the route**
+- [x] **Step 3: Add the route**
 
 In `server/src/routes/api/auth.ts`:
 1. Add these imports:
@@ -2270,17 +2270,17 @@ import { buildAuthMiddleware } from "../../middleware/auth.js"
 ```
 Every 204 route in these plans uses `reply.status(204).send(null)`. Calling `send()` with no argument is a TS2554 error, and Fastify sends no body on a 204 anyway.
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `npx vitest run test/routes/account.test.ts`
 Expected: `3 passed`.
 
-- [ ] **Step 5: Run the whole suite and typecheck**
+- [x] **Step 5: Run the whole suite and typecheck**
 
 Run: `npm test && npm run typecheck`
 Expected: every test file passes, and typecheck exits 0.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
