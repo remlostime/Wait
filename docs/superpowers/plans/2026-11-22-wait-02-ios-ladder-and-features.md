@@ -1205,7 +1205,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/Domain/MarketTypes.swift`, `Wait/Packages/WaitKit/Sources/Domain/MarketCalendar.swift`
 - Create: `Wait/Packages/WaitKit/Tests/DomainTests/MarketCalendarTests.swift`, `Wait/Packages/WaitKit/Tests/DomainTests/MarketTypesCodingTests.swift`
 
-- [ ] **Step 1: Write the failing tests.** All the expected UTC instants below were cross-checked with Python `zoneinfo`.
+- [x] **Step 1: Write the failing tests.** All the expected UTC instants below were cross-checked with Python `zoneinfo`.
 
 `Wait/Packages/WaitKit/Tests/DomainTests/MarketCalendarTests.swift`:
 ```swift
@@ -1297,12 +1297,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests/MarketCalendarTests DomainTests/MarketTypesCodingTests`
 Expected FAIL: `error: cannot find 'MarketCalendar' in scope` and `cannot find 'Quote' in scope`.
 
-- [ ] **Step 3: Implement `MarketCalendar.swift`**
+- [x] **Step 3: Implement `MarketCalendar.swift`**
 
 `Wait/Packages/WaitKit/Sources/Domain/MarketCalendar.swift`:
 ```swift
@@ -1382,7 +1382,7 @@ public enum MarketCalendar {
 }
 ```
 
-- [ ] **Step 4: Implement `MarketTypes.swift`**
+- [x] **Step 4: Implement `MarketTypes.swift`**
 
 `Wait/Packages/WaitKit/Sources/Domain/MarketTypes.swift`:
 ```swift
@@ -1755,12 +1755,12 @@ extension CompanyProfile: Codable {
 }
 ```
 
-- [ ] **Step 5: Run the tests and confirm they pass**
+- [ ] **Step 5: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests`
 Expected PASS: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/Domain Wait/Packages/WaitKit/Tests/DomainTests
 git commit -m "feat(domain): market value types and DST-aware MarketCalendar
