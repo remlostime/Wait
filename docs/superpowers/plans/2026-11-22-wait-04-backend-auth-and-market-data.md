@@ -3999,7 +3999,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `server/src/services/MarketDataService.ts`
 - Test: `server/test/services/MarketDataService.history.test.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `server/test/services/MarketDataService.history.test.ts`:
 ```ts
@@ -4094,12 +4094,12 @@ describe("getHistory 1M / 1Y / 5Y (Tiingo daily5y)", () => {
 })
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `npx vitest run test/services/MarketDataService.history.test.ts`
 Expected: FAIL. `deriveDailyRange`/`isoWeekKey` aren't exported, and `service.getHistory is not a function`.
 
-- [ ] **Step 3: Implement `getHistory`**
+- [x] **Step 3: Implement `getHistory`**
 
 In `server/src/services/MarketDataService.ts`, add these imports below the existing ones:
 ```ts
@@ -4220,12 +4220,12 @@ Then add these methods inside `MarketDataService`, after `getQuotes`:
   }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `npx vitest run test/services && npm run typecheck`
 Expected: every service test passes, including `7 passed` in the history file. Typecheck exits 0.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait

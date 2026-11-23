@@ -13,6 +13,10 @@ import {
   type SymbolSearchProvider,
 } from "../providers/types.js"
 import { PROVIDER_BUCKETS, type BucketPolicy, type RateLimiter } from "./RateLimiter.js"
+import type { HistorySeries } from "../db/MarketCacheRepository.js"
+import { etDateString, isRegularSessionTime, lastSessionOpen } from "../domain/marketCalendar.js"
+import type { CacheKind } from "../domain/ttl.js"
+import type { Bar } from "../providers/types.js"
 
 export interface MarketProviders {
   quotes: QuoteProvider
@@ -87,6 +91,42 @@ function toQuoteDTO(entry: CacheEntry<ProviderQuote>, stale: boolean): QuoteDTO 
     source: entry.provider,
     stale,
   }
+}
+
+export const CHART_RANGES = ["1D", "1W", "1M", "1Y", "5Y"] as const
+export type ChartRange = (typeof CHART_RANGES)[number]
+
+/** Wire shape of GET /api/market/history (overview §8.4). */
+export interface HistoryResult {
+  symbol: string
+  range: ChartRange
+  points: Bar[]
+  source: string
+  asOf: string
+  stale: boolean
+  delayedMinutes: number | null
+}
+
+const SIP_DELAY_MS = 16 * 60_000
+const FIVE_YEARS_MS = (5 * 365 + 7) * 86_400_000
+
+export function isoWeekKey(iso: string): string {
+  const source = new Date(iso)
+  const d = new Date(Date.UTC(source.getUTCFullYear(), source.getUTCMonth(), source.getUTCDate()))
+  const weekday = d.getUTCDay() || 7
+  d.setUTCDate(d.getUTCDate() + 4 - weekday)
+  const yearStart = Date.UTC(d.getUTCFullYear(), 0, 1)
+  const week = Math.ceil(((d.getTime() - yearStart) / 86_400_000 + 1) / 7)
+  return `${d.getUTCFullYear()}-W${String(week).padStart(2, "0")}`
+}
+
+/** 1M = last 22 closes, 1Y = last 252, 5Y = last close of each ISO week. Input oldest first. */
+export function deriveDailyRange(bars: Bar[], range: "1M" | "1Y" | "5Y"): Bar[] {
+  if (range === "1M") return bars.slice(-22)
+  if (range === "1Y") return bars.slice(-252)
+  const byWeek = new Map<string, Bar>()
+  for (const bar of bars) byWeek.set(isoWeekKey(bar.t), bar)
+  return [...byWeek.values()]
 }
 
 export class MarketDataService {
@@ -171,5 +211,74 @@ export class MarketDataService {
     if (quotes.length === 0 && rateLimitedFor !== undefined) throw rateLimitedError(rateLimitedFor)
     if (quotes.length === 0 && providerUnavailable) throw unavailableError()
     return { quotes, missing }
+  }
+
+  async getHistory(symbol: string, range: ChartRange): Promise<HistoryResult> {
+    if (range === "1D" || range === "1W") {
+      const { entry, stale } = await this.cachedSeries(symbol, range, range === "1D" ? "history1D" : "history1W", "alpaca", [PROVIDER_BUCKETS.alpaca], () =>
+        this.loadIntraday(symbol, range),
+      )
+      return { symbol, range, points: entry.payload, source: entry.provider, asOf: entry.fetchedAt.toISOString(), stale, delayedMinutes: 15 }
+    }
+    const { entry, stale } = await this.cachedSeries(symbol, "daily5y", "daily5y", "tiingo", [PROVIDER_BUCKETS.tiingoHour, PROVIDER_BUCKETS.tiingoDay], () => {
+      const now = this.deps.clock.now()
+      return this.deps.providers.daily.getDailyBars(symbol, etDateString(new Date(now.getTime() - FIVE_YEARS_MS)), etDateString(now))
+    })
+    return {
+      symbol,
+      range,
+      points: deriveDailyRange(entry.payload, range),
+      source: entry.provider,
+      asOf: entry.fetchedAt.toISOString(),
+      stale,
+      delayedMinutes: null,
+    }
+  }
+
+  /**
+   * 1D = the latest session with delayed data; 1W = the last five sessions. The calendar has no holiday
+   * table, so an empty window (Thanksgiving, an early close) steps back one session at a time, up to
+   * 5 weekdays, before giving up. A valid symbol never gets 404 on a holiday.
+   */
+  private async loadIntraday(symbol: string, range: "1D" | "1W"): Promise<Bar[]> {
+    const now = this.deps.clock.now()
+    const timeframe = range === "1D" ? "5Min" : "30Min"
+    let open = lastSessionOpen(new Date(now.getTime() - SIP_DELAY_MS))
+    let end = now
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      let start = open
+      if (range === "1W") {
+        for (let i = 1; i < 5; i += 1) start = lastSessionOpen(new Date(start.getTime() - 1))
+      }
+      const bars = await this.deps.providers.intraday.getIntradayBars(symbol, timeframe, start, end)
+      const regular = bars.filter((bar) => isRegularSessionTime(new Date(bar.t)))
+      if (regular.length > 0) return regular
+      end = open
+      open = lastSessionOpen(new Date(open.getTime() - 1))
+    }
+    return []
+  }
+
+  private async cachedSeries(
+    symbol: string,
+    series: HistorySeries,
+    kind: CacheKind,
+    provider: string,
+    buckets: Bucket[],
+    load: () => Promise<Bar[]>,
+  ): Promise<{ entry: CacheEntry<Bar[]>; stale: boolean }> {
+    const now = this.deps.clock.now()
+    const cached = await this.deps.cache.getHistory(symbol, series)
+    if (cached && cached.expiresAt.getTime() > now.getTime()) return { entry: cached, stale: false }
+    const outcome = await this.coalesce(`history:${symbol}:${series}`, () => this.callProvider(buckets, load))
+    if (outcome.ok && outcome.value.length > 0) {
+      const entry: CacheEntry<Bar[]> = { payload: outcome.value, provider, fetchedAt: now, expiresAt: expiresAt(kind, now) }
+      await this.deps.cache.putHistory(symbol, series, entry)
+      return { entry, stale: false }
+    }
+    if (cached) return { entry: cached, stale: true }
+    if (outcome.ok || outcome.reason === "not_found") throw new AppError("NOT_FOUND", `No price history for ${symbol}`, 404)
+    if (outcome.reason === "rate_limited") throw rateLimitedError(outcome.retryAfterSec)
+    throw unavailableError()
   }
 }
