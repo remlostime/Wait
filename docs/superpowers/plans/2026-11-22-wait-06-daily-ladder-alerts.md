@@ -486,7 +486,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/migrations/004_alerts.sql`
 - Test: `server/test/db/migration004.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/db/migration004.test.ts`:
 ```ts
@@ -542,12 +542,12 @@ describe("004_alerts.sql", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/db/migration004.test.ts`
 Expected: FAIL with `relation "device_tokens" does not exist`, or an empty table list.
 
-- [ ] **Step 3: Write the migration**
+- [x] **Step 3: Write the migration**
 
 Create `server/migrations/004_alerts.sql`. It is copied verbatim from overview §8.3:
 ```sql
@@ -567,12 +567,12 @@ CREATE TABLE IF NOT EXISTS alert_job_runs (
   started_at TIMESTAMPTZ NOT NULL, finished_at TIMESTAMPTZ, stats JSONB NOT NULL DEFAULT '{}');
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `npx vitest run test/db/migration004.test.ts && npm test`
 Expected: PASS (`Tests  4 passed (4)`), and the full suite stays green.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add server/migrations/004_alerts.sql server/test/db/migration004.test.ts
