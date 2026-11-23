@@ -147,3 +147,45 @@ export function classifyStatus(ladder: LadderInput, price: number): LadderStatus
   if (buyHigh !== null && price <= buyHigh) return "BUY_ZONE"
   return "WATCH"
 }
+
+/** Statuses that can trigger a push (overview §7.3). */
+export type AlertStatus = "DEEP_BUY" | "BUY_ZONE" | "TRIM" | "SELL"
+
+const STATUS_RANK = {
+  DEEP_BUY: 0,
+  BUY_ZONE: 1,
+  WATCH: 2,
+  AT_OR_ABOVE_FAIR: 3,
+  TRIM: 4,
+  SELL: 5,
+} as const satisfies Record<Exclude<LadderStatus, "NO_ANCHORS">, number>
+
+const ALERT_STATUSES: readonly string[] = ["DEEP_BUY", "BUY_ZONE", "TRIM", "SELL"]
+
+/** Parses a stored status string (reusing plan 05's `LADDER_STATUSES`); unknown values become null. */
+export function parseLadderStatus(value: unknown): LadderStatus | null {
+  return typeof value === "string" && (LADDER_STATUSES as readonly string[]).includes(value) ? (value as LadderStatus) : null
+}
+
+export function isAlertStatus(value: string): value is AlertStatus {
+  return ALERT_STATUSES.includes(value)
+}
+
+/** DEEP_BUY = 0 … SELL = 5; NO_ANCHORS has no rank. */
+export function statusRank(status: LadderStatus): number | null {
+  return status === "NO_ANCHORS" ? null : STATUS_RANK[status]
+}
+
+/**
+ * Directional alert rule: push only when moving *down* into DEEP_BUY/BUY_ZONE or *up* into TRIM/SELL.
+ * A null previous status seeds silently.
+ */
+export function shouldAlert(previous: LadderStatus | null, next: LadderStatus): boolean {
+  if (previous === null || previous === next) return false
+  const previousRank = statusRank(previous)
+  const nextRank = statusRank(next)
+  if (previousRank === null || nextRank === null) return false
+  if ((next === "DEEP_BUY" || next === "BUY_ZONE") && nextRank < previousRank) return true
+  if ((next === "TRIM" || next === "SELL") && nextRank > previousRank) return true
+  return false
+}

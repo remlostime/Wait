@@ -53,16 +53,16 @@
 
 ## Prerequisites
 
-- [ ] **Worktree.**
+- [x] **Worktree.** Not created: the session rules say to work in place on `ck/sever` in `/Users/ckai/code/Wait`.
   - Use `superpowers:using-git-worktrees` to create a worktree off `ck/new-version`. Never `master`.
   - Every path below is relative to the worktree's root (`/Users/ckai/code/Wait` in the examples).
 - [ ] **Plans 01–05 are done.** Each of these must pass:
-  - `cd server && npm run typecheck && npm test` is green.
-  - The `WaitKit-Package` tests are green.
-  - `POST /api/watchlist/sync` is deployed.
-  - Migrations 001–003 are applied in production.
-- [ ] **(manual: user) Massive.** Sign up at https://massive.com (free "Basic" stocks plan) and copy the API key.
-- [ ] **(manual: user) APNs key.**
+  - `cd server && npm run typecheck && npm test` is green. (Server green: 209/209 on 2026-11-23.)
+  - The `WaitKit-Package` tests are green. (NOT RUN (code-only); plan 05 iOS (`SyncClient`) still pending.)
+  - `POST /api/watchlist/sync` is deployed. (server tests green; deploy pending, manual)
+  - Migrations 001–003 are applied in production. (server tests green; deploy pending, manual)
+- [ ] **(manual: user) Massive.** — SKIPPED (manual) Sign up at https://massive.com (free "Basic" stocks plan) and copy the API key.
+- [ ] **(manual: user) APNs key.** — SKIPPED (manual)
   1. Go to https://developer.apple.com/account/resources/authkeys/list and click **+**.
   2. Enable **Apple Push Notifications service (APNs)**, then **Continue → Register**.
   3. **Download** `AuthKey_<KEYID>.p8`. It can be downloaded only once.
@@ -71,9 +71,9 @@
      ```bash
      base64 -i AuthKey_<KEYID>.p8 | tr -d '\n'
      ```
-- [ ] **(manual: user) Cron secret.** Generate it with `openssl rand -hex 32`.
-- [ ] **(manual: user) Push capability.** In Certificates, IDs & Profiles → Identifiers → `com.chenkai.wait`, check that **Push Notifications** is enabled. Xcode's automatic signing usually turns it on once the entitlement is present; Task 23 checks it again.
-- [ ] **(manual: user) Local env.** Add these lines to `server/.env.local`, which is gitignored. Every config-loading command in this plan needs them.
+- [ ] **(manual: user) Cron secret.** — SKIPPED (manual) Generate it with `openssl rand -hex 32`.
+- [ ] **(manual: user) Push capability.** — SKIPPED (manual) In Certificates, IDs & Profiles → Identifiers → `com.chenkai.wait`, check that **Push Notifications** is enabled. Xcode's automatic signing usually turns it on once the entitlement is present; Task 23 checks it again.
+- [ ] **(manual: user) Local env.** — SKIPPED (manual) Add these lines to `server/.env.local`, which is gitignored. Every config-loading command in this plan needs them.
   ```
   MASSIVE_API_KEY=<massive key>
   CRON_SECRET=<64 hex chars>
@@ -183,7 +183,9 @@ Every `.run` closure captures its dependencies explicitly, e.g. `.run { [notific
 
 **Files:** none (read-only check)
 
-- [ ] **Step 1: Check the server names this plan depends on**
+- [x] **Step 1: Check the server names this plan depends on**
+
+> Result (2026-11-23): all 28 greps print `1`; the shouldAlert/parseLadderStatus/statusRank grep prints nothing; the config-builder grep prints one line per file (`test/config.test.ts:4`, `test/server.test.ts:3`, `test/support/app.ts:5`). No substitutions. The remaining table rows (`Clock`/`FixedClock`, `asNullableDate`, `AppError`, `MarketLogger`, `BucketPolicy`, `PROVIDER_BUCKETS.massive/.finnhub`, `QuoteProvider`, `Container` fields, `RouteOptions`) were also found as described.
 
 Run each line from `/Users/ckai/code/Wait/server`. Every line must print exactly one match. A `grep -c` printing `0` means the name differs: find the real one and substitute it (see the Interfaces table).
 ```bash
@@ -228,7 +230,10 @@ grep -n "const validEnv\|const env = {\|export const testConfig" test/config.tes
 ```
 Expected: one line for each of the three files.
 
-- [ ] **Step 2: Check the iOS names this plan depends on**
+- [x] **Step 2: Check the iOS names this plan depends on**
+
+> Result (2026-11-23), verified now: `scripts/test-waitkit.sh` (executable), the `.dependenciesTestSupport` helper (and `.tca`, `.dependencies`, `.dependenciesMacros`, `.sharing`), `Log.push`, `HTTPSession.post` (no-response overload), `HTTPSession.delete`, `APIClient.live(session:)`, `APIClient.misconfigured`, `HTTPSession.init(baseURL:session:anonymousID:)`, `AppDelegate` `lazy var store`, `AppFeature` `case .appDelegate(.didFinishLaunching):`, `ConnectivityClient.noop`, and `aps-environment` in both `Wait.entitlements` and `WaitRelease.entitlements` (not in `project.yml`, which only references the entitlement files). No substitutions.
+> Pending, verify before Chunk 7 (code not written yet): `Sources/SyncClient` with `SyncReport(pushed: Int = 0 …)` (plan 05); `SettingsFeature` `case task` and `syncNowTapped` (plan 05; today `SettingsFeature.Action` has only `checklistTemplateTapped` and `path`).
 
 Run each line from `/Users/ckai/code/Wait`. Each `grep -c` must print `1` or more:
 ```bash
@@ -249,7 +254,9 @@ grep -n "aps-environment" Wait/project.yml Wait/Wait/Wait.entitlements Wait/Wait
 ```
 Expected: `test-waitkit ok`, every count at least `1`, and at least one `aps-environment` line.
 
-- [ ] **Step 3: Confirm the baseline is green**
+- [x] **Step 3: Confirm the baseline is green** — server part only; `scripts/test-waitkit.sh` NOT RUN (code-only)
+
+> Result (2026-11-23): `npm run typecheck` exits 0; `npm test` 29 files, 209/209 passed.
 
 Run:
 ```bash
@@ -268,7 +275,7 @@ No commit for this task.
 - Modify: `server/src/domain/ladder.ts` (append at the end)
 - Test: `server/test/domain/shouldAlert.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/domain/shouldAlert.test.ts`:
 ```ts
@@ -330,12 +337,12 @@ describe("parseLadderStatus / isAlertStatus", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `cd /Users/ckai/code/Wait/server && npx vitest run test/domain/shouldAlert.test.ts`
 Expected: FAIL. The new exports don't exist yet, so vitest reports `… is not a function` or a missing-export error.
 
-- [ ] **Step 3: Implement the rule**
+- [x] **Step 3: Implement the rule**
 
 Append to `server/src/domain/ladder.ts`. It reuses the file's existing `LADDER_STATUSES` and `LadderStatus`, so don't redeclare them. If Task 1 found that plan 05 already exports `parseLadderStatus`, leave that function out.
 ```ts
@@ -382,12 +389,12 @@ export function shouldAlert(previous: LadderStatus | null, next: LadderStatus): 
 }
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 Run: `npx vitest run test/domain/shouldAlert.test.ts && npm run typecheck`
 Expected: PASS (`Tests  18 passed (18)`), and `tsc` exits 0.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add server/src/domain/ladder.ts server/test/domain/shouldAlert.test.ts
