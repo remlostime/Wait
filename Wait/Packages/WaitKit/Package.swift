@@ -57,7 +57,7 @@ let package = Package(
     .testTarget(name: "DesignSystemTests", dependencies: ["DesignSystem", "Domain"]),
     .testTarget(name: "PersistenceTests", dependencies: ["Persistence", "Domain", .sharing, .identifiedCollections, .dependenciesTestSupport]),
     .testTarget(name: "ConnectivityTests", dependencies: ["Connectivity", "Domain"]),
-    .testTarget(name: "MarketDataClientTests", dependencies: ["MarketDataClient", "Domain", .dependencies, .dependenciesTestSupport], resources: [.copy("Fixtures")]),
+    .testTarget(name: "MarketDataClientTests", dependencies: ["MarketDataClient", "Domain", .dependencies], resources: [.copy("Fixtures")]),
     .testTarget(name: "ChecklistFeatureTests", dependencies: ["ChecklistFeature", "Domain", "Persistence", .tca, .dependenciesTestSupport]),
     .testTarget(name: "StockChartFeatureTests", dependencies: ["StockChartFeature", "Domain", "MarketDataClient", .tca]),
     .testTarget(name: "StockDetailsFeatureTests", dependencies: ["StockDetailsFeature", "Domain", "MarketDataClient", .tca]),

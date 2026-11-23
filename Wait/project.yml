@@ -65,9 +65,10 @@ targets:
       - path: WaitWidget
     settings:
       base:
+        SWIFT_VERSION: "6.0"
         PRODUCT_BUNDLE_IDENTIFIER: com.chenkai.wait.WaitWidget
         INFOPLIST_FILE: WaitWidget/Info.plist
-        TARGETED_DEVICE_FAMILY: "1,2"
+        TARGETED_DEVICE_FAMILY: "1"
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME: WidgetBackground
         SKIP_INSTALL: YES
