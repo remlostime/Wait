@@ -16,7 +16,8 @@
 		28D7449E4F3A212BF732DD18 /* Money in Frameworks */ = {isa = PBXBuildFile; productRef = DC545A725082129FF2399D0F /* Money */; };
 		2E308C8D3AB37011DF6FA3A9 /* Connectivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EEC12710451DD1486B0D24 /* Connectivity.swift */; };
 		30471EC91141DB4E1F410BF9 /* Stock.swift in Sources */ = {isa = PBXBuildFile; fileRef = B426B64091352264298D6C7C /* Stock.swift */; };
-		334F3F89D2E59EA0A88AB2EE /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = 46FB6C74E7C60E25F4CD08F1 /* Logging */; };
+		334F3F89D2E59EA0A88AB2EE /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 4AC47668988F6798D9CF6531 /* DesignSystem */; };
+		390A3F85646E3724602129D4 /* WidgetRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5236369514DF6571E3BA305 /* WidgetRowView.swift */; };
 		46B8468BEFCC3840FA707F92 /* StockChartSnapshotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A33ECDB770EF2547F1290C8A /* StockChartSnapshotView.swift */; };
 		48A7F283F00B59C6EC843F04 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A1C4CF6ACABE2B1044D985 /* MainView.swift */; };
 		4B55064232407BC5BA1DC502 /* Networking in Frameworks */ = {isa = PBXBuildFile; productRef = 7DFC5A12F104EA60FF18A678 /* Networking */; };
@@ -24,10 +25,8 @@
 		5822B35D8C374709EE7DB4C7 /* WaitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA020FBB341E2CAB0E4DF41 /* WaitApp.swift */; };
 		5823E933825370304615B336 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = A853FD6412B87C6CAB59E176 /* SwiftyJSON */; };
 		585DBDB58971C70CE2AFFAF1 /* StockCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5596D7C449F935EB25D48146 /* StockCard.swift */; };
-		5949DA0E40718CC0F9D7331A /* Networking in Frameworks */ = {isa = PBXBuildFile; productRef = A0E8ECA3E873D206D8D8F1B5 /* Networking */; };
 		64D293F4A4167AF27B6AC9BA /* Model in Frameworks */ = {isa = PBXBuildFile; productRef = 6274BD95AE37F54EDBE90DE1 /* Model */; };
 		6A3D5F2EFB80A3AFB4C351B6 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 9FAD0E7761409BA4561840C0 /* DesignSystem */; };
-		6C73841B21050FDFBE13CCAF /* WidgetStockRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E478B4BDC31D2236A5414F50 /* WidgetStockRow.swift */; };
 		762DF6E2E25F5ADA611EBBA9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8EDC53D595167F3F43483AAF /* Assets.xcassets */; };
 		7636D4E7FC5422B74C563749 /* TradeAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A361D2F41410099492A2DF35 /* TradeAction.swift */; };
 		7A59ADCA66C41218DD9101E2 /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 9B00CBC5A571C467101E5FFD /* AppFeature */; };
@@ -38,7 +37,6 @@
 		8F38D1DD8F9C3A8B7D44A62C /* PriceHistoryNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BCCA8665E69189E130742DA /* PriceHistoryNetworkClient.swift */; };
 		94009C68E1CDCBE191E31B15 /* SearchStockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B7643939607DA8F9E8C7FAB /* SearchStockView.swift */; };
 		A1FDDF6D9811DB6B48A81BD4 /* SearchStockRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F54E5EAE2E5FDE57AB25A8CE /* SearchStockRow.swift */; };
-		A6262B69BE56AA69E8D7682E /* CacheService in Frameworks */ = {isa = PBXBuildFile; productRef = 1C5142790DB8AEC2C123D6CB /* CacheService */; };
 		A8B9E89A272DC96134E58CE8 /* StockRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35FB4ADCFCB65D9754289663 /* StockRow.swift */; };
 		A8DBDABF6CC11040F60FA1FF /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6A9021E06C9965E2793EA1B3 /* Launch Screen.storyboard */; };
 		ADE09A58096BD731D26305BA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D9628FA6879CD47DF60CA81 /* Assets.xcassets */; };
@@ -59,8 +57,8 @@
 		EE8C505870496BA16E7C5592 /* SearchStockDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6511BA59E33029054531DB7F /* SearchStockDataSource.swift */; };
 		F6556D944D65436DDE8C87AA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5D5536D9E34658D6A2B375FF /* Preview Assets.xcassets */; };
 		F6ED00E7B6D83F00922EA963 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF6FE02474D2F7C248F6AFB0 /* Assets.xcassets */; };
-		FA195D356152DBC3482F2252 /* Model in Frameworks */ = {isa = PBXBuildFile; productRef = 3611AE97F1D03A7D85FC5B24 /* Model */; };
-		FAD1F64ED89830EA4C8BE43C /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 4AC47668988F6798D9CF6531 /* DesignSystem */; };
+		FA195D356152DBC3482F2252 /* Persistence in Frameworks */ = {isa = PBXBuildFile; productRef = A1C8F406703BC250391A3E08 /* Persistence */; };
+		FAD1F64ED89830EA4C8BE43C /* Domain in Frameworks */ = {isa = PBXBuildFile; productRef = 35F477C55EE36B2F16C05F04 /* Domain */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -139,6 +137,7 @@
 		9B7643939607DA8F9E8C7FAB /* SearchStockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchStockView.swift; sourceTree = "<group>"; };
 		A33ECDB770EF2547F1290C8A /* StockChartSnapshotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockChartSnapshotView.swift; sourceTree = "<group>"; };
 		A361D2F41410099492A2DF35 /* TradeAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeAction.swift; sourceTree = "<group>"; };
+		A5236369514DF6571E3BA305 /* WidgetRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetRowView.swift; sourceTree = "<group>"; };
 		AB54621695C0F304B424D2BB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		B426B64091352264298D6C7C /* Stock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stock.swift; sourceTree = "<group>"; };
 		BCAF24F842C1E8D9CA8952AB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -147,7 +146,6 @@
 		C34DB7B30ACE23427504F9E0 /* WaitWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitWatchApp.swift; sourceTree = "<group>"; };
 		CBAF5ADE019A7B57FA021A99 /* PriceHistoryDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceHistoryDataSource.swift; sourceTree = "<group>"; };
 		D3EEC12710451DD1486B0D24 /* Connectivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connectivity.swift; sourceTree = "<group>"; };
-		E478B4BDC31D2236A5414F50 /* WidgetStockRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetStockRow.swift; sourceTree = "<group>"; };
 		E8AE94FB45C8D9A74A4D1799 /* SearchStockNetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchStockNetworkClient.swift; sourceTree = "<group>"; };
 		F54E5EAE2E5FDE57AB25A8CE /* SearchStockRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchStockRow.swift; sourceTree = "<group>"; };
 		FF6FE02474D2F7C248F6AFB0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -158,13 +156,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FAD1F64ED89830EA4C8BE43C /* DesignSystem in Frameworks */,
-				334F3F89D2E59EA0A88AB2EE /* Logging in Frameworks */,
-				FA195D356152DBC3482F2252 /* Model in Frameworks */,
-				A6262B69BE56AA69E8D7682E /* CacheService in Frameworks */,
-				5949DA0E40718CC0F9D7331A /* Networking in Frameworks */,
 				C7BC106A6DE61946D5AC9CE4 /* SwiftUI.framework in Frameworks */,
 				7AE3A33744C0DF7A3DFA9AA0 /* WidgetKit.framework in Frameworks */,
+				FAD1F64ED89830EA4C8BE43C /* Domain in Frameworks */,
+				334F3F89D2E59EA0A88AB2EE /* DesignSystem in Frameworks */,
+				FA195D356152DBC3482F2252 /* Persistence in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -229,7 +225,7 @@
 				7EE3F485BF0627E751A6EEC8 /* Info.plist */,
 				0281310D9D8A85B6B32A3FB1 /* WaitWidget.entitlements */,
 				1DD0A9E00FFE87438B0ED30C /* WaitWidget.swift */,
-				E478B4BDC31D2236A5414F50 /* WidgetStockRow.swift */,
+				A5236369514DF6571E3BA305 /* WidgetRowView.swift */,
 			);
 			path = WaitWidget;
 			sourceTree = "<group>";
@@ -417,11 +413,9 @@
 			);
 			name = WaitWidgetExtension;
 			packageProductDependencies = (
+				35F477C55EE36B2F16C05F04 /* Domain */,
 				4AC47668988F6798D9CF6531 /* DesignSystem */,
-				46FB6C74E7C60E25F4CD08F1 /* Logging */,
-				3611AE97F1D03A7D85FC5B24 /* Model */,
-				1C5142790DB8AEC2C123D6CB /* CacheService */,
-				A0E8ECA3E873D206D8D8F1B5 /* Networking */,
+				A1C8F406703BC250391A3E08 /* Persistence */,
 			);
 			productName = WaitWidgetExtension;
 			productReference = 00AC94E61052A432C8AA5E61 /* WaitWidgetExtension.appex */;
@@ -556,7 +550,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B937BC4420BD1A1CA6D4DB29 /* WaitWidget.swift in Sources */,
-				6C73841B21050FDFBE13CCAF /* WidgetStockRow.swift in Sources */,
+				390A3F85646E3724602129D4 /* WidgetRowView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -942,21 +936,13 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = SettingsTab;
 		};
-		1C5142790DB8AEC2C123D6CB /* CacheService */ = {
+		35F477C55EE36B2F16C05F04 /* Domain */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = CacheService;
-		};
-		3611AE97F1D03A7D85FC5B24 /* Model */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Model;
+			productName = Domain;
 		};
 		3861CD96BF78DAD3918F2BBE /* StockCharts */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = StockCharts;
-		};
-		46FB6C74E7C60E25F4CD08F1 /* Logging */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Logging;
 		};
 		4AC47668988F6798D9CF6531 /* DesignSystem */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -982,9 +968,9 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = DesignSystem;
 		};
-		A0E8ECA3E873D206D8D8F1B5 /* Networking */ = {
+		A1C8F406703BC250391A3E08 /* Persistence */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = Networking;
+			productName = Persistence;
 		};
 		A853FD6412B87C6CAB59E176 /* SwiftyJSON */ = {
 			isa = XCSwiftPackageProductDependency;

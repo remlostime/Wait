@@ -99,18 +99,14 @@ targets:
         SKIP_INSTALL: YES
         CODE_SIGN_ENTITLEMENTS: WaitWidget/WaitWidget.entitlements
     dependencies:
+      - sdk: SwiftUI.framework
+      - sdk: WidgetKit.framework
+      - package: WaitKit
+        product: Domain
       - package: WaitKit
         product: DesignSystem
       - package: WaitKit
-        product: Logging
-      - package: WaitKit
-        product: Model
-      - package: WaitKit
-        product: CacheService
-      - package: WaitKit
-        product: Networking
-      - sdk: SwiftUI.framework
-      - sdk: WidgetKit.framework
+        product: Persistence
   WaitWatch:
     type: application
     platform: watchOS

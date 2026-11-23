@@ -10206,7 +10206,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 The widget makes no network calls. The app writes the snapshot through `SnapshotClient` and reloads the widget timelines whenever the watchlist or its quotes change (Task 27).
 
-- [ ] **Step 1: Point the widget at the new products.** In `project.yml`, replace the `WaitWidgetExtension` target's `dependencies:` list with the list below. Keep plan 01's `sdk:` framework entries; if plan 01 lists more `sdk:` entries, keep those too.
+- [x] **Step 1: Point the widget at the new products.** In `project.yml`, replace the `WaitWidgetExtension` target's `dependencies:` list with the list below. Keep plan 01's `sdk:` framework entries; if plan 01 lists more `sdk:` entries, keep those too.
 ```yaml
     dependencies:
       - sdk: SwiftUI.framework
@@ -10219,7 +10219,7 @@ The widget makes no network calls. The app writes the snapshot through `Snapshot
         product: Persistence
 ```
 
-- [ ] **Step 2: Rewrite the widget**
+- [x] **Step 2: Rewrite the widget**
 
 `Wait/WaitWidget/WaitWidget.swift`:
 ```swift
@@ -10400,7 +10400,7 @@ struct WidgetRowView: View {
 }
 ```
 
-- [ ] **Step 3: Remove the old row and the widget's API key**
+- [x] **Step 3: Remove the old row and the widget's API key**
 
 Run:
 ```sh
@@ -10408,7 +10408,7 @@ cd "$(git rev-parse --show-toplevel)" && git rm Wait/WaitWidget/WidgetStockRow.s
   (/usr/libexec/PlistBuddy -c "Delete :TwelveDataAPIKey" Wait/WaitWidget/Info.plist 2>/dev/null || true)
 ```
 
-- [ ] **Step 4: Regenerate and build**
+- [ ] **Step 4: Regenerate and build** — NOT RUN (code-only; xcodegen generate was run)
 
 Run: `cd "$(git rev-parse --show-toplevel)/Wait" && xcodegen generate && cd .. && scripts/build-app.sh`
 Expected: `** BUILD SUCCEEDED **`
@@ -10416,13 +10416,13 @@ Expected: `** BUILD SUCCEEDED **`
 Run: `R="$(git rev-parse --show-toplevel)"; test -f "$R/Wait/Wait.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved" && echo "Package.resolved present"; git -C "$R" status --short Wait/Wait.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`
 Expected: `Package.resolved present`, and never a ` D` status line.
 
-- [ ] **Step 5: Manual check (manual: user, or an agent with simulator UI access).** With the app from Task 27 installed and launched once, so `snapshot.json` exists:
+- [ ] **Step 5: Manual check (manual: user, or an agent with simulator UI access).** — SKIPPED (manual) With the app from Task 27 installed and launched once, so `snapshot.json` exists:
   1. Long-press the home screen, choose **+**, then **Wait**, then **Watchlist (medium)**.
   2. Expected: the widget shows up to four real symbols, with status pills, temperature badges and the quote time.
   3. Tapping a row opens that stock in the app.
   4. A fresh install, before the app has run, shows "Add stocks in Wait".
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 ```bash
 git add Wait/WaitWidget Wait/project.yml Wait/Wait.xcodeproj
 git commit -m "feat(widget): render the app-group watchlist snapshot with deep links (no network)
