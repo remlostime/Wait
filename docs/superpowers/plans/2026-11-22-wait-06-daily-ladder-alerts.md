@@ -924,7 +924,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `server/test/support/alertFixtures.ts` (add `toEvaluableItem`)
 - Test: `server/test/db/AlertRepository.test.ts`
 
-- [ ] **Step 1: Add the fixture mapper**
+- [x] **Step 1: Add the fixture mapper**
 
 Append to `server/test/support/alertFixtures.ts`:
 ```ts
@@ -950,7 +950,7 @@ export function toEvaluableItem(item: ItemFixture): EvaluableItem & { deleted: b
 ```
 Move the two new `import` lines to the top of the file, next to the existing `import type { Sql }`.
 
-- [ ] **Step 2: Write the failing contract test**
+- [x] **Step 2: Write the failing contract test**
 
 Create `server/test/db/AlertRepository.test.ts`:
 ```ts
@@ -1132,12 +1132,12 @@ describe("NeonAlertRepository (PGlite only)", () => {
 })
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run: `npx vitest run test/db/AlertRepository.test.ts`
 Expected: FAIL with `Failed to load url ../../src/db/AlertRepository.js`.
 
-- [ ] **Step 4: Write the interface**
+- [x] **Step 4: Write the interface**
 
 Create `server/src/db/AlertRepository.ts`:
 ```ts
@@ -1190,7 +1190,7 @@ export interface AlertRepository {
 }
 ```
 
-- [ ] **Step 5: Write the Neon implementation**
+- [x] **Step 5: Write the Neon implementation**
 
 Create `server/src/db/NeonAlertRepository.ts`:
 ```ts
@@ -1370,7 +1370,7 @@ export class NeonAlertRepository implements AlertRepository {
 }
 ```
 
-- [ ] **Step 6: Write the Mock implementation**
+- [x] **Step 6: Write the Mock implementation**
 
 Create `server/src/db/MockAlertRepository.ts`:
 ```ts
@@ -1506,13 +1506,13 @@ export class MockAlertRepository implements AlertRepository {
 }
 ```
 
-- [ ] **Step 7: Run the tests to verify they pass**
+- [x] **Step 7: Run the tests to verify they pass**
 
 Run: `npx vitest run test/db/AlertRepository.test.ts && npm run typecheck`
 Expected: PASS (`Tests  13 passed (13)`: 6 contract tests × 2 implementations, plus 1 PGlite-only test).
 If PGlite rejects `trim_scale` (it needs Postgres 13 or later), stop and report the PGlite version. Don't switch to a client-side workaround.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add server/src/db/AlertRepository.ts server/src/db/NeonAlertRepository.ts server/src/db/MockAlertRepository.ts \
