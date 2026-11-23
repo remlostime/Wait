@@ -1847,7 +1847,7 @@ TCA stays at **0.31.0, pinned exactly**, so this commit only moves files. `Stock
 - Delete: `Wait/Checklist/Checklist.docc` (an unedited template), `Wait/ChecklistEditFeature/ChecklistEditFeature.h`
 - Modify: `Wait/Packages/WaitKit/Package.swift`, `Wait/project.yml`
 
-- [ ] **Step 1: Move the sources and tests**
+- [x] **Step 1: Move the sources and tests**
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/Checklist Packages/WaitKit/Sources/ChecklistEditFeature \
@@ -1864,7 +1864,7 @@ cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/Checklist Pac
 ```
 Expected: `4`
 
-- [ ] **Step 2: Replace `Wait/Packages/WaitKit/Package.swift`**
+- [x] **Step 2: Replace `Wait/Packages/WaitKit/Package.swift`**
 
 This adds TCA 0.31.0, pinned exactly, plus the two modules and their test targets:
 ```swift
@@ -1932,7 +1932,7 @@ let package = Package(
 )
 ```
 
-- [ ] **Step 3: Update `Wait/project.yml`**
+- [x] **Step 3: Update `Wait/project.yml`**
 
 1. Delete the `Checklist:`, `ChecklistEditFeature:`, `ChecklistTests:` and `ChecklistEditFeatureTests:` target entries completely.
 2. In `SettingsTab`, replace `      - target: ChecklistEditFeature` with:
@@ -1954,7 +1954,7 @@ cd /Users/ckai/code/Wait/Wait && grep -nE "target: Checklist(EditFeature)?$|^  C
 ```
 Expected: no output from the first grep, and the `test:` block lists only `- StockDetailsFeatureTests`.
 
-- [ ] **Step 4: Regenerate and run the moved tests from the package**
+- [ ] **Step 4: Regenerate and run the moved tests from the package** — NOT RUN (code-only; `xcodegen generate` run, Package.resolved check clean, package tests not run)
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1
@@ -1964,11 +1964,11 @@ Expected: `Executed 4 tests, with 0 failures` and `** TEST SUCCEEDED **`.
 
 If you're in red-baseline mode, save command D's full output (`… > /tmp/wait-task11-test.log 2>&1`) and run Task 1 Step 6 check (i) on it. If any failing project is `swift-composable-architecture` or one of its dependency projects (`swift-custom-dump`, `swift-case-paths`, `combine-schedulers`, `xctest-dynamic-overlay`, `swift-identified-collections`, `swift-collections`), TCA 0.31.0 can't build here. In that case run Task 13 Steps 1–7 now, then come back to Step 5.
 
-- [ ] **Step 5: Build the app and run the remaining app-scheme test**
+- [ ] **Step 5: Build the app and run the remaining app-scheme test** — NOT RUN (code-only)
 
 Run commands B, C and E. Expected: `** BUILD SUCCEEDED **`, then `Executed 1 test, with 0 failures`, then `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add -A Wait && git status --short | grep -v '^[RMAD] ' ; git commit -m "$(cat <<'EOF'

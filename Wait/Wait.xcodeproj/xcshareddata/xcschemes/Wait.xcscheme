@@ -45,28 +45,6 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "25249AE39A6273886656EC37"
-               BuildableName = "ChecklistTests.xctest"
-               BlueprintName = "ChecklistTests"
-               ReferencedContainer = "container:Wait.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DC50EDFE2D0B8CA535B0BA1C"
-               BuildableName = "ChecklistEditFeatureTests.xctest"
-               BlueprintName = "ChecklistEditFeatureTests"
-               ReferencedContainer = "container:Wait.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "E583106147B2E1D860585000"
                BuildableName = "StockDetailsFeatureTests.xctest"
                BlueprintName = "StockDetailsFeatureTests"

@@ -69,30 +69,11 @@ targetTemplates:
 targets:
   UI:
     templates: [Framework]
-  Checklist:
-    templates: [Framework]
-    dependencies:
-      - package: WaitKit
-        product: CacheService
-      - package: WaitKit
-        product: DesignSystem
-      - package: WaitKit
-        product: Model
-      - package: WaitKit
-        product: Logging
-      - package: ComposableArchitecture
-  ChecklistEditFeature:
-    templates: [Framework]
-    dependencies:
-      - package: WaitKit
-        product: Logging
-      - package: WaitKit
-        product: Model
-      - package: ComposableArchitecture
   SettingsTab:
     templates: [Framework]
     dependencies:
-      - target: ChecklistEditFeature
+      - package: WaitKit
+        product: ChecklistEditFeature
       - package: WaitKit
         product: Model
       - package: ComposableArchitecture
@@ -105,29 +86,14 @@ targets:
         product: Networking
       - package: WaitKit
         product: Logging
-      - target: Checklist
+      - package: WaitKit
+        product: Checklist
       - package: WaitKit
         product: DesignSystem
       - package: WaitKit
         product: Model
       - package: WaitKit
         product: StockCharts
-      - package: ComposableArchitecture
-  ChecklistTests:
-    templates: [UnitTests]
-    settings:
-      base:
-        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
-    dependencies:
-      - target: Checklist
-      - package: WaitKit
-        product: Model
-  ChecklistEditFeatureTests:
-    templates: [UnitTests]
-    dependencies:
-      - target: ChecklistEditFeature
-      - package: WaitKit
-        product: Model
       - package: ComposableArchitecture
   StockDetailsFeatureTests:
     templates: [UnitTests]
@@ -226,8 +192,10 @@ targets:
         product: DesignSystem
       - package: WaitKit
         product: Logging
-      - target: Checklist
-      - target: ChecklistEditFeature
+      - package: WaitKit
+        product: Checklist
+      - package: WaitKit
+        product: ChecklistEditFeature
       - package: WaitKit
         product: StockCharts
       - target: SettingsTab
@@ -252,8 +220,6 @@ schemes:
       config: Debug
       gatherCoverageData: true
       targets:
-        - ChecklistTests
-        - ChecklistEditFeatureTests
         - StockDetailsFeatureTests
     run:
       config: Debug
