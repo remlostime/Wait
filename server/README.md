@@ -1,0 +1,60 @@
+# wait-server
+
+Backend for the Wait iOS app: anonymous auth and a cached, rate-limited market-data proxy (plan 04). Watchlist sync (plan 05) and daily ladder alerts (plan 06) build on it. Shared contracts are in `../docs/superpowers/plans/2026-11-22-wait-00-overview.md`.
+
+## Stack
+Fastify 5 + TypeBox · TypeScript ESM (NodeNext, `.js` import suffixes) · Neon Postgres via raw SQL (`src/db/sql.ts`) · vitest + PGlite · Vercel (one function built from `src/server.ts`). Node 22 or newer.
+
+## Layout
+- `src/app.ts`: `buildApp({ config, container })` sets up plugins, the error envelope and the routes.
+- `src/container.ts`: the composition root. `createContainer(config)` builds the Neon repositories, live providers and services. `createMockContainer()` builds in-memory versions for tests; it has no database unless a test passes `{ sql }`.
+- `src/server.ts`: the Vercel entry. It loads the config from `process.env` at cold start and exports the app and a request handler. `src/index.ts` is the local dev entry (`app.listen`).
+- `src/routes/**`: thin route plugins with TypeBox schemas on every route.
+- `src/services/**`: business logic: `AuthService`, `MarketDataService`, and `RateLimiter` (a token bucket in Postgres).
+- `src/db/**`: one interface per repository, each with `Neon*` (SQL) and `Mock*` (in-memory) implementations.
+- `src/providers/**`: adapters for Finnhub (quotes, search, profile), Tiingo (daily history) and Alpaca (intraday bars, 15 min delayed).
+- `src/domain/**`: the ET market calendar and the cache TTL rules.
+- `migrations/NNN_name.sql`: re-runnable SQL migrations, applied by `npm run migrate`.
+
+## Commands
+```sh
+npm ci
+npm run typecheck   # src + test + scripts
+npm test            # vitest; repository SQL runs against in-process PGlite
+npm run build       # tsc -p tsconfig.json, emits to dist/
+npm run dev         # http://localhost:3000 (PORT overrides); reads .env.local and .env.development.local, .env.local wins
+npm run migrate     # applies pending migrations to $DATABASE_URL (prefers DATABASE_URL_UNPOOLED)
+TEST_DATABASE_URL=postgres://… npm run test:neon   # same repository suites against a disposable Neon branch
+```
+
+## Environment
+See `.env.example` and overview §8.2. The app fails at cold start, naming any missing variable.
+
+| Variable | Required | Notes |
+|---|---|---|
+| `DATABASE_URL` | yes | Neon pooled URL (Vercel ↔ Neon integration) |
+| `DATABASE_URL_UNPOOLED` | for `npm run migrate` | Direct URL from the same integration; migrations fall back to `DATABASE_URL` |
+| `JWT_SECRET` | yes | 32+ characters |
+| `FINNHUB_API_KEY` | yes | sent as the `X-Finnhub-Token` header |
+| `TIINGO_API_KEY` | yes | sent as `Authorization: Token …` |
+| `ALPACA_KEY_ID`, `ALPACA_SECRET_KEY` | yes | Alpaca paper account (Basic data) |
+| `LOG_LEVEL` | no | `fatal`, `error`, `warn`, `info`, `debug`, `trace` or `silent`; default `info` |
+| `NODE_ENV` | no | `development`, `test` or `production`; default `development`. Set to `production` on Vercel |
+
+## API (plan 04)
+All `/api/market/*` routes and `DELETE /api/auth/account` need `Authorization: Bearer <token>`. Every error is returned as `{ "error": { "code", "message" } }`.
+
+| Route | Notes |
+|---|---|
+| `GET /health` | `{ status, timestamp }` |
+| `POST /api/auth/register` `{ anonymousId }` | `anonymousId` must be a UUID. Returns `{ token, user: { id } }`. Idempotent. Rate-limited per IP (20/min) and per id (5/min), then `429 RATE_LIMITED` with `Retry-After`. |
+| `DELETE /api/auth/account` | 204. Deletes the user and everything that belongs to them. |
+| `GET /api/market/quotes?symbols=AAPL,MSFT` | 1–50 symbols, `{ quotes, missing }`. Quotes stay fresh for 3 min while the market is open. |
+| `GET /api/market/history?symbol=AAPL&range=1D\|1W\|1M\|1Y\|5Y` | 1D and 1W come from Alpaca, 15 min delayed. 1M, 1Y and 5Y come from one cached Tiingo `daily5y` series. |
+| `GET /api/market/search?q=app` | US common stock, ETP and ADR only. Cached 7 days. |
+| `GET /api/market/profile?symbol=AAPL` | Finnhub profile2 (refreshed every 7 days) plus metrics (refreshed daily). |
+
+When a provider is rate-limited, the API serves the cached value with `stale: true`. If nothing is cached, it returns `503 UPSTREAM_RATE_LIMITED` with `Retry-After`. If a provider fails for another reason and nothing is cached, it returns `502 UPSTREAM_UNAVAILABLE`.
+
+## Data licensing
+Finnhub, Tiingo and Alpaca free tiers are **personal use only**. This server is for the owner and a few friends. Before any public release, move to a plan that allows external display. Only the adapters in `src/providers/` would change.
