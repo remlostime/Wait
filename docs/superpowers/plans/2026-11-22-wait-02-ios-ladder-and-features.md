@@ -3325,7 +3325,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/Persistence/LegacyMigration.swift`
 - Create: `Wait/Packages/WaitKit/Tests/PersistenceTests/LegacyMigrationTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/PersistenceTests/LegacyMigrationTests.swift`:
 ```swift
@@ -3441,12 +3441,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh PersistenceTests/LegacyMigrationTests`
 Expected FAIL: `error: cannot find 'LegacyMigration' in scope`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `Wait/Packages/WaitKit/Sources/Persistence/LegacyMigration.swift`:
 ```swift
@@ -3583,12 +3583,12 @@ public struct LegacyMigration: Sendable {
 }
 ```
 
-- [ ] **Step 4: Run the tests and confirm they pass**
+- [ ] **Step 4: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh PersistenceTests`
 Expected PASS: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/Persistence/LegacyMigration.swift Wait/Packages/WaitKit/Tests/PersistenceTests/LegacyMigrationTests.swift
 git commit -m "feat(persistence): one-time legacy Documents to app group migration
