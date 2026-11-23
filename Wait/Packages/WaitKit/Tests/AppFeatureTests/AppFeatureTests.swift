@@ -56,6 +56,9 @@ struct AppFeatureTests {
       $0.snapshotClient.publish = { snapshot in published.withValue { $0.append(snapshot) } }
     }
     await store.send(.appDelegate(.didFinishLaunching))
+    // `PushFeature` starts at launch. With nothing stored and the default `.notDetermined` status it registers for nothing.
+    await store.receive(\.push.launched)
+    await store.receive(\.push.authorizationLoaded, .notDetermined)
     await clock.advance(by: .seconds(1))
     #expect(published.value.map { $0.rows.map(\.symbol) } == [["AAPL"]])
   }

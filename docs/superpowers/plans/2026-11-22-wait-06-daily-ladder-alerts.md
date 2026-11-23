@@ -4869,7 +4869,7 @@ Run iOS commands from `/Users/ckai/code/Wait` with `scripts/test-waitkit.sh` and
 - Test: `Wait/Packages/WaitKit/Tests/AppFeatureTests/PushFeatureTests.swift`
 - Test: `Wait/Packages/WaitKit/Tests/AppFeatureTests/AppFeaturePushRoutingTests.swift`
 
-- [ ] **Step 1: Add the dependencies and the shared keys**
+- [x] **Step 1: Add the dependencies and the shared keys**
 
 In `Package.swift`:
 - Add `"NotificationClient"` and `"APIClient"` to the `AppFeature` target's `dependencies`, skipping any it already has.
@@ -4895,7 +4895,7 @@ public extension SharedReaderKey where Self == AppStorageKey<String?> {
 }
 ```
 
-- [ ] **Step 2: Write the failing `PushFeature` test**
+- [x] **Step 2: Write the failing `PushFeature` test**
 
 Create `Tests/AppFeatureTests/PushFeatureTests.swift`:
 ```swift
@@ -5051,12 +5051,14 @@ struct PushFeatureTests {
 }
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [ ] **Step 3: Run the test to verify it fails** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh AppFeatureTests/PushFeatureTests`
 Expected: the build fails with `cannot find 'PushFeature' in scope`.
 
-- [ ] **Step 4: Implement `PushFeature`**
+- [x] **Step 4: Implement `PushFeature`**
+
+> Result (2026-11-23): `@Shared(.alertsEnabled) var alertsEnabled: Bool` and `@Shared(.apnsDeviceToken) var deviceToken: String?` carry explicit types (the optional key goes through `Shared.init<Wrapped>(_ key: some SharedKey<Value>) where Value == Wrapped?`, checked in swift-sharing). `swiftlint`: 0 violations.
 
 Create `Sources/AppFeature/PushFeature.swift`:
 ```swift
@@ -5184,12 +5186,12 @@ public struct PushFeature {
 }
 ```
 
-- [ ] **Step 5: Run the `PushFeature` test to verify it passes**
+- [ ] **Step 5: Run the `PushFeature` test to verify it passes** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh AppFeatureTests/PushFeatureTests`
 Expected: `** TEST SUCCEEDED **` (9 tests).
 
-- [ ] **Step 6: Write the failing routing test**
+- [x] **Step 6: Write the failing routing test**
 
 Create `Tests/AppFeatureTests/AppFeaturePushRoutingTests.swift`. It stubs the plan 03 and 05 clients that `AppFeature` effects touch:
 ```swift
@@ -5241,12 +5243,14 @@ struct AppFeaturePushRoutingTests {
 }
 ```
 
-- [ ] **Step 7: Run the routing test to verify it fails**
+- [ ] **Step 7: Run the routing test to verify it fails** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh AppFeatureTests/AppFeaturePushRoutingTests`
 Expected: the build fails with `type 'AppDelegateAction' has no member 'didRegisterForRemoteNotifications'` and `value of type 'AppFeature.State' has no member 'push'`.
 
-- [ ] **Step 8: Wire `PushFeature` into `AppFeature` and `AppDelegate`**
+- [x] **Step 8: Wire `PushFeature` into `AppFeature` and `AppDelegate`**
+
+> Deviation (2026-11-23): instead of `PushFeature().reduce(into: &state.push, action: …).map(Action.push)`, `AppFeature` returns `.send(.push(.launched))`, `.send(.push(.registered(token)))` and `.send(.push(.registrationFailed(message)))`. In TCA 1.26 both `Reducer.reduce(into:action:)` (unconditionally) and `Effect.map` (with the `ComposableArchitecture2Deprecations` trait this package enables) are deprecated, and the repo uses the canonical forms. The cost is one extra received action: `AppFeatureTests.didFinishLaunchingPublishesASnapshot` now also receives `.push(.launched)`, and the routing test receives `.push(.registered)`. The `AppFeature` reducer also changes `case .binding, .watchlist, .settings:` to include `.push`, because the plan's `case .push: return .none` is subsumed there.
 
 In `Sources/AppFeature/AppDelegateAction.swift`, add two cases (overview §12.3). Add `import Foundation` if it's missing.
 ```swift
@@ -5304,7 +5308,7 @@ In `Sources/AppFeature/AppDelegate.swift` (inside its `#if os(iOS)` block):
     }
 ```
 
-- [ ] **Step 9: Run the AppFeature tests to verify they pass**
+- [ ] **Step 9: Run the AppFeature tests to verify they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh AppFeatureTests`
 Expected: `** TEST SUCCEEDED **`, with every existing `AppFeatureTests` test and the 11 new ones passing.
@@ -5314,12 +5318,12 @@ If an existing exhaustive test that sends `.appDelegate(.didFinishLaunching)` no
 
 The default `authorizationStatus` returns `.notDetermined`.
 
-- [ ] **Step 10: Build the app**
+- [ ] **Step 10: Build the app** — NOT RUN (code-only); `xcodegen generate` ran (no `project.yml` change; only a cosmetic `WaitWatch.xcscheme` rewrite, which was reverted)
 
 Run: `cd /Users/ckai/code/Wait/Wait && xcodegen generate && cd .. && scripts/build-app.sh`
 Expected: `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 11: Commit**
+- [x] **Step 11: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait

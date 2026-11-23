@@ -54,10 +54,16 @@ let package = Package(
     .target(name: "StockChartFeature", dependencies: ["Domain", "MarketDataClient", "DesignSystem", .tca]),
     .target(name: "StockDetailsFeature", dependencies: ["Domain", "Persistence", "MarketDataClient", "StockChartFeature", "DesignSystem", .tca]),
     .target(name: "WatchlistFeature", dependencies: ["Domain", "Persistence", "MarketDataClient", "StockDetailsFeature", "ChecklistFeature", "DesignSystem", .tca]),
-    .target(name: "SettingsFeature", dependencies: ["APIClient", "ChecklistFeature", "DesignSystem", "Persistence", "SyncClient", .tca]),
+    .target(
+      name: "SettingsFeature",
+      dependencies: ["APIClient", "ChecklistFeature", "DesignSystem", "Logging", "NotificationClient", "Persistence", "SyncClient", .tca]
+    ),
     .target(
       name: "AppFeature",
-      dependencies: ["Connectivity", "Domain", "DesignSystem", "Logging", "Persistence", "SettingsFeature", "SyncClient", "WatchlistFeature", .tca]
+      dependencies: [
+        "APIClient", "Connectivity", "Domain", "DesignSystem", "Logging", "NotificationClient", "Persistence", "SettingsFeature", "SyncClient",
+        "WatchlistFeature", .tca,
+      ]
     ),
 
     // Tests
@@ -82,13 +88,13 @@ let package = Package(
     ),
     .testTarget(
       name: "SettingsFeatureTests",
-      dependencies: ["SettingsFeature", "APIClient", "ChecklistFeature", "Persistence", "SyncClient", .tca, .dependenciesTestSupport]
+      dependencies: ["SettingsFeature", "APIClient", "ChecklistFeature", "NotificationClient", "Persistence", "SyncClient", .tca, .dependenciesTestSupport]
     ),
     .testTarget(
       name: "AppFeatureTests",
       dependencies: [
-        "AppFeature", "Connectivity", "Domain", "MarketDataClient", "Persistence", "StockDetailsFeature", "SyncClient", "WatchlistFeature",
-        .tca, .dependenciesTestSupport,
+        "AppFeature", "APIClient", "Connectivity", "Domain", "MarketDataClient", "NotificationClient", "Persistence", "StockDetailsFeature", "SyncClient",
+        "WatchlistFeature", .tca, .dependenciesTestSupport,
       ]
     ),
   ],

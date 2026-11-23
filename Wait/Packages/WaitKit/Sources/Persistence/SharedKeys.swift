@@ -28,3 +28,21 @@ public extension SharedReaderKey where Self == FileStorageKey<IdentifiedArrayOf<
     ]
   }
 }
+
+// MARK: - Alerts (plan 06)
+
+// Declared once, on `SharedReaderKey`, like `.watchlist` and `.syncState`, so `@Shared(.alertsEnabled)` isn't ambiguous.
+
+/// `@Shared(.alertsEnabled)`: the user turned on "Daily alerts" in Settings.
+public extension SharedReaderKey where Self == AppStorageKey<Bool>.Default {
+  static var alertsEnabled: Self {
+    Self[.appStorage("alerts.enabled"), default: false]
+  }
+}
+
+/// `@Shared(.apnsDeviceToken)`: the APNs token (lowercase hex) last sent to `POST /api/devices`. Cleared only after the server confirms the DELETE.
+public extension SharedReaderKey where Self == AppStorageKey<String?> {
+  static var apnsDeviceToken: Self {
+    .appStorage("apns.deviceToken")
+  }
+}

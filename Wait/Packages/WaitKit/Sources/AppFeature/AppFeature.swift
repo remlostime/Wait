@@ -36,6 +36,7 @@ public struct AppFeature {
     public var selectedTab: Tab = .watchlist
     public var watchlist = WatchlistFeature.State()
     public var settings = SettingsFeature.State()
+    public var push = PushFeature.State()
   }
 
   public enum Action: BindableAction {
@@ -45,6 +46,7 @@ public struct AppFeature {
     case appDelegate(AppDelegateAction)
     case watchlist(WatchlistFeature.Action)
     case settings(SettingsFeature.Action)
+    case push(PushFeature.Action)
     case syncDebounceElapsed
     case syncFinished(SyncReport)
     case syncFailed(String)
@@ -68,14 +70,31 @@ public struct AppFeature {
       Scope(\.settings, action: \.settings) {
         SettingsFeature()
       }
+      Scope(\.push, action: \.push) {
+        PushFeature()
+      }
       Reduce { state, action in
         switch action {
           case .appDelegate(.didFinishLaunching):
             // Publish once on launch, so the widget has data even before any quote changes.
             return .merge(
               publishSnapshot(state.watchlist.snapshotInputs),
-              .run { [connectivity] _ in await connectivity.activate() }
+              .run { [connectivity] _ in await connectivity.activate() },
+              .send(.push(.launched))
             )
+
+          // The push callbacks go to `PushFeature` as actions; `Reducer.reduce` and `Effect.map` are deprecated in TCA 1.25+.
+          case let .appDelegate(.didRegisterForRemoteNotifications(deviceToken)):
+            return .send(.push(.registered(deviceToken)))
+
+          case let .appDelegate(.didFailToRegisterForRemoteNotifications(message)):
+            return .send(.push(.registrationFailed(message)))
+
+          case let .push(.delegate(.openStock(symbol))):
+            guard let url = URL(string: "wait://stock/\(symbol)") else {
+              return .none
+            }
+            return .send(.openURL(url))
 
           case let .scenePhaseChanged(phase):
             switch phase {
@@ -149,7 +168,7 @@ public struct AppFeature {
             Log.sync.error("Watchlist sync failed: \(message)")
             return .none
 
-          case .binding, .watchlist, .settings:
+          case .binding, .watchlist, .settings, .push:
             return .none
         }
       }
