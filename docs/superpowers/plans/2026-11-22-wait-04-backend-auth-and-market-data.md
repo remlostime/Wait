@@ -401,7 +401,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/lib/errors.ts`, `server/src/lib/safeEqual.ts`, `server/src/lib/clock.ts`, `server/src/lib/time.ts`, `server/src/lib/decimal.ts`, `server/src/lib/concurrency.ts`
 - Test: `server/test/lib/lib.test.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `server/test/lib/lib.test.ts`:
 ```ts
@@ -478,12 +478,12 @@ describe("mapLimit", () => {
 })
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `npx vitest run test/lib/lib.test.ts`
 Expected: FAIL with `Failed to load url ../../src/lib/errors.js`.
 
-- [ ] **Step 3: Implement the helpers**
+- [x] **Step 3: Implement the helpers**
 
 Create `server/src/lib/errors.ts`:
 ```ts
@@ -605,12 +605,12 @@ export async function mapLimit<T, R>(items: readonly T[], limit: number, fn: (it
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `npx vitest run test/lib/lib.test.ts && npm run typecheck`
 Expected: `6 passed`, and typecheck exits 0.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
