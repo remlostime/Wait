@@ -13,7 +13,8 @@
     "typecheck": "tsc -p tsconfig.test.json --noEmit",
     "test": "vitest run",
     "test:neon": "TEST_DB=neon vitest run --no-file-parallelism test/db test/services",
-    "migrate": "tsx scripts/migrate.ts"
+    "migrate": "tsx scripts/migrate.ts",
+    "send-test-push": "tsx scripts/send-test-push.ts"
   },
   "dependencies": {
     "@fastify/jwt": "^10.0.0",

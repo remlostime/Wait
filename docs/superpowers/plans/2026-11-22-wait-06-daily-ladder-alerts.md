@@ -4196,7 +4196,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 This is a thin CLI over modules that already have tests (`normalizeApnsKey`, `ApnsTokenProvider`, `buildPayload`, `Http2ApnsTransport`). It is verified by `npm run typecheck` now and by a real push in Task 24.
 
-- [ ] **Step 1: Write the script**
+- [x] **Step 1: Write the script**
 
 Create `server/scripts/send-test-push.ts`:
 ```ts
@@ -4270,7 +4270,7 @@ Add to `server/package.json`'s `"scripts"`:
 "send-test-push": "tsx scripts/send-test-push.ts"
 ```
 
-- [ ] **Step 2: Typecheck and smoke-test the argument handling**
+- [x] **Step 2: Typecheck and smoke-test the argument handling**
 
 Run:
 ```bash
@@ -4279,7 +4279,7 @@ npm run send-test-push -- --token NOT-HEX; echo "exit=$?"
 ```
 Expected: `tsc` exits 0. The second command fails before any network call with `Error: --token <lowercase hex APNs device token> is required`, followed by `exit=1`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add server/scripts/send-test-push.ts server/package.json
