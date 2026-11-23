@@ -2693,7 +2693,7 @@ Expected: `0`, `0`, `0`.
 - Modify: `CLAUDE.md`
 - Create or replace: `Wait/Packages/WaitKit/README.md`
 
-- [ ] **Step 1: Check the real names the docs mention**
+- [x] **Step 1: Check the real names the docs mention**
 
 The text in Steps 3–4 names things plans 01–02 created. Check each name against the code before writing:
 
@@ -2718,13 +2718,13 @@ Expected:
 
 If any name differs (say, a policy has another name or the debounce isn't 1 s), use the real name or value wherever Step 3 or 4 mentions it. If something is missing entirely (no `LegacyMigration` call, say), stop and ask the user. This plan doesn't own that code.
 
-- [ ] **Step 2: Keep any server section**
+- [x] **Step 2: Keep any server section**
 
 Run: `cd /Users/ckai/code/Wait && grep -n "^## " CLAUDE.md`
 
 If the output contains a heading that starts with `## Backend` (plan 04 writes ``## Backend (`server/`)`` when it ran before this plan), copy that whole section, heading included, from the heading up to the next `## ` heading or the end of the file. Keep it for Step 3.
 
-- [ ] **Step 3: Write the new CLAUDE.md**
+- [x] **Step 3: Write the new CLAUDE.md**
 
 Replace the contents of `/Users/ckai/code/Wait/CLAUDE.md` with the text below.
 - If Step 2 found a `## Backend` section, paste it unchanged, heading included, between `## Architecture` and `## Code style`.
@@ -2866,7 +2866,7 @@ Backend version of the **Market data** bullet. Use it only if Step 1 printed `up
 
 Check with `grep -n "Market data" /Users/ckai/code/Wait/CLAUDE.md`: exactly one line, and it names the upstream Step 1 found.
 
-- [ ] **Step 4: Write the WaitKit README**
+- [x] **Step 4: Write the WaitKit README**
 
 Create or replace `/Users/ckai/code/Wait/Wait/Packages/WaitKit/README.md` with:
 
@@ -2921,7 +2921,7 @@ cd Wait/Packages/WaitKit && xcodebuild test -scheme WaitKit-Package \
 4. Keep watchOS-compatible targets (see the table) free of UIKit and iOS-only APIs.
 ~~~
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -2933,6 +2933,15 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 EOF
 )"
 ```
+
+> **Execution notes (Task 11, 2026-11-23).** Step 1 printed the expected values: `useCache`, `reload` and `cacheOnly` all exist, the publish debounce is 1 s, `LegacyMigration` runs in `AppDelegate.swift`, and `upstream=twelveData` (the Twelve Data version of the Market data bullet applies). Step 2 found no `## Backend` section. The docs differ from the text above in these places, because the code differs:
+> - `CLAUDE.md` keeps the execution-time facts that plans 01 and 02 added: the code-only verification caveat, the stale `Package.resolved` pins, the shared schemes, `TwelveDataAPIKey.isUsable`, `PriceInput` strict grouping, the canonical TCA scope forms, the `.onChange(of:)` effect form, and `symbolQuotesLoaded`.
+> - Test id example: `validatesOrder()` doesn't exist. It is `DomainTests/PriceLadderValidationTests/vectorsValidation()`.
+> - Ladder: fair is derived as `(buyHigh ?? buyLow) × 10 / 7` only when fair, trim and sell are all absent. Temperature knots are 10, 30, 50, 80 and 95.
+> - Snapshot fan-out: the debounce is on `watchlist.snapshotInputs`. Going to the background publishes at once.
+> - Fixtures exist today only for `DomainTests` and `MarketDataClientTests`.
+> - README: the dependency list of `AppFeature` also has `DesignSystem` and `Logging`. A Responsibility column was added and the existing conventions section (mutations, wire format, TCA forms, watchOS, key, price input) was kept.
+> - `.noop` exists only on `ConnectivityClient`.
 
 ---
 
