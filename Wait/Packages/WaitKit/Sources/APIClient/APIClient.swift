@@ -18,6 +18,8 @@ public struct APIClient: Sendable {
   public var search: @Sendable (_ query: String) async throws -> SearchResponseDTO
   public var profile: @Sendable (_ symbol: String) async throws -> ProfileDTO
   public var deleteAccount: @Sendable () async throws -> Void
+  /// `POST /api/watchlist/sync` (overview §8.4–§8.5).
+  public var syncWatchlist: @Sendable (_ request: SyncRequestDTO) async throws -> SyncResponseDTO
 }
 
 extension APIClient {
@@ -37,6 +39,9 @@ extension APIClient {
       },
       deleteAccount: {
         try await session.delete("/api/auth/account")
+      },
+      syncWatchlist: { request in
+        try await session.post("/api/watchlist/sync", body: request)
       }
     )
   }
@@ -59,7 +64,8 @@ extension APIClient {
     history: { _, _ in throw APIError.misconfigured },
     search: { _ in throw APIError.misconfigured },
     profile: { _ in throw APIError.misconfigured },
-    deleteAccount: { throw APIError.misconfigured }
+    deleteAccount: { throw APIError.misconfigured },
+    syncWatchlist: { _ in throw APIError.misconfigured }
   )
 }
 

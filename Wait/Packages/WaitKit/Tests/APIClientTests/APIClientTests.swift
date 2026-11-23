@@ -78,6 +78,35 @@ struct APIClientTests {
   }
 
   @Test
+  func syncWatchlistPostsTheBatchAndDecodesTheEnvelope() async throws {
+    let body = #"{"changes":[{"symbol":"AAPL","name":"Apple Inc.","ladder":{"buyLow":null,"buyHigh":"175","fair":null,"trim":null,"sell":null},"# +
+      #""memo":"","isFavorite":false,"sortIndex":0,"checklist":[],"ladderHistory":[],"clientUpdatedAt":"2026-11-20T15:00:00.000Z","deleted":false,"version":3}],"# +
+      #""cursor":"3:AAPL","hasMore":true}"#
+    let (api, base) = client(path: "/api/watchlist/sync", json: body)
+    let request = SyncRequestDTO(
+      cursor: nil,
+      changes: [
+        WatchlistChangeDTO(
+          symbol: "AAPL", name: "Apple Inc.", ladder: LadderDTO(buyHigh: "175"), memo: "", isFavorite: false, sortIndex: 0,
+          checklist: [], ladderHistory: [], clientUpdatedAt: "2026-11-20T15:00:00.000Z", deleted: false
+        ),
+      ]
+    )
+
+    let response = try await api.syncWatchlist(request)
+
+    let sent = try #require(lastRequest(base))
+    #expect(sent.httpMethod == "POST")
+    #expect(sent.url?.path() == "/api/watchlist/sync")
+    let sentBody = try #require(sent.httpBody)
+    let json = try #require(JSONSerialization.jsonObject(with: sentBody) as? [String: Any])
+    #expect(json["cursor"] is NSNull)
+    #expect((json["changes"] as? [[String: Any]])?.first?["symbol"] as? String == "AAPL")
+    #expect(response.cursor == "3:AAPL" && response.hasMore)
+    #expect(response.changes.first?.version == 3)
+  }
+
+  @Test
   func baseURLComesFromInfoPlistAndRejectsEmptyValues() {
     #expect(APIClient.baseURL(infoValue: "https://wait-api.vercel.app") == URL(string: "https://wait-api.vercel.app"))
     #expect(APIClient.baseURL(infoValue: "") == nil)

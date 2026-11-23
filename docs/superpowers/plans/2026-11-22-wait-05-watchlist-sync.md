@@ -2951,7 +2951,7 @@ MSG
 - Test: `Wait/Packages/WaitKit/Tests/APIClientTests/WatchlistSyncDTOTests.swift`
 - Test: `Wait/Packages/WaitKit/Tests/SyncClientTests/SyncMappingTests.swift`
 
-- [ ] **Step 1: Write the failing DTO test**
+- [x] **Step 1: Write the failing DTO test**
 
 Create `Wait/Packages/WaitKit/Tests/APIClientTests/WatchlistSyncDTOTests.swift`:
 ```swift
@@ -3007,12 +3007,12 @@ struct WatchlistSyncDTOTests {
 }
 ```
 
-- [ ] **Step 2: Run it and confirm it fails**
+- [ ] **Step 2: Run it and confirm it fails — NOT RUN through Xcode (code-only; the /tmp harness failed with `no such module 'APIClient'` before the DTO file existed)**
 
 Run, with `-only-testing:APIClientTests/WatchlistSyncDTOTests`, the package command from the chunk header.
 Expected: `** TEST BUILD FAILED **` with `cannot find 'SyncRequestDTO' in scope`.
 
-- [ ] **Step 3: Write the DTOs**
+- [x] **Step 3: Write the DTOs**
 
 Create `Wait/Packages/WaitKit/Sources/APIClient/DTOs/WatchlistSyncDTOs.swift`. The shapes come from overview §8.4: prices are decimal strings, and timestamps are pre-formatted ISO strings.
 ```swift
@@ -3219,7 +3219,7 @@ public struct SyncResponseDTO: Codable, Equatable, Sendable {
 ```
 Every DTO has a public memberwise initializer, because `SyncClient` (another module) and its tests build them.
 
-- [ ] **Step 4: Add the endpoint to `APIClient`**
+- [x] **Step 4: Add the endpoint to `APIClient`** (`grep -c syncWatchlist` = 3. Also added `APIClientTests.syncWatchlistPostsTheBatchAndDecodesTheEnvelope`.)
 
 `Wait/Packages/WaitKit/Sources/APIClient/APIClient.swift` (plan 04) declares the endpoints in this order: `quotes`, `history`, `search`, `profile`, `deleteAccount`. Both `live(session:)` and `misconfigured` call the full memberwise init, and memberwise arguments follow declaration order. Append `syncWatchlist` **after `deleteAccount` in all three places**:
 
@@ -3246,12 +3246,12 @@ grep -c "syncWatchlist" Sources/APIClient/APIClient.swift
 ```
 Expected: `3`.
 
-- [ ] **Step 5: Run the DTO test and confirm it passes**
+- [ ] **Step 5: Run the DTO test and confirm it passes — NOT RUN through Xcode (code-only; real `WatchlistSyncDTOTests` plus `APIClientTests` ran in a /tmp macOS harness: 10 of 10 passed)**
 
 Run, with `-only-testing:APIClientTests/WatchlistSyncDTOTests`, the package command from the chunk header.
 Expected: `** TEST SUCCEEDED **`, with 2 tests passing.
 
-- [ ] **Step 6: Write the failing mapping test**
+- [x] **Step 6: Write the failing mapping test** (the listing's `(0 ..< 150).map { ChecklistItem(...) }` does not compile; the file uses `{ _ in ... }`)
 
 Create `Wait/Packages/WaitKit/Tests/SyncClientTests/SyncMappingTests.swift`:
 ```swift
@@ -3363,12 +3363,12 @@ struct SyncMappingTests {
 }
 ```
 
-- [ ] **Step 7: Run it and confirm it fails**
+- [ ] **Step 7: Run it and confirm it fails — NOT RUN through Xcode (code-only; the /tmp harness failed with `cannot find 'SyncMapping' in scope`)**
 
 Run, with `-only-testing:SyncClientTests/SyncMappingTests`, the package command from the chunk header.
 Expected: `** TEST BUILD FAILED **` with `cannot find 'SyncMapping' in scope`.
 
-- [ ] **Step 8: Write the mapping**
+- [x] **Step 8: Write the mapping** (plus two client-side hardenings from the server review, below)
 
 Create `Wait/Packages/WaitKit/Sources/SyncClient/SyncMapping.swift`:
 ```swift
@@ -3538,12 +3538,17 @@ enum SyncMapping {
 }
 ```
 
-- [ ] **Step 9: Run the mapping test and confirm it passes**
+- [ ] **Step 9: Run the mapping test and confirm it passes — NOT RUN through Xcode (code-only; real `SyncMappingTests` and `SyncPlannerTests` ran in a /tmp macOS harness with a stand-in `IdentifiedArray`: 19 of 19 passed, i.e. 11 mapping + 8 planner)**
 
 Run, with `-only-testing:SyncClientTests/SyncMappingTests`, the package command from the chunk header.
 Expected: `** TEST SUCCEEDED **`, with 7 tests passing.
 
-- [ ] **Step 10: Commit**
+**Hardening added after the server review** (the code above is the plan's baseline; the committed files also have these):
+- **NUL stripping.** The server answers 400 for the whole batch when `name`, `memo` or a checklist `id`/`name` contains U+0000. `SyncMapping.sanitize` strips `\0` first, then clamps, so a NUL never uses up the length budget.
+- **Unrepresentable anchors stay local-only.** An anchor is rounded to 6 decimals, so a positive anchor below 0.0000005 goes out as `"0"` and the server rejects the batch with `INVALID_LADDER` on every sync. An anchor of 10^12 or more fails the decimal pattern the same way. `SyncMapping.isRepresentable(_:)` detects both. `SyncPlanner.isSyncable(_ item:)` uses it, so `pendingChanges` skips the item and `unsyncableSymbols` lists it for the engine log (deviation 6 applies). `changeDTO` drops history revisions that fail the same check.
+- Tests: `SyncMappingTests` (NUL, representability, history) and `SyncPlannerTests.leavesItemsWhoseAnchorsTheServerWouldReadAsZeroLocalOnly`.
+
+- [x] **Step 10: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05

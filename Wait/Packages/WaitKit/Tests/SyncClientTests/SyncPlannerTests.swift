@@ -64,4 +64,15 @@ struct SyncPlannerTests {
     let pending = SyncPlanner.pendingChanges(items: items, state: state)
     #expect(pending == [.deletion(symbol: "MSFT", at: stamp(6)), .upsert(items[id: "AAPL"]!)])
   }
+
+  @Test
+  func leavesItemsWhoseAnchorsTheServerWouldReadAsZeroLocalOnly() throws {
+    let penny = makeItem("PENNY", ladder: try PriceLadder(buyLow: Decimal(string: "0.0000004")!))
+    let huge = makeItem("HUGE", ladder: try PriceLadder(sell: Decimal(string: "1000000000000")!))
+    let items: IdentifiedArrayOf<WatchlistItem> = [makeItem("AAPL"), penny, huge]
+    #expect(SyncPlanner.pendingChanges(items: items, state: .initial).map(\.symbol) == ["AAPL"])
+    #expect(SyncPlanner.unsyncableSymbols(items: items, state: .initial) == ["HUGE", "PENNY"])
+    #expect(!SyncPlanner.isSyncable(penny))
+    #expect(SyncPlanner.isSyncable(makeItem("AAPL")))
+  }
 }

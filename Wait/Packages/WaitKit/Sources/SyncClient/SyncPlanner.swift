@@ -18,9 +18,18 @@ public enum SyncPlanner {
     symbol.wholeMatch(of: /[A-Z0-9][A-Z0-9.\-]{0,14}/) != nil
   }
 
+  /// An item is local-only when its symbol is outside the pattern, or when a ladder anchor can't survive the wire format
+  /// (`SyncMapping.isRepresentable`): one such item would make the server reject the whole batch on every sync.
+  public static func isSyncable(_ item: WatchlistItem) -> Bool {
+    isSyncable(item.symbol) && SyncMapping.isRepresentable(item.ladder)
+  }
+
   /// Symbols (items or tombstones) that `pendingChanges` leaves out, sorted. `SyncEngine` logs them.
+  /// A tombstone only needs a syncable symbol, because its fields are placeholders.
   public static func unsyncableSymbols(items: IdentifiedArrayOf<WatchlistItem>, state: SyncState) -> [String] {
-    Set(items.map(\.symbol)).union(state.tombstones.keys).filter { !isSyncable($0) }.sorted()
+    Set(items.filter { !isSyncable($0) }.map(\.symbol))
+      .union(state.tombstones.keys.filter { !isSyncable($0) })
+      .sorted()
   }
 
   /// One change per symbol: whichever of the item and the tombstone is newer (the item wins a tie).
@@ -37,11 +46,18 @@ public enum SyncPlanner {
       latest[symbol] = .deletion(symbol: symbol, at: date)
     }
     return latest.values
-      .filter { isSyncable($0.symbol) && !SyncStamp.same(state.acknowledged[$0.symbol], $0.stamp) }
+      .filter { isPending($0, state: state) }
       .sorted { lhs, rhs in
         let left = SyncStamp.milliseconds(lhs.stamp)
         let right = SyncStamp.milliseconds(rhs.stamp)
         return left == right ? lhs.symbol < rhs.symbol : left < right
       }
+  }
+
+  // MARK: Private
+
+  private static func isPending(_ change: SyncChange, state: SyncState) -> Bool {
+    let isSendable = change.item.map(isSyncable) ?? isSyncable(change.symbol)
+    return isSendable && !SyncStamp.same(state.acknowledged[change.symbol], change.stamp)
   }
 }
