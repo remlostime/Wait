@@ -42,6 +42,7 @@ let package = Package(
     .target(name: "Persistence", dependencies: ["Domain", "Logging", .sharing, .identifiedCollections, .dependencies, .dependenciesMacros]),
     .target(name: "Connectivity", dependencies: ["Domain", .dependencies, .dependenciesMacros]),
     .target(name: "MarketDataClient", dependencies: ["Domain", "Logging", .dependencies, .dependenciesMacros]),
+    .target(name: "APIClient", dependencies: ["Domain", .dependencies, .dependenciesMacros]),
 
     // Features
     .target(name: "ChecklistFeature", dependencies: ["Domain", "Persistence", "DesignSystem", .tca]),
@@ -58,6 +59,7 @@ let package = Package(
     .testTarget(name: "PersistenceTests", dependencies: ["Persistence", "Domain", .sharing, .identifiedCollections, .dependenciesTestSupport]),
     .testTarget(name: "ConnectivityTests", dependencies: ["Connectivity", "Domain"]),
     .testTarget(name: "MarketDataClientTests", dependencies: ["MarketDataClient", "Domain", .dependencies], resources: [.copy("Fixtures")]),
+    .testTarget(name: "APIClientTests", dependencies: ["APIClient", "Domain", .dependencies, .dependenciesTestSupport]),
     .testTarget(name: "ChecklistFeatureTests", dependencies: ["ChecklistFeature", "Domain", "Persistence", .tca, .dependenciesTestSupport]),
     .testTarget(name: "StockChartFeatureTests", dependencies: ["StockChartFeature", "Domain", "MarketDataClient", .tca]),
     .testTarget(name: "StockDetailsFeatureTests", dependencies: ["StockDetailsFeature", "Domain", "MarketDataClient", .tca]),

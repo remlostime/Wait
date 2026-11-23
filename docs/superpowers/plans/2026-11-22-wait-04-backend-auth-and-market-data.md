@@ -4995,7 +4995,7 @@ From here on, Swift paths are relative to `/Users/ckai/code/Wait/Wait`, and ever
 - Create: `Packages/WaitKit/Sources/APIClient/WireDates.swift`, `Packages/WaitKit/Sources/APIClient/APIError.swift`
 - Test: `Packages/WaitKit/Tests/APIClientTests/WireDatesTests.swift`, `Packages/WaitKit/Tests/APIClientTests/APIErrorTests.swift`
 
-- [ ] **Step 1: Declare the targets**
+- [x] **Step 1: Declare the targets**
 
 In `Packages/WaitKit/Package.swift`, add this target to `targets:` right after the `MarketDataClient` target. It uses plan 02's `Target.Dependency` shorthands.
 ```swift
@@ -5006,7 +5006,7 @@ Add this alongside the other test targets. Every module the tests import is decl
     .testTarget(name: "APIClientTests", dependencies: ["APIClient", "Domain", .dependencies, .dependenciesTestSupport]),
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `Packages/WaitKit/Tests/APIClientTests/WireDatesTests.swift`:
 ```swift
@@ -5079,12 +5079,12 @@ struct APIErrorTests {
 }
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [ ] **Step 3: Run the tests to verify they fail** — NOT RUN (code-only; red confirmed in a /tmp harness)
 
 Run: `scripts/test-waitkit.sh APIClientTests`
 Expected: the build fails with `cannot find 'WireDates' in scope` and `cannot find 'APIError' in scope`.
 
-- [ ] **Step 4: Implement `WireDates` and `APIError`**
+- [x] **Step 4: Implement `WireDates` and `APIError`**
 
 Create `Packages/WaitKit/Sources/APIClient/WireDates.swift`:
 ```swift
@@ -5211,12 +5211,12 @@ extension APIError: LocalizedError {
 }
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [ ] **Step 5: Run the tests to verify they pass** — NOT RUN (code-only; 5/5 pass in a /tmp harness)
 
 Run: `scripts/test-waitkit.sh APIClientTests`
 Expected: `** TEST SUCCEEDED **`, with 5 tests passing.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
