@@ -1634,7 +1634,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/services/RateLimiter.ts`
 - Test: `server/test/services/RateLimiter.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/services/RateLimiter.test.ts`:
 ```ts
@@ -1721,12 +1721,12 @@ describe("MockRateLimiter", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/services/RateLimiter.test.ts`
 Expected: FAIL with `Failed to load url ../../src/services/RateLimiter.js`.
 
-- [ ] **Step 3: Implement the rate limiter**
+- [x] **Step 3: Implement the rate limiter**
 
 Create `server/src/services/RateLimiter.ts`:
 ```ts
@@ -1824,12 +1824,12 @@ export class MockRateLimiter implements RateLimiter {
 }
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 Run: `npx vitest run test/services/RateLimiter.test.ts && npm run typecheck`
 Expected: `6 passed`, and typecheck exits 0.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
