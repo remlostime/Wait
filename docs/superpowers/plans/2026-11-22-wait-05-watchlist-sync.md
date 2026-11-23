@@ -1558,7 +1558,7 @@ MSG
 - Modify: `server/src/app.ts` (route registration inside `buildApp`)
 - Test: `server/test/routes/watchlist.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/routes/watchlist.test.ts`:
 ```ts
@@ -1661,12 +1661,12 @@ describe("watchlist routes", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test and confirm it fails**
+- [x] **Step 2: Run the test and confirm it fails**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/routes/watchlist.test.ts`
 Expected: FAIL. `container.watchlist` is `undefined`, so `seedUser` throws `TypeError: Cannot read properties of undefined (reading 'seedUser')`, and none of the routes exist yet.
 
-- [ ] **Step 3: Write the schemas and DTO mapping**
+- [x] **Step 3: Write the schemas and DTO mapping**
 
 Create `server/src/schemas/watchlist.ts`:
 ```ts
@@ -1772,7 +1772,7 @@ export function toWatchlistItemDto(row: WatchlistRow): WatchlistItemDto {
 }
 ```
 
-- [ ] **Step 4: Write the route plugin**
+- [x] **Step 4: Write the route plugin**
 
 Create `server/src/routes/api/watchlist.ts`:
 ```ts
@@ -1830,7 +1830,7 @@ const watchlistRoutes: FastifyPluginAsync<RouteOptions> = async (server, { conta
 export default watchlistRoutes
 ```
 
-- [ ] **Step 5: Wire the container**
+- [x] **Step 5: Wire the container**
 
 In `server/src/container.ts`, add these imports next to the other repository and service imports:
 ```ts
@@ -1859,7 +1859,7 @@ In `createMockContainer(overrides)`, follow plan 04's `overrides.x ?? default` p
     watchlistSync: overrides.watchlistSync ?? new WatchlistSyncService(watchlist),
 ```
 
-- [ ] **Step 6: Register the routes**
+- [x] **Step 6: Register the routes**
 
 In `server/src/app.ts`, add the import next to the other route imports:
 ```ts
@@ -1870,17 +1870,17 @@ Then, inside `buildApp`, register the plugin directly after the `/api/market` re
   await app.register(watchlistRoutes, { prefix: "/api/watchlist", container })
 ```
 
-- [ ] **Step 7: Run the route tests and confirm they pass**
+- [x] **Step 7: Run the route tests and confirm they pass**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/routes/watchlist.test.ts`
 Expected: PASS, `Tests  8 passed (8)`.
 
-- [ ] **Step 8: Run the whole server suite and the typecheck**
+- [x] **Step 8: Run the whole server suite and the typecheck**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npm run typecheck && npm test`
 Expected: `tsc` exits 0. vitest shows every file passing, including plan 04's suites and this plan's 7 new files: `ladder`, `migration003`, `watchlistTypes`, `NeonWatchlistRepository`, `MockWatchlistRepository`, `WatchlistSyncService`, `watchlist` routes.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
@@ -1894,7 +1894,7 @@ MSG
 )"
 ```
 
-- [ ] **Step 10: Apply the migration in production (manual: user)**
+- [ ] **Step 10: Apply the migration in production (manual: user)** — SKIPPED (manual)
 
 After this branch is deployed to the Vercel production project:
 ```bash

@@ -2,10 +2,13 @@ import type { Config } from "./config.js"
 import type { MarketCacheRepository } from "./db/MarketCacheRepository.js"
 import { MockMarketCacheRepository } from "./db/MockMarketCacheRepository.js"
 import { MockUserRepository } from "./db/MockUserRepository.js"
+import { MockWatchlistRepository } from "./db/MockWatchlistRepository.js"
 import { NeonMarketCacheRepository } from "./db/NeonMarketCacheRepository.js"
 import { NeonUserRepository } from "./db/NeonUserRepository.js"
+import { NeonWatchlistRepository } from "./db/NeonWatchlistRepository.js"
 import { neonSql, type Sql } from "./db/sql.js"
 import type { UserRepository } from "./db/UserRepository.js"
+import type { WatchlistRepository } from "./db/WatchlistRepository.js"
 import type { FastifyBaseLogger } from "fastify"
 import { fixedClock, systemClock, type Clock } from "./lib/clock.js"
 import { createLogger } from "./lib/logger.js"
@@ -16,6 +19,7 @@ import { ProviderError, type ProviderName } from "./providers/types.js"
 import { AuthService } from "./services/AuthService.js"
 import { MarketDataService, type MarketProviders } from "./services/MarketDataService.js"
 import { MockRateLimiter, PostgresRateLimiter, type RateLimiter } from "./services/RateLimiter.js"
+import { WatchlistSyncService } from "./services/WatchlistSyncService.js"
 
 export interface Container {
   clock: Clock
@@ -28,6 +32,8 @@ export interface Container {
   auth: AuthService
   marketCache: MarketCacheRepository
   marketData: MarketDataService
+  watchlist: WatchlistRepository
+  watchlistSync: WatchlistSyncService
 }
 
 /** Options every route plugin receives. */
@@ -43,6 +49,7 @@ export function createContainer(config: Config): Container {
   const users = new NeonUserRepository(sql)
   const rateLimiter = new PostgresRateLimiter(sql, clock)
   const marketCache = new NeonMarketCacheRepository(sql)
+  const watchlist = new NeonWatchlistRepository(sql)
   const finnhub = new FinnhubProvider(config.finnhubApiKey)
   const providers: MarketProviders = {
     quotes: finnhub,
@@ -61,6 +68,8 @@ export function createContainer(config: Config): Container {
     marketCache,
     // The same logger Fastify uses, so `market.provider_error` warnings reach the Vercel runtime logs.
     marketData: new MarketDataService({ cache: marketCache, limiter: rateLimiter, providers, clock, logger: logger.child({ component: "market" }) }),
+    watchlist,
+    watchlistSync: new WatchlistSyncService(watchlist),
   }
 }
 
@@ -91,6 +100,7 @@ export function createMockContainer(overrides: Partial<Container> = {}): Contain
   const rateLimiter = overrides.rateLimiter ?? new MockRateLimiter()
   const marketCache = overrides.marketCache ?? new MockMarketCacheRepository()
   const logger = overrides.logger ?? createLogger("silent")
+  const watchlist = overrides.watchlist ?? new MockWatchlistRepository()
   return {
     clock,
     logger,
@@ -100,5 +110,7 @@ export function createMockContainer(overrides: Partial<Container> = {}): Contain
     auth: overrides.auth ?? new AuthService(users, rateLimiter, clock),
     marketCache,
     marketData: overrides.marketData ?? new MarketDataService({ cache: marketCache, limiter: rateLimiter, providers: unavailableProviders(), clock, logger }),
+    watchlist,
+    watchlistSync: overrides.watchlistSync ?? new WatchlistSyncService(watchlist),
   }
 }

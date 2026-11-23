@@ -6,6 +6,7 @@ import { AppError, sendAppError, sendError } from "./lib/errors.js"
 import jwtPlugin from "./plugins/jwt.js"
 import authRoutes from "./routes/api/auth.js"
 import marketRoutes from "./routes/api/market.js"
+import watchlistRoutes from "./routes/api/watchlist.js"
 import healthRoutes from "./routes/health.js"
 
 /** Codes from the overview §8.4 table for framework/plugin 4xx errors; anything else is INVALID_INPUT. */
@@ -48,6 +49,7 @@ export async function buildApp({ config, container }: BuildAppOptions) {
   await app.register(healthRoutes, { container })
   await app.register(authRoutes, { prefix: "/api/auth", container })
   await app.register(marketRoutes, { prefix: "/api/market", container })
+  await app.register(watchlistRoutes, { prefix: "/api/watchlist", container })
 
   return app
 }
