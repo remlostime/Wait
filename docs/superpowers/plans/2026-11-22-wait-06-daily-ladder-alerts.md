@@ -411,7 +411,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/domain/tradingDate.ts` (re-exports plan 04's `etDateString` as `easternDate`, and adds `isWeekend`)
 - Test: `server/test/domain/tradingDate.test.ts` (pins the DST behavior this plan relies on)
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/domain/tradingDate.test.ts`:
 ```ts
@@ -445,12 +445,12 @@ describe("isWeekend", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/domain/tradingDate.test.ts`
 Expected: FAIL with `Failed to load url ../../src/domain/tradingDate.js … Does the file exist?`
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 Create `server/src/domain/tradingDate.ts`:
 ```ts
@@ -464,12 +464,12 @@ export function isWeekend(tradingDate: string): boolean {
 }
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 Run: `npx vitest run test/domain/tradingDate.test.ts && npm run typecheck`
 Expected: PASS (`Tests  12 passed (12)`).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add server/src/domain/tradingDate.ts server/test/domain/tradingDate.test.ts
