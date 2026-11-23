@@ -2926,7 +2926,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/Persistence/SharedKeys.swift`, `Wait/Packages/WaitKit/Sources/Persistence/Shared+Watchlist.swift`
 - Create: `Wait/Packages/WaitKit/Tests/PersistenceTests/SharedWatchlistTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/PersistenceTests/SharedWatchlistTests.swift`:
 ```swift
@@ -3017,12 +3017,12 @@ import Testing
 ```
 The `.dependencies` trait comes from `DependenciesTestSupport`, which is imported at the top of the file. It gives each test its own in-memory file storage.
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh PersistenceTests/SharedWatchlistTests`
 Expected FAIL: `error: value of type 'Shared<IdentifiedArray<String, WatchlistItem>>' has no member 'update'` and `type 'SharedReaderKey' has no member 'watchlist'`.
 
-- [ ] **Step 3: Implement `SharedKeys.swift`**
+- [x] **Step 3: Implement `SharedKeys.swift`**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -3056,7 +3056,7 @@ public extension SharedReaderKey where Self == FileStorageKey<IdentifiedArrayOf<
 }
 ```
 
-- [ ] **Step 4: Implement `Shared+Watchlist.swift`.** These are the only mutation paths, and every one of them stamps `updatedAt` truncated to milliseconds. Plan 05 changes the bodies of `add` and `remove` to keep tombstones, but leaves their signatures alone.
+- [x] **Step 4: Implement `Shared+Watchlist.swift`.** These are the only mutation paths, and every one of them stamps `updatedAt` truncated to milliseconds. Plan 05 changes the bodies of `add` and `remove` to keep tombstones, but leaves their signatures alone.
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -3094,10 +3094,10 @@ public extension Shared where Value == IdentifiedArrayOf<WatchlistItem> {
       guard items[id: item.symbol] == nil else {
         return false
       }
-      var item = item
-      item.sortIndex = (items.map(\.sortIndex).max() ?? -1) + 1
-      item.updatedAt = now.truncatedToMilliseconds
-      items.append(item)
+      var appended = item
+      appended.sortIndex = (items.map(\.sortIndex).max() ?? -1) + 1
+      appended.updatedAt = now.truncatedToMilliseconds
+      items.append(appended)
       return true
     }
   }
@@ -3140,12 +3140,12 @@ public extension Shared where Value == WatchlistItem {
 }
 ```
 
-- [ ] **Step 5: Run the tests and confirm they pass**
+- [ ] **Step 5: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh PersistenceTests`
 Expected PASS: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/Persistence Wait/Packages/WaitKit/Tests/PersistenceTests
 git commit -m "feat(persistence): shared watchlist and template keys with stamped mutation helpers
