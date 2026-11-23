@@ -146,14 +146,14 @@ xcodebuild -project /Users/ckai/code/Wait/Wait/Wait.xcodeproj -scheme WaitWatch 
 - Create: `docs/superpowers/plans/2026-11-22-wait-01-baseline-log.md`
 - Modify: `CLAUDE.md` (the `-destination` lines of its three `xcodebuild` commands)
 
-- [ ] **Step 1: Resolve packages with the untouched project**
+- [ ] **Step 1: Resolve packages with the untouched project** — NOT RUN (code-only)
 
 ```sh
 xcodebuild -resolvePackageDependencies -project /Users/ckai/code/Wait/Wait/Wait.xcodeproj -scheme Wait 2>&1 | tail -20
 ```
 Expected: a `Resolved source packages:` list that includes `swift-composable-architecture: … @ 0.31.0`, `Money: … @ 1.3.0`, `shake-ios: … @ 14.4.0`, `SwiftyBeaver: … @ 1.9.5`, `Alamofire: … @ 5.5.0` and `SwiftyJSON: … @ 5.0.1`. If you see `Invalid manifest`, copy the first error line into the log in Step 5.
 
-- [ ] **Step 2: Build the app as it is today**
+- [ ] **Step 2: Build the app as it is today** — NOT RUN (code-only)
 
 ```sh
 xcodebuild -project /Users/ckai/code/Wait/Wait/Wait.xcodeproj -scheme Wait \
@@ -163,7 +163,7 @@ xcodebuild -project /Users/ckai/code/Wait/Wait/Wait.xcodeproj -scheme Wait \
 ```
 Expected, when it works: `** BUILD SUCCEEDED **` and no `error:` lines. If it fails, keep `/tmp/wait-baseline-build.log`, because Task 2 onward compares against it.
 
-- [ ] **Step 3: Run the three real test targets**
+- [ ] **Step 3: Run the three real test targets** — NOT RUN (code-only)
 
 The shared `Wait` scheme also references six deleted test targets, so run the real ones explicitly:
 ```sh
@@ -174,7 +174,7 @@ xcodebuild test -project /Users/ckai/code/Wait/Wait/Wait.xcodeproj -scheme Wait 
 ```
 Expected: `Executed 5 tests, with 0 failures` and `** TEST SUCCEEDED **`.
 
-- [ ] **Step 4: Build the watch target**
+- [ ] **Step 4: Build the watch target** — NOT RUN (code-only)
 
 There is no shared watch scheme yet, so build the target directly:
 ```sh
@@ -183,7 +183,7 @@ cd /Users/ckai/code/Wait/Wait && xcodebuild -project Wait.xcodeproj -target "Wai
 ```
 Expected: `** BUILD SUCCEEDED **`. Record a failure in the log rather than fixing it here.
 
-- [ ] **Step 5: Write the baseline log**
+- [x] **Step 5: Write the baseline log**
 
 Create `docs/superpowers/plans/2026-11-22-wait-01-baseline-log.md`. Fill in every `<…>` from Steps 1–4.
 ```markdown
@@ -203,7 +203,7 @@ Recorded: <YYYY-MM-DD> on <hostname>, Xcode 27.0 (27A266a)
 **Parity data seeded on simulator:** <yes, UDID … / no>
 ```
 
-- [ ] **Step 6: Choose the verification mode for Tasks 2–13**
+- [x] **Step 6: Choose the verification mode for Tasks 2–13**
 
 Use the first rule that matches and write the mode into the log.
 
@@ -230,7 +230,7 @@ Use the first rule that matches and write the mode into the log.
    Failures clear as packages are removed: Shake in Task 5, SwiftyBeaver in Task 7. If the failing projects include `swift-composable-architecture` or any of its dependency projects listed above, run Task 13 Steps 1–7 inside Task 11, right after Task 11 Step 4, and skip them in Task 13. Strict mode resumes no later than the end of Task 13.
 3. **Anything else** means Wait's own sources fail to compile. **Stop and ask the user.** This plan assumes the app code compiles.
 
-- [ ] **Step 7 (manual: user, recommended): Seed parity data on the simulator**
+- [ ] **Step 7 (manual: user, recommended): Seed parity data on the simulator** — SKIPPED (manual)
 
 Skip this step if the baseline build failed. Otherwise, run this as one block:
 ```sh
@@ -247,7 +247,7 @@ Expected: `UDID=<36-char id>`, `** BUILD SUCCEEDED **`, and `com.chenkai.wait: <
 
 Ask the user to add 2–3 stocks in the simulator, each with an expected price and one note, then quit the app. **Keep this simulator (don't erase it) until plan 01 is done.** Tasks 12 and 13 install over it to check that the watchlist is unchanged. Write the UDID into the log.
 
-- [ ] **Step 8: Fix the destinations in CLAUDE.md**
+- [x] **Step 8: Fix the destinations in CLAUDE.md**
 
 ```sh
 cd /Users/ckai/code/Wait && sed -i '' "s/-destination 'platform=iOS Simulator,name=iPhone 15'/-destination 'platform=iOS Simulator,name=iPhone 17,OS=27.0' -skipMacroValidation/" CLAUDE.md \
@@ -255,7 +255,7 @@ cd /Users/ckai/code/Wait && sed -i '' "s/-destination 'platform=iOS Simulator,na
 ```
 Expected: three lines, each ending in `name=iPhone 17,OS=27.0' -skipMacroValidation` (the third keeps its trailing ` \`). None of them mentions `iPhone 15`.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add docs/superpowers/plans/2026-11-22-wait-01-baseline-log.md CLAUDE.md && git commit -m "$(cat <<'EOF'

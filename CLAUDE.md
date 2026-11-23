@@ -13,15 +13,15 @@ Everything is in one Xcode project at `Wait/Wait.xcodeproj`. There is no workspa
 ```sh
 # Build the iOS app (also builds the widget and every framework target)
 xcodebuild -project Wait/Wait.xcodeproj -scheme Wait \
-  -destination 'platform=iOS Simulator,name=iPhone 15' build
+  -destination 'platform=iOS Simulator,name=iPhone 17,OS=27.0' -skipMacroValidation build
 
 # Run all unit tests
 xcodebuild test -project Wait/Wait.xcodeproj -scheme Wait \
-  -destination 'platform=iOS Simulator,name=iPhone 15'
+  -destination 'platform=iOS Simulator,name=iPhone 17,OS=27.0' -skipMacroValidation
 
 # Run one test target / class / method
 xcodebuild test -project Wait/Wait.xcodeproj -scheme Wait \
-  -destination 'platform=iOS Simulator,name=iPhone 15' \
+  -destination 'platform=iOS Simulator,name=iPhone 17,OS=27.0' -skipMacroValidation \
   -only-testing:ChecklistEditFeatureTests/ChecklistEditFeatureTests/testAddNewItem
 
 # Format and lint (configs live in Wait/, so run from there; neither runs as a build phase)
