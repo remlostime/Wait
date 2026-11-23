@@ -5971,7 +5971,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/ChecklistFeature/ChecklistFeature.swift`, `ChecklistView.swift`, `ChecklistTemplateFeature.swift`, `ChecklistTemplateView.swift`
 - Create: `Wait/Packages/WaitKit/Tests/ChecklistFeatureTests/ChecklistFeatureTests.swift`
 
-- [ ] **Step 1: Update `Package.swift`**
+- [x] **Step 1: Update `Package.swift`**
   - Append to `products:`: `.library(name: "ChecklistFeature", targets: ["ChecklistFeature"]),`
   - Append to `targets:`:
     ```swift
@@ -5997,7 +5997,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
     ```
   - Create `Wait/Packages/WaitKit/Sources/ChecklistFeature/ChecklistFeature.swift` containing only the file header, so the package loads (SwiftPM rejects a target with no sources). Step 4 fills it in.
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/ChecklistFeatureTests/ChecklistFeatureTests.swift`:
 ```swift
@@ -6098,12 +6098,12 @@ struct ChecklistFeatureTests {
 }
 ```
 
-- [ ] **Step 3: Run the tests and confirm they fail**
+- [ ] **Step 3: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh ChecklistFeatureTests`
 Expected FAIL: `error: cannot find 'ChecklistFeature' in scope`.
 
-- [ ] **Step 4: Implement the reducers** (replace the header-only `ChecklistFeature.swift`)
+- [x] **Step 4: Implement the reducers** (replace the header-only `ChecklistFeature.swift`)
 
 `Wait/Packages/WaitKit/Sources/ChecklistFeature/ChecklistFeature.swift`:
 ```swift
@@ -6260,12 +6260,12 @@ public struct ChecklistTemplateFeature {
 }
 ```
 
-- [ ] **Step 5: Run the tests and confirm they pass**
+- [ ] **Step 5: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh ChecklistFeatureTests`
 Expected PASS: 4 tests pass.
 
-- [ ] **Step 6: Add the views.** Load `swiftui-expert:swiftui-expert-skill` first.
+- [x] **Step 6: Add the views.** Load `swiftui-expert:swiftui-expert-skill` first.
 
 `Wait/Packages/WaitKit/Sources/ChecklistFeature/ChecklistView.swift`:
 ```swift
@@ -6393,12 +6393,12 @@ public struct ChecklistTemplateView: View {
 }
 ```
 
-- [ ] **Step 7: Build the package scheme so the views compile**
+- [ ] **Step 7: Build the package scheme so the views compile** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh ChecklistFeatureTests`
 Expected PASS: `** TEST SUCCEEDED **`. The views compile as part of the target.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/ChecklistFeature Wait/Packages/WaitKit/Tests/ChecklistFeatureTests
 git commit -m "feat(checklist): TCA checklist and template features on shared watchlist state
