@@ -21,6 +21,13 @@ public struct MigrationReport: Equatable, Sendable {
   public var migratedTemplate: Bool
 }
 
+// MARK: - LegacyMigrationError
+
+public enum LegacyMigrationError: Error, Equatable, Sendable {
+  /// `stocks` has rows but none could be decoded. Nothing is written, so the migration retries on the next launch.
+  case undecodableStocks(rowCount: Int)
+}
+
 // MARK: - LegacyMigration
 
 /// One-time move of the legacy Documents files into the app group (overview §7.6).
@@ -29,7 +36,8 @@ public struct MigrationReport: Equatable, Sendable {
 /// - Old files are kept.
 /// - A destination watchlist that already has items is never overwritten. A missing, zero-byte or `[]` watchlist counts as absent.
 /// - Malformed `stocks` rows are skipped and logged.
-/// - If `stocks` exists but can't be read or isn't a JSON array, this throws without writing the marker, so the migration retries on the next launch.
+/// - If `stocks` exists but can't be read, isn't a JSON array, or has rows but none decode, this throws without writing the marker, so the migration retries on the next launch.
+/// - `checklist-template.json` counts as absent when it is missing, zero-byte or `[]`.
 public struct LegacyMigration: Sendable {
   // MARK: Lifecycle
 
@@ -68,7 +76,7 @@ public struct LegacyMigration: Sendable {
       !legacyTemplate.isEmpty
     {
       template = Self.uniqueByID(legacyTemplate)
-      if !fileManager.fileExists(atPath: templateURL.path) {
+      if (try? Self.isAbsentOrEmpty(templateURL)) == true { // best-effort like the rest of the template block: an unreadable file is left alone
         try encoder.encode(template).write(to: templateURL, options: .atomic)
         report.migratedTemplate = true
       }
@@ -78,6 +86,9 @@ public struct LegacyMigration: Sendable {
     if try Self.isAbsentOrEmpty(watchlistURL), let data = try Self.readIfPresent(documents.appending(path: "stocks")) {
       let rows = try decoder.decode([LossyLegacyStock].self, from: data)
       let stocks = rows.compactMap(\.stock)
+      if stocks.isEmpty, !rows.isEmpty {
+        throw LegacyMigrationError.undecodableStocks(rowCount: rows.count)
+      }
       if stocks.count < rows.count {
         Log.persistence.error("Legacy migration skipped \(rows.count - stocks.count) malformed stock rows")
       }
@@ -85,7 +96,10 @@ public struct LegacyMigration: Sendable {
       for stock in stocks {
         let url = documents.appending(path: "checklist-\(stock.symbol)")
         if let data = try? Self.readIfPresent(url), let items = try? decoder.decode([ChecklistItem].self, from: data) {
-          checklists[LegacyStockMapper.mappedSymbol(stock.symbol)] = Self.uniqueByID(items)
+          let key = LegacyStockMapper.mappedSymbol(stock.symbol)
+          if checklists[key] == nil { // the mapper keeps the first row of a duplicated symbol, so keep its checklist too
+            checklists[key] = Self.uniqueByID(items)
+          }
         }
       }
       let items = LegacyStockMapper.items(from: stocks, checklists: checklists, template: template, now: now)

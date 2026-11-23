@@ -107,4 +107,71 @@ import Testing
     }
     #expect(!markerExists(group))
   }
+
+  @Test func aZeroByteTemplateFileDoesNotBlockMigratingTheLegacyTemplate() throws {
+    let (documents, group) = try dirs()
+    try FileManager.default.createDirectory(at: group, withIntermediateDirectories: true)
+    try Data().write(to: group.appending(path: "checklist-template.json")) // swift-sharing creates empty files when subscribing
+    try Data(template.utf8).write(to: documents.appending(path: "checklist-items.json"))
+
+    let report = try LegacyMigration(documents: documents, destination: group).runIfNeeded(now: now)
+
+    #expect(report.migratedTemplate)
+    let data = try Data(contentsOf: group.appending(path: "checklist-template.json"))
+    #expect(try JSONDecoder().decode([ChecklistItem].self, from: data).map(\.name) == ["T1"])
+  }
+
+  @Test func aNonEmptyTemplateFileIsNeverOverwritten() throws {
+    let (documents, group) = try dirs()
+    try FileManager.default.createDirectory(at: group, withIntermediateDirectories: true)
+    let existing = #"[{"name":"Mine","isChecked":false,"id":"00000000-0000-0000-0000-0000000000BB"}]"#
+    try Data(existing.utf8).write(to: group.appending(path: "checklist-template.json"))
+    try Data(template.utf8).write(to: documents.appending(path: "checklist-items.json"))
+
+    let report = try LegacyMigration(documents: documents, destination: group).runIfNeeded(now: now)
+
+    #expect(!report.migratedTemplate)
+    let data = try Data(contentsOf: group.appending(path: "checklist-template.json"))
+    #expect(try JSONDecoder().decode([ChecklistItem].self, from: data).map(\.name) == ["Mine"])
+  }
+
+  @Test func rowsThatAllFailToDecodeThrowAndLeaveNoMarker() throws {
+    let (documents, group) = try dirs()
+    try Data(#"[42, {"name":"no symbol"}]"#.utf8).write(to: documents.appending(path: "stocks"))
+    #expect(throws: LegacyMigrationError.undecodableStocks(rowCount: 2)) {
+      try LegacyMigration(documents: documents, destination: group).runIfNeeded(now: now)
+    }
+    #expect(!markerExists(group))
+    #expect(!FileManager.default.fileExists(atPath: group.appending(path: "watchlist.json").path))
+  }
+
+  @Test func anEmptyStocksArrayStillMigratesCleanly() throws {
+    let (documents, group) = try dirs()
+    try Data("[]".utf8).write(to: documents.appending(path: "stocks"))
+    let report = try LegacyMigration(documents: documents, destination: group).runIfNeeded(now: now)
+    #expect(report == MigrationReport(didRun: true, migratedItems: 0, migratedTemplate: false))
+    #expect(markerExists(group))
+  }
+
+  @Test func theFirstDuplicateSymbolKeepsItsOwnChecklist() throws {
+    let (documents, group) = try dirs()
+    let duplicates = #"""
+    [
+      {"symbol":" AAPL","name":"First","memo":"first"},
+      {"symbol":"AAPL","name":"Second","memo":"second"}
+    ]
+    """#
+    let first = #"[{"name":"FirstList","isChecked":true,"id":"00000000-0000-0000-0000-0000000000C1"}]"#
+    let second = #"[{"name":"SecondList","isChecked":true,"id":"00000000-0000-0000-0000-0000000000C2"}]"#
+    try Data(duplicates.utf8).write(to: documents.appending(path: "stocks"))
+    try Data(first.utf8).write(to: documents.appending(path: "checklist- AAPL"))
+    try Data(second.utf8).write(to: documents.appending(path: "checklist-AAPL"))
+
+    _ = try LegacyMigration(documents: documents, destination: group).runIfNeeded(now: now)
+
+    let items = try decodeWatchlist(group)
+    #expect(items.map(\.symbol) == ["AAPL"])
+    #expect(items[0].memo == "first")
+    #expect(items[0].checklist.map(\.name) == ["FirstList"])
+  }
 }
