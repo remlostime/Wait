@@ -2551,7 +2551,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/test/support/fakeFetch.ts`
 - Test: `server/test/providers/http.test.ts`
 
-- [ ] **Step 1: Write the fake fetch helper**
+- [x] **Step 1: Write the fake fetch helper**
 
 Create `server/test/support/fakeFetch.ts`:
 ```ts
@@ -2594,7 +2594,7 @@ export function headerOf(init: RequestInit | undefined, name: string): string | 
 }
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `server/test/providers/http.test.ts`:
 ```ts
@@ -2649,12 +2649,12 @@ describe("parseRetryAfter", () => {
 })
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [x] **Step 3: Run the tests to verify they fail**
 
 Run: `npx vitest run test/providers/http.test.ts`
 Expected: FAIL with `Failed to load url ../../src/providers/http.js`.
 
-- [ ] **Step 4: Implement the provider types and HTTP helper**
+- [x] **Step 4: Implement the provider types and HTTP helper**
 
 Create `server/src/providers/types.ts`:
 ```ts
@@ -2793,12 +2793,12 @@ export async function getJson<T>(fetchImpl: FetchLike, url: string, options: Get
 }
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `npx vitest run test/providers/http.test.ts && npm run typecheck`
 Expected: `4 passed`, and typecheck exits 0.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
