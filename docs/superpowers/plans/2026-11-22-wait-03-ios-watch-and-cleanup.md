@@ -18,6 +18,8 @@
 > 1. `WatchSnapshotStore` lives in the `Connectivity` package target (`Sources/Connectivity/WatchSnapshotStore.swift`), not in `WaitWatch/WatchSnapshotStore.swift` as overview §12.1 says. The watch app has no test target, and package tests run on the iOS simulator, so this is the only place the store can be tested.
 > 2. Files beyond the two that §12.1 lists: `Connectivity/{SnapshotCoding,ConnectivityEngine,LiveWCSessionAdapter,WatchSnapshotStore}.swift`, `AppFeature/SnapshotClient+Connectivity.swift`, and `WaitWatch/{WatchlistRowView,WatchFormat}.swift`.
 > 3. The publish effect reaches `connectivity.send` through `snapshotClient.alsoSending(to: connectivity)`. This combinator lives in `AppFeature` and keeps every other `SnapshotClient` endpoint intact. That satisfies §12.3's "In 03 it also calls `connectivity.send`".
+> 4. **Plan 02's app-layer fix changed `publishSnapshot` (verified by Task 1).** The helper is now `private func publishSnapshot(_ inputs:, debounced: Bool = true)`, and the `.run` effect does `if debounced { try await clock.sleep(for: .seconds(1)) }` before publishing. `.scenePhaseChanged(.background)` calls it with `debounced: false` inside a `.merge`, so a suspended app still publishes at once. There is still exactly one `snapshotClient.publish(` call site, so Task 6's two substring edits apply unchanged. Only the code block in Task 6 Step 7 is adapted. More plan-02 tests now reach the publish path than Task 6 Step 10 lists: `didFinishLaunchingPublishesASnapshot`, `backgroundPublishesImmediatelyAndCancelsTheDebouncedPublish`, `becomingActiveRefreshesQuotesAndPublishesOneSnapshot` and `burstsOfChangesPublishOnce`. Step 10's rule (add `$0.connectivity = .noop` plus `import Connectivity`) applies to each of them.
+> 5. `Package.swift` already defines `Target.Dependency` shortcuts, so Task 2 Step 1 writes `.dependencies` and `.dependenciesMacros` instead of `.product(name: "Dependencies", package: "swift-dependencies")`, and declares the `Connectivity` target on one line.
 >
 > `Connectivity` depends only on Domain, Dependencies and DependenciesMacros, as overview §3.1 specifies, so the watch doesn't link Persistence, Sharing or IdentifiedCollections. It logs with `os.Logger` directly.
 
@@ -82,7 +84,7 @@ No code changes and no commit. If any expected output differs, **stop and ask th
 
 **Files:** none (read-only)
 
-- [ ] **Step 1: Check the Domain snapshot initializers**
+- [x] **Step 1: Check the Domain snapshot initializers**
 
 Run:
 ```bash
@@ -98,7 +100,7 @@ Expected:
 - The `-A 9` grep shows the multi-line `Row` init. Its parameters, one per line and in this order, are `symbol: String`, `name: String`, `price: Decimal?`, `changePercent: Double?`, `status: LadderStatus?`, `temperature: Double?`, `ladder: PriceLadder`, `isFavorite: Bool`.
 - If the `Row` init is on a single line instead, it shows up in the `public init` count and should read `public init(symbol: String, name: String, price: Decimal?, changePercent: Double?, status: LadderStatus?, temperature: Double?, ladder: PriceLadder, isFavorite: Bool)`.
 
-- [ ] **Step 2: Check `LadderRung` and `StatusPill`**
+- [x] **Step 2: Check `LadderRung` and `StatusPill`**
 
 Run: `grep -rn -A 5 "public struct LadderRung" Sources/Domain/ && grep -n "public init" Sources/DesignSystem/StatusPill.swift`
 
@@ -107,13 +109,13 @@ Expected:
 - `PriceLadder.Rung` has `public var title: String` ("Buy low", "Buy high", …). Check with `grep -n "public var title" Sources/Domain/PriceLadder.swift`. The watch detail view uses it.
 - `StatusPill` has an initializer whose first parameter is `status:` and whose other parameters all have defaults. Plan 02 writes `public init(status: LadderStatus?, compact: Bool = false)`, which is fine. This plan calls `StatusPill(status:compact:)` with `compact: true`.
 
-- [ ] **Step 3: Check `SnapshotClient`**
+- [x] **Step 3: Check `SnapshotClient`**
 
 Run: `grep -n -B 2 -A 4 "struct SnapshotClient" Sources/Persistence/SnapshotClient.swift && grep -rn "var snapshotClient" Sources/Persistence/`
 
 Expected: `@DependencyClient` above `public struct SnapshotClient`, a `public var publish: @Sendable (_ snapshot: WatchlistSnapshot) async -> Void` (the argument label may be omitted), and a `public var snapshotClient: SnapshotClient` in a `DependencyValues` extension.
 
-- [ ] **Step 4: Check the AppFeature anchors**
+- [x] **Step 4: Check the AppFeature anchors**
 
 Run: `grep -n "didFinishLaunching" Sources/AppFeature/*.swift; grep -c "snapshotClient.publish(" Sources/AppFeature/AppFeature.swift; grep -n "public init()" Sources/AppFeature/AppFeature.swift; ls Tests/AppFeatureTests`
 
@@ -123,13 +125,13 @@ Expected:
 - `AppFeature.State` has a `public init()` (inside `struct State`).
 - `Tests/AppFeatureTests` lists at least one `.swift` file.
 
-- [ ] **Step 5: Check the package dependency identities**
+- [x] **Step 5: Check the package dependency identities**
 
 Run: `grep -n "swift-dependencies\|swift-composable-architecture" Package.swift | head -4`
 
 Expected: `.package(url: "https://github.com/pointfreeco/swift-dependencies", …)` and the TCA package are both declared.
 
-- [ ] **Step 6: Check platforms, the snapshot dependency, the watch target key and `.gitignore`**
+- [x] **Step 6: Check platforms, the snapshot dependency, the watch target key and `.gitignore`**
 
 Run:
 ```bash
@@ -164,7 +166,7 @@ On any mismatch, stop and ask the user. The one exception is `.gitignore`: if ei
 - Create: `Wait/Packages/WaitKit/Tests/ConnectivityTests/Support/SnapshotFixtures.swift`
 - Test: `Wait/Packages/WaitKit/Tests/ConnectivityTests/SnapshotCodingTests.swift`
 
-- [ ] **Step 1: Declare the product and targets**
+- [x] **Step 1: Declare the product and targets**
 
 In `Wait/Packages/WaitKit/Package.swift`, add this element to the `products:` array (after the `Persistence` product):
 
@@ -192,7 +194,7 @@ Add these two elements to the `targets:` array (after the `Persistence` target):
     ),
 ```
 
-- [ ] **Step 2: Write the test fixtures**
+- [x] **Step 2: Write the test fixtures**
 
 Create `Wait/Packages/WaitKit/Tests/ConnectivityTests/Support/SnapshotFixtures.swift`:
 
@@ -233,7 +235,7 @@ enum SnapshotFixtures {
 }
 ```
 
-- [ ] **Step 3: Write the failing tests**
+- [x] **Step 3: Write the failing tests**
 
 Create `Wait/Packages/WaitKit/Tests/ConnectivityTests/SnapshotCodingTests.swift`:
 
@@ -301,7 +303,7 @@ struct SnapshotCodingTests {
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they fail**
+- [ ] **Step 4: Run the tests to verify they fail** — NOT RUN (code-only; checked in the /tmp harness instead: RED = `no such module 'Connectivity'`, GREEN = 5 of 5 pass)
 
 Run:
 ```bash
@@ -311,7 +313,7 @@ cd /Users/ckai/code/Wait/Wait/Packages/WaitKit && xcodebuild test -scheme WaitKi
 ```
 Expected: FAIL. Package resolution reports that the target `Connectivity` has no source files under `Sources/Connectivity`, or the compile stops with `cannot find 'SnapshotCoding' in scope`.
 
-- [ ] **Step 5: Implement `SnapshotCoding`**
+- [x] **Step 5: Implement `SnapshotCoding`**
 
 Create `Wait/Packages/WaitKit/Sources/Connectivity/SnapshotCoding.swift`:
 
@@ -372,12 +374,12 @@ public enum SnapshotCodingError: Error, Equatable, Sendable {
 }
 ```
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [ ] **Step 6: Run the tests to verify they pass** — NOT RUN (code-only; checked in the /tmp harness instead: RED = `no such module 'Connectivity'`, GREEN = 5 of 5 pass)
 
 Run: the same command as Step 4.
 Expected: PASS. `** TEST SUCCEEDED **`, with 5 tests passing in `SnapshotCodingTests`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -1613,10 +1615,13 @@ In the same file, the single publish call site is in plan 02's `publishSnapshot(
 With plan 02's code, the helper then reads:
 
 ```swift
-  /// The only `snapshotClient.publish` call site: debounced 1 s and cancellable by `CancelID.publishSnapshot`.
-  private func publishSnapshot(_ inputs: WatchlistFeature.SnapshotInputs) -> Effect<Action> {
+  /// The only `snapshotClient.publish` call site: debounced 1 s by default and cancellable by `CancelID.publishSnapshot`.
+  /// With `debounced: false` it publishes at once and cancels any pending debounced publish.
+  private func publishSnapshot(_ inputs: WatchlistFeature.SnapshotInputs, debounced: Bool = true) -> Effect<Action> {
     .run { [clock, date, snapshotClient, connectivity] _ in
-      try await clock.sleep(for: .seconds(1))
+      if debounced {
+        try await clock.sleep(for: .seconds(1))
+      }
       await snapshotClient.alsoSending(to: connectivity).publish(WatchlistSnapshot.make(items: inputs.items, quotes: inputs.quotes, now: date.now))
     }
     .cancellable(id: CancelID.publishSnapshot, cancelInFlight: true)
@@ -1661,7 +1666,7 @@ cd /Users/ckai/code/Wait/Wait/Packages/WaitKit && xcodebuild test -scheme WaitKi
 ```
 Expected: PASS.
 
-If any existing test fails with `Unimplemented: 'ConnectivityClient.activate'` or `Unimplemented: 'ConnectivityClient.send'`, it reaches the launch or publish path and now touches the watch. Plan 02's `didFinishLaunchingPublishesASnapshot()` is expected to be one of them. Fix each one the same way:
+If any existing test fails with `Unimplemented: 'ConnectivityClient.activate'` or `Unimplemented: 'ConnectivityClient.send'`, it reaches the launch or publish path and now touches the watch. Plan 02's `didFinishLaunchingPublishesASnapshot()`, `backgroundPublishesImmediatelyAndCancelsTheDebouncedPublish()`, `becomingActiveRefreshesQuotesAndPublishesOneSnapshot()` and `burstsOfChangesPublishOnce()` are expected to be among them. Fix each one the same way:
 1. Add `$0.connectivity = .noop` to that test's `withDependencies { … }` closure.
 2. Add `import Connectivity` to the top of its file.
 3. Re-run until the suite passes.

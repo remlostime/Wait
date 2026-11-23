@@ -22,6 +22,7 @@ let package = Package(
     .library(name: "Logging", targets: ["Logging"]),
     .library(name: "MarketDataClient", targets: ["MarketDataClient"]),
     .library(name: "Persistence", targets: ["Persistence"]),
+    .library(name: "Connectivity", targets: ["Connectivity"]),
     .library(name: "SettingsFeature", targets: ["SettingsFeature"]),
     .library(name: "StockChartFeature", targets: ["StockChartFeature"]),
     .library(name: "StockDetailsFeature", targets: ["StockDetailsFeature"]),
@@ -39,6 +40,7 @@ let package = Package(
     .target(name: "Logging"),
     .target(name: "DesignSystem", dependencies: ["Domain"]),
     .target(name: "Persistence", dependencies: ["Domain", "Logging", .sharing, .identifiedCollections, .dependencies, .dependenciesMacros]),
+    .target(name: "Connectivity", dependencies: ["Domain", .dependencies, .dependenciesMacros]),
     .target(name: "MarketDataClient", dependencies: ["Domain", "Logging", .dependencies, .dependenciesMacros]),
 
     // Features
@@ -54,6 +56,7 @@ let package = Package(
     .testTarget(name: "LoggingTests", dependencies: ["Logging"]),
     .testTarget(name: "DesignSystemTests", dependencies: ["DesignSystem", "Domain"]),
     .testTarget(name: "PersistenceTests", dependencies: ["Persistence", "Domain", .sharing, .identifiedCollections, .dependenciesTestSupport]),
+    .testTarget(name: "ConnectivityTests", dependencies: ["Connectivity", "Domain"]),
     .testTarget(name: "MarketDataClientTests", dependencies: ["MarketDataClient", "Domain", .dependencies, .dependenciesTestSupport], resources: [.copy("Fixtures")]),
     .testTarget(name: "ChecklistFeatureTests", dependencies: ["ChecklistFeature", "Domain", "Persistence", .tca, .dependenciesTestSupport]),
     .testTarget(name: "StockChartFeatureTests", dependencies: ["StockChartFeature", "Domain", "MarketDataClient", .tca]),
