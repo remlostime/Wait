@@ -21,7 +21,22 @@ extension MarketDataClient {
     var seen = Set<String>()
     return symbols
       .map { $0.uppercased() }
-      .filter { $0.range(of: #"^[A-Z]{1,5}([.-][A-Z]{1,2})?$"#, options: .regularExpression) != nil && seen.insert($0).inserted }
+      .filter { isRequestable($0) && seen.insert($0).inserted }
+  }
+
+  /// The one rule for every endpoint that takes a ticker. `symbol` is already uppercased.
+  static func isRequestable(_ symbol: String) -> Bool {
+    symbol.range(of: #"^[A-Z]{1,5}([.-][A-Z]{1,2})?$"#, options: .regularExpression) != nil
+  }
+
+  /// The server accepts at most 30 UTF-16 units in a search query (it measures `maxLength` that way). Whole `Character`s are dropped from
+  /// the end, so a surrogate pair or a grapheme cluster is never cut in half.
+  static func truncatedSearchQuery(_ query: String, maxUTF16Length: Int = 30) -> String {
+    var result = query.trimmingCharacters(in: .whitespacesAndNewlines)
+    while result.utf16.count > maxUTF16Length {
+      result.removeLast()
+    }
+    return result.trimmingCharacters(in: .whitespacesAndNewlines)
   }
 
   /// Every call goes to the Wait backend, which owns provider keys, shared caches and rate limits.
@@ -48,18 +63,26 @@ extension MarketDataClient {
         }
       },
       series: { symbol, range, _ in
-        try await mapAPIErrors { try PriceSeries(dto: try await api.history(symbol, range)) }
+        let symbol = symbol.uppercased()
+        guard isRequestable(symbol) else {
+          throw MarketDataError.notFound
+        }
+        return try await mapAPIErrors { try PriceSeries(dto: try await api.history(symbol, range)) }
       },
       search: { query in
-        // The server accepts 1–30 characters with at least one non-space.
-        let trimmed = String(query.trimmingCharacters(in: .whitespacesAndNewlines).prefix(30))
+        // The server accepts 1–30 UTF-16 units with at least one non-space.
+        let trimmed = truncatedSearchQuery(query)
         guard !trimmed.isEmpty else {
           return []
         }
         return try await mapAPIErrors { try await api.search(trimmed).results.map(SymbolSearchResult.init(dto:)) }
       },
       profile: { symbol in
-        try await mapAPIErrors { CompanyProfile(dto: try await api.profile(symbol)) }
+        let symbol = symbol.uppercased()
+        guard isRequestable(symbol) else {
+          throw MarketDataError.notFound
+        }
+        return try await mapAPIErrors { CompanyProfile(dto: try await api.profile(symbol)) }
       }
     )
   }

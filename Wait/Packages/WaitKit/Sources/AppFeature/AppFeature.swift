@@ -37,6 +37,20 @@ public struct AppFeature {
     public var watchlist = WatchlistFeature.State()
     public var settings = SettingsFeature.State()
     public var push = PushFeature.State()
+    /// A deep link or push tap for a stock that is not on this device yet. The next sync result retries it once.
+    public var pendingStockSymbol: String?
+
+    /// Shows the details of `symbol`. An unknown symbol leaves the current screen and stack alone: they are cleared only once there is
+    /// something to push. Returns false for an unknown symbol.
+    @discardableResult
+    mutating func showStock(symbol: String) -> Bool {
+      guard watchlist.items[id: symbol] != nil else {
+        return false
+      }
+      watchlist.destination = nil
+      watchlist.path.removeAll()
+      return watchlist.showDetails(symbol: symbol)
+    }
   }
 
   public enum Action: BindableAction {
@@ -139,13 +153,12 @@ public struct AppFeature {
             switch link {
               case let .stock(symbol):
                 state.selectedTab = .watchlist
-                // An unknown symbol leaves the current screen and stack alone: clear them only once there is something to push.
-                guard state.watchlist.items[id: symbol] != nil else {
-                  return .none
+                guard state.showStock(symbol: symbol) else {
+                  // The stock may exist on the server only (added on another device): sync, then retry once in `.syncFinished`.
+                  state.pendingStockSymbol = symbol
+                  return sync(after: nil)
                 }
-                state.watchlist.destination = nil
-                state.watchlist.path.removeAll()
-                state.watchlist.showDetails(symbol: symbol)
+                state.pendingStockSymbol = nil
             }
             return .none
 
@@ -156,6 +169,11 @@ public struct AppFeature {
             return runSync()
 
           case let .syncFinished(report):
+            // The pending link is retried once, whether or not the stock arrived.
+            if let symbol = state.pendingStockSymbol {
+              state.pendingStockSymbol = nil
+              state.showStock(symbol: symbol)
+            }
             // SyncEngine writes merged rows straight into @Shared, which onChange can't see (overview §12.3).
             // Pulled rows also arrive without quotes, so the ones that are missing are loaded; the quotes then change
             // `snapshotInputs`, which republishes through `onChange`.
@@ -166,6 +184,7 @@ public struct AppFeature {
 
           case let .syncFailed(message):
             Log.sync.error("Watchlist sync failed: \(message)")
+            state.pendingStockSymbol = nil
             return .none
 
           case .binding, .watchlist, .settings, .push:

@@ -148,6 +148,60 @@ struct BackendMarketDataTests {
   }
 
   @Test
+  func searchTrimsByUTF16LengthWithoutSplittingACharacter() async throws {
+    let sent = LockIsolated<String?>(nil)
+    var api = APIClient()
+    api.search = { query in
+      sent.setValue(query)
+      return try WireDates.makeDecoder().decode(SearchResponseDTO.self, from: Data(#"{"results":[]}"#.utf8))
+    }
+    let client = MarketDataClient.backend(api)
+    // 29 ASCII characters plus a surrogate pair is 31 UTF-16 units (30 Characters): the server would reject it.
+    _ = try await client.search(String(repeating: "a", count: 29) + "😀")
+    #expect(sent.value == String(repeating: "a", count: 29))
+    // Every emoji is 2 units: 15 fit exactly.
+    _ = try await client.search(String(repeating: "😀", count: 20))
+    #expect(sent.value == String(repeating: "😀", count: 15))
+    #expect(sent.value?.utf16.count == 30)
+    // A flag is one Character of 4 units and is dropped whole, never cut in half.
+    _ = try await client.search(String(repeating: "a", count: 28) + "🇯🇵")
+    #expect(sent.value == String(repeating: "a", count: 28))
+  }
+
+  @Test
+  func seriesAndProfileNeverAskTheServerAboutSymbolsItWouldReject() async {
+    let client = MarketDataClient.backend(APIClient()) // every endpoint unimplemented: any call fails the test
+    await #expect(throws: MarketDataError.notFound) { try await client.series("0700.HK", .oneYear, .useCache) }
+    await #expect(throws: MarketDataError.notFound) { try await client.profile("0700.HK") }
+  }
+
+  @Test
+  func seriesAndProfileSendTheNormalizedSymbol() async throws {
+    let history: HistoryResponseDTO = try decode(#"""
+    {"symbol":"AAPL","range":"1D","points":[],"source":"alpaca","asOf":"2026-11-20T15:00:00.000Z","stale":false,"delayedMinutes":15}
+    """#)
+    let profile: ProfileDTO = try decode(#"""
+    {"symbol":"BRK-B","name":"Berkshire","exchange":null,"industry":null,"logoUrl":null,"marketCap":null,"peRatio":null,"pbRatio":null,
+     "dividendYield":null,"roe":null,"roa":null,"profitMargin":null,"fiftyTwoWeekHigh":null,"fiftyTwoWeekLow":null,"beta":null,
+     "asOf":"2026-11-20T15:00:00.000Z"}
+    """#)
+    let sent = LockIsolated<[String]>([])
+    var api = APIClient()
+    api.history = { symbol, _ in
+      sent.withValue { $0.append(symbol) }
+      return history
+    }
+    api.profile = { symbol in
+      sent.withValue { $0.append(symbol) }
+      return profile
+    }
+    let client = MarketDataClient.backend(api)
+    _ = try await client.series("aapl", .oneDay, .useCache)
+    _ = try await client.profile("brk-b")
+    #expect(sent.value == ["AAPL", "BRK-B"])
+  }
+
+  @Test
   func mapsAPIErrorsToMarketDataErrors() async {
     var api = APIClient()
     api.quotes = { _ in throw APIError(status: 503, code: "UPSTREAM_RATE_LIMITED", message: "", retryAfter: .seconds(30)) }
