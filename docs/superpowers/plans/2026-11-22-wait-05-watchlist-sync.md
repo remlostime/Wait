@@ -707,7 +707,7 @@ MSG
 - Create: `server/test/db/watchlistRepositoryContract.ts` (a shared suite, run against both implementations)
 - Test: `server/test/db/NeonWatchlistRepository.test.ts`
 
-- [ ] **Step 1: Write the test builders**
+- [x] **Step 1: Write the test builders**
 
 Create `server/test/support/watchlist.ts`:
 ```ts
@@ -736,7 +736,7 @@ export function makeChange(overrides: Partial<WatchlistChange> & { symbol: strin
 }
 ```
 
-- [ ] **Step 2: Write the shared contract suite**
+- [x] **Step 2: Write the shared contract suite**
 
 Create `server/test/db/watchlistRepositoryContract.ts`. It has no `.test.ts` suffix, so vitest only runs it through the files that import it.
 ```ts
@@ -883,7 +883,7 @@ export function describeWatchlistRepositoryContract(name: string, makeHarness: (
 }
 ```
 
-- [ ] **Step 3: Write the failing SQL-backed test**
+- [x] **Step 3: Write the failing SQL-backed test**
 
 Create `server/test/db/NeonWatchlistRepository.test.ts`:
 ```ts
@@ -908,12 +908,12 @@ describeWatchlistRepositoryContract("NeonWatchlistRepository (PGlite)", async ()
 })
 ```
 
-- [ ] **Step 4: Run the test and confirm it fails**
+- [x] **Step 4: Run the test and confirm it fails**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/db/NeonWatchlistRepository.test.ts`
 Expected: FAIL with `Failed to load url ../../src/db/NeonWatchlistRepository.js`.
 
-- [ ] **Step 5: Write the interface**
+- [x] **Step 5: Write the interface**
 
 Create `server/src/db/WatchlistRepository.ts`:
 ```ts
@@ -934,7 +934,7 @@ export interface WatchlistRepository {
 }
 ```
 
-- [ ] **Step 6: Write the SQL implementation**
+- [x] **Step 6: Write the SQL implementation**
 
 Create `server/src/db/NeonWatchlistRepository.ts`. Per overview §8.1 it uses only plain value interpolation: no `sql.unsafe`, and the columns are written out in every query.
 ```ts
@@ -1095,12 +1095,12 @@ Notes:
 - The anchor-change test pushes `"100.000"` against a stored `100`. NUMERIC compares by value, so `IS DISTINCT FROM` is false and `last_status` survives. That's intended.
 - Symbol lists travel as one JSON parameter, not a Postgres array parameter, so the Neon HTTP driver and PGlite serialize them the same way.
 
-- [ ] **Step 7: Run the test and confirm it passes**
+- [x] **Step 7: Run the test and confirm it passes**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npx vitest run test/db/NeonWatchlistRepository.test.ts`
 Expected: PASS, `Tests  11 passed (11)`.
 
-- [ ] **Step 8: Typecheck and commit**
+- [x] **Step 8: Typecheck and commit**
 
 Run: `cd /Users/ckai/code/Wait-plan05/server && npm run typecheck`
 Expected: exits 0.
