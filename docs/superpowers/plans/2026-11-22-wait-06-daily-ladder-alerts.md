@@ -2084,7 +2084,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/apns/ApnsTokenProvider.ts`
 - Test: `server/test/apns/ApnsTokenProvider.test.ts`
 
-- [ ] **Step 1: Write the test key helper**
+- [x] **Step 1: Write the test key helper**
 
 Create `server/test/support/apnsKey.ts`. It generates a P-256 key pair once per test process. Task 13 uses `TEST_APNS_KEY_BASE64` in every test env/config fixture, so no fixture contains a fake or real `.p8`.
 ```ts
@@ -2102,7 +2102,7 @@ export const TEST_APNS_PUBLIC_KEY_PEM: string = pair.publicKey
 export const TEST_APNS_KEY_BASE64: string = Buffer.from(pair.privateKey).toString("base64")
 ```
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `server/test/apns/ApnsTokenProvider.test.ts`:
 ```ts
@@ -2178,12 +2178,12 @@ describe("normalizeApnsKey", () => {
 })
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run: `npx vitest run test/apns/ApnsTokenProvider.test.ts`
 Expected: FAIL with `Failed to load url ../../src/apns/ApnsTokenProvider.js`.
 
-- [ ] **Step 4: Implement**
+- [x] **Step 4: Implement**
 
 Create `server/src/apns/ApnsTokenProvider.ts`:
 ```ts
@@ -2245,12 +2245,12 @@ function base64url(value: object): string {
 }
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `npx vitest run test/apns/ApnsTokenProvider.test.ts && npm run typecheck`
 Expected: PASS (`Tests  8 passed (8)`).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add server/src/apns/ApnsTokenProvider.ts server/test/apns/ApnsTokenProvider.test.ts server/test/support/apnsKey.ts
