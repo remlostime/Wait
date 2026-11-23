@@ -69,23 +69,19 @@ targetTemplates:
 targets:
   UI:
     templates: [Framework]
-  Model:
-    templates: [Framework]
-    dependencies:
-      - package: WaitKit
-        product: DesignSystem
-      - package: Money
   Networking:
     templates: [Framework]
     dependencies:
-      - target: Model
+      - package: WaitKit
+        product: Model
       - package: WaitKit
         product: Logging
       - package: Alamofire
   CacheService:
     templates: [Framework]
     dependencies:
-      - target: Model
+      - package: WaitKit
+        product: Model
       - package: WaitKit
         product: Logging
   StockCharts:
@@ -93,7 +89,8 @@ targets:
     dependencies:
       - target: CacheService
       - target: Networking
-      - target: Model
+      - package: WaitKit
+        product: Model
       - package: WaitKit
         product: DesignSystem
       - package: WaitKit
@@ -107,7 +104,8 @@ targets:
       - target: CacheService
       - package: WaitKit
         product: DesignSystem
-      - target: Model
+      - package: WaitKit
+        product: Model
       - package: WaitKit
         product: Logging
       - package: ComposableArchitecture
@@ -116,13 +114,15 @@ targets:
     dependencies:
       - package: WaitKit
         product: Logging
-      - target: Model
+      - package: WaitKit
+        product: Model
       - package: ComposableArchitecture
   SettingsTab:
     templates: [Framework]
     dependencies:
       - target: ChecklistEditFeature
-      - target: Model
+      - package: WaitKit
+        product: Model
       - package: ComposableArchitecture
   StockDetailsFeature:
     templates: [Framework]
@@ -134,7 +134,8 @@ targets:
       - target: Checklist
       - package: WaitKit
         product: DesignSystem
-      - target: Model
+      - package: WaitKit
+        product: Model
       - target: StockCharts
       - package: ComposableArchitecture
       - package: Alamofire
@@ -145,16 +146,21 @@ targets:
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
     dependencies:
       - target: Checklist
+      - package: WaitKit
+        product: Model
   ChecklistEditFeatureTests:
     templates: [UnitTests]
     dependencies:
       - target: ChecklistEditFeature
-      - target: Model
+      - package: WaitKit
+        product: Model
       - package: ComposableArchitecture
   StockDetailsFeatureTests:
     templates: [UnitTests]
     dependencies:
       - target: StockDetailsFeature
+      - package: WaitKit
+        product: Model
       - package: SnapshotTesting
   WaitWidgetExtension:
     type: app-extension
@@ -173,7 +179,8 @@ targets:
         Release:
           CODE_SIGN_ENTITLEMENTS: WaitWidgetExtensionRelease.entitlements
     dependencies:
-      - target: Model
+      - package: WaitKit
+        product: Model
       - package: WaitKit
         product: Logging
       - package: WaitKit
@@ -237,7 +244,8 @@ targets:
           CODE_SIGN_ENTITLEMENTS: Wait/WaitRelease.entitlements
     dependencies:
       - target: UI
-      - target: Model
+      - package: WaitKit
+        product: Model
       - target: Networking
       - package: WaitKit
         product: DesignSystem

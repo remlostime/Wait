@@ -1506,7 +1506,7 @@ EOF
 - Delete: `Wait/Model/Info.plist`, `Wait/Model/Model.h`
 - Modify: `Wait/Packages/WaitKit/Package.swift`, `Wait/project.yml`
 
-- [ ] **Step 1: Move the sources**
+- [x] **Step 1: Move the sources**
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/Model \
@@ -1516,7 +1516,7 @@ cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/Model \
 ```
 Expected: `11`
 
-- [ ] **Step 2: Replace `Wait/Packages/WaitKit/Package.swift` (adds Money, pinned exactly, and `Model`)**
+- [x] **Step 2: Replace `Wait/Packages/WaitKit/Package.swift` (adds Money, pinned exactly, and `Model`)**
 
 ```swift
 // swift-tools-version: 6.1
@@ -1556,7 +1556,7 @@ let package = Package(
 )
 ```
 
-- [ ] **Step 3: Update `Wait/project.yml`**
+- [x] **Step 3: Update `Wait/project.yml`**
 
 1. Delete the whole `Model:` target entry. After Task 6 it reads:
    ```yaml
@@ -1581,7 +1581,7 @@ cd /Users/ckai/code/Wait/Wait && grep -n "target: Model$" project.yml; grep -c "
 ```
 Expected: no output, then `12`.
 
-- [ ] **Step 4: Regenerate, then build and test**
+- [ ] **Step 4: Regenerate, then build and test** — NOT RUN (code-only)
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 \
@@ -1591,7 +1591,7 @@ Expected: `Created project at …` and `** BUILD SUCCEEDED **`. Repeat the Packa
 
 If Money's manifest is rejected (`Invalid manifest` naming `Money`), stop and ask the user. Plan 02 removes Money, and vendoring it here would be throwaway work.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add -A Wait && git status --short | grep -v '^[RMAD] ' ; git commit -m "$(cat <<'EOF'

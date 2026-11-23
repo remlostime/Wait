@@ -9,6 +9,10 @@ import PackageDescription
 /// Legacy modules moved from framework targets keep Swift 5 language mode until the plan 02 cutover.
 let legacySettings: [SwiftSetting] = [.swiftLanguageMode(.v5)]
 
+extension Target.Dependency {
+  static let money = Self.product(name: "Money", package: "Money")
+}
+
 let package = Package(
   name: "WaitKit",
   defaultLocalization: "en",
@@ -16,10 +20,16 @@ let package = Package(
   products: [
     .library(name: "DesignSystem", targets: ["DesignSystem"]),
     .library(name: "Logging", targets: ["Logging"]),
+    .library(name: "Model", targets: ["Model"]),
+  ],
+  dependencies: [
+    // Legacy only — removed at the plan 02 cutover.
+    .package(url: "https://github.com/Flight-School/Money", exact: "1.3.0"),
   ],
   targets: [
     .target(name: "DesignSystem", swiftSettings: legacySettings),
     .target(name: "Logging"),
+    .target(name: "Model", dependencies: ["DesignSystem", .money], swiftSettings: legacySettings),
   ],
   swiftLanguageModes: [.v6]
 )
