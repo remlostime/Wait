@@ -8768,14 +8768,16 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/WatchlistFeature/WatchlistFeature.swift`, `Wait/Packages/WaitKit/Sources/WatchlistFeature/WatchlistView.swift`, `Wait/Packages/WaitKit/Sources/WatchlistFeature/WatchlistRow.swift`
 - Create: `Wait/Packages/WaitKit/Tests/WatchlistFeatureTests/WatchlistFeatureTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/WatchlistFeatureTests/WatchlistFeatureTests.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
+
+// swiftlint:disable force_try
 
 import ChecklistFeature
 import ComposableArchitecture
@@ -8954,17 +8956,17 @@ struct WatchlistFeatureTests {
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh WatchlistFeatureTests/WatchlistFeatureTests`
 Expected FAIL: `error: cannot find 'WatchlistFeature' in scope`.
 
-- [ ] **Step 3: Implement the reducer**
+- [x] **Step 3: Implement the reducer**
 
 `Wait/Packages/WaitKit/Sources/WatchlistFeature/WatchlistFeature.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -9081,7 +9083,8 @@ public struct WatchlistFeature {
           return loadQuotes(symbols: state.items.map(\.symbol), policies: [.useCache], id: .all)
 
         case .refreshPulled:
-          state.quotesStatus = .refreshing
+          // With nothing to load there is no completion to clear the spinner state.
+          state.quotesStatus = state.items.isEmpty ? .idle : .refreshing
           return .merge(
             .send(.delegate(.refreshRequested)),
             loadQuotes(symbols: state.items.map(\.symbol), policies: [.reload], id: .all)
@@ -9186,17 +9189,17 @@ extension WatchlistFeature.Path.State: Equatable {}
 extension WatchlistFeature.Destination.State: Equatable {}
 ```
 
-- [ ] **Step 4: Run the tests and confirm they pass**
+- [ ] **Step 4: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh WatchlistFeatureTests`
-Expected PASS: 14 tests pass.
+Expected PASS: 9 tests pass.
 
-- [ ] **Step 5: Add the views** (`swiftui-expert:swiftui-expert-skill`)
+- [x] **Step 5: Add the views** (`swiftui-expert:swiftui-expert-skill`)
 
 `Wait/Packages/WaitKit/Sources/WatchlistFeature/WatchlistRow.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -9261,7 +9264,7 @@ struct WatchlistRow: View {
 `Wait/Packages/WaitKit/Sources/WatchlistFeature/WatchlistView.swift`:
 ```swift
 //
-// Created by: Claude on 2026-11-22.
+// Created by: Claude on 2026-11-23.
 // Copyright © 2021 Wait. All rights reserved.
 //
 
@@ -9285,7 +9288,7 @@ public struct WatchlistView: View {
   // MARK: Public
 
   public var body: some View {
-    NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
+    NavigationStack(path: $store.scope(\.path, action: \.path)) {
       list
         .navigationTitle("Wait")
         .toolbar {
@@ -9298,7 +9301,7 @@ public struct WatchlistView: View {
             }
           }
         }
-        .sheet(item: $store.scope(state: \.destination?.addStock, action: \.destination.addStock)) { addStore in
+        .sheet(item: $store.scope(\.$destination, action: \.destination).addStock) { addStore in
           AddStockView(store: addStore)
         }
         .task { await store.send(.task).finish() }
@@ -9382,12 +9385,12 @@ public struct WatchlistView: View {
 }
 ```
 
-- [ ] **Step 6: Compile**
+- [ ] **Step 6: Compile** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh WatchlistFeatureTests`
 Expected PASS: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/WatchlistFeature Wait/Packages/WaitKit/Tests/WatchlistFeatureTests
 git commit -m "feat(watchlist): WatchlistFeature with favorites, swipes, reorder, refresh and stack navigation
