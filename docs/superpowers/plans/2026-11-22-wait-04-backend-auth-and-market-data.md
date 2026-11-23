@@ -3156,7 +3156,7 @@ Each adapter is tested against a committed fixture through `fakeFetch`. Every te
 - Create: `server/test/support/fixtures/finnhub-quote-aapl.json`, `finnhub-quote-unknown.json`, `finnhub-search-app.json`, `finnhub-profile2-aapl.json`, `finnhub-metric-aapl.json`
 - Test: `server/test/providers/finnhub.test.ts`
 
-- [ ] **Step 1: Add the fixtures**
+- [x] **Step 1: Add the fixtures**
 
 Create `server/test/support/fixtures/finnhub-quote-aapl.json`:
 ```json
@@ -3204,7 +3204,7 @@ Create `server/test/support/fixtures/finnhub-metric-aapl.json`:
 }
 ```
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `server/test/providers/finnhub.test.ts`:
 ```ts
@@ -3271,12 +3271,12 @@ describe("FinnhubProvider", () => {
 })
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run: `npx vitest run test/providers/finnhub.test.ts`
 Expected: FAIL with `Failed to load url ../../src/providers/finnhub.js`.
 
-- [ ] **Step 4: Implement the adapter**
+- [x] **Step 4: Implement the adapter**
 
 Create `server/src/providers/finnhub.ts`:
 ```ts
@@ -3362,12 +3362,12 @@ export class FinnhubProvider implements QuoteProvider, SymbolSearchProvider, Pro
 }
 ```
 
-- [ ] **Step 5: Run the test to verify it passes**
+- [x] **Step 5: Run the test to verify it passes**
 
 Run: `npx vitest run test/providers/finnhub.test.ts && npm run typecheck`
 Expected: `5 passed`, and typecheck exits 0.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
