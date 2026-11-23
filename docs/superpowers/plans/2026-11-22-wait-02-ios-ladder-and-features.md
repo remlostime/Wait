@@ -645,7 +645,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/Domain/Temperature.swift`, `Wait/Packages/WaitKit/Sources/Domain/PriceLadder+Evaluation.swift`
 - Create: `Wait/Packages/WaitKit/Tests/DomainTests/PriceLadderTemperatureTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/DomainTests/PriceLadderTemperatureTests.swift`:
 ```swift
@@ -718,12 +718,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests/PriceLadderTemperatureTests`
 Expected FAIL: `error: value of type 'PriceLadder' has no member 'knots'` and `cannot find 'Temperature' in scope`.
 
-- [ ] **Step 3: Implement `Temperature.swift`**
+- [x] **Step 3: Implement `Temperature.swift`**
 
 `Wait/Packages/WaitKit/Sources/Domain/Temperature.swift`:
 ```swift
@@ -787,7 +787,7 @@ public struct Temperature: Equatable, Sendable {
 }
 ```
 
-- [ ] **Step 4: Implement `PriceLadder+Evaluation.swift`.** It also holds the status and distance helpers, which Task 3 tests.
+- [x] **Step 4: Implement `PriceLadder+Evaluation.swift`.** It also holds the status and distance helpers, which Task 3 tests.
 
 `Wait/Packages/WaitKit/Sources/Domain/PriceLadder+Evaluation.swift`:
 ```swift
@@ -907,7 +907,7 @@ public extension PriceLadder {
 }
 ```
 
-- [ ] **Step 5: Create a minimal `LadderStatus.swift`** so that `status(at:)` compiles. Task 3 adds the full version and its tests.
+- [x] **Step 5: Create a minimal `LadderStatus.swift`** so that `status(at:)` compiles. Task 3 adds the full version and its tests.
 
 `Wait/Packages/WaitKit/Sources/Domain/LadderStatus.swift`:
 ```swift
@@ -931,12 +931,12 @@ public enum LadderStatus: String, Codable, CaseIterable, Sendable {
 }
 ```
 
-- [ ] **Step 6: Run the tests and confirm they pass**
+- [ ] **Step 6: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh DomainTests`
 Expected PASS: `** TEST SUCCEEDED **`, with all 12 Domain tests passing.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/Domain Wait/Packages/WaitKit/Tests/DomainTests
 git commit -m "feat(domain): ladder knots, derived fair and temperature bands
