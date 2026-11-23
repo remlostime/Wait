@@ -1,5 +1,93 @@
 # Wait Backend: Auth and Market Data Implementation Plan
 
+## Execution log
+
+**Executed:** 2026-11-23 on `ck/sever`, subagent-driven, with a code review after every chunk or two.
+- **Server (Chunks 1–8): fully verified.** Every task ran real TDD with vitest and PGlite. At the end of plan 04, `npm run typecheck` was clean and `npm test` passed 117/117. Later plans grew the suite, and the shared helpers still pass.
+- **iOS (Chunks 9–12): code-only**, as in plans 01–03. Nothing has been built or tested in Xcode. Instead:
+  - The pure `APIClient`, `BackendMarketData` and DTO tests ran for real in `/tmp` Swift Testing harnesses, with hand-written stand-ins for `@DependencyClient`. Results: 38/38 after the review fixes, and `MarketDataClientTests` 32/32 in the reviewer's SwiftPM harness.
+  - The Foundation-only files were typechecked for iOS 17.
+  - TCA code was checked against the TCA 1.26.2 sources.
+  - `swiftlint` reports 0 errors.
+  - `xcodegen generate` produces no diff.
+  - `check-secrets.sh` and `check-client-has-no-provider-keys.sh` both pass.
+
+| Task | Commit |
+|---|---|
+| 1 Package, config | `562fe49` |
+| 2 Lib helpers | `9c60df7` |
+| 3 buildApp, logger, /health | `9ed8e75` |
+| 4 Sql adapter, migrations, 001 | `ad32f98` |
+| 5 Entry points, vercel.json | `6495ed0` |
+| 6 UserRepository | `a937963` |
+| 7 Token bucket RateLimiter | `24d27f2` |
+| 8 JWT, auth, register | `b906c15` |
+| 9 DELETE /api/auth/account | `db21d61` |
+| 10 Calendar, TTLs | `d40cefe` |
+| 11 Provider types, getJson | `d8eae5e` |
+| 12 Market cache, 002 | `b051da9` |
+| 13 Finnhub | `4e83dc2` |
+| 14 Tiingo | `be48ced` |
+| 15 Alpaca | `821530d` |
+| 16 Quotes service | `195fa71` |
+| 17 History | `812315e` |
+| 18 Search, profile | `9f790dd` |
+| 19 Market routes, container | `99d7856` |
+| 20 server/README.md | `0ac8b2e` |
+| 21 Deploy | `fd933b9` (SKIPPED, manual) |
+| 22 APIClient, WireDates, APIError | `d84d52f` |
+| 23 Keychain, Identity | `8eaa125` |
+| 24 HTTPSession | `9a12a42` |
+| 25 Market DTOs, APIClient dependency | `e154825` |
+| 26 MarketDataClient.backend | `a9ad4f0` |
+| 27 Fundamentals in Stock Details | `227782d` |
+| 28 Settings account section | `3fd76e0` |
+| 29 Remove Twelve Data, provider-key guard | `76d57b9` |
+| 30 Docs | `4110ed1` |
+
+**Review fixes**
+- `9f81972`, Chunks 1–3:
+  - logger redaction for top-level, nested and provider-header secrets
+  - an advisory lock in the migration runner, and a failed ROLLBACK no longer masks the original error
+  - `asDate`, `asNumber` and `mapLimit` reject invalid input, and provider keys are trimmed
+  - framework 4xx errors map to the §8.4 codes
+  - shell env vars win over `.env` files
+  - `test:neon` refuses to truncate `DATABASE_URL`
+  - a later, shorter 429 never shortens a block, and the bucket cost is bounded
+  - register `Retry-After` is computed per token
+  - JWTs without a `userId` are rejected
+  - account deletion also drops the register bucket
+- `5fc4973`, market core:
+  - adapter exceptions fall back to stale data instead of returning 500
+  - data fetched within 20 minutes of the close expires 20 minutes after the close, not at the next open
+  - Alpaca has a page cap
+  - `Retry-After` is at least 1 s
+- `2f044f7`:
+  - a profile with one half failed is retried after 60 s
+  - auth is tested on every market route
+- `29bdcf5`, iOS:
+  - cancellation is rethrown as `CancellationError`
+  - `MISCONFIGURED` and `IDENTITY` map to `.unavailable` and are logged once
+  - the ATS script declares its input and output files
+  - the registration task sets the token
+  - the base URL must have a scheme and a host
+  - decode errors carry the real status
+  - keychain `errSecDuplicateItem` triggers a re-read
+
+**User follow-ups**
+1. Run the real build and tests locally: `scripts/test-waitkit.sh`, `scripts/build-app.sh`, `scripts/build-app.sh WaitWatch`.
+2. Refresh `Package.resolved`.
+3. Task 21 (deploy):
+   - provider accounts: Finnhub, Tiingo, Alpaca
+   - Vercel project with Root Directory `server` and the Neon integration
+   - env vars
+   - `npm run migrate`
+   - curl smoke test
+4. Set `WAIT_API_BASE_URL` in `Config/Base.xcconfig` to the Vercel host. It is empty, and the app reports "misconfigured" until it is set.
+5. Revoke the old Twelve Data key, and delete `TWELVE_DATA_API_KEY` from your local `Secrets.xcconfig`.
+6. Known limitation: a quote batch that is partly rate-limited returns 200, with the deferred symbols in `missing` and no `Retry-After`. The client retries them on the next refresh.
+7. `npm audit` reports zod < 4.6.6 (GHSA-mrhx-c7xc-m3w5). Only env parsing uses zod. Upgrading is a major version bump.
+
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:**
