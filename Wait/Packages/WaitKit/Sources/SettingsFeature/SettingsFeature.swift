@@ -7,10 +7,13 @@ import APIClient
 import ChecklistFeature
 import ComposableArchitecture
 import Foundation
+import Persistence
+import SyncClient
 
 // MARK: - SettingsFeature
 
-/// Settings: the checklist template editor, the account section (anonymous ID, Delete Account) and the app version. Plans 05/06 add sync and alerts sections (overview §12.3).
+/// Settings: the checklist template editor, the account section (anonymous ID, Delete Account), the sync section
+/// ("Last synced", "Sync now") and the app version. Plan 06 adds the alerts section (overview §12.3).
 @Reducer
 public struct SettingsFeature {
   // MARK: Lifecycle
@@ -38,6 +41,13 @@ public struct SettingsFeature {
     public var appVersion: String
     public var account = AccountState()
     @Presents public var alert: AlertState<Action.Alert>?
+    @SharedReader(.syncState) public var syncState: SyncState
+    public var isSyncing = false
+    public var syncError: String?
+
+    public var lastSyncedAt: Date? {
+      syncState.lastSyncedAt
+    }
 
     public static func versionString(info: [String: Any]?) -> String {
       let version = info?["CFBundleShortVersionString"] as? String ?? "?"
@@ -55,6 +65,9 @@ public struct SettingsFeature {
     case alert(PresentationAction<Alert>)
     case accountDeleted
     case accountDeletionFailed(String)
+    case syncNowTapped
+    case syncFinished(SyncReport)
+    case syncFailed(String)
 
     public enum Alert: Equatable, Sendable {
       case confirmDeleteAccount
@@ -82,10 +95,11 @@ public struct SettingsFeature {
         case .alert(.presented(.confirmDeleteAccount)):
           state.account.isDeleting = true
           state.account.errorMessage = nil
-          // Plan 05 adds `syncClient` to this capture list and calls `await syncClient.reset()` after `deleteAccount()`.
-          return .run { [apiClient, identity] send in
+          return .run { [apiClient, identity, syncClient] send in
             do {
               try await apiClient.deleteAccount()
+              // Bumps the sync generation and forgets the old account's cursor. The local watchlist stays and re-uploads under the new identity.
+              await syncClient.reset()
               try identity.reset()
               await send(.accountDeleted)
             } catch {
@@ -106,6 +120,29 @@ public struct SettingsFeature {
           state.account.errorMessage = message
           return .none
 
+        case .syncNowTapped:
+          guard !state.isSyncing else {
+            return .none
+          }
+          state.isSyncing = true
+          state.syncError = nil
+          return .run { [syncClient] send in
+            do {
+              await send(.syncFinished(try await syncClient.sync()))
+            } catch {
+              await send(.syncFailed(error.localizedDescription))
+            }
+          }
+
+        case .syncFinished:
+          state.isSyncing = false
+          return .none
+
+        case let .syncFailed(message):
+          state.isSyncing = false
+          state.syncError = message
+          return .none
+
         case .checklistTemplateTapped:
           state.path.append(.checklistTemplate(ChecklistTemplateFeature.State()))
           return .none
@@ -122,6 +159,7 @@ public struct SettingsFeature {
 
   @Dependency(\.apiClient) var apiClient
   @Dependency(\.identity) var identity
+  @Dependency(\.syncClient) var syncClient
 }
 
 // MARK: - AccountState

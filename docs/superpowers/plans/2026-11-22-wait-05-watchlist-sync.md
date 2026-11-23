@@ -4386,13 +4386,13 @@ MSG
 
 Load swiftui-expert:swiftui-expert-skill before writing the view.
 
-- [ ] **Step 1: Add the dependencies**
+- [x] **Step 1: Add the dependencies**
 
 In `Wait/Packages/WaitKit/Package.swift`:
 - Add `"SyncClient"` and `"Persistence"` to the `SettingsFeature` target's `dependencies` array, if they aren't already there.
 - Add `"Persistence"`, `"SyncClient"` and `.dependenciesTestSupport` to the `SettingsFeatureTests` test target, if any of them are missing. The new and updated tests import `Persistence` and `SyncClient`.
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `Wait/Packages/WaitKit/Tests/SettingsFeatureTests/SettingsSyncTests.swift`:
 ```swift
@@ -4478,12 +4478,12 @@ struct SettingsSyncTests {
 ```
 The last test drives plan 04's delete-account flow (`deleteAccountTapped`, then the alert's confirm action). If plan 04 named the confirm action differently, use plan 04's name. If plan 04's deletion effect calls more dependencies, stub them the same way.
 
-- [ ] **Step 3: Run the test and confirm it fails**
+- [ ] **Step 3: Run the test and confirm it fails** — NOT RUN (code-only)
 
 Run, with `-only-testing:SettingsFeatureTests/SettingsSyncTests`, the package command from the chunk header.
 Expected: `** TEST BUILD FAILED **`, with errors like `type 'SettingsFeature.Action' has no member 'syncNowTapped'`.
 
-- [ ] **Step 4: Extend `SettingsFeature`**
+- [x] **Step 4: Extend `SettingsFeature`**
 
 All edits are in `Wait/Packages/WaitKit/Sources/SettingsFeature/SettingsFeature.swift`.
 
@@ -4544,7 +4544,7 @@ All edits are in `Wait/Packages/WaitKit/Sources/SettingsFeature/SettingsFeature.
      ```
    Deleting the account keeps the local watchlist (it's offline-first). With the sync state reset, the next sync uploads the list under the new anonymous identity.
 
-- [ ] **Step 5: Write the section view**
+- [x] **Step 5: Write the section view**
 
 Create `Wait/Packages/WaitKit/Sources/SettingsFeature/SyncSection.swift`:
 ```swift
@@ -4607,7 +4607,7 @@ struct SyncSection: View {
 }
 ```
 
-- [ ] **Step 6: Show the section**
+- [x] **Step 6: Show the section**
 
 In `Wait/Packages/WaitKit/Sources/SettingsFeature/SettingsView.swift`, inside the settings `Form`/`List`, add this directly after plan 04's `AccountSection(…)`:
 ```swift
@@ -4619,7 +4619,7 @@ In `Wait/Packages/WaitKit/Sources/SettingsFeature/SettingsView.swift`, inside th
         )
 ```
 
-- [ ] **Step 7: Run the tests and confirm they pass**
+- [ ] **Step 7: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 First update plan 04's exhaustive test, which now reaches `syncClient.reset()` (an unimplemented dependency fails it). In `Tests/SettingsFeatureTests/SettingsAccountTests.swift`:
 - Add `import SyncClient`.
@@ -4632,7 +4632,7 @@ Its expected state changes and received actions stay the same, because `reset()`
 Run, with `-only-testing:SettingsFeatureTests`, the package command from the chunk header.
 Expected: `** TEST SUCCEEDED **`. Plan 02's settings tests, plan 04's updated account tests, and these 5 all pass.
 
-- [ ] **Step 8: Build the app**
+- [ ] **Step 8: Build the app** — NOT RUN (code-only)
 
 Run (overview §5.1):
 ```bash
@@ -4641,7 +4641,7 @@ xcodebuild -project /Users/ckai/code/Wait-plan05/Wait/Wait.xcodeproj -scheme Wai
 ```
 Expected: `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05

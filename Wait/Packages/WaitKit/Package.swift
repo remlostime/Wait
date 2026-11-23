@@ -53,7 +53,7 @@ let package = Package(
     .target(name: "StockChartFeature", dependencies: ["Domain", "MarketDataClient", "DesignSystem", .tca]),
     .target(name: "StockDetailsFeature", dependencies: ["Domain", "Persistence", "MarketDataClient", "StockChartFeature", "DesignSystem", .tca]),
     .target(name: "WatchlistFeature", dependencies: ["Domain", "Persistence", "MarketDataClient", "StockDetailsFeature", "ChecklistFeature", "DesignSystem", .tca]),
-    .target(name: "SettingsFeature", dependencies: ["APIClient", "ChecklistFeature", "DesignSystem", .tca]),
+    .target(name: "SettingsFeature", dependencies: ["APIClient", "ChecklistFeature", "DesignSystem", "Persistence", "SyncClient", .tca]),
     .target(
       name: "AppFeature",
       dependencies: ["Connectivity", "Domain", "DesignSystem", "Logging", "Persistence", "SettingsFeature", "SyncClient", "WatchlistFeature", .tca]
@@ -78,7 +78,10 @@ let package = Package(
       name: "WatchlistFeatureTests",
       dependencies: ["WatchlistFeature", "ChecklistFeature", "Domain", "MarketDataClient", "Persistence", "StockDetailsFeature", .tca, .dependenciesTestSupport]
     ),
-    .testTarget(name: "SettingsFeatureTests", dependencies: ["SettingsFeature", "APIClient", "ChecklistFeature", .tca, .dependenciesTestSupport]),
+    .testTarget(
+      name: "SettingsFeatureTests",
+      dependencies: ["SettingsFeature", "APIClient", "ChecklistFeature", "Persistence", "SyncClient", .tca, .dependenciesTestSupport]
+    ),
     .testTarget(
       name: "AppFeatureTests",
       dependencies: [

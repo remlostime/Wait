@@ -35,6 +35,12 @@ public struct SettingsView: View {
           .foregroundStyle(.primary)
         }
         AccountSection(store: store)
+        SyncSection(
+          lastSyncedAt: store.lastSyncedAt,
+          isSyncing: store.isSyncing,
+          errorMessage: store.syncError,
+          onSyncNow: { store.send(.syncNowTapped) }
+        )
         Section {
           LabeledContent("Version", value: store.appVersion)
         } header: {

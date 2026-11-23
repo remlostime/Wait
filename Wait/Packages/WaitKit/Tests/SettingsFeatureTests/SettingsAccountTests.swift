@@ -7,6 +7,7 @@ import APIClient
 import ComposableArchitecture
 import Foundation
 @testable import SettingsFeature
+import SyncClient
 import Testing
 
 // MARK: - SettingsAccountTests
@@ -37,6 +38,7 @@ struct SettingsAccountTests {
     } withDependencies: {
       $0.apiClient.deleteAccount = { deleted.setValue(true) }
       $0.identity.reset = { resets.withValue { $0 += 1 } }
+      $0.syncClient.reset = {}
     }
     await store.send(.deleteAccountTapped) { $0.alert = .deleteAccount }
     await store.send(.alert(.presented(.confirmDeleteAccount))) {
