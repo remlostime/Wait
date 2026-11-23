@@ -711,7 +711,7 @@ EOF
 **Files:**
 - Modify: `Wait/project.yml`, generated `Wait/Wait.xcodeproj` (adds the `WaitWatch.xcscheme`)
 
-- [ ] **Step 1: Fix the watch bundle ids in `Wait/project.yml`**
+- [x] **Step 1: Fix the watch bundle ids in `Wait/project.yml`**
 
 In the `WaitWatch` target's `settings.base`, replace:
 ```yaml
@@ -732,7 +732,7 @@ with these three lines. They mark the app as a single-target watch app that need
         INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp: NO
 ```
 
-- [ ] **Step 2: Embed the watch app in the iOS app**
+- [x] **Step 2: Embed the watch app in the iOS app**
 
 In the `Wait` target's `dependencies`, add this right after `- target: WaitWidgetExtension`. It is the same copy phase Xcode calls "Embed Watch Content":
 ```yaml
@@ -745,7 +745,7 @@ In the `Wait` target's `dependencies`, add this right after `- target: WaitWidge
           subpath: "$(CONTENTS_FOLDER_PATH)/Watch"
 ```
 
-- [ ] **Step 3: Add a `WaitWatch` scheme**
+- [x] **Step 3: Add a `WaitWatch` scheme**
 
 Append under `schemes:`:
 ```yaml
@@ -759,7 +759,7 @@ Append under `schemes:`:
       config: Release
 ```
 
-- [ ] **Step 4: Regenerate and build the watch scheme**
+- [ ] **Step 4: Regenerate and build the watch scheme** — NOT RUN (code-only; `xcodegen generate` done, watch build not run)
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 && ls Wait.xcodeproj/xcshareddata/xcschemes
@@ -767,7 +767,7 @@ cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 && ls Wait.xcodepro
 Expected: `Created project at …`, then `Wait.xcscheme` and `WaitWatch.xcscheme`. Repeat the Package.resolved check from Task 2 Step 3, then run command E.
 Expected: `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 5: Build the app and confirm the watch app is embedded with the right companion id**
+- [ ] **Step 5: Build the app and confirm the watch app is embedded with the right companion id** — NOT RUN (code-only)
 
 ```sh
 xcodebuild -project /Users/ckai/code/Wait/Wait/Wait.xcodeproj -scheme Wait -destination 'platform=iOS Simulator,name=iPhone 17,OS=27.0' \
@@ -787,11 +787,11 @@ WaitWatch.app
 ```
 From now on, the app build fails if the watch fails to compile. That is intended (overview risk 17).
 
-- [ ] **Step 6: Run the tests**
+- [ ] **Step 6: Run the tests** — NOT RUN (code-only)
 
 Run command C. Expected: `Executed 5 tests, with 0 failures`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add Wait/project.yml Wait/Wait.xcodeproj && git commit -m "$(cat <<'EOF'

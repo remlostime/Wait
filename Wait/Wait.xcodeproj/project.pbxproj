@@ -135,6 +135,7 @@
 		ADE09A58096BD731D26305BA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D9628FA6879CD47DF60CA81 /* Assets.xcassets */; };
 		AFE251CDB4A6227CB8C235DC /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90680DE37FF1B1C962CC5DE9 /* Logging.swift */; };
 		B1D4B4FFF75F90F8D62CF9F8 /* TimeSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C259450DBA91BF16EFC34576 /* TimeSection.swift */; };
+		B4104D5C9AAABEE9BE071230 /* WaitWatch.app in Embed Dependencies */ = {isa = PBXBuildFile; fileRef = 70CCE5DFE766601D708818B5 /* WaitWatch.app */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B518999166E8AC6A7E61B50E /* Checklist.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DA1DB171EE02F17D04A7C6D1 /* Checklist.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B5306B27840815B8BA7AB110 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE951C8D56203E8A5C66F6C8 /* SettingsView.swift */; };
 		B72FBAF1B37A23330F1BF7F8 /* Model.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D76F8868E4832E2607B2866 /* Model.framework */; };
@@ -446,6 +447,13 @@
 			remoteGlobalIDString = EE1D11AF9ECA3DF3539A4C8A;
 			remoteInfo = CacheService;
 		};
+		BB6406A2655CB104FDEE44CF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 34444D1CF0730AF4F6EA335C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BF916524DAC1B75145FFF280;
+			remoteInfo = WaitWatch;
+		};
 		BD8FE881AA77A7EB0CEBCA0C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 34444D1CF0730AF4F6EA335C /* Project object */;
@@ -591,6 +599,17 @@
 				ECD479006ACF19FD5BB47E99 /* StockDetailsFeature.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F977971FC7E12CE1D0487DBA /* Embed Dependencies */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				B4104D5C9AAABEE9BE071230 /* WaitWatch.app in Embed Dependencies */,
+			);
+			name = "Embed Dependencies";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -1338,6 +1357,7 @@
 				9A7550B9901F7CB3F75FF068 /* Frameworks */,
 				8DA8EE2DBBBEB113E80D410B /* Embed Foundation Extensions */,
 				A83AB1AAFEFF8B8DDCEE3817 /* Embed Frameworks */,
+				F977971FC7E12CE1D0487DBA /* Embed Dependencies */,
 			);
 			buildRules = (
 			);
@@ -1355,6 +1375,7 @@
 				527974618F0F389E6538616E /* PBXTargetDependency */,
 				324647F3F01DD76682885036 /* PBXTargetDependency */,
 				DB42019C18475CFAA303CFDB /* PBXTargetDependency */,
+				52FE25CF93438AC480234C3A /* PBXTargetDependency */,
 			);
 			name = Wait;
 			packageProductDependencies = (
@@ -2144,6 +2165,11 @@
 			target = 4FCD36926B739F24C29943D2 /* StockDetailsFeature */;
 			targetProxy = D162127641BEDA12F345C826 /* PBXContainerItemProxy */;
 		};
+		52FE25CF93438AC480234C3A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BF916524DAC1B75145FFF280 /* WaitWatch */;
+			targetProxy = BB6406A2655CB104FDEE44CF /* PBXContainerItemProxy */;
+		};
 		657A8D9C6CF1D9FF91C1CD1E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 36E1BA13B2A28271EF47E1CD /* Checklist */;
@@ -2732,9 +2758,11 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = WaitWatch;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "";
+				INFOPLIST_KEY_WKApplication = YES;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.chenkai.wait;
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = NO;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = .watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.chenkai.wait.watchkitapp;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
@@ -2807,9 +2835,11 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = WaitWatch;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "";
+				INFOPLIST_KEY_WKApplication = YES;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.chenkai.wait;
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = NO;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = .watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.chenkai.wait.watchkitapp;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;

@@ -191,11 +191,13 @@ targets:
       - path: Shared/Connectivity.swift
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: .watchkitapp
+        PRODUCT_BUNDLE_IDENTIFIER: com.chenkai.wait.watchkitapp
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: WaitWatch
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown
-        INFOPLIST_KEY_WKCompanionAppBundleIdentifier: ""
+        INFOPLIST_KEY_WKApplication: YES
+        INFOPLIST_KEY_WKCompanionAppBundleIdentifier: com.chenkai.wait
+        INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp: NO
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         DEVELOPMENT_ASSET_PATHS: '"WaitWatch Watch App/Preview Content"'
@@ -250,6 +252,13 @@ targets:
       - target: StockDetailsFeature
       - target: CacheService
       - target: WaitWidgetExtension
+      - target: WaitWatch
+        embed: true
+        link: false
+        codeSign: true
+        copy:
+          destination: productsDirectory
+          subpath: "$(CONTENTS_FOLDER_PATH)/Watch"
       - package: Alamofire
       - package: SwiftyBeaver
       - package: SwiftyJSON
@@ -273,6 +282,14 @@ schemes:
     profile:
       config: Release
     analyze:
+      config: Debug
+    archive:
+      config: Release
+  WaitWatch:
+    build:
+      targets:
+        WaitWatch: all
+    run:
       config: Debug
     archive:
       config: Release
