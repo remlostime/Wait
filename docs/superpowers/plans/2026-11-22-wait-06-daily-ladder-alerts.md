@@ -5347,13 +5347,13 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 Load `swiftui-expert:swiftui-expert-skill` before Step 5.
 
-- [ ] **Step 1: Add the dependencies**
+- [x] **Step 1: Add the dependencies**
 
 In `Package.swift`:
 - Add `"NotificationClient"`, `"Persistence"` and `"Logging"` to the `SettingsFeature` target's `dependencies`, skipping any it already has. `"APIClient"` and `"SyncClient"` came with plans 04 and 05.
 - Make `SettingsFeatureTests` include `.tca`, `.dependenciesTestSupport`, `"NotificationClient"` and `"APIClient"` (which also provides `\.identity`).
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `Tests/SettingsFeatureTests/SettingsAlertsTests.swift`:
 ```swift
@@ -5489,12 +5489,14 @@ struct SettingsAlertsTests {
 }
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [ ] **Step 3: Run the test to verify it fails** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh SettingsFeatureTests/SettingsAlertsTests`
 Expected: the build fails with `type 'SettingsFeature.Action' has no member 'alertsToggled'`.
 
-- [ ] **Step 4: Extend `SettingsFeature`**
+- [x] **Step 4: Extend `SettingsFeature`**
+
+> Result (2026-11-23): `alertsEnabled` and `apnsDeviceToken` carry explicit types (`Bool`, `String?`). The account-deletion flow (plan 04/05: `identity.reset()` then `syncClient.reset()`) is untouched and does not unregister the device: `DELETE /api/auth/account` cascades to `device_tokens` on the server (`004_alerts.sql`, `ON DELETE CASCADE`), so only the local `apnsDeviceToken` stays, and `PushFeature` re-registers under the new identity on the next launch.
 
 In `Sources/SettingsFeature/SettingsFeature.swift`, make the following changes.
 
@@ -5581,7 +5583,7 @@ In `Sources/SettingsFeature/SettingsFeature.swift`, make the following changes.
 ```
 The device token itself is uploaded by `PushFeature` when APNs calls back (Task 21).
 
-- [ ] **Step 5: Write the view**
+- [x] **Step 5: Write the view**
 
 Create `Sources/SettingsFeature/AlertsSection.swift`:
 ```swift
@@ -5632,13 +5634,15 @@ struct AlertsSection: View {
 ```
 In `Sources/SettingsFeature/SettingsView.swift`, add `AlertsSection(store: store)` inside the settings `Form`/`List`, after plan 05's sync section and before the attribution footer.
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [ ] **Step 6: Run the tests to verify they pass** — NOT RUN (code-only)
+
+> Result (2026-11-23): the existing `SettingsAccountTests.taskShowsTheAnonymousID` was adapted. `.task` now merges two concurrent effects, so the test sends `.task`, calls `finish()` in non-exhaustive mode and checks the account ID, instead of receiving the two actions in a fixed order. `swiftlint`: 0 violations.
 
 Run: `scripts/test-waitkit.sh SettingsFeatureTests`
 Expected: `** TEST SUCCEEDED **`, with every existing `SettingsFeatureTests` test and the 7 new ones passing.
 If an existing exhaustive test that sends `.task` now reports an unhandled `.authorizationStatusLoaded(.notDetermined)`, add `await store.receive(\.authorizationStatusLoaded, .notDetermined)` to it. The default `authorizationStatus` returns `.notDetermined`. Those tests already stub `\.identity` for plan 04's account load, so no other change is needed.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait

@@ -23,8 +23,11 @@ struct SettingsAccountTests {
     } withDependencies: {
       $0.identity.anonymousID = { id }
     }
+    // `.task` also loads the notification status. The two effects run concurrently, so their actions can arrive in either order.
+    store.exhaustivity = .off(showSkippedAssertions: false)
     await store.send(.task)
-    await store.receive(\.accountLoaded) { $0.account.anonymousID = id.uuidString }
+    await store.finish()
+    #expect(store.state.account.anonymousID == id.uuidString)
   }
 
   @Test

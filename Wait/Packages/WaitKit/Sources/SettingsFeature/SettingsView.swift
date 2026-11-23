@@ -41,6 +41,7 @@ public struct SettingsView: View {
           errorMessage: store.syncError,
           onSyncNow: { store.send(.syncNowTapped) }
         )
+        AlertsSection(store: store)
         Section {
           LabeledContent("Version", value: store.appVersion)
         } header: {

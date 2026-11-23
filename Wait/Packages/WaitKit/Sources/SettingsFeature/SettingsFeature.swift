@@ -7,13 +7,15 @@ import APIClient
 import ChecklistFeature
 import ComposableArchitecture
 import Foundation
+import Logging
+import NotificationClient
 import Persistence
 import SyncClient
 
 // MARK: - SettingsFeature
 
 /// Settings: the checklist template editor, the account section (anonymous ID, Delete Account), the sync section
-/// ("Last synced", "Sync now") and the app version. Plan 06 adds the alerts section (overview §12.3).
+/// ("Last synced", "Sync now"), the "Daily alerts" toggle and the app version.
 @Reducer
 public struct SettingsFeature {
   // MARK: Lifecycle
@@ -44,6 +46,13 @@ public struct SettingsFeature {
     @SharedReader(.syncState) public var syncState: SyncState
     public var isSyncing = false
     public var syncError: String?
+    @Shared(.alertsEnabled) public var alertsEnabled: Bool
+    @Shared(.apnsDeviceToken) public var apnsDeviceToken: String?
+    public var authorizationStatus: NotificationAuthorization = .notDetermined
+
+    public var showsOpenSystemSettings: Bool {
+      authorizationStatus == .denied
+    }
 
     public var lastSyncedAt: Date? {
       syncState.lastSyncedAt
@@ -68,6 +77,11 @@ public struct SettingsFeature {
     case syncNowTapped
     case syncFinished(SyncReport)
     case syncFailed(String)
+    case alertsToggled(Bool)
+    case authorizationStatusLoaded(NotificationAuthorization)
+    case alertsEnablementFinished(granted: Bool)
+    case deviceUnregistered
+    case openSystemSettingsTapped
 
     public enum Alert: Equatable, Sendable {
       case confirmDeleteAccount
@@ -78,11 +92,14 @@ public struct SettingsFeature {
     Reduce { state, action in
       switch action {
         case .task:
-          return .run { [identity] send in
-            if let id = try? identity.anonymousID() {
-              await send(.accountLoaded(id.uuidString))
-            }
-          }
+          return .merge(
+            .run { [identity] send in
+              if let id = try? identity.anonymousID() {
+                await send(.accountLoaded(id.uuidString))
+              }
+            },
+            loadAuthorizationStatus()
+          )
 
         case let .accountLoaded(id):
           state.account.anonymousID = id
@@ -154,6 +171,50 @@ public struct SettingsFeature {
           state.syncError = message
           return .none
 
+        case .alertsToggled(true):
+          return .run { [notifications] send in
+            let granted = (try? await notifications.requestAuthorization()) ?? false
+            await send(.authorizationStatusLoaded(notifications.authorizationStatus()))
+            await send(.alertsEnablementFinished(granted: granted))
+            if granted {
+              await notifications.registerForRemoteNotifications()
+            }
+          }
+
+        case .alertsToggled(false):
+          // Keep the token until the server confirms the DELETE; PushFeature retries a pending unregistration at launch.
+          let token = state.apnsDeviceToken
+          state.$alertsEnabled.withLock { $0 = false }
+          return .run { [notifications, apiClient] send in
+            await notifications.unregisterForRemoteNotifications()
+            guard let token else {
+              return
+            }
+            do {
+              try await apiClient.unregisterDevice(token)
+              await send(.deviceUnregistered)
+            } catch {
+              Log.push.error("Device unregistration failed, will retry next launch: \(error)")
+            }
+          }
+
+        case let .alertsEnablementFinished(granted):
+          state.$alertsEnabled.withLock { $0 = granted }
+          return .none
+
+        case .deviceUnregistered:
+          state.$apnsDeviceToken.withLock { $0 = nil }
+          return .none
+
+        case let .authorizationStatusLoaded(status):
+          state.authorizationStatus = status
+          return .none
+
+        case .openSystemSettingsTapped:
+          return .run { [openURL] _ in
+            await openURL(SettingsFeature.systemSettingsURL)
+          }
+
         case .checklistTemplateTapped:
           state.path.append(.checklistTemplate(ChecklistTemplateFeature.State()))
           return .none
@@ -168,9 +229,22 @@ public struct SettingsFeature {
 
   // MARK: Internal
 
+  /// The value of `UIApplication.openSettingsURLString`, written out so the reducer doesn't touch main-actor UIKit API.
+  static let systemSettingsURL = URL(string: "app-settings:")!
+
   @Dependency(\.apiClient) var apiClient
   @Dependency(\.identity) var identity
+  @Dependency(\.notifications) var notifications
+  @Dependency(\.openURL) var openURL
   @Dependency(\.syncClient) var syncClient
+
+  // MARK: Private
+
+  private func loadAuthorizationStatus() -> Effect<Action> {
+    .run { [notifications] send in
+      await send(.authorizationStatusLoaded(notifications.authorizationStatus()))
+    }
+  }
 }
 
 // MARK: - AccountState
