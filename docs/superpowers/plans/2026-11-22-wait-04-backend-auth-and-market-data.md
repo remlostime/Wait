@@ -627,7 +627,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/test/support/app.ts`
 - Test: `server/test/app.test.ts`
 
-- [ ] **Step 1: Add pino at the version Fastify already uses**
+- [x] **Step 1: Add pino at the version Fastify already uses**
 
 The app and every service share one pino logger, which is passed to Fastify as `loggerInstance`. Pin the same range Fastify depends on, so there's only one copy of pino and its types.
 
@@ -639,7 +639,7 @@ npm ls pino
 ```
 Expected: `package.json` now lists `pino` with the same range as Fastify (for example `^9.x`). `npm ls pino` shows a single deduped version.
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `server/test/support/app.ts`:
 ```ts
@@ -766,12 +766,12 @@ describe("buildApp", () => {
 })
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [x] **Step 3: Run the tests to verify they fail**
 
 Run: `npx vitest run test/app.test.ts`
 Expected: FAIL with `Failed to load url ../../src/app.js` (or `../src/lib/logger.js`).
 
-- [ ] **Step 4: Implement the logger, schemas, container, health route and app**
+- [x] **Step 4: Implement the logger, schemas, container, health route and app**
 
 Create `server/src/lib/logger.ts`:
 ```ts
@@ -908,14 +908,14 @@ export type App = Awaited<ReturnType<typeof buildApp>>
 ```
 `config` isn't used until Task 8, which registers the JWT plugin with `config.jwtSecret`.
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `npx vitest run test/app.test.ts && npm run typecheck`
 Expected: `8 passed`, and typecheck exits 0.
 - If the nullable test or the strict test fails, the `ajv.customOptions` line is missing.
 - If the redaction test fails, `loggerInstance` isn't wired to `container.logger`.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
