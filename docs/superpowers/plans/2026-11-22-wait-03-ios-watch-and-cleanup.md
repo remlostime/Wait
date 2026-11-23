@@ -2252,7 +2252,7 @@ export WATCH_UDID=$(xcrun simctl list devices available | sed -n '/-- watchOS 27
 
 **Files:** none
 
-- [ ] **Step 1: Find the simulators and pair them**
+- [ ] **Step 1: Find the simulators and pair them** — NOT RUN (code-only)
 
 ```bash
 export PHONE_UDID=$(xcrun simctl list devices available | sed -n '/-- iOS 27.0 --/,/^--/p' | grep -E '^ +iPhone 17 \(' | grep -oE '[0-9A-F-]{36}' | head -1)
@@ -2269,7 +2269,7 @@ OLD_PAIR=$(xcrun simctl list pairs | grep -B 2 "$PHONE_UDID" | grep -oE '^[0-9A-
 xcrun simctl unpair "$OLD_PAIR" && xcrun simctl pair "$WATCH_UDID" "$PHONE_UDID"
 ```
 
-- [ ] **Step 2: Build into a known folder, install the phone app and launch the watch app**
+- [ ] **Step 2: Build into a known folder, install the phone app and launch the watch app** — NOT RUN (code-only)
 
 The phone app embeds the watch app (`Wait.app/Watch/WaitWatch.app`, checked in Task 7 Step 8). Installing the phone app on a paired phone simulator installs the watch app on the paired watch.
 
@@ -2296,7 +2296,7 @@ xcrun simctl io "$WATCH_UDID" screenshot /tmp/wait-watch-empty.png
 ```
 Open `/tmp/wait-watch-empty.png`: it shows "No stocks yet / Open Wait on iPhone".
 
-- [ ] **Step 3: Seed a watchlist on the phone and launch it**
+- [ ] **Step 3: Seed a watchlist on the phone and launch it** — NOT RUN (code-only)
 
 Launch the app once so plan 02's migration runs and writes its marker. Then terminate it and plant a two-item watchlist in the app group:
 
@@ -2311,7 +2311,7 @@ xcrun simctl launch "$PHONE_UDID" com.chenkai.wait
 ```
 Expected: the phone shows AAPL under Favorites and MSFT under Watchlist. If plan 02's `WatchlistItem` JSON has keys this sample doesn't, add them from `Wait/Packages/WaitKit/Tests/PersistenceTests` fixtures. The decoder uses `decodeIfPresent` (overview §7.5), so missing optional keys are fine.
 
-- [ ] **Step 4: Check the watch**
+- [ ] **Step 4: Check the watch** — NOT RUN (code-only)
 
 ```bash
 sleep 10; xcrun simctl io "$WATCH_UDID" screenshot /tmp/wait-watch-list.png
@@ -2320,7 +2320,7 @@ Expected: `/tmp/wait-watch-list.png` shows "Favorites: AAPL" and "Watchlist: MSF
 - If the watch still shows "No stocks yet", force a state change that publishes a new snapshot: relaunch the phone app (`xcrun simctl terminate "$PHONE_UDID" com.chenkai.wait && xcrun simctl launch "$PHONE_UDID" com.chenkai.wait`), or ask the user to toggle the star on MSFT. Wait 10 s and take the screenshot again. Pull-to-refresh is not enough: it publishes nothing when quotes don't change.
 - WCSession delivery on simulators can take up to about 30 s.
 
-- [ ] **Step 5: (manual: user) Tap through the detail screen**
+- [ ] **Step 5: (manual: user) Tap through the detail screen** — SKIPPED (manual)
 
 Ask the user to tap AAPL in the watch Simulator window and confirm the detail screen shows:
 - name, price, change %, status and temperature
