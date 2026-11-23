@@ -1280,7 +1280,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/server.ts`, `server/src/index.ts`, `server/scripts/migrate.ts`, `server/vercel.json`, `server/.env.example`
 - Test: `server/test/server.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/server.test.ts`:
 ```ts
@@ -1313,12 +1313,12 @@ describe("src/server.ts (Vercel entry)", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/server.test.ts`
 Expected: FAIL with `Failed to load url ../src/server.js`.
 
-- [ ] **Step 3: Implement the entry points and deploy files**
+- [x] **Step 3: Implement the entry points and deploy files**
 
 Create `server/src/server.ts`:
 ```ts
@@ -1416,12 +1416,12 @@ ALPACA_SECRET_KEY=
 # Plan 06 adds: MASSIVE_API_KEY, MASSIVE_BASE_URL, CRON_SECRET, APNS_KEY, APNS_KEY_ID, APNS_TEAM_ID, APNS_TOPIC
 ```
 
-- [ ] **Step 4: Run the full suite and typecheck**
+- [x] **Step 4: Run the full suite and typecheck**
 
 Run: `npm test && npm run typecheck`
 Expected: all test files pass (`Test Files  6 passed`), and typecheck exits 0.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
