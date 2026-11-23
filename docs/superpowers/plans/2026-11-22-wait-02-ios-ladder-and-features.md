@@ -6855,7 +6855,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 Load `swiftui-expert:swiftui-expert-skill`. The view takes the ladder as a parameter, because the rungs belong to the item, not to the chart state.
 
-- [ ] **Step 1: Implement**
+- [x] **Step 1: Implement**
 
 `Wait/Packages/WaitKit/Sources/StockChartFeature/StockChartView.swift`:
 ```swift
@@ -7027,18 +7027,18 @@ public struct StockChartView: View {
 }
 ```
 
-- [ ] **Step 2: Build the package so the view compiles**
+- [ ] **Step 2: Build the package so the view compiles** — NOT RUN (code-only; typechecked with swiftc against stubbed `Store`)
 
 Run: `scripts/test-waitkit.sh StockChartFeatureTests`
 Expected PASS: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 3: Check the preview by hand.** Open `StockChartView.swift` in Xcode and confirm:
+- [ ] **Step 3: Check the preview by hand.** — SKIPPED (manual) Open `StockChartView.swift` in Xcode and confirm:
   - The canvas shows a line with a gradient, "Buy high" and "Fair" dashed rules, and a segmented 1D–5Y picker.
   - Dragging across the chart moves the selection rule and updates the header price.
 
   If you're running without Xcode UI, skip this step; it's checked again in Task 29.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/StockChartFeature/StockChartView.swift
 git commit -m "feat(chart): Swift Charts view with area gradient, ladder rungs and chartXSelection
