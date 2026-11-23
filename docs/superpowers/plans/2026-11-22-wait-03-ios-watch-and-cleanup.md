@@ -2340,7 +2340,7 @@ Wait for confirmation before Chunk 4.
 - Modify: `Wait/.swiftlint.yml`
 - Modify: `.gitignore`
 
-- [ ] **Step 1: Update SwiftFormat**
+- [x] **Step 1: Update SwiftFormat**
 
 In `Wait/.swiftformat`:
 - Change the line `--swiftversion 5.0` to `--swiftversion 6.0`.
@@ -2350,7 +2350,7 @@ In `Wait/.swiftformat`:
 --exclude Tests/XCTestManifests.swift,Tests/BadConfig,Snapshots,Pods,Generated,Wait/Generated,Packages/WaitKit/.build,Packages/WaitKit/.swiftpm,build
 ```
 
-- [ ] **Step 2: Update SwiftLint**
+- [x] **Step 2: Update SwiftLint**
 
 In `Wait/.swiftlint.yml`, replace the `excluded:` block with the block below, and add the `deployment_target:` block directly after it:
 
@@ -2368,7 +2368,7 @@ deployment_target:
   watchOS_deployment_target: "10.0"
 ```
 
-- [ ] **Step 3: Ignore the package's own resolution file**
+- [x] **Step 3: Ignore the package's own resolution file**
 
 Plan 01 normally adds both lines already. Append only the ones that are missing:
 
@@ -2386,7 +2386,7 @@ cd /Users/ckai/code/Wait && git rm --cached --ignore-unmatch Wait/Packages/WaitK
 ```
 Expected: `Wait/.swiftformat` and `Wait/.swiftlint.yml` are modified. `.gitignore` is modified only if a line was appended. If they had been tracked, `Wait/Packages/WaitKit/Package.resolved` and `.swiftpm` show as deleted (`D`).
 
-- [ ] **Step 4: Lint**
+- [x] **Step 4: Lint**
 
 Run: `cd /Users/ckai/code/Wait/Wait && swiftlint lint --quiet | grep -c " error: "`
 Expected: `0`.
@@ -2397,11 +2397,11 @@ If the count is not 0, run `swiftlint lint --quiet | grep " error: "`.
 
 Warnings are allowed.
 
-- [ ] **Step 5: (optional) Format check**
+- [ ] **Step 5: (optional) Format check** — NOT RUN (SwiftFormat not installed)
 
 Only if SwiftFormat is installed (`brew install swiftformat`): run `cd /Users/ckai/code/Wait/Wait && swiftformat --lint .` and apply `swiftformat .` to files this plan created. The step passes whether or not SwiftFormat is installed.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait

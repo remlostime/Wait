@@ -1,6 +1,6 @@
 # file options
 
---exclude Tests/XCTestManifests.swift,Tests/BadConfig,Snapshots,Pods,Generated,Wait/Generated
+--exclude Tests/XCTestManifests.swift,Tests/BadConfig,Snapshots,Pods,Generated,Wait/Generated,Packages/WaitKit/.build,Packages/WaitKit/.swiftpm,build
 
 # format options
 
@@ -30,7 +30,7 @@
 --self remove
 --semicolons inline
 --stripunusedargs always
---swiftversion 5.0
+--swiftversion 6.0
 --trimwhitespace always
 --wraparguments preserve
 --wrapcollections preserve
