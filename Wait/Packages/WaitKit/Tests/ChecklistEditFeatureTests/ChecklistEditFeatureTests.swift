@@ -4,98 +4,62 @@
 //
 
 import ComposableArchitecture
+import Foundation
 import Model
-import XCTest
+import Testing
 @testable import ChecklistEditFeature
-
-// MARK: - UUIDGenerator
-
-private class UUIDGenerator {
-  // MARK: Lifecycle
-
-  init(uuid: UUID) {
-    self.uuid = uuid
-  }
-
-  // MARK: Internal
-
-  var uuid: UUID
-
-  func callAsFunction() -> UUID {
-    uuid
-  }
-}
 
 // MARK: - ChecklistEditFeatureTests
 
-class ChecklistEditFeatureTests: XCTestCase {
-  func testAddNewItem() {
-    let state = ChecklistEditState(items: [
-      ChecklistItem(name: "First", id: UUID()),
-      ChecklistItem(name: "Second", id: UUID()),
-      ChecklistItem(name: "Third", id: UUID()),
-    ])
+@MainActor
+@Suite("ChecklistEditReducer")
+struct ChecklistEditFeatureTests {
+  // MARK: Internal
 
-    let uuidGenerator = UUIDGenerator(uuid: UUID())
-
-    let store = TestStore(
-      initialState: state,
-      reducer: ChecklistEditReducerBuilder.build(),
-      environment: ChecklistEditEnvironment(checklistDataManager: MockChecklistDataManager(), uuid: { uuidGenerator() })
-    )
-
-    store.send(.addItem) {
-      $0.items.insert(ChecklistItem(name: "", id: uuidGenerator.uuid), at: 0)
+  @Test("adding inserts an empty item at the top, then editing renames it")
+  func addNewItem() async {
+    let store = TestStore(initialState: ChecklistEditReducer.State(items: items)) {
+      ChecklistEditReducer(dataManager: MockChecklistDataManager())
+    } withDependencies: {
+      $0.uuid = .constant(UUID(100))
     }
 
-    store.send(.itemDidChange(index: 0, text: "New")) {
-      guard var firstItem = $0.items.first else {
-        XCTFail("Item is empty")
-        return
-      }
-
-      firstItem.name = "New"
-      $0.items[0] = firstItem
+    await store.send(.addItem) {
+      $0.items.insert(ChecklistItem(name: "", id: UUID(100)), at: 0)
+    }
+    await store.send(.itemDidChange(index: 0, text: "New")) {
+      $0.items[0].name = "New"
     }
   }
 
-  func testLoadItems() {
-    let items = [
-      ChecklistItem(name: "First", id: UUID()),
-      ChecklistItem(name: "Second", id: UUID()),
-      ChecklistItem(name: "Third", id: UUID()),
-    ]
+  @Test("load replaces the items with the stored list")
+  func loadItems() async {
+    let store = TestStore(initialState: ChecklistEditReducer.State(items: [])) {
+      ChecklistEditReducer(dataManager: MockChecklistDataManager(items: items))
+    }
 
-    let uuidGenerator = UUIDGenerator(uuid: UUID())
-
-    let store = TestStore(
-      initialState: .init(items: []),
-      reducer: ChecklistEditReducerBuilder.build(),
-      environment: ChecklistEditEnvironment(checklistDataManager: MockChecklistDataManager(items: items), uuid: { uuidGenerator() })
-    )
-
-    store.send(.load) {
+    await store.send(.load) {
       $0.items = items
     }
   }
 
-  func testSaveItems() {
-    let items = [
-      ChecklistItem(name: "First", id: UUID()),
-      ChecklistItem(name: "Second", id: UUID()),
-      ChecklistItem(name: "Third", id: UUID()),
-    ]
-
+  @Test("save hands the current items to the data manager")
+  func saveItems() async {
     let dataManager = MockChecklistDataManager()
-    let uuidGenerator = UUIDGenerator(uuid: UUID())
-    let store = TestStore(
-      initialState: .init(items: items),
-      reducer: ChecklistEditReducerBuilder.build(),
-      environment: ChecklistEditEnvironment(checklistDataManager: dataManager, uuid: { uuidGenerator() })
-    )
+    let store = TestStore(initialState: ChecklistEditReducer.State(items: items)) {
+      ChecklistEditReducer(dataManager: dataManager)
+    }
 
-    store.send(.save) { _ in }
+    await store.send(.save)
 
-    XCTAssertEqual(items, dataManager.items)
+    #expect(dataManager.items == items)
   }
+
+  // MARK: Private
+
+  private let items = [
+    ChecklistItem(name: "First", id: UUID(0)),
+    ChecklistItem(name: "Second", id: UUID(1)),
+    ChecklistItem(name: "Third", id: UUID(2)),
+  ]
 }

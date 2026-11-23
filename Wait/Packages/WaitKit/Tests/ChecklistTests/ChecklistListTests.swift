@@ -4,31 +4,53 @@
 //
 
 import ComposableArchitecture
+import Foundation
 import Model
-import XCTest
+import Testing
 @testable import Checklist
 
-class ChecklistListTests: XCTestCase {
-  func testCheckAndUncheckAction() {
-    let state = ChecklistListState(checklistItems: [
-      ChecklistItem(name: "first", id: UUID()),
-      ChecklistItem(name: "second", id: UUID()),
-    ])
+// MARK: - ChecklistListTests
 
-    let store = TestStore(
-      initialState: state,
-      reducer: ChecklistListReducerBuilder.build(),
-      environment: ChecklistListEnvironment(checklistStorage: ChecklistStorage(name: "test"))
-    )
+@MainActor
+@Suite("ChecklistListReducer")
+struct ChecklistListTests {
+  // MARK: Internal
 
-    for index in 0 ..< state.checklistItems.count {
-      store.send(.check(index: index)) {
+  @Test("checking then unchecking every item toggles isChecked")
+  func checkAndUncheck() async {
+    let store = TestStore(initialState: ChecklistListReducer.State(checklistItems: items)) {
+      ChecklistListReducer(save: { _ in })
+    }
+
+    for index in items.indices {
+      await store.send(.check(index: index)) {
         $0.checklistItems[index].isChecked = true
       }
-
-      store.send(.uncheck(index: index)) {
+      await store.send(.uncheck(index: index)) {
         $0.checklistItems[index].isChecked = false
       }
     }
   }
+
+  @Test("every toggle persists the whole list")
+  func persistsOnEveryToggle() async {
+    let saved = LockIsolated<[[ChecklistItem]]>([])
+    let store = TestStore(initialState: ChecklistListReducer.State(checklistItems: items)) {
+      ChecklistListReducer(save: { items in saved.withValue { $0.append(items) } })
+    }
+
+    await store.send(.check(index: 1)) {
+      $0.checklistItems[1].isChecked = true
+    }
+
+    #expect(saved.value.count == 1)
+    #expect(saved.value.last?.map(\.isChecked) == [false, true])
+  }
+
+  // MARK: Private
+
+  private let items = [
+    ChecklistItem(name: "first", id: UUID(0)),
+    ChecklistItem(name: "second", id: UUID(1)),
+  ]
 }

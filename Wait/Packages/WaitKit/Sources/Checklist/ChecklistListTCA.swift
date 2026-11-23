@@ -7,62 +7,56 @@ import ComposableArchitecture
 import Foundation
 import Model
 
-// MARK: - ChecklistListAction
+// MARK: - ChecklistListReducer
 
-public enum ChecklistListAction {
-  case check(index: Int)
-  case uncheck(index: Int)
-}
-
-// MARK: - ChecklistListState
-
-public struct ChecklistListState: Equatable {
+/// Checks and unchecks a stock's checklist and persists every change.
+/// Persistence is injected (`save`) so tests never write to disk.
+@Reducer
+public struct ChecklistListReducer {
   // MARK: Lifecycle
 
-  public init(checklistItems: [ChecklistItem]) {
-    self.checklistItems = checklistItems
+  public init(save: @escaping ([ChecklistItem]) -> Void) {
+    self.save = save
   }
 
-  // MARK: Internal
-
-  var checklistItems: [ChecklistItem]
-}
-
-// MARK: - ChecklistListEnvironment
-
-public struct ChecklistListEnvironment {
-  // MARK: Lifecycle
-
-  public init(checklistStorage: ChecklistStorage) {
-    self.checklistStorage = checklistStorage
+  public init(storage: ChecklistStorage) {
+    self.init(save: { storage.save(checklistItems: $0) })
   }
 
   // MARK: Public
 
-  public let checklistStorage: ChecklistStorage
-}
+  @ObservableState
+  public struct State: Equatable {
+    // MARK: Lifecycle
 
-public typealias ChecklistListReducer = Reducer<ChecklistListState, ChecklistListAction, ChecklistListEnvironment>
+    public init(checklistItems: [ChecklistItem]) {
+      self.checklistItems = checklistItems
+    }
 
-// MARK: - ChecklistListReducerBuilder
+    // MARK: Public
 
-public enum ChecklistListReducerBuilder {
-  public static func build() -> ChecklistListReducer {
-    let reducer = ChecklistListReducer { state, action, environment in
+    public var checklistItems: [ChecklistItem]
+  }
+
+  public enum Action: Equatable {
+    case check(index: Int)
+    case uncheck(index: Int)
+  }
+
+  public var body: some ReducerOf<Self> {
+    Reduce { state, action in
       switch action {
         case let .check(index):
           state.checklistItems[index].isChecked = true
-          environment.checklistStorage.save(checklistItems: state.checklistItems)
-
-          return .none
         case let .uncheck(index):
           state.checklistItems[index].isChecked = false
-          environment.checklistStorage.save(checklistItems: state.checklistItems)
-
-          return .none
       }
+      save(state.checklistItems)
+      return .none
     }
-
-    return reducer
   }
+
+  // MARK: Private
+
+  private let save: ([ChecklistItem]) -> Void
 }

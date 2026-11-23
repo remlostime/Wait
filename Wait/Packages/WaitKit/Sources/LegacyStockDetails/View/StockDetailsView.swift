@@ -252,11 +252,9 @@ public struct StockDetailsView: View {
         Spacer()
 
         NavigationLink("Let's check") {
-          ChecklistListView(store: Store<ChecklistListState, ChecklistListAction>.init(
-            initialState: ChecklistListState(checklistItems: checklistItems),
-            reducer: ChecklistListReducerBuilder.build(),
-            environment: ChecklistListEnvironment(checklistStorage: checklistStorage)
-          ))
+          ChecklistListView(store: Store(initialState: ChecklistListReducer.State(checklistItems: checklistItems)) {
+            ChecklistListReducer(storage: checklistStorage)
+          })
         }
       }
     }

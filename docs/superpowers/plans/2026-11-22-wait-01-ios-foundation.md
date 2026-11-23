@@ -2341,14 +2341,14 @@ The reducer names avoid the module names `Checklist` and `ChecklistEditFeature`,
   - `Wait/Packages/WaitKit/Tests/ChecklistTests/ChecklistListTests.swift`
   - `Wait/Packages/WaitKit/Tests/ChecklistEditFeatureTests/ChecklistEditFeatureTests.swift`
 
-- [ ] **Step 1: Confirm the latest TCA 1.x tag**
+- [x] **Step 1: Confirm the latest TCA 1.x tag**
 
 ```sh
 git ls-remote --tags https://github.com/pointfreeco/swift-composable-architecture | awk -F/ '{print $3}' | grep -E '^1\.[0-9]+\.[0-9]+$' | sort -V | tail -1
 ```
 Expected: `1.26.2` or a later 1.x. The `from: "1.26.2"` requirement below accepts any later 1.x. Never move to a 2.x major in this plan.
 
-- [ ] **Step 2: Write the failing tests: replace `Wait/Packages/WaitKit/Tests/ChecklistTests/ChecklistListTests.swift`**
+- [x] **Step 2: Write the failing tests: replace `Wait/Packages/WaitKit/Tests/ChecklistTests/ChecklistListTests.swift`**
 
 ```swift
 //
@@ -2409,7 +2409,7 @@ struct ChecklistListTests {
 }
 ```
 
-- [ ] **Step 3: Write the failing tests: replace `Wait/Packages/WaitKit/Tests/ChecklistEditFeatureTests/ChecklistEditFeatureTests.swift`**
+- [x] **Step 3: Write the failing tests: replace `Wait/Packages/WaitKit/Tests/ChecklistEditFeatureTests/ChecklistEditFeatureTests.swift`**
 
 Keep `MockChecklistDataManager.swift` unchanged.
 ```swift
@@ -2480,7 +2480,7 @@ struct ChecklistEditFeatureTests {
 }
 ```
 
-- [ ] **Step 4: Run the tests and watch them fail**
+- [ ] **Step 4: Run the tests and watch them fail** — NOT RUN (code-only)
 
 Run command D with the full log saved:
 ```sh
@@ -2496,7 +2496,7 @@ Expected: `** TEST FAILED **`, plus compile errors located in the two test files
 
 At least one error must come from each of the two test files.
 
-- [ ] **Step 5: Upgrade TCA in `Wait/Packages/WaitKit/Package.swift`**
+- [ ] **Step 5: Upgrade TCA in `Wait/Packages/WaitKit/Package.swift`** — Package.swift edit done; `xcodebuild -resolvePackageDependencies` NOT RUN (code-only)
 
 Replace these two lines:
 ```swift
@@ -2517,7 +2517,7 @@ xcodebuild -resolvePackageDependencies -project /Users/ckai/code/Wait/Wait/Wait.
 ```
 Expected: lines showing `swift-composable-architecture: … @ 1.26.2` (or the later 1.x from Step 1), plus the new transitive `swift-dependencies` and `swift-sharing`.
 
-- [ ] **Step 6: Port `ChecklistListTCA.swift` and its view**
+- [x] **Step 6: Port `ChecklistListTCA.swift` and its view**
 
 Replace the whole of `Wait/Packages/WaitKit/Sources/Checklist/ChecklistListTCA.swift` with:
 ```swift
@@ -2654,7 +2654,7 @@ struct ChecklistListView_Previews: PreviewProvider {
 }
 ```
 
-- [ ] **Step 7: Port `ChecklistEditTCA.swift` and its view, and the inline store in `StockDetailsView`**
+- [x] **Step 7: Port `ChecklistEditTCA.swift` and its view, and the inline store in `StockDetailsView`**
 
 Replace the whole of `Wait/Packages/WaitKit/Sources/ChecklistEditFeature/ChecklistEditTCA.swift` with:
 ```swift
@@ -2826,11 +2826,11 @@ cd /Users/ckai/code/Wait/Wait && grep -rnE "WithViewStore|ReducerBuilder|Checkli
 ```
 Expected: no output.
 
-- [ ] **Step 8: Run the tests and watch them pass**
+- [ ] **Step 8: Run the tests and watch them pass** — NOT RUN (code-only)
 
 Run command D. Expected: `✔ Test run with 5 tests in 2 suites passed` and `** TEST SUCCEEDED **`.
 
-- [ ] **Step 9: Build the app and the watch, then smoke-run**
+- [ ] **Step 9: Build the app and the watch, then smoke-run** — NOT RUN (code-only); manual simulator checks SKIPPED (manual)
 
 Run commands B and E. Expected: `** BUILD SUCCEEDED **` twice. Then repeat the Task 12 Step 6 block, writing the screenshot to `/tmp/wait-plan01-task13.png`. Expected: the same four results.
 
@@ -2838,7 +2838,7 @@ Run commands B and E. Expected: `** BUILD SUCCEEDED **` twice. Then repeat the T
 1. Open a stock, tap **Let's check**, check two items, go back, and reopen. The two items must still be checked.
 2. The watchlist, expected prices and notes must match what was seeded in Task 1 Step 7.
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add -A Wait && git status --short | grep -v '^[RMAD] ' ; git commit -m "$(cat <<'EOF'

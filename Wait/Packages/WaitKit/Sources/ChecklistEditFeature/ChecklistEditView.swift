@@ -12,61 +12,60 @@ import SwiftUI
 public struct ChecklistEditView: View {
   // MARK: Lifecycle
 
-  public init(store: Store<ChecklistEditState, ChecklistEditAction>) {
+  public init(store: StoreOf<ChecklistEditReducer>) {
     self.store = store
   }
 
   // MARK: Public
 
   public var body: some View {
-    WithViewStore(self.store) { viewStore in
-      List {
-        ForEach(Array(viewStore.items.enumerated()), id: \.element.id) { index, _ in
-          TextField(
-            "New Item",
-            text: viewStore.binding(
-              get: { $0.items[index].name },
-              send: { .itemDidChange(index: index, text: $0) }
-            )
+    List {
+      ForEach(Array(store.items.enumerated()), id: \.element.id) { index, _ in
+        TextField(
+          "New Item",
+          text: Binding(
+            get: { store.items[index].name },
+            set: { store.send(.itemDidChange(index: index, text: $0)) }
           )
+        )
+      }
+    }
+    .toolbar {
+      ToolbarItemGroup(placement: .topBarTrailing) {
+        Button("Save") {
+          store.send(.save)
+        }
+        Button(action: { store.send(.addItem) }) {
+          Image(systemName: "plus")
         }
       }
-      .navigationBarItems(
-        trailing:
-        HStack {
-          Button("Save") {
-            viewStore.send(.save)
-          }
-          Button(action: { viewStore.send(.addItem) }) {
-            Image(systemName: "plus")
-          }
-        }
-      )
-      .onDisappear {
-        viewStore.send(.save)
-      }
-      .onAppear {
-        viewStore.send(.load)
-      }
+    }
+    .onDisappear {
+      store.send(.save)
+    }
+    .onAppear {
+      store.send(.load)
     }
   }
 
   // MARK: Internal
 
-  let store: Store<ChecklistEditState, ChecklistEditAction>
+  @Bindable var store: StoreOf<ChecklistEditReducer>
 }
 
 // MARK: - ChecklistEditView_Previews
 
 struct ChecklistEditView_Previews: PreviewProvider {
   static var previews: some View {
-    ChecklistEditView(store: Store(
-      initialState: ChecklistEditState(items: [
-        ChecklistItem(name: "First", id: UUID()),
-        ChecklistItem(name: "Second", id: UUID()),
-      ]),
-      reducer: ChecklistEditReducerBuilder.build(),
-      environment: ChecklistEditEnvironment(checklistDataManager: DefaultChecklistDataManager(), uuid: { UUID() })
-    ))
+    ChecklistEditView(
+      store: Store(
+        initialState: ChecklistEditReducer.State(items: [
+          ChecklistItem(name: "First", id: UUID()),
+          ChecklistItem(name: "Second", id: UUID()),
+        ])
+      ) {
+        ChecklistEditReducer(dataManager: DefaultChecklistDataManager())
+      }
+    )
   }
 }

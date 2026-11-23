@@ -33,8 +33,11 @@ let package = Package(
     .library(name: "SettingsTab", targets: ["SettingsTab"]),
   ],
   dependencies: [
-    // Task 13 of plan 01 upgrades this to 1.26.2.
-    .package(url: "https://github.com/pointfreeco/swift-composable-architecture", exact: "0.31.0"),
+    .package(
+      url: "https://github.com/pointfreeco/swift-composable-architecture",
+      from: "1.26.2",
+      traits: ["ComposableArchitecture2Deprecations"]
+    ),
     // Legacy only — removed at the plan 02 cutover.
     .package(url: "https://github.com/Flight-School/Money", exact: "1.3.0"),
     .package(url: "https://github.com/Alamofire/Alamofire", exact: "5.5.0"),

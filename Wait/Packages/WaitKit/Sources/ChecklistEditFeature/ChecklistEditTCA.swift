@@ -5,76 +5,65 @@
 
 import ComposableArchitecture
 import Foundation
-import Logging
 import Model
-import SwiftUI
 
-// MARK: - ChecklistEditAction
+// MARK: - ChecklistEditReducer
 
-public enum ChecklistEditAction {
-  case addItem
-  case save
-  case load
-  case itemDidChange(index: Int, text: String)
-}
-
-// MARK: - ChecklistEditState
-
-public struct ChecklistEditState: Equatable {
+/// Edits the checklist template. The data manager is injected; ids come from `@Dependency(\.uuid)`.
+@Reducer
+public struct ChecklistEditReducer {
   // MARK: Lifecycle
 
-  public init(items: [ChecklistItem]) {
-    self.items = items
+  public init(dataManager: ChecklistDataManager) {
+    self.dataManager = dataManager
   }
 
-  // MARK: Internal
+  // MARK: Public
 
-  var items: [ChecklistItem]
-}
+  @ObservableState
+  public struct State: Equatable {
+    // MARK: Lifecycle
 
-// MARK: - ChecklistEditEnvironment
+    public init(items: [ChecklistItem]) {
+      self.items = items
+    }
 
-public struct ChecklistEditEnvironment {
-  // MARK: Lifecycle
+    // MARK: Public
 
-  public init(checklistDataManager: ChecklistDataManager, uuid: @escaping (() -> UUID)) {
-    self.checklistDataManager = checklistDataManager
-    self.uuid = uuid
+    public var items: [ChecklistItem]
   }
 
-  // MARK: Internal
+  public enum Action: Equatable {
+    case addItem
+    case save
+    case load
+    case itemDidChange(index: Int, text: String)
+  }
 
-  let checklistDataManager: ChecklistDataManager
-  let uuid: () -> UUID
-}
-
-// MARK: - ChecklistEditReducerBuilder
-
-public typealias ChecklistEditReducer = Reducer<ChecklistEditState, ChecklistEditAction, ChecklistEditEnvironment>
-
-// MARK: - ChecklistEditReducerBuilder
-
-public enum ChecklistEditReducerBuilder {
-  public static func build() -> ChecklistEditReducer {
-    let reducer = ChecklistEditReducer { state, action, environment in
+  public var body: some ReducerOf<Self> {
+    Reduce { state, action in
       switch action {
         case .addItem:
-          state.items.insert(ChecklistItem(name: "", id: environment.uuid()), at: 0)
+          state.items.insert(ChecklistItem(name: "", id: uuid()), at: 0)
           return .none
         case .load:
-          if let checklistItems = environment.checklistDataManager.load() {
+          if let checklistItems = dataManager.load() {
             state.items = checklistItems
           }
           return .none
         case .save:
-          environment.checklistDataManager.save(items: state.items)
+          dataManager.save(items: state.items)
           return .none
         case let .itemDidChange(index, text):
           state.items[index].name = text
           return .none
       }
     }
-
-    return reducer
   }
+
+  // MARK: Private
+
+  @Dependency(\.uuid) private var uuid
+
+  private let dataManager: ChecklistDataManager
 }

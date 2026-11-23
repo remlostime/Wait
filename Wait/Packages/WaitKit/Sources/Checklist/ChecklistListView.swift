@@ -5,7 +5,6 @@
 
 import ComposableArchitecture
 import Model
-import DesignSystem
 import SwiftUI
 
 // MARK: - ChecklistListView
@@ -13,30 +12,27 @@ import SwiftUI
 public struct ChecklistListView: View {
   // MARK: Lifecycle
 
-  public init(store: Store<ChecklistListState, ChecklistListAction>) {
+  public init(store: StoreOf<ChecklistListReducer>) {
     self.store = store
   }
 
   // MARK: Public
 
   public var body: some View {
-    WithViewStore(store) { viewStore in
-      List(viewStore.checklistItems) { item in
-        Checklist(item: item) { item in
-          if item.isChecked {
-            viewStore.send(.uncheck(index: viewStore.checklistItems.firstIndex(of: item)!))
-          } else {
-            viewStore.send(.check(index: viewStore.checklistItems.firstIndex(of: item)!))
-          }
+    List(store.checklistItems) { item in
+      Checklist(item: item) { tapped in
+        guard let index = store.checklistItems.firstIndex(of: tapped) else {
+          return
         }
+        store.send(tapped.isChecked ? .uncheck(index: index) : .check(index: index))
       }
-      .navigationTitle(navigationTitle(with: viewStore.checklistItems))
     }
+    .navigationTitle(navigationTitle(with: store.checklistItems))
   }
 
   // MARK: Private
 
-  private let store: Store<ChecklistListState, ChecklistListAction>
+  private let store: StoreOf<ChecklistListReducer>
 
   private func navigationTitle(with checklistItems: [ChecklistItem]) -> String {
     let itemCheckedCount = checklistItems.reduce(into: 0) { count, item in
@@ -55,15 +51,16 @@ public struct ChecklistListView: View {
 
 struct ChecklistListView_Previews: PreviewProvider {
   static var previews: some View {
-    ChecklistListView(store: Store<ChecklistListState, ChecklistListAction>.init(
-      initialState: ChecklistListState(
-        checklistItems: [
+    ChecklistListView(
+      store: Store(
+        initialState: ChecklistListReducer.State(checklistItems: [
           ChecklistItem(name: "First", id: UUID()),
           ChecklistItem(name: "Second", id: UUID()),
           ChecklistItem(name: "Third", id: UUID()),
-        ]),
-      reducer: ChecklistListReducerBuilder.build(),
-      environment: ChecklistListEnvironment(checklistStorage: ChecklistStorage(name: "checklist-test"))
-    ))
+        ])
+      ) {
+        ChecklistListReducer(save: { _ in })
+      }
+    )
   }
 }
