@@ -126,9 +126,9 @@ describe.each(harnesses)("%s", (_name, makeHarness) => {
     await harness.repo.insertEvents([event({ id: "e3", tradingDate: "2026-11-19" })], NOW)
     await harness.repo.insertEvents([event({ id: "e4", status: "DEEP_BUY", previousStatus: "BUY_ZONE" })], NOW)
     await harness.repo.markSent("e2", NOW)
-    await harness.repo.incrementAttempts("e1")
-    await harness.repo.incrementAttempts("e1")
-    for (let attempt = 0; attempt < 3; attempt += 1) await harness.repo.incrementAttempts("e4")
+    await harness.repo.claimForSend("e1", 0)
+    await harness.repo.claimForSend("e1", 1)
+    for (let attempt = 0; attempt < 3; attempt += 1) await harness.repo.claimForSend("e4", attempt)
 
     expect(await harness.repo.listPendingEvents("2026-11-20", 3)).toEqual([
       {
@@ -143,6 +143,17 @@ describe.each(harnesses)("%s", (_name, makeHarness) => {
         ladder: { buyLow: "150", buyHigh: "175", fair: "210", trim: null, sell: null },
       },
     ])
+  })
+
+  it("lets exactly one caller claim an event for a given attempt count, and counts the claim as an attempt", async () => {
+    await harness.repo.insertEvents([event({ id: "e1" })], NOW)
+    expect(await Promise.all([harness.repo.claimForSend("e1", 0), harness.repo.claimForSend("e1", 0)])).toEqual(expect.arrayContaining([true, false]))
+    expect(await harness.repo.claimForSend("e1", 0)).toBe(false)
+    expect((await harness.repo.listPendingEvents("2026-11-20", 3))[0]?.attempts).toBe(1)
+    expect(await harness.repo.claimForSend("e1", 1)).toBe(true)
+    await harness.repo.markSent("e1", NOW)
+    expect(await harness.repo.claimForSend("e1", 2)).toBe(false)
+    expect(await harness.repo.claimForSend("missing", 0)).toBe(false)
   })
 
   it("claims a day once, refuses a fresh running claim, and takes over a stale one", async () => {

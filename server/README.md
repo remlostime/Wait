@@ -58,3 +58,10 @@ When a provider is rate-limited, the API serves the cached value with `stale: tr
 
 ## Data licensing
 Finnhub, Tiingo and Alpaca free tiers are **personal use only**. This server is for the owner and a few friends. Before any public release, move to a plan that allows external display. Only the adapters in `src/providers/` would change.
+
+## Daily alerts cron (plan 06)
+`GET /api/internal/daily-alerts` is called by Vercel Cron with `Authorization: Bearer $CRON_SECRET`. `vercel.json` has two entries for the same path: `0 22 * * 1-5` (the run) and `30 23 * * 1-5` (a catch-up). Hobby crons fire at most once a day each, so a retry needs its own entry.
+
+- **Catch-up:** the second call on the same trading day takes over a crashed run (a `running` row older than 10 min) or, when the day is `completed`, only delivers events that are still unsent (`attempts < 3`) and returns `resent`. Events are claimed one at a time (`attempts + 1 WHERE attempts = <read value>`), so overlapping calls never push the same alert twice.
+- **Delivery budget:** pushes go out 5 at a time. No new send starts 45 s after the run began; what is left stays pending for the catch-up. Each APNs request times out after 3 s, with one retry after 1 s. The job closes its HTTP/2 sessions at the end of every run.
+- **maxDuration:** the function needs **at least 60 s**. The legacy `builds` config in `vercel.json` cannot set `maxDuration`, so rely on the project default: with Fluid Compute on (the default for new projects) the default duration is 300 s on every plan; with it off, Hobby is capped at 10 s and the run would be killed mid-delivery. To verify, open Project Settings → Functions and check that Fluid Compute is enabled (or Function Max Duration is ≥ 60 s), then trigger the cron from the dashboard (Settings → Cron Jobs → Run) and look at the invocation in Logs: its duration, the `alerts.daily` line, and no `alerts.delivery_deadline` warning (that warning means the budget ran out and the catch-up had to finish the job).

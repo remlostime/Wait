@@ -40,7 +40,11 @@ export interface AlertRepository {
   applyEvaluations(updates: EvaluationUpdate[], now: Date): Promise<void>
   listPendingEvents(tradingDate: string, maxAttempts: number): Promise<PendingAlertEvent[]>
   markSent(eventId: string, now: Date): Promise<void>
-  incrementAttempts(eventId: string): Promise<void>
+  /**
+   * Atomically claims one delivery attempt: `attempts + 1` where the event is still unsent and still has `expectedAttempts`.
+   * Returns false when another caller got there first (or the event was sent), so two overlapping runs never both deliver it.
+   */
+  claimForSend(eventId: string, expectedAttempts: number): Promise<boolean>
   /** Atomically claims the day: inserts the run row, or takes over a `running` row older than RUN_STALE_AFTER_MS. */
   beginRun(tradingDate: string, now: Date): Promise<JobRun>
   finishRun(tradingDate: string, status: Exclude<JobRunStatus, "running">, stats: JobStats, now: Date): Promise<void>

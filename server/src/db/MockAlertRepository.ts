@@ -109,8 +109,11 @@ export class MockAlertRepository implements AlertRepository {
     this.events = this.events.map((event) => (event.id === eventId ? { ...event, sentAt: now } : event))
   }
 
-  async incrementAttempts(eventId: string): Promise<void> {
-    this.events = this.events.map((event) => (event.id === eventId ? { ...event, attempts: event.attempts + 1 } : event))
+  async claimForSend(eventId: string, expectedAttempts: number): Promise<boolean> {
+    const index = this.events.findIndex((event) => event.id === eventId && event.sentAt === null && event.attempts === expectedAttempts)
+    if (index < 0) return false
+    this.events = this.events.map((event, i) => (i === index ? { ...event, attempts: event.attempts + 1 } : event))
+    return true
   }
 
   async beginRun(tradingDate: string, now: Date): Promise<JobRun> {

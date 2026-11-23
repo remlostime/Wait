@@ -6,8 +6,12 @@ type VercelConfig = { crons?: Array<{ path: string; schedule: string }>; routes?
 const config = JSON.parse(readFileSync(new URL("../vercel.json", import.meta.url), "utf8")) as VercelConfig
 
 describe("vercel.json", () => {
-  it("schedules the daily alert job after the US close on weekdays", () => {
-    expect(config.crons).toEqual([{ path: "/api/internal/daily-alerts", schedule: "0 22 * * 1-5" }])
+  it("schedules the daily alert job after the US close on weekdays, with a second daily catch-up run", () => {
+    // Hobby crons run at most once per day each, so the catch-up is a separate entry for the same path.
+    expect(config.crons).toEqual([
+      { path: "/api/internal/daily-alerts", schedule: "0 22 * * 1-5" },
+      { path: "/api/internal/daily-alerts", schedule: "30 23 * * 1-5" },
+    ])
   })
 
   it("routes the cron path to the Fastify function", () => {

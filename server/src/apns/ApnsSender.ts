@@ -9,6 +9,8 @@ export type SendOutcome = "sent" | "pruned" | "failed"
 
 export interface AlertSender {
   send(device: DeviceToken, payload: ApnsPayload, log?: LogSink): Promise<SendOutcome>
+  /** Releases network connections. Safe to call repeatedly; the next `send` reconnects. */
+  close(): Promise<void>
 }
 
 export type ApnsSenderDependencies = {
@@ -33,6 +35,10 @@ export class ApnsSender implements AlertSender {
   constructor(deps: ApnsSenderDependencies) {
     this.deps = deps
     this.sleep = deps.sleep ?? ((ms) => new Promise((resolve) => setTimeout(resolve, ms)))
+  }
+
+  close(): Promise<void> {
+    return this.deps.transport.close()
   }
 
   async send(device: DeviceToken, payload: ApnsPayload, log: LogSink = silentLog): Promise<SendOutcome> {

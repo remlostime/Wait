@@ -2,6 +2,7 @@ import type { ApnsRequest, ApnsResponse, ApnsTransport } from "./types.js"
 
 export class MockApnsTransport implements ApnsTransport {
   readonly calls: ApnsRequest[] = []
+  closeCalls = 0
   private readonly scripted: Array<ApnsResponse | Error> = []
 
   /** Queue responses (or thrown errors) for the next sends; unscripted sends answer 200. */
@@ -16,5 +17,7 @@ export class MockApnsTransport implements ApnsTransport {
     return next ?? { status: 200, apnsId: `mock-${this.calls.length}` }
   }
 
-  async close(): Promise<void> {}
+  async close(): Promise<void> {
+    this.closeCalls += 1
+  }
 }

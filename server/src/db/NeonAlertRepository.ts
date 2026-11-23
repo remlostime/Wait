@@ -137,8 +137,12 @@ export class NeonAlertRepository implements AlertRepository {
     await this.sql`UPDATE alert_events SET sent_at = ${now.toISOString()}::timestamptz WHERE id = ${eventId}`
   }
 
-  async incrementAttempts(eventId: string): Promise<void> {
-    await this.sql`UPDATE alert_events SET attempts = attempts + 1 WHERE id = ${eventId}`
+  async claimForSend(eventId: string, expectedAttempts: number): Promise<boolean> {
+    const rows = await this.sql`
+      UPDATE alert_events SET attempts = attempts + 1
+      WHERE id = ${eventId} AND sent_at IS NULL AND attempts = ${expectedAttempts}
+      RETURNING id`
+    return rows.length > 0
   }
 
   async beginRun(tradingDate: string, now: Date): Promise<JobRun> {

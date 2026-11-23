@@ -77,6 +77,11 @@ describe("ApnsSender", () => {
     expect(devices.all()[0]?.lastSuccessAt).toEqual(NOW)
   })
 
+  it("closes the transport's connections on close()", async () => {
+    await sender.close()
+    expect(transport.closeCalls).toBe(1)
+  })
+
   it("expires the push at the next market open so a stale signal is not delivered days later", async () => {
     await sender.send(DEVICE, PAYLOAD)
     // NOW is Friday 5pm ET; the next open is Monday 2026-11-23 09:30 ET = 14:30 UTC.
