@@ -14,6 +14,7 @@ import Foundation
 import MarketDataClient
 import Persistence
 import StockDetailsFeature
+import SyncClient
 import Testing
 import WatchlistFeature
 
@@ -126,6 +127,10 @@ struct AppFeatureTests {
       $0.marketData.quotes = { _, _ in [quote] }
       $0.connectivity = .noop
       $0.snapshotClient.publish = { snapshot in published.withValue { $0.append(snapshot) } }
+      $0.syncClient.sync = {
+        try await clock.sleep(for: .seconds(1))
+        return .empty
+      }
     }
     await store.send(.scenePhaseChanged(.active))
     await store.receive(\.watchlist.sceneBecameActive)
@@ -133,6 +138,7 @@ struct AppFeatureTests {
       $0.watchlist.quotes = ["AAPL": quote]
     }
     await clock.advance(by: .seconds(1))
+    await store.receive(\.syncFinished)
     #expect(published.value.count == 1)
     #expect(published.value.first?.rows.first?.status == .buyZone)
   }

@@ -11,6 +11,7 @@ import Logging
 import Persistence
 import SettingsFeature
 import SwiftUI
+import SyncClient
 import WatchlistFeature
 
 // MARK: - AppFeature
@@ -44,10 +45,13 @@ public struct AppFeature {
     case appDelegate(AppDelegateAction)
     case watchlist(WatchlistFeature.Action)
     case settings(SettingsFeature.Action)
+    case syncFinished(SyncReport)
+    case syncFailed(String)
   }
 
   public enum CancelID: Hashable, Sendable {
     case publishSnapshot
+    case sync
   }
 
   public var body: some ReducerOf<Self> {
@@ -71,7 +75,7 @@ public struct AppFeature {
           case let .scenePhaseChanged(phase):
             switch phase {
               case .active:
-                return .send(.watchlist(.sceneBecameActive))
+                return .merge(.send(.watchlist(.sceneBecameActive)), sync(after: nil))
               case .background:
                 // `@Shared(.fileStorage)` throttles writes, so flush them before the app is suspended (overview risk 5).
                 // The snapshot is published at once, because the debounce might never fire in a suspended app. Starting it also cancels
@@ -114,6 +118,17 @@ public struct AppFeature {
             }
             return .none
 
+          case .watchlist(.delegate(.refreshRequested)):
+            return sync(after: nil)
+
+          case let .syncFinished(report):
+            // SyncEngine writes merged rows straight into @Shared, which onChange can't see (overview §12.3).
+            return report.pulled > 0 ? publishSnapshot(state.watchlist.snapshotInputs) : .none
+
+          case let .syncFailed(message):
+            Log.sync.error("Watchlist sync failed: \(message)")
+            return .none
+
           case .binding, .watchlist, .settings:
             return .none
         }
@@ -123,6 +138,11 @@ public struct AppFeature {
     .onChange(of: \.watchlist.snapshotInputs) { _, state in
       publishSnapshot(state.watchlist.snapshotInputs)
     }
+    // Any edit of the watchlist (made by a child reducer) starts the 2 s sync debounce. Remote rows written by `SyncEngine`
+    // happen outside any action, so they can't trigger a sync loop.
+    .onChange(of: \.watchlist.items) { _, _ in
+      sync(after: .seconds(2))
+    }
   }
 
   // MARK: Internal
@@ -131,6 +151,7 @@ public struct AppFeature {
   @Dependency(\.continuousClock) var clock
   @Dependency(\.date) var date
   @Dependency(\.snapshotClient) var snapshotClient
+  @Dependency(\.syncClient) var syncClient
 
   // MARK: Private
 
@@ -144,5 +165,21 @@ public struct AppFeature {
       await snapshotClient.alsoSending(to: connectivity).publish(WatchlistSnapshot.make(items: inputs.items, quotes: inputs.quotes, now: date.now))
     }
     .cancellable(id: CancelID.publishSnapshot, cancelInFlight: true)
+  }
+
+  /// One sync, optionally debounced. Every trigger shares `CancelID.sync`, so a newer trigger replaces a pending one.
+  /// The engine itself is single-flight, so cancelling a caller never cancels a run that is already in progress.
+  private func sync(after delay: Duration?) -> Effect<Action> {
+    .run { [clock, syncClient] send in
+      if let delay {
+        try await clock.sleep(for: delay)
+      }
+      do {
+        await send(.syncFinished(try await syncClient.sync()))
+      } catch {
+        await send(.syncFailed(error.localizedDescription))
+      }
+    }
+    .cancellable(id: CancelID.sync, cancelInFlight: true)
   }
 }

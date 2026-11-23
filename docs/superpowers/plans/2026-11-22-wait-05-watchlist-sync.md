@@ -4091,11 +4091,11 @@ These are the triggers from overview §8.5 and §12.3 (including the TCA `onChan
 
 When the sync engine writes remote rows, no action is involved, so `onChange` doesn't fire. That means remote changes can't cause a sync loop. It also means the widget/watch snapshot wouldn't see them, so AppFeature republishes the snapshot on `.syncFinished` whenever `report.pulled > 0` (§12.3).
 
-- [ ] **Step 1: Add the dependency**
+- [x] **Step 1: Add the dependency** (both lines are wrapped over several lines, for the 180-character SwiftLint limit; `AppFeatureTests` already had `Connectivity` and `.dependenciesTestSupport`)
 
 In `Wait/Packages/WaitKit/Package.swift`, add `"SyncClient"` to the `AppFeature` target's `dependencies` array. Also make sure the `AppFeatureTests` test target lists `"SyncClient"`, `.dependenciesTestSupport` and `"Connectivity"` (plan 03 normally adds the last one), and add whichever are missing.
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `Wait/Packages/WaitKit/Tests/AppFeatureTests/AppFeatureSyncTests.swift`:
 ```swift
@@ -4231,12 +4231,12 @@ struct AppFeatureSyncTests {
 }
 ```
 
-- [ ] **Step 3: Run the test and confirm it fails**
+- [ ] **Step 3: Run the test and confirm it fails — NOT RUN (code-only; TCA `TestStore` code can't run in the /tmp harness)**
 
 Run, with `-only-testing:AppFeatureTests/AppFeatureSyncTests`, the package command from the chunk header.
 Expected: `** TEST BUILD FAILED **`, with errors like `type 'AppFeature.Action' has no member 'syncFinished'` and `value of type 'DependencyValues' has no member 'syncClient'`.
 
-- [ ] **Step 4: Add the triggers to `AppFeature`**
+- [x] **Step 4: Add the triggers to `AppFeature`** (item 7 uses the effect-returning `onChange` form, as CLAUDE.md requires: the reducer-builder overload is deprecated. Checked against TCA 1.26.2 `OnChange.swift`: `perform: (oldValue, inout State) -> EffectOf<Self>`)
 
 All edits are in `Wait/Packages/WaitKit/Sources/AppFeature/AppFeature.swift`. After plans 02 and 03, `body` has the §12.3 shape: `CombineReducers { BindingReducer(); Scope…; Scope…; Reduce { … } }`, followed by one `.onChange(of: \.watchlist.snapshotInputs) { _, inputs in Reduce { _, _ in publishSnapshot(inputs) } }`. The debounced `publishSnapshot(_:)` helper calls `snapshotClient.alsoSending(to: connectivity).publish(…)`.
 
@@ -4285,7 +4285,7 @@ All edits are in `Wait/Packages/WaitKit/Sources/AppFeature/AppFeature.swift`. Af
 7. **Add the debounce trigger.** Chain a second `.onChange` on the same `CombineReducers`, directly after the snapshot one. It has to wrap the whole composition, because the edits happen in child reducers (§12.3):
    ```swift
      .onChange(of: \.watchlist.items) { _, _ in
-       Reduce { _, _ in sync(after: .seconds(2)) }
+       sync(after: .seconds(2))
      }
    ```
    After this edit, `body` looks like this (with plan 02's and plan 03's contents unchanged):
@@ -4303,7 +4303,7 @@ All edits are in `Wait/Packages/WaitKit/Sources/AppFeature/AppFeature.swift`. Af
          Reduce { _, _ in publishSnapshot(inputs) }
        }
        .onChange(of: \.watchlist.items) { _, _ in
-         Reduce { _, _ in sync(after: .seconds(2)) }
+         sync(after: .seconds(2))
        }
      }
    ```
@@ -4326,12 +4326,12 @@ All edits are in `Wait/Packages/WaitKit/Sources/AppFeature/AppFeature.swift`. Af
      }
    ```
 
-- [ ] **Step 5: Run the new tests and confirm they pass**
+- [ ] **Step 5: Run the new tests and confirm they pass — NOT RUN (code-only)**
 
 Run, with `-only-testing:AppFeatureTests/AppFeatureSyncTests`, the package command from the chunk header.
 Expected: `** TEST SUCCEEDED **`, with 6 tests passing. The earlier AppFeature suites are fixed and run in Step 6.
 
-- [ ] **Step 6: Update the earlier exhaustive AppFeature tests that reach the new sync paths**
+- [x] **Step 6: Update the earlier exhaustive AppFeature tests that reach the new sync paths** (the grep matched only `becomingActiveRefreshesQuotesAndPublishesOneSnapshot`, which is edited as written; the test run is NOT RUN (code-only))
 
 `.active` and the `.refreshRequested` delegate now sync, and any action that changes `watchlist.items` starts the 2 s debounce. Exhaustive tests from plans 02 and 03 that hit these paths must stub `syncClient.sync` and receive `.syncFinished`. Find them:
 ```bash
@@ -4358,7 +4358,7 @@ In `Tests/AppFeatureTests/AppFeatureTests.swift`:
 Run, with `-only-testing:AppFeatureTests`, the package command from the chunk header.
 Expected: `** TEST SUCCEEDED **`. Every plan 02/03 AppFeature test passes, plus the 6 new ones.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
