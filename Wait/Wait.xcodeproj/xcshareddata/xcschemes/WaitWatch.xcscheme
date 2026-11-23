@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
    LastUpgradeVersion = "1430"
-   version = "1.7">
+   version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
-      buildImplicitDependencies = "YES"
-      runPostActionsOnFailure = "NO">
+      buildImplicitDependencies = "YES">
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
@@ -27,8 +26,7 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      onlyGenerateCoverageForSpecifiedTargets = "NO">
+      shouldUseLaunchSchemeArgsEnv = "YES">
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
@@ -57,12 +55,9 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "BF916524DAC1B75145FFF280"
             BuildableName = "WaitWatch.app"
-            BlueprintName = "WaitWatch"
             ReferencedContainer = "container:Wait.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <CommandLineArguments>
-      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -76,7 +71,6 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "BF916524DAC1B75145FFF280"
             BuildableName = "WaitWatch.app"
-            BlueprintName = "WaitWatch"
             ReferencedContainer = "container:Wait.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
