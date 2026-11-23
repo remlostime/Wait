@@ -10623,7 +10623,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `CLAUDE.md` (repo root; `AGENTS.md` is a symlink to it)
 - Create: `Wait/Packages/WaitKit/README.md`
 
-- [ ] **Step 1: Replace the `## Architecture` section of `CLAUDE.md`** (from `## Architecture` up to, but not including, `## Code style`) with:
+- [x] **Step 1: Replace the `## Architecture` section of `CLAUDE.md`** (from `## Architecture` up to, but not including, `## Code style`) with:
 
 ````markdown
 ## Architecture
@@ -10685,7 +10685,7 @@ AppFeature          -> WatchlistFeature, SettingsFeature, Persistence, DesignSys
 - Tests use Swift Testing with `TestStore`, in `Packages/WaitKit/Tests/<Target>Tests`. Run them with `scripts/test-waitkit.sh`.
 ````
 
-- [ ] **Step 2: Update the test and build lines in the `## Commands` section of `CLAUDE.md`** so they read:
+- [x] **Step 2: Update the test and build lines in the `## Commands` section of `CLAUDE.md`** so they read:
 ```sh
 cd Wait && xcodegen generate                 # after editing Wait/project.yml
 scripts/build-app.sh                         # app + widget (+ embedded watch), iPhone 17 / iOS 27.0
@@ -10695,7 +10695,7 @@ scripts/test-waitkit.sh DomainTests/PriceLadderTemperatureTests   # one suite
 ```
 Also add this line: "`xcodebuild`/`xcodegen` need to run unsandboxed in agent sessions."
 
-- [ ] **Step 3: Create `Wait/Packages/WaitKit/README.md`**
+- [x] **Step 3: Create `Wait/Packages/WaitKit/README.md`**
 ````markdown
 # WaitKit
 
@@ -10723,7 +10723,7 @@ The local Swift package that holds all of Wait's code except the three thin Xcod
 - **Adding a target.** Append its `.target` and `.testTarget` to `Package.swift`. If an Xcode target links it, add a `.library` product and list that product in `Wait/project.yml`.
 ````
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 ```bash
 git add CLAUDE.md Wait/Packages/WaitKit/README.md
 git commit -m "docs: describe WaitKit architecture, data flow and commands after plan 02
@@ -10734,9 +10734,9 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ---
 
 ## Plan 02 done when
-- Every box above is checked.
-- `scripts/test-waitkit.sh && scripts/build-app.sh && scripts/build-app.sh WaitWatch` is green.
-- The manual checks in Tasks 27–29 passed: migrated list, memo kept, star toggles, no crash with an empty chart, widget shows the real watchlist.
-- `Package.swift` has no legacy targets or third-party dependencies apart from Point-Free's.
+- Every box above is checked. — NOT MET: build/test and manual steps in earlier tasks are NOT RUN (code-only) or SKIPPED (manual).
+- `scripts/test-waitkit.sh && scripts/build-app.sh && scripts/build-app.sh WaitWatch` is green. — NOT RUN (code-only).
+- The manual checks in Tasks 27–29 passed: migrated list, memo kept, star toggles, no crash with an empty chart, widget shows the real watchlist. — SKIPPED (manual).
+- `Package.swift` has no legacy targets or third-party dependencies apart from Point-Free's. — VERIFIED by grep of `Package.swift` (no Money, Alamofire, SwiftyJSON or legacy targets; only four Point-Free packages). Also checked: `scripts/check-secrets.sh` exits 0, the `apikey=|clientId:|clientSecret:` git grep (excluding docs and the script) is empty, and `xcodegen generate` leaves no diff.
 
 Then hand off to plan 03 (watch and cleanup) and/or plan 04 (backend). Use superpowers:finishing-a-development-branch.
