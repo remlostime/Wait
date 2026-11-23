@@ -41,7 +41,7 @@ public struct PushFeature {
     case authorizationLoaded(NotificationAuthorization)
     case registered(Data)
     case registrationFailed(String)
-    case staleTokenRemoved
+    case staleTokenRemoved(String)
     case tapped(String)
     case delegate(Delegate)
 
@@ -72,7 +72,7 @@ public struct PushFeature {
               }
               do {
                 try await apiClient.unregisterDevice(token)
-                await send(.staleTokenRemoved)
+                await send(.staleTokenRemoved(token))
               } catch {
                 Log.push.error("Pending device unregistration failed, will retry next launch: \(error)")
               }
@@ -88,6 +88,11 @@ public struct PushFeature {
           }
 
         case let .registered(deviceToken):
+          // A token can arrive after the user turned alerts off (the toggle raced the APNs callback). Storing and uploading it would
+          // register a device the user just opted out of, and nothing would clear it.
+          guard state.alertsEnabled else {
+            return .none
+          }
           let token = APNsToken.hexString(deviceToken)
           state.$deviceToken.withLock { $0 = token }
           return .run { [apiClient] _ in
@@ -100,8 +105,13 @@ public struct PushFeature {
           Log.push.error("APNs registration failed: \(message)")
           return .none
 
-        case .staleTokenRemoved:
-          state.$deviceToken.withLock { $0 = nil }
+        case let .staleTokenRemoved(removed):
+          // Only forget the token the server confirmed. A newer one may have been stored while the DELETE was in flight.
+          state.$deviceToken.withLock { stored in
+            if stored == removed {
+              stored = nil
+            }
+          }
           return .none
 
         case let .tapped(symbol):

@@ -12,6 +12,7 @@ import DependenciesTestSupport
 import Domain
 import Foundation
 import MarketDataClient
+import NotificationClient
 import Persistence
 import StockDetailsFeature
 import SyncClient
@@ -53,10 +54,12 @@ struct AppFeatureTests {
       $0.continuousClock = clock
       $0.date.now = appNow
       $0.connectivity = .noop
+      $0.notifications = .noop
       $0.snapshotClient.publish = { snapshot in published.withValue { $0.append(snapshot) } }
     }
     await store.send(.appDelegate(.didFinishLaunching))
-    // `PushFeature` starts at launch. With nothing stored and the default `.notDetermined` status it registers for nothing.
+    // `PushFeature` starts at launch. `.noop` reports `.notDetermined`, so it registers for nothing. The override is needed even for
+    // the endpoints that have a default: `@DependencyClient` reports "Unimplemented" for those too.
     await store.receive(\.push.launched)
     await store.receive(\.push.authorizationLoaded, .notDetermined)
     await clock.advance(by: .seconds(1))
@@ -129,14 +132,19 @@ struct AppFeatureTests {
       $0.date.now = appNow
       $0.marketData.quotes = { _, _ in [quote] }
       $0.connectivity = .noop
+      $0.notifications = .noop
       $0.snapshotClient.publish = { snapshot in published.withValue { $0.append(snapshot) } }
       $0.syncClient.sync = {
         try await clock.sleep(for: .seconds(1))
         return .empty
       }
     }
+    // `.active` also reloads the notification status in Settings. Its actions arrive in no fixed order next to the quotes, so the
+    // order isn't asserted.
+    store.exhaustivity = .off(showSkippedAssertions: false)
     await store.send(.scenePhaseChanged(.active))
     await store.receive(\.watchlist.sceneBecameActive)
+    await store.receive(\.settings.sceneBecameActive)
     await store.receive(\.watchlist.quotesLoaded) {
       $0.watchlist.quotes = ["AAPL": quote]
     }

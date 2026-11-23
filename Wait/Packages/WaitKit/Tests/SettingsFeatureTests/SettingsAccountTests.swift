@@ -5,7 +5,9 @@
 
 import APIClient
 import ComposableArchitecture
+import DependenciesTestSupport
 import Foundation
+import NotificationClient
 @testable import SettingsFeature
 import SyncClient
 import Testing
@@ -13,7 +15,7 @@ import Testing
 // MARK: - SettingsAccountTests
 
 @MainActor
-@Suite
+@Suite(.dependencies { $0.defaultAppStorage = UserDefaults(suiteName: "SettingsAccountTests.\(UUID().uuidString)")! })
 struct SettingsAccountTests {
   @Test
   func taskShowsTheAnonymousID() async {
@@ -22,6 +24,7 @@ struct SettingsAccountTests {
       SettingsFeature()
     } withDependencies: {
       $0.identity.anonymousID = { id }
+      $0.notifications = .noop
     }
     // `.task` also loads the notification status. The two effects run concurrently, so their actions can arrive in either order.
     store.exhaustivity = .off(showSkippedAssertions: false)
@@ -66,6 +69,43 @@ struct SettingsAccountTests {
   }
 
   @Test
+  func deletingTheAccountWithAlertsOnRegistersForPushesAgain() async {
+    let registrations = LockIsolated(0)
+    let store = deletionStore(alertsEnabled: true) { registrations.withValue { $0 += 1 } }
+
+    await store.send(.deleteAccountTapped) { $0.alert = .deleteAccount }
+    await store.send(.alert(.presented(.confirmDeleteAccount))) {
+      $0.alert = nil
+      $0.account.isDeleting = true
+    }
+    await store.receive(\.accountDeleted) {
+      $0.account.isDeleting = false
+      $0.account.anonymousID = nil
+    }
+    await store.finish()
+    // The server dropped the device with the account. APNs hands the token back and `PushFeature` uploads it under the new identity.
+    #expect(registrations.value == 1)
+  }
+
+  @Test
+  func deletingTheAccountWithAlertsOffDoesNotRegisterForPushes() async {
+    let registrations = LockIsolated(0)
+    let store = deletionStore(alertsEnabled: false) { registrations.withValue { $0 += 1 } }
+
+    await store.send(.deleteAccountTapped) { $0.alert = .deleteAccount }
+    await store.send(.alert(.presented(.confirmDeleteAccount))) {
+      $0.alert = nil
+      $0.account.isDeleting = true
+    }
+    await store.receive(\.accountDeleted) {
+      $0.account.isDeleting = false
+      $0.account.anonymousID = nil
+    }
+    await store.finish()
+    #expect(registrations.value == 0)
+  }
+
+  @Test
   func cancellingTheAlertDeletesNothing() async {
     let store = TestStore(initialState: SettingsFeature.State(appVersion: "1.0 (1)")) { SettingsFeature() }
     await store.send(.deleteAccountTapped) { $0.alert = .deleteAccount }
@@ -89,6 +129,22 @@ struct SettingsAccountTests {
     await store.receive(\.accountDeletionFailed) {
       $0.account.isDeleting = false
       $0.account.errorMessage = "The Internet connection appears to be offline."
+    }
+  }
+
+  // MARK: Private
+
+  private func deletionStore(alertsEnabled: Bool, onRegister: @escaping @Sendable () -> Void) -> TestStoreOf<SettingsFeature> {
+    var state = SettingsFeature.State(appVersion: "1.0 (1)")
+    state.account.anonymousID = "OLD"
+    state.$alertsEnabled.withLock { $0 = alertsEnabled }
+    return TestStore(initialState: state) {
+      SettingsFeature()
+    } withDependencies: {
+      $0.apiClient.deleteAccount = {}
+      $0.identity.reset = {}
+      $0.syncClient.reset = {}
+      $0.notifications.registerForRemoteNotifications = { onRegister() }
     }
   }
 }

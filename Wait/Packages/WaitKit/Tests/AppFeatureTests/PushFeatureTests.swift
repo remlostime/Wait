@@ -68,7 +68,7 @@ struct PushFeatureTests {
     store.exhaustivity = .off(showSkippedAssertions: false)
 
     await store.send(.launched)
-    await store.receive(\.staleTokenRemoved) { $0.$deviceToken.withLock { $0 = nil } }
+    await store.receive(\.staleTokenRemoved, "abc123") { $0.$deviceToken.withLock { $0 = nil } }
     await store.finish()
     #expect(deletions.value == ["abc123"])
   }
@@ -118,6 +118,24 @@ struct PushFeatureTests {
     }
     await store.finish()
     #expect(uploads.value == [DeviceRegistrationDTO(token: "deadbeef", environment: .sandbox, bundleId: "com.chenkai.wait")])
+  }
+
+  @Test
+  func aTokenThatArrivesAfterAlertsWereTurnedOffIsNeitherStoredNorUploaded() async {
+    let store = TestStore(initialState: state(alertsEnabled: false)) { PushFeature() }
+
+    // `apiClient.registerDevice` isn't overridden: an upload would report an issue.
+    await store.send(.registered(Data([0xDE, 0xAD, 0xBE, 0xEF])))
+    await store.finish()
+    #expect(store.state.deviceToken == nil)
+  }
+
+  @Test
+  func aStaleTokenConfirmationKeepsANewerStoredToken() async {
+    let store = TestStore(initialState: state(alertsEnabled: true, deviceToken: "new")) { PushFeature() }
+
+    await store.send(.staleTokenRemoved("old"))
+    #expect(store.state.deviceToken == "new")
   }
 
   @Test

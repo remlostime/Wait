@@ -12,22 +12,13 @@ import UserNotifications
 // MARK: - NotificationCenterDelegate
 
 /// Receives taps and foreground presentations. Installed in `application(_:didFinishLaunchingWithOptions:)`
-/// so cold-start taps are not lost; taps are buffered until `AppFeature` subscribes.
+/// so cold-start taps are not lost; `TapBroadcaster` keeps them until `AppFeature` subscribes.
 final class NotificationCenterDelegate: NSObject, UNUserNotificationCenterDelegate, Sendable {
-  // MARK: Lifecycle
-
-  override init() {
-    let (stream, streamContinuation) = AsyncStream.makeStream(of: String.self, bufferingPolicy: .bufferingNewest(8))
-    taps = stream
-    continuation = streamContinuation
-    super.init()
-  }
-
   // MARK: Internal
 
   static let shared = NotificationCenterDelegate()
 
-  let taps: AsyncStream<String>
+  let taps = TapBroadcaster()
 
   func userNotificationCenter(
     _ center: UNUserNotificationCenter,
@@ -41,12 +32,8 @@ final class NotificationCenterDelegate: NSObject, UNUserNotificationCenterDelega
       Log.push.info("Ignoring a tapped push without a valid symbol")
       return
     }
-    continuation.yield(symbol)
+    taps.send(symbol)
   }
-
-  // MARK: Private
-
-  private let continuation: AsyncStream<String>.Continuation
 }
 
 // MARK: - NotificationClient + DependencyKey
@@ -63,10 +50,10 @@ extension NotificationClient: DependencyKey {
     registerForRemoteNotifications: {
       await MainActor.run { UIApplication.shared.registerForRemoteNotifications() }
     },
-    unregisterForRemoteNotifications: {
-      await MainActor.run { UIApplication.shared.unregisterForRemoteNotifications() }
+    notificationSettingsURL: {
+      await MainActor.run { URL(string: UIApplication.openNotificationSettingsURLString) }
     },
-    tappedSymbols: { NotificationCenterDelegate.shared.taps }
+    tappedSymbols: { NotificationCenterDelegate.shared.taps.stream() }
   )
 
   /// Call synchronously from `application(_:didFinishLaunchingWithOptions:)`.

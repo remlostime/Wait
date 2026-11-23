@@ -8,6 +8,7 @@ import ComposableArchitecture
 import Connectivity
 import DependenciesTestSupport
 import Foundation
+import NotificationClient
 import SyncClient
 import Testing
 @testable import AppFeature
@@ -19,9 +20,13 @@ import Testing
 struct AppFeaturePushRoutingTests {
   @Test
   func forwardsTheDeviceTokenToPushFeature() async {
-    let store = TestStore(initialState: AppFeature.State()) { AppFeature() } withDependencies: {
+    let state = AppFeature.State()
+    // `PushFeature` ignores a token while alerts are off.
+    state.push.$alertsEnabled.withLock { $0 = true }
+    let store = TestStore(initialState: state) { AppFeature() } withDependencies: {
       $0.apiClient.registerDevice = { _ in }
       $0.connectivity = .noop
+      $0.notifications = .noop
       $0.syncClient.sync = { SyncReport() }
     }
     store.exhaustivity = .off(showSkippedAssertions: false)
@@ -36,6 +41,7 @@ struct AppFeaturePushRoutingTests {
   func openStockDelegateOpensTheDeepLink() async {
     let store = TestStore(initialState: AppFeature.State()) { AppFeature() } withDependencies: {
       $0.connectivity = .noop
+      $0.notifications = .noop
       $0.syncClient.sync = { SyncReport() }
     }
     store.exhaustivity = .off(showSkippedAssertions: false)

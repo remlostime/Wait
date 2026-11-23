@@ -10,6 +10,7 @@ import DependenciesTestSupport
 import Domain
 import Foundation
 import MarketDataClient
+import NotificationClient
 import Persistence
 import SyncClient
 import Testing
@@ -232,6 +233,7 @@ struct AppFeatureSyncTests {
       $0.marketData.quotes = quotes
       $0.snapshotClient.publish = { _ in publishes.withValue { $0 += 1 } }
       $0.connectivity = .noop
+      $0.notifications = .noop
       $0.syncClient.sync = {
         syncs.withValue { $0 += 1 }
         return try await result()

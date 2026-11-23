@@ -99,7 +99,7 @@ public struct AppFeature {
           case let .scenePhaseChanged(phase):
             switch phase {
               case .active:
-                return .merge(.send(.watchlist(.sceneBecameActive)), sync(after: nil))
+                return .merge(.send(.watchlist(.sceneBecameActive)), .send(.settings(.sceneBecameActive)), sync(after: nil))
               case .background:
                 // `@Shared(.fileStorage)` throttles writes, so flush them before the app is suspended (overview risk 5).
                 // The snapshot is published at once, because the debounce might never fire in a suspended app. Starting it also cancels

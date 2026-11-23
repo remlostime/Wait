@@ -80,7 +80,8 @@ public struct SettingsFeature {
     case alertsToggled(Bool)
     case authorizationStatusLoaded(NotificationAuthorization)
     case alertsEnablementFinished(granted: Bool)
-    case deviceUnregistered
+    case deviceUnregistered(String)
+    case sceneBecameActive
     case openSystemSettingsTapped
 
     public enum Alert: Equatable, Sendable {
@@ -141,7 +142,14 @@ public struct SettingsFeature {
         case .accountDeleted:
           state.account.isDeleting = false
           state.account.anonymousID = nil
-          return .none
+          // The server dropped this device with the account. APNs hands the token back through `AppDelegate` and `PushFeature`
+          // uploads it under the new identity.
+          guard state.alertsEnabled else {
+            return .none
+          }
+          return .run { [notifications] _ in
+            await notifications.registerForRemoteNotifications()
+          }
 
         case let .accountDeletionFailed(message):
           state.account.isDeleting = false
@@ -185,14 +193,14 @@ public struct SettingsFeature {
           // Keep the token until the server confirms the DELETE; PushFeature retries a pending unregistration at launch.
           let token = state.apnsDeviceToken
           state.$alertsEnabled.withLock { $0 = false }
-          return .run { [notifications, apiClient] send in
-            await notifications.unregisterForRemoteNotifications()
+          // No `unregisterForRemoteNotifications()`: the server DELETE stops the pushes, and Apple discourages unregistering.
+          return .run { [apiClient] send in
             guard let token else {
               return
             }
             do {
               try await apiClient.unregisterDevice(token)
-              await send(.deviceUnregistered)
+              await send(.deviceUnregistered(token))
             } catch {
               Log.push.error("Device unregistration failed, will retry next launch: \(error)")
             }
@@ -202,17 +210,29 @@ public struct SettingsFeature {
           state.$alertsEnabled.withLock { $0 = granted }
           return .none
 
-        case .deviceUnregistered:
-          state.$apnsDeviceToken.withLock { $0 = nil }
+        case let .deviceUnregistered(removed):
+          // Only forget the token the server confirmed. The user may have re-enabled alerts, and APNs stored a new one, meanwhile.
+          state.$apnsDeviceToken.withLock { stored in
+            if stored == removed {
+              stored = nil
+            }
+          }
           return .none
+
+        case .sceneBecameActive:
+          // The user may have changed the permission in the system Settings app.
+          return loadAuthorizationStatus()
 
         case let .authorizationStatusLoaded(status):
           state.authorizationStatus = status
           return .none
 
         case .openSystemSettingsTapped:
-          return .run { [openURL] _ in
-            await openURL(SettingsFeature.systemSettingsURL)
+          return .run { [notifications, openURL] _ in
+            guard let url = await notifications.notificationSettingsURL() else {
+              return
+            }
+            await openURL(url)
           }
 
         case .checklistTemplateTapped:
@@ -228,9 +248,6 @@ public struct SettingsFeature {
   }
 
   // MARK: Internal
-
-  /// The value of `UIApplication.openSettingsURLString`, written out so the reducer doesn't touch main-actor UIKit API.
-  static let systemSettingsURL = URL(string: "app-settings:")!
 
   @Dependency(\.apiClient) var apiClient
   @Dependency(\.identity) var identity

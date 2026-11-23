@@ -63,26 +63,31 @@ struct SettingsAlertsTests {
   }
 
   @Test
-  func disablingAlertsUnregistersAndClearsTheTokenOnlyAfterTheServerConfirms() async {
-    let systemUnregistrations = LockIsolated(0)
+  func disablingAlertsClearsTheTokenOnlyAfterTheServerConfirms() async {
     let serverUnregistrations = LockIsolated<[String]>([])
+    // `notifications` isn't overridden: turning alerts off must not call into APNs (no `unregisterForRemoteNotifications`).
     let store = TestStore(initialState: enabledState(token: "abc123")) { SettingsFeature() } withDependencies: {
-      $0.notifications.unregisterForRemoteNotifications = { systemUnregistrations.withValue { $0 += 1 } }
       $0.apiClient.unregisterDevice = { token in serverUnregistrations.withValue { $0.append(token) } }
     }
 
     await store.send(.alertsToggled(false)) { $0.$alertsEnabled.withLock { $0 = false } }
-    await store.receive(\.deviceUnregistered) { $0.$apnsDeviceToken.withLock { $0 = nil } }
+    await store.receive(\.deviceUnregistered, "abc123") { $0.$apnsDeviceToken.withLock { $0 = nil } }
     await store.finish()
-    #expect(systemUnregistrations.value == 1)
     #expect(serverUnregistrations.value == ["abc123"])
+  }
+
+  @Test
+  func aConfirmedUnregistrationKeepsANewerStoredToken() async {
+    let store = TestStore(initialState: enabledState(token: "new")) { SettingsFeature() }
+
+    await store.send(.deviceUnregistered("old"))
+    #expect(store.state.apnsDeviceToken == "new")
   }
 
   @Test
   func failedServerUnregistrationKeepsTheTokenForTheLaunchRetry() async {
     struct Offline: Error {}
     let store = TestStore(initialState: enabledState(token: "abc123")) { SettingsFeature() } withDependencies: {
-      $0.notifications.unregisterForRemoteNotifications = {}
       $0.apiClient.unregisterDevice = { _ in throw Offline() }
     }
 
@@ -92,9 +97,10 @@ struct SettingsAlertsTests {
   }
 
   @Test
-  func openSystemSettingsUsesTheAppSettingsURL() async {
+  func openSystemSettingsOpensTheNotificationSettingsURL() async {
     let opened = LockIsolated<URL?>(nil)
     let store = TestStore(initialState: SettingsFeature.State()) { SettingsFeature() } withDependencies: {
+      $0.notifications.notificationSettingsURL = { URL(string: "app-notification-settings") }
       $0.openURL = OpenURLEffect { url in
         opened.setValue(url)
         return true
@@ -103,7 +109,33 @@ struct SettingsAlertsTests {
 
     await store.send(.openSystemSettingsTapped)
     await store.finish()
-    #expect(opened.value == URL(string: "app-settings:"))
+    #expect(opened.value == URL(string: "app-notification-settings"))
+  }
+
+  @Test
+  func openSystemSettingsDoesNothingWithoutAURL() async {
+    let opened = LockIsolated(false)
+    let store = TestStore(initialState: SettingsFeature.State()) { SettingsFeature() } withDependencies: {
+      $0.notifications = .noop
+      $0.openURL = OpenURLEffect { _ in
+        opened.setValue(true)
+        return true
+      }
+    }
+
+    await store.send(.openSystemSettingsTapped)
+    await store.finish()
+    #expect(!opened.value)
+  }
+
+  @Test
+  func becomingActiveReloadsTheAuthorizationStatus() async {
+    let store = TestStore(initialState: SettingsFeature.State()) { SettingsFeature() } withDependencies: {
+      $0.notifications.authorizationStatus = { .denied }
+    }
+
+    await store.send(.sceneBecameActive)
+    await store.receive(\.authorizationStatusLoaded, .denied) { $0.authorizationStatus = .denied }
   }
 
   @Test
