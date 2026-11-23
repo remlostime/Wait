@@ -26,6 +26,14 @@ describe("GET /api/market/quotes", () => {
     expect(response.statusCode).toBe(401)
   })
 
+  it("requires auth on every market route", async () => {
+    await setup()
+    for (const url of ["/api/market/quotes?symbols=AAPL", "/api/market/history?symbol=AAPL&range=1Y", "/api/market/search?q=apple", "/api/market/profile?symbol=AAPL"]) {
+      const response = await app!.inject({ method: "GET", url })
+      expect(response.statusCode, url).toBe(401)
+    }
+  })
+
   it("authenticates before validating, so a bad query without a token is 401, not 400", async () => {
     await setup()
     const response = await app!.inject({ method: "GET", url: "/api/market/history?symbol=lower&range=2Y" })

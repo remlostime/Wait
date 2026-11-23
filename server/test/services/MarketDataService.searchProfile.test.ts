@@ -59,6 +59,21 @@ describe("MarketDataService.getProfile", () => {
     expect([getProfile.mock.calls.length, getMetrics.mock.calls.length]).toEqual([2, 3])
   })
 
+  it("retries a transiently failed half after a minute instead of caching it for a day", async () => {
+    const getProfile = vi.fn(async () => PROFILE)
+    let metricsFail = true
+    const getMetrics = vi.fn(async () => {
+      if (metricsFail) throw new ProviderError("finnhub", "timeout")
+      return METRICS
+    })
+    const { service, clock } = makeService({ providers: { profile: { getProfile, getMetrics } } })
+    await service.getProfile("AAPL")
+    metricsFail = false
+    clock.advance(61_000)
+    await service.getProfile("AAPL")
+    expect([getProfile.mock.calls.length, getMetrics.mock.calls.length]).toEqual([1, 2])
+  })
+
   it("throws NOT_FOUND when Finnhub knows nothing about the symbol", async () => {
     const { service } = makeService()
     await expect(service.getProfile("ZZZZ")).rejects.toMatchObject({ code: "NOT_FOUND", statusCode: 404 })

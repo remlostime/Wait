@@ -150,6 +150,8 @@ export interface ProfileDTO {
 }
 
 const PROFILE_REFRESH_MS = 7 * 86_400_000
+/** How soon a profile with a transiently failed half (profile2 or metrics) is retried. */
+const PARTIAL_PROFILE_RETRY_MS = 60_000
 
 function toProfileDTO(symbol: string, entry: CacheEntry<ProfilePayload>): ProfileDTO {
   const p = entry.payload.profile
@@ -332,8 +334,17 @@ export class MarketDataService {
       metrics: metrics.ok ? metrics.value : (cached?.payload.metrics ?? null),
       profileFetchedAt: profile?.ok ? now.toISOString() : (cached?.payload.profileFetchedAt ?? now.toISOString()),
     }
-    if (payload.profile === null && payload.metrics === null) throw new AppError("NOT_FOUND", `No profile for ${symbol}`, 404)
-    const entry: CacheEntry<ProfilePayload> = { payload, provider: "finnhub", fetchedAt: now, expiresAt: expiresAt("metrics", now) }
+    // A half that failed for a transient reason (rate limit, outage) must not be cached as fresh for a day:
+    // expire soon so the next request retries it (profile2 is skipped again while it is still fresh).
+    const transient = [metrics, profile].flatMap((o) => (o && !o.ok && o.reason !== "not_found" ? [o] : []))
+    if (payload.profile === null && payload.metrics === null) {
+      const limited = transient.find((o) => o.reason === "rate_limited")
+      if (limited) throw rateLimitedError(limited.retryAfterSec)
+      if (transient.length > 0) throw unavailableError()
+      throw new AppError("NOT_FOUND", `No profile for ${symbol}`, 404)
+    }
+    const expiry = transient.length > 0 ? new Date(now.getTime() + PARTIAL_PROFILE_RETRY_MS) : expiresAt("metrics", now)
+    const entry: CacheEntry<ProfilePayload> = { payload, provider: "finnhub", fetchedAt: now, expiresAt: expiry }
     await this.deps.cache.putProfile(symbol, entry)
     return toProfileDTO(symbol, entry)
   }
