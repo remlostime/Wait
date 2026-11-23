@@ -3159,7 +3159,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/Persistence/SnapshotStore.swift`, `Wait/Packages/WaitKit/Sources/Persistence/SnapshotClient.swift`
 - Create: `Wait/Packages/WaitKit/Tests/PersistenceTests/SnapshotStoreTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/PersistenceTests/SnapshotStoreTests.swift`:
 ```swift
@@ -3199,12 +3199,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh PersistenceTests/SnapshotStoreTests`
 Expected FAIL: `error: cannot find 'SnapshotStore' in scope`.
 
-- [ ] **Step 3: Implement `SnapshotStore.swift`**
+- [x] **Step 3: Implement `SnapshotStore.swift`**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -3252,7 +3252,7 @@ public struct SnapshotStore: Sendable {
 }
 ```
 
-- [ ] **Step 4: Implement `SnapshotClient.swift`**
+- [x] **Step 4: Implement `SnapshotClient.swift`**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -3306,12 +3306,12 @@ public extension DependencyValues {
 }
 ```
 
-- [ ] **Step 5: Run the tests and confirm they pass**
+- [ ] **Step 5: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh PersistenceTests`
 Expected PASS: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/Persistence Wait/Packages/WaitKit/Tests/PersistenceTests
 git commit -m "feat(persistence): snapshot store and snapshot client dependency
