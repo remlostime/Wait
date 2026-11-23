@@ -1999,7 +1999,7 @@ The module is renamed so that plan 02 can introduce the new `StockDetailsFeature
   - `Wait/project.yml`: full rewrite
   - `Wait/Wait/Waitlist/View/MainView.swift` and `Wait/Wait/Waitlist/View/SearchStockView.swift`: import lines only
 
-- [ ] **Step 1: Move, delete and rename the import**
+- [x] **Step 1: Move, delete and rename the import**
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/LegacyStockDetails Packages/WaitKit/Sources/SettingsTab \
@@ -2012,7 +2012,7 @@ cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/LegacyStockDe
 ```
 Expected: no output from the grep, then `8`.
 
-- [ ] **Step 2: Replace `Wait/Packages/WaitKit/Package.swift`**
+- [x] **Step 2: Replace `Wait/Packages/WaitKit/Package.swift`**
 
 ```swift
 // swift-tools-version: 6.1
@@ -2087,7 +2087,7 @@ let package = Package(
 )
 ```
 
-- [ ] **Step 3: Replace `Wait/project.yml` with the three-target spec**
+- [x] **Step 3: Replace `Wait/project.yml` with the three-target spec**
 
 ```yaml
 # XcodeGen spec for Wait. Regenerate with `cd Wait && xcodegen generate`.
@@ -2254,7 +2254,7 @@ schemes:
 ```
 The `Wait` scheme no longer has a test action. All tests run through `WaitKit-Package` (command D). `bundleIdPrefix` changed to `com.chenkai`, but every target sets its bundle id explicitly, so this changes nothing.
 
-- [ ] **Step 4: Regenerate and confirm the project has three targets**
+- [x] **Step 4: Regenerate and confirm the project has three targets** — xcodegen ran; target list verified by grepping project.pbxproj (xcodebuild -list not run, code-only)
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 \
@@ -2271,11 +2271,11 @@ Created project at /Users/ckai/code/Wait/Wait/Wait.xcodeproj
 ```
 The three target lines may appear in a different order. Then repeat the Package.resolved check from Task 2 Step 3.
 
-- [ ] **Step 5: Build everything and run the package tests**
+- [ ] **Step 5: Build everything and run the package tests** — NOT RUN (code-only)
 
 Run commands D, B and E. Expected, in that order: `Executed 4 tests, with 0 failures` with `** TEST SUCCEEDED **`, then `** BUILD SUCCEEDED **`, then `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 6: Smoke-run the app on the seeded simulator**
+- [ ] **Step 6: Smoke-run the app on the seeded simulator** — NOT RUN (code-only)
 
 Run as one block:
 ```sh
@@ -2295,9 +2295,9 @@ Expected:
 - `1`, meaning the app is still running after 5 s and didn't crash
 - `Wrote screenshot to: /tmp/wait-plan01-task12.png`
 
-(manual: user, if Task 1 Step 7 seeded data) Open the screenshot or the simulator and confirm the watchlist shows the same stocks as before.
+(manual: user, if Task 1 Step 7 seeded data) Open the screenshot or the simulator and confirm the watchlist shows the same stocks as before. — SKIPPED (manual)
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add -A Wait && git status --short | grep -v '^[RMAD] ' ; git commit -m "$(cat <<'EOF'

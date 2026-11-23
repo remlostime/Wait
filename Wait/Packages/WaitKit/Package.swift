@@ -29,6 +29,8 @@ let package = Package(
     .library(name: "StockCharts", targets: ["StockCharts"]),
     .library(name: "Checklist", targets: ["Checklist"]),
     .library(name: "ChecklistEditFeature", targets: ["ChecklistEditFeature"]),
+    .library(name: "LegacyStockDetails", targets: ["LegacyStockDetails"]),
+    .library(name: "SettingsTab", targets: ["SettingsTab"]),
   ],
   dependencies: [
     // Task 13 of plan 01 upgrades this to 1.26.2.
@@ -55,6 +57,12 @@ let package = Package(
       swiftSettings: legacySettings
     ),
     .target(name: "ChecklistEditFeature", dependencies: ["Logging", "Model", .tca], swiftSettings: legacySettings),
+    .target(
+      name: "LegacyStockDetails",
+      dependencies: ["CacheService", "Networking", "Logging", "Checklist", "DesignSystem", "Model", "StockCharts", .money, .tca],
+      swiftSettings: legacySettings
+    ),
+    .target(name: "SettingsTab", dependencies: ["ChecklistEditFeature", "Model", .tca], swiftSettings: legacySettings),
     .testTarget(name: "ChecklistTests", dependencies: ["Checklist", "Model", .tca], swiftSettings: legacySettings),
     .testTarget(name: "ChecklistEditFeatureTests", dependencies: ["ChecklistEditFeature", "Model", .tca], swiftSettings: legacySettings),
   ],

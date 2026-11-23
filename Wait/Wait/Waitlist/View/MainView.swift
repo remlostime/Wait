@@ -4,7 +4,7 @@ import DesignSystem
 import Logging
 import Model
 import Networking
-import StockDetailsFeature
+import LegacyStockDetails
 import SwiftUI
 
 // MARK: - MainView

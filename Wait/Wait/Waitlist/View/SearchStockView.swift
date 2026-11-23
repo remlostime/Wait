@@ -4,7 +4,7 @@ import Combine
 import Model
 import Networking
 import DesignSystem
-import StockDetailsFeature
+import LegacyStockDetails
 import SwiftUI
 
 // MARK: - SearchStockView
