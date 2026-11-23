@@ -6417,7 +6417,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/StockChartFeature/ChartGeometry.swift`, `Wait/Packages/WaitKit/Sources/StockChartFeature/StockChartFeature.swift`
 - Create: `Wait/Packages/WaitKit/Tests/StockChartFeatureTests/ChartGeometryTests.swift`, `Wait/Packages/WaitKit/Tests/StockChartFeatureTests/StockChartFeatureTests.swift`
 
-- [ ] **Step 1: Update `Package.swift`**
+- [x] **Step 1: Update `Package.swift`**
   - Append to `products:`: `.library(name: "StockChartFeature", targets: ["StockChartFeature"]),`
   - Append to `targets:`:
     ```swift
@@ -6442,7 +6442,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
     ```
   - Create `Wait/Packages/WaitKit/Sources/StockChartFeature/ChartGeometry.swift` containing only the file header, so the package loads (SwiftPM rejects a target with no sources). Step 4 fills it in.
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/StockChartFeatureTests/ChartGeometryTests.swift`:
 ```swift
@@ -6623,12 +6623,12 @@ let oneYear = PriceSeries(symbol: "AAPL", range: .oneYear, points: points(["10",
 }
 ```
 
-- [ ] **Step 3: Run the tests and confirm they fail**
+- [ ] **Step 3: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh StockChartFeatureTests`
 Expected FAIL: `error: cannot find 'ChartGeometry' in scope` and `cannot find 'StockChartFeature' in scope`.
 
-- [ ] **Step 4: Replace the contents of `ChartGeometry.swift` with the implementation**
+- [x] **Step 4: Replace the contents of `ChartGeometry.swift` with the implementation**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -6701,7 +6701,7 @@ public enum ChartGeometry {
 }
 ```
 
-- [ ] **Step 5: Implement `StockChartFeature.swift`**
+- [x] **Step 5: Implement `StockChartFeature.swift`**
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -6835,12 +6835,12 @@ public struct StockChartFeature {
 }
 ```
 
-- [ ] **Step 6: Run the tests and confirm they pass**
+- [ ] **Step 6: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh StockChartFeatureTests`
 Expected PASS: 12 tests pass.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/StockChartFeature Wait/Packages/WaitKit/Tests/StockChartFeatureTests
 git commit -m "feat(chart): StockChartFeature loads one range at a time; ChartGeometry fixes empty/sub-dollar domains
