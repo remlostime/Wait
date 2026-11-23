@@ -628,7 +628,7 @@ EOF
 - Modify: `Wait/project.yml`, `Wait/Wait/Info.plist`, generated `Wait/Wait.xcodeproj`
 - Delete (generated): `Wait/Wait.xcodeproj/xcshareddata/xcschemes/Color.xcscheme`
 
-- [ ] **Step 1: Raise the deployment targets in `Wait/project.yml`**
+- [x] **Step 1: Raise the deployment targets in `Wait/project.yml`**
 
 Replace:
 ```yaml
@@ -643,7 +643,7 @@ with:
     watchOS: "10.0"
 ```
 
-- [ ] **Step 2: Remove the aggregate target and the `Color` scheme from `Wait/project.yml`**
+- [x] **Step 2: Remove the aggregate target and the `Color` scheme from `Wait/project.yml`**
 
 Delete this whole block:
 ```yaml
@@ -662,7 +662,7 @@ Then delete the last four lines of `schemes:`:
 ```
 Periphery can still be run by hand (Task 14 documents the command in CLAUDE.md).
 
-- [ ] **Step 3: Require arm64 instead of armv7**
+- [x] **Step 3: Require arm64 instead of armv7**
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && plutil -replace UIRequiredDeviceCapabilities -json '["arm64"]' Wait/Info.plist \
@@ -670,7 +670,7 @@ cd /Users/ckai/code/Wait/Wait && plutil -replace UIRequiredDeviceCapabilities -j
 ```
 Expected: `["arm64"]`
 
-- [ ] **Step 4: Regenerate and check the settings**
+- [ ] **Step 4: Regenerate and check the settings** — NOT RUN (code-only; `xcodegen generate` was run and the pbxproj was grepped for the deployment targets instead of `xcodebuild -showBuildSettings`)
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 \
@@ -689,11 +689,11 @@ Wait.xcscheme
 ```
 Then repeat the Package.resolved check from Task 2 Step 3.
 
-- [ ] **Step 5: Build and test**
+- [ ] **Step 5: Build and test** — NOT RUN (code-only)
 
 Run commands B and C. Expected: `** BUILD SUCCEEDED **` and `Executed 5 tests, with 0 failures`. New iOS 17 deprecation **warnings**, such as `onChange(of:perform:)`, are expected and fine.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add -A Wait/project.yml Wait/Wait/Info.plist Wait/Wait.xcodeproj && git commit -m "$(cat <<'EOF'

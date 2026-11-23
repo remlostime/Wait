@@ -4,8 +4,8 @@ name: Wait
 options:
   bundleIdPrefix: com.ck
   deploymentTarget:
-    iOS: "16.0"
-    watchOS: "9.0"
+    iOS: "17.0"
+    watchOS: "10.0"
   createIntermediateGroups: true
   developmentLanguage: en
 settings:
@@ -256,11 +256,6 @@ targets:
       - package: Shake
       - package: Money
       - package: ComposableArchitecture
-aggregateTargets:
-  Unused Code:
-    buildScripts:
-      - name: Periphery
-        script: periphery scan --project Wait.xcodeproj --schemes Wait --targets Wait --format xcode
 schemes:
   Wait:
     build:
@@ -281,7 +276,3 @@ schemes:
       config: Debug
     archive:
       config: Release
-  Color:
-    build:
-      targets:
-        Color: all
