@@ -13,11 +13,16 @@ import os
 ///
 /// - Sending is latest-wins. `send` keeps only the newest payload and delivers it once the session
 ///   is activated and the counterpart app is installed. Older payloads that were never delivered are dropped.
+/// - Sends are serialized. One flush at a time reads the pending payload, sends it, and clears it only if no
+///   newer one arrived meanwhile, so an older payload can never be handed to the session after a newer one.
+/// - The last payload that was handed to the session successfully is kept. It is sent again when the session
+///   re-activates or the counterpart changes (for example the user switches watches) and nothing newer is pending.
 /// - Receiving is latest-wins by `generatedAt`. A context older than, or equal to, the latest one is ignored.
 /// - Every stream from `snapshots()` first yields the latest snapshot already known (including the
 ///   context received before launch), then each newer one.
 ///
 /// State sits behind a lock and events are handled synchronously, so delivery order is deterministic.
+/// The state lock is never held across a call into the session; `flushLock` serializes those calls instead.
 public final class ConnectivityEngine: Sendable {
   // MARK: Lifecycle
 
@@ -56,15 +61,16 @@ public final class ConnectivityEngine: Sendable {
   public func snapshots() -> AsyncStream<WatchlistSnapshot> {
     let (stream, continuation) = AsyncStream.makeStream(of: WatchlistSnapshot.self, bufferingPolicy: .bufferingNewest(1))
     let id = UUID()
-    let latest = state.withLock { locked -> WatchlistSnapshot? in
-      locked.continuations[id] = continuation
-      return locked.latestReceived
-    }
-    if let latest {
-      continuation.yield(latest)
-    }
     continuation.onTermination = { [weak self] _ in
       self?.removeContinuation(id: id)
+    }
+    // Register and replay in one critical section: `deliver` yields under the same lock, so the replayed
+    // value is always yielded before any newer one.
+    state.withLock { locked in
+      locked.continuations[id] = continuation
+      if let latest = locked.latestReceived {
+        continuation.yield(latest)
+      }
     }
     return stream
   }
@@ -77,9 +83,9 @@ public final class ConnectivityEngine: Sendable {
         if let data = adapter.receivedContextData {
           deliver(data)
         }
-        flush()
+        flush(resendingLastSent: true)
       case .counterpartChanged:
-        flush()
+        flush(resendingLastSent: true)
       case let .receivedContext(data):
         deliver(data)
     }
@@ -90,6 +96,7 @@ public final class ConnectivityEngine: Sendable {
   private struct State: Sendable {
     var didRequestActivation = false
     var pending: Data?
+    var lastSent: Data?
     var latestReceived: WatchlistSnapshot?
     var continuations: [UUID: AsyncStream<WatchlistSnapshot>.Continuation] = [:]
   }
@@ -99,23 +106,30 @@ public final class ConnectivityEngine: Sendable {
   private let adapter: any WCSessionAdapter
   private let maxContextBytes: Int
   private let state = OSAllocatedUnfairLock(initialState: State())
+  /// Held for a whole flush (read pending, send, clear). Never taken while holding `state`.
+  private let flushLock = NSLock()
 
-  private func flush() {
-    guard adapter.isActivated, adapter.canSendToCounterpart else {
-      return
-    }
-    guard let data = state.withLock({ $0.pending }) else {
-      return
-    }
-    do {
-      try adapter.updateContext(data)
-      state.withLock { locked in
-        if locked.pending == data {
-          locked.pending = nil
-        }
+  /// Sends the pending payload, or, when `resendingLastSent` and nothing is pending, the last one that was sent.
+  private func flush(resendingLastSent: Bool = false) {
+    flushLock.withLock {
+      guard adapter.isActivated, adapter.canSendToCounterpart else {
+        return
       }
-    } catch {
-      Self.logger.error("updateApplicationContext failed: \(error.localizedDescription, privacy: .public)")
+      let data = state.withLock { locked in locked.pending ?? (resendingLastSent ? locked.lastSent : nil) }
+      guard let data else {
+        return
+      }
+      do {
+        try adapter.updateContext(data)
+        state.withLock { locked in
+          if locked.pending == data {
+            locked.pending = nil
+          }
+          locked.lastSent = data
+        }
+      } catch {
+        Self.logger.error("updateApplicationContext failed: \(error.localizedDescription, privacy: .public)")
+      }
     }
   }
 
@@ -124,15 +138,16 @@ public final class ConnectivityEngine: Sendable {
       Self.logger.error("Dropped an application context that is not a WatchlistSnapshot")
       return
     }
-    let continuations = state.withLock { locked -> [AsyncStream<WatchlistSnapshot>.Continuation] in
+    // Yield under the lock so two deliveries (or a delivery and a new subscriber) cannot be reordered.
+    // `yield` on a buffered stream never blocks and never calls `onTermination` synchronously.
+    state.withLock { locked in
       if let current = locked.latestReceived, snapshot.generatedAt < current.generatedAt || snapshot == current {
-        return []
+        return
       }
       locked.latestReceived = snapshot
-      return Array(locked.continuations.values)
-    }
-    for continuation in continuations {
-      continuation.yield(snapshot)
+      for continuation in locked.continuations.values {
+        continuation.yield(snapshot)
+      }
     }
   }
 

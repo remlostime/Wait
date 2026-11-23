@@ -57,7 +57,7 @@ struct WatchStockDetailView: View {
       if let change = WatchFormat.changePercent(row.changePercent) {
         Text(change)
           .font(.footnote.monospacedDigit())
-          .foregroundStyle((row.changePercent ?? 0) < 0 ? Color.red : Color.green)
+          .foregroundStyle(changeColor)
       }
       HStack {
         if let status = row.status {
@@ -72,11 +72,18 @@ struct WatchStockDetailView: View {
     }
   }
 
+  private var changeColor: Color {
+    guard let value = row.changePercent, value != 0 else {
+      return .secondary
+    }
+    return value < 0 ? .red : .green
+  }
+
   private var distanceText: String? {
     guard let price = row.price else {
       return nil
     }
-    return WatchFormat.distanceToBuy(row.ladder.distanceToBuy(from: price))
+    return WatchFormat.distanceToBuy(row.ladder.distanceToBuy(from: price), status: row.status)
   }
 }
 

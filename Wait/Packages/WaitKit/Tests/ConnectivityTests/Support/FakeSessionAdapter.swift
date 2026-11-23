@@ -3,6 +3,7 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
+import Dispatch
 import Foundation
 import os
 @testable import Connectivity
@@ -11,6 +12,16 @@ import os
 
 enum FakeSessionError: Error, Equatable, Sendable {
   case notReachable
+}
+
+// MARK: - UpdateGate
+
+/// Makes one `updateContext` call block until the test lets it go, so a test can interleave a second send.
+final class UpdateGate: Sendable {
+  /// Signalled once the blocked call has started.
+  let entered = DispatchSemaphore(value: 0)
+  /// The blocked call waits on this.
+  let release = DispatchSemaphore(value: 0)
 }
 
 // MARK: - FakeSessionAdapter
@@ -33,6 +44,7 @@ final class FakeSessionAdapter: WCSessionAdapter, Sendable {
     var activationCount = 0
     var sentContexts: [Data] = []
     var updateError: FakeSessionError?
+    var gate: UpdateGate?
     var onEvent: (@Sendable (SessionEvent) -> Void)?
   }
 
@@ -51,12 +63,26 @@ final class FakeSessionAdapter: WCSessionAdapter, Sendable {
   }
 
   func updateContext(_ data: Data) throws {
+    // One-shot: only the next call blocks. The wait happens outside the state lock.
+    let gate = state.withLock { locked -> UpdateGate? in
+      defer { locked.gate = nil }
+      return locked.gate
+    }
+    if let gate {
+      gate.entered.signal()
+      gate.release.wait()
+    }
     try state.withLock { locked in
       if let error = locked.updateError {
         throw error
       }
       locked.sentContexts.append(data)
     }
+  }
+
+  /// The next `updateContext` call blocks, before it records anything, until `gate.release` is signalled.
+  func blockNextUpdate(_ gate: UpdateGate) {
+    state.withLock { $0.gate = gate }
   }
 
   /// Simulates `activationDidCompleteWith: .activated`.

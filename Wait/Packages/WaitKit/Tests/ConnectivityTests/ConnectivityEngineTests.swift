@@ -3,8 +3,10 @@
 // Copyright © 2021 Wait. All rights reserved.
 //
 
+import Dispatch
 import Domain
 import Foundation
+import os
 import Testing
 @testable import Connectivity
 
@@ -73,6 +75,120 @@ struct ConnectivityEngineTests {
     fake.setUpdateError(nil)
     fake.setCanSendToCounterpart(true)
     #expect(fake.sentContexts.count == 1)
+  }
+
+  @Test
+  func aSlowSendCannotOvertakeANewerOne() throws {
+    let fake = FakeSessionAdapter()
+    let engine = ConnectivityEngine(adapter: fake)
+    engine.activate()
+    fake.completeActivation()
+    let older = try SnapshotFixtures.snapshot(rowCount: 1)
+    let newer = try SnapshotFixtures.snapshot(rowCount: 2, generatedAt: SnapshotFixtures.generatedAt.addingTimeInterval(30))
+    let gate = UpdateGate()
+    fake.blockNextUpdate(gate)
+    let firstDone = DispatchGroup()
+    let secondDone = DispatchGroup()
+
+    // The first send blocks inside `updateContext`.
+    firstDone.enter()
+    DispatchQueue.global().async {
+      _ = try? engine.send(older)
+      firstDone.leave()
+    }
+    gate.entered.wait()
+    // A second send races it. Serialized flushes make it wait for the first one; unserialized, it finishes first.
+    secondDone.enter()
+    DispatchQueue.global().async {
+      _ = try? engine.send(newer)
+      secondDone.leave()
+    }
+    _ = secondDone.wait(timeout: .now() + .milliseconds(300))
+    gate.release.signal()
+    firstDone.wait()
+    secondDone.wait()
+
+    let sent = fake.sentContexts.map { SnapshotCoding.decode($0) }
+    #expect(sent.last == newer)
+    #expect(sent == [older, newer])
+  }
+
+  @Test
+  func theLastSentSnapshotIsResentAfterTheWatchChanges() throws {
+    let fake = FakeSessionAdapter()
+    let engine = ConnectivityEngine(adapter: fake)
+    engine.activate()
+    fake.completeActivation()
+    let snapshot = try SnapshotFixtures.snapshot(rowCount: 1)
+    try engine.send(snapshot)
+    #expect(fake.sentContexts.count == 1)
+
+    fake.setCanSendToCounterpart(false)
+    #expect(fake.sentContexts.count == 1)
+    fake.setCanSendToCounterpart(true)
+
+    #expect(fake.sentContexts.count == 2)
+    #expect(SnapshotCoding.decode(try #require(fake.sentContexts.last)) == snapshot)
+  }
+
+  @Test
+  func theLastSentSnapshotIsResentOnReactivation() throws {
+    let fake = FakeSessionAdapter()
+    let engine = ConnectivityEngine(adapter: fake)
+    engine.activate()
+    fake.completeActivation()
+    try engine.send(try SnapshotFixtures.snapshot(rowCount: 1))
+
+    fake.completeActivation()
+
+    #expect(fake.sentContexts.count == 2)
+    #expect(fake.sentContexts.first == fake.sentContexts.last)
+  }
+
+  @Test
+  func aPendingSnapshotWinsOverTheResend() throws {
+    let fake = FakeSessionAdapter()
+    let engine = ConnectivityEngine(adapter: fake)
+    engine.activate()
+    fake.completeActivation()
+    let older = try SnapshotFixtures.snapshot(rowCount: 1)
+    let newer = try SnapshotFixtures.snapshot(rowCount: 2, generatedAt: SnapshotFixtures.generatedAt.addingTimeInterval(30))
+    try engine.send(older)
+    fake.setCanSendToCounterpart(false)
+    try engine.send(newer)
+
+    fake.setCanSendToCounterpart(true)
+
+    #expect(fake.sentContexts.map { SnapshotCoding.decode($0) } == [older, newer])
+  }
+
+  @Test
+  func nothingIsResentWhenNothingWasEverSent() {
+    let fake = FakeSessionAdapter()
+    let engine = ConnectivityEngine(adapter: fake)
+    engine.activate()
+    fake.completeActivation()
+
+    fake.setCanSendToCounterpart(true)
+
+    #expect(fake.sentContexts.isEmpty)
+  }
+
+  @Test
+  func aFailedResendIsNotRecordedAsSent() throws {
+    let fake = FakeSessionAdapter()
+    let engine = ConnectivityEngine(adapter: fake)
+    engine.activate()
+    fake.completeActivation()
+    try engine.send(try SnapshotFixtures.snapshot(rowCount: 1))
+    fake.setUpdateError(.notReachable)
+
+    fake.setCanSendToCounterpart(true)
+    #expect(fake.sentContexts.count == 1)
+
+    fake.setUpdateError(nil)
+    fake.setCanSendToCounterpart(true)
+    #expect(fake.sentContexts.count == 2)
   }
 
   @Test
@@ -175,5 +291,37 @@ struct ConnectivityEngineTests {
 
     let first = await iterator.next()
     #expect(first == snapshot)
+  }
+
+  @Test
+  func subscribingWhileASnapshotArrivesNeverEndsOnTheOlderOne() async throws {
+    // Not deterministic by construction (there is no hook between registering and yielding), so it repeats
+    // the race. It can never fail on correct code; on the old code it fails when the interleaving hits.
+    let base = SnapshotFixtures.generatedAt
+    let older = try SnapshotFixtures.snapshot(rowCount: 1, generatedAt: base)
+    let newer = try SnapshotFixtures.snapshot(rowCount: 2, generatedAt: base.addingTimeInterval(60))
+    let olderData = try SnapshotCoding.encode(older)
+    let newerData = try SnapshotCoding.encode(newer)
+
+    for _ in 0 ..< 500 {
+      let fake = FakeSessionAdapter()
+      let engine = ConnectivityEngine(adapter: fake)
+      engine.activate()
+      fake.completeActivation()
+      fake.receive(olderData)
+      let box = OSAllocatedUnfairLock<AsyncStream<WatchlistSnapshot>?>(initialState: nil)
+
+      DispatchQueue.concurrentPerform(iterations: 2) { index in
+        if index == 0 {
+          box.withLock { $0 = engine.snapshots() }
+        } else {
+          fake.receive(newerData)
+        }
+      }
+
+      var iterator = try #require(box.withLock { $0 }).makeAsyncIterator()
+      let observed = await iterator.next()
+      #expect(observed == newer)
+    }
   }
 }

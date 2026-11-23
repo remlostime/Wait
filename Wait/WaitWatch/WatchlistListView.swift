@@ -56,7 +56,8 @@ struct WatchlistListView: View {
       }
       if let quotesAsOf = store.snapshot?.quotesAsOf {
         Section {
-          Text("Quotes \(quotesAsOf.formatted(.relative(presentation: .named)))")
+          // The `style:` interpolation keeps counting on its own; a formatted string would freeze at render time.
+          Text("Quotes \(quotesAsOf, style: .relative) ago")
             .font(.footnote)
             .foregroundStyle(.secondary)
         }

@@ -396,6 +396,8 @@ EOF
 
 ### Task 3: `ConnectivityEngine`: latest-wins delivery behind `WCSessionAdapter`
 
+> Review fix (2026-11-23): `flush()` now runs under a serial `flushLock` (read pending, send, clear if unchanged) so two sends cannot reach the session out of order, and the state lock is never held across IPC. `snapshots()` registers and replays the latest snapshot in one critical section, `deliver` yields under the lock, and the last sent payload is resent on `.activated`/`.counterpartChanged` when nothing is pending. `FakeSessionAdapter` gained a one-shot `UpdateGate` so a test can block one `updateContext` and interleave a second send; the new tests cover the race and the resend.
+
 **Files:**
 - Create: `Wait/Packages/WaitKit/Sources/Connectivity/WCSessionAdapter.swift`
 - Create: `Wait/Packages/WaitKit/Sources/Connectivity/ConnectivityEngine.swift`
@@ -412,6 +414,7 @@ Create `Wait/Packages/WaitKit/Tests/ConnectivityTests/Support/FakeSessionAdapter
 // Copyright © 2021 Wait. All rights reserved.
 //
 
+import Dispatch
 import Foundation
 import os
 @testable import Connectivity
@@ -420,6 +423,16 @@ import os
 
 enum FakeSessionError: Error, Equatable, Sendable {
   case notReachable
+}
+
+// MARK: - UpdateGate
+
+/// Makes one `updateContext` call block until the test lets it go, so a test can interleave a second send.
+final class UpdateGate: Sendable {
+  /// Signalled once the blocked call has started.
+  let entered = DispatchSemaphore(value: 0)
+  /// The blocked call waits on this.
+  let release = DispatchSemaphore(value: 0)
 }
 
 // MARK: - FakeSessionAdapter
@@ -442,6 +455,7 @@ final class FakeSessionAdapter: WCSessionAdapter, Sendable {
     var activationCount = 0
     var sentContexts: [Data] = []
     var updateError: FakeSessionError?
+    var gate: UpdateGate?
     var onEvent: (@Sendable (SessionEvent) -> Void)?
   }
 
@@ -460,12 +474,26 @@ final class FakeSessionAdapter: WCSessionAdapter, Sendable {
   }
 
   func updateContext(_ data: Data) throws {
+    // One-shot: only the next call blocks. The wait happens outside the state lock.
+    let gate = state.withLock { locked -> UpdateGate? in
+      defer { locked.gate = nil }
+      return locked.gate
+    }
+    if let gate {
+      gate.entered.signal()
+      gate.release.wait()
+    }
     try state.withLock { locked in
       if let error = locked.updateError {
         throw error
       }
       locked.sentContexts.append(data)
     }
+  }
+
+  /// The next `updateContext` call blocks, before it records anything, until `gate.release` is signalled.
+  func blockNextUpdate(_ gate: UpdateGate) {
+    state.withLock { $0.gate = gate }
   }
 
   /// Simulates `activationDidCompleteWith: .activated`.
@@ -515,8 +543,10 @@ Create `Wait/Packages/WaitKit/Tests/ConnectivityTests/ConnectivityEngineTests.sw
 // Copyright © 2021 Wait. All rights reserved.
 //
 
+import Dispatch
 import Domain
 import Foundation
+import os
 import Testing
 @testable import Connectivity
 
@@ -585,6 +615,120 @@ struct ConnectivityEngineTests {
     fake.setUpdateError(nil)
     fake.setCanSendToCounterpart(true)
     #expect(fake.sentContexts.count == 1)
+  }
+
+  @Test
+  func aSlowSendCannotOvertakeANewerOne() throws {
+    let fake = FakeSessionAdapter()
+    let engine = ConnectivityEngine(adapter: fake)
+    engine.activate()
+    fake.completeActivation()
+    let older = try SnapshotFixtures.snapshot(rowCount: 1)
+    let newer = try SnapshotFixtures.snapshot(rowCount: 2, generatedAt: SnapshotFixtures.generatedAt.addingTimeInterval(30))
+    let gate = UpdateGate()
+    fake.blockNextUpdate(gate)
+    let firstDone = DispatchGroup()
+    let secondDone = DispatchGroup()
+
+    // The first send blocks inside `updateContext`.
+    firstDone.enter()
+    DispatchQueue.global().async {
+      _ = try? engine.send(older)
+      firstDone.leave()
+    }
+    gate.entered.wait()
+    // A second send races it. Serialized flushes make it wait for the first one; unserialized, it finishes first.
+    secondDone.enter()
+    DispatchQueue.global().async {
+      _ = try? engine.send(newer)
+      secondDone.leave()
+    }
+    _ = secondDone.wait(timeout: .now() + .milliseconds(300))
+    gate.release.signal()
+    firstDone.wait()
+    secondDone.wait()
+
+    let sent = fake.sentContexts.map { SnapshotCoding.decode($0) }
+    #expect(sent.last == newer)
+    #expect(sent == [older, newer])
+  }
+
+  @Test
+  func theLastSentSnapshotIsResentAfterTheWatchChanges() throws {
+    let fake = FakeSessionAdapter()
+    let engine = ConnectivityEngine(adapter: fake)
+    engine.activate()
+    fake.completeActivation()
+    let snapshot = try SnapshotFixtures.snapshot(rowCount: 1)
+    try engine.send(snapshot)
+    #expect(fake.sentContexts.count == 1)
+
+    fake.setCanSendToCounterpart(false)
+    #expect(fake.sentContexts.count == 1)
+    fake.setCanSendToCounterpart(true)
+
+    #expect(fake.sentContexts.count == 2)
+    #expect(SnapshotCoding.decode(try #require(fake.sentContexts.last)) == snapshot)
+  }
+
+  @Test
+  func theLastSentSnapshotIsResentOnReactivation() throws {
+    let fake = FakeSessionAdapter()
+    let engine = ConnectivityEngine(adapter: fake)
+    engine.activate()
+    fake.completeActivation()
+    try engine.send(try SnapshotFixtures.snapshot(rowCount: 1))
+
+    fake.completeActivation()
+
+    #expect(fake.sentContexts.count == 2)
+    #expect(fake.sentContexts.first == fake.sentContexts.last)
+  }
+
+  @Test
+  func aPendingSnapshotWinsOverTheResend() throws {
+    let fake = FakeSessionAdapter()
+    let engine = ConnectivityEngine(adapter: fake)
+    engine.activate()
+    fake.completeActivation()
+    let older = try SnapshotFixtures.snapshot(rowCount: 1)
+    let newer = try SnapshotFixtures.snapshot(rowCount: 2, generatedAt: SnapshotFixtures.generatedAt.addingTimeInterval(30))
+    try engine.send(older)
+    fake.setCanSendToCounterpart(false)
+    try engine.send(newer)
+
+    fake.setCanSendToCounterpart(true)
+
+    #expect(fake.sentContexts.map { SnapshotCoding.decode($0) } == [older, newer])
+  }
+
+  @Test
+  func nothingIsResentWhenNothingWasEverSent() {
+    let fake = FakeSessionAdapter()
+    let engine = ConnectivityEngine(adapter: fake)
+    engine.activate()
+    fake.completeActivation()
+
+    fake.setCanSendToCounterpart(true)
+
+    #expect(fake.sentContexts.isEmpty)
+  }
+
+  @Test
+  func aFailedResendIsNotRecordedAsSent() throws {
+    let fake = FakeSessionAdapter()
+    let engine = ConnectivityEngine(adapter: fake)
+    engine.activate()
+    fake.completeActivation()
+    try engine.send(try SnapshotFixtures.snapshot(rowCount: 1))
+    fake.setUpdateError(.notReachable)
+
+    fake.setCanSendToCounterpart(true)
+    #expect(fake.sentContexts.count == 1)
+
+    fake.setUpdateError(nil)
+    fake.setCanSendToCounterpart(true)
+    #expect(fake.sentContexts.count == 2)
   }
 
   @Test
@@ -688,6 +832,38 @@ struct ConnectivityEngineTests {
     let first = await iterator.next()
     #expect(first == snapshot)
   }
+
+  @Test
+  func subscribingWhileASnapshotArrivesNeverEndsOnTheOlderOne() async throws {
+    // Not deterministic by construction (there is no hook between registering and yielding), so it repeats
+    // the race. It can never fail on correct code; on the old code it fails when the interleaving hits.
+    let base = SnapshotFixtures.generatedAt
+    let older = try SnapshotFixtures.snapshot(rowCount: 1, generatedAt: base)
+    let newer = try SnapshotFixtures.snapshot(rowCount: 2, generatedAt: base.addingTimeInterval(60))
+    let olderData = try SnapshotCoding.encode(older)
+    let newerData = try SnapshotCoding.encode(newer)
+
+    for _ in 0 ..< 500 {
+      let fake = FakeSessionAdapter()
+      let engine = ConnectivityEngine(adapter: fake)
+      engine.activate()
+      fake.completeActivation()
+      fake.receive(olderData)
+      let box = OSAllocatedUnfairLock<AsyncStream<WatchlistSnapshot>?>(initialState: nil)
+
+      DispatchQueue.concurrentPerform(iterations: 2) { index in
+        if index == 0 {
+          box.withLock { $0 = engine.snapshots() }
+        } else {
+          fake.receive(newerData)
+        }
+      }
+
+      var iterator = try #require(box.withLock { $0 }).makeAsyncIterator()
+      let observed = await iterator.next()
+      #expect(observed == newer)
+    }
+  }
 }
 ```
 
@@ -761,11 +937,16 @@ import os
 ///
 /// - Sending is latest-wins. `send` keeps only the newest payload and delivers it once the session
 ///   is activated and the counterpart app is installed. Older payloads that were never delivered are dropped.
+/// - Sends are serialized. One flush at a time reads the pending payload, sends it, and clears it only if no
+///   newer one arrived meanwhile, so an older payload can never be handed to the session after a newer one.
+/// - The last payload that was handed to the session successfully is kept. It is sent again when the session
+///   re-activates or the counterpart changes (for example the user switches watches) and nothing newer is pending.
 /// - Receiving is latest-wins by `generatedAt`. A context older than, or equal to, the latest one is ignored.
 /// - Every stream from `snapshots()` first yields the latest snapshot already known (including the
 ///   context received before launch), then each newer one.
 ///
 /// State sits behind a lock and events are handled synchronously, so delivery order is deterministic.
+/// The state lock is never held across a call into the session; `flushLock` serializes those calls instead.
 public final class ConnectivityEngine: Sendable {
   // MARK: Lifecycle
 
@@ -804,15 +985,16 @@ public final class ConnectivityEngine: Sendable {
   public func snapshots() -> AsyncStream<WatchlistSnapshot> {
     let (stream, continuation) = AsyncStream.makeStream(of: WatchlistSnapshot.self, bufferingPolicy: .bufferingNewest(1))
     let id = UUID()
-    let latest = state.withLock { locked -> WatchlistSnapshot? in
-      locked.continuations[id] = continuation
-      return locked.latestReceived
-    }
-    if let latest {
-      continuation.yield(latest)
-    }
     continuation.onTermination = { [weak self] _ in
       self?.removeContinuation(id: id)
+    }
+    // Register and replay in one critical section: `deliver` yields under the same lock, so the replayed
+    // value is always yielded before any newer one.
+    state.withLock { locked in
+      locked.continuations[id] = continuation
+      if let latest = locked.latestReceived {
+        continuation.yield(latest)
+      }
     }
     return stream
   }
@@ -825,9 +1007,9 @@ public final class ConnectivityEngine: Sendable {
         if let data = adapter.receivedContextData {
           deliver(data)
         }
-        flush()
+        flush(resendingLastSent: true)
       case .counterpartChanged:
-        flush()
+        flush(resendingLastSent: true)
       case let .receivedContext(data):
         deliver(data)
     }
@@ -838,6 +1020,7 @@ public final class ConnectivityEngine: Sendable {
   private struct State: Sendable {
     var didRequestActivation = false
     var pending: Data?
+    var lastSent: Data?
     var latestReceived: WatchlistSnapshot?
     var continuations: [UUID: AsyncStream<WatchlistSnapshot>.Continuation] = [:]
   }
@@ -847,23 +1030,30 @@ public final class ConnectivityEngine: Sendable {
   private let adapter: any WCSessionAdapter
   private let maxContextBytes: Int
   private let state = OSAllocatedUnfairLock(initialState: State())
+  /// Held for a whole flush (read pending, send, clear). Never taken while holding `state`.
+  private let flushLock = NSLock()
 
-  private func flush() {
-    guard adapter.isActivated, adapter.canSendToCounterpart else {
-      return
-    }
-    guard let data = state.withLock({ $0.pending }) else {
-      return
-    }
-    do {
-      try adapter.updateContext(data)
-      state.withLock { locked in
-        if locked.pending == data {
-          locked.pending = nil
-        }
+  /// Sends the pending payload, or, when `resendingLastSent` and nothing is pending, the last one that was sent.
+  private func flush(resendingLastSent: Bool = false) {
+    flushLock.withLock {
+      guard adapter.isActivated, adapter.canSendToCounterpart else {
+        return
       }
-    } catch {
-      Self.logger.error("updateApplicationContext failed: \(error.localizedDescription, privacy: .public)")
+      let data = state.withLock { locked in locked.pending ?? (resendingLastSent ? locked.lastSent : nil) }
+      guard let data else {
+        return
+      }
+      do {
+        try adapter.updateContext(data)
+        state.withLock { locked in
+          if locked.pending == data {
+            locked.pending = nil
+          }
+          locked.lastSent = data
+        }
+      } catch {
+        Self.logger.error("updateApplicationContext failed: \(error.localizedDescription, privacy: .public)")
+      }
     }
   }
 
@@ -872,15 +1062,16 @@ public final class ConnectivityEngine: Sendable {
       Self.logger.error("Dropped an application context that is not a WatchlistSnapshot")
       return
     }
-    let continuations = state.withLock { locked -> [AsyncStream<WatchlistSnapshot>.Continuation] in
+    // Yield under the lock so two deliveries (or a delivery and a new subscriber) cannot be reordered.
+    // `yield` on a buffered stream never blocks and never calls `onTermination` synchronously.
+    state.withLock { locked in
       if let current = locked.latestReceived, snapshot.generatedAt < current.generatedAt || snapshot == current {
-        return []
+        return
       }
       locked.latestReceived = snapshot
-      return Array(locked.continuations.values)
-    }
-    for continuation in continuations {
-      continuation.yield(snapshot)
+      for continuation in locked.continuations.values {
+        continuation.yield(snapshot)
+      }
     }
   }
 
@@ -913,6 +1104,8 @@ EOF
 ## Chunk 2: Live client and watch store
 
 ### Task 4: Live WCSession adapter and `ConnectivityClient`
+
+> Review fix (2026-11-23): no snippet in this task changed. The engine now replays the last sent payload on `.activated` and `.counterpartChanged`, so the live adapter's `sessionWatchStateDidChange`/`sessionCompanionAppInstalledDidChange` events (and the re-`activate()` in `sessionDidDeactivate`) are what bring a newly switched watch up to date.
 
 **Files:**
 - Create: `Wait/Packages/WaitKit/Sources/Connectivity/LiveWCSessionAdapter.swift`
@@ -1724,6 +1917,8 @@ EOF
 
 ### Task 7: Watch app on WaitKit
 
+> Review fix (2026-11-23): `WatchFormat.distanceToBuy` takes the row's `LadderStatus` and says "Deep buy" instead of "In buy band" at or below `buyLow`; the footer uses a self-updating `Text(_, style: .relative)`; a 0% change is neutral (`.secondary`), not green.
+
 **Files:**
 - Move: `Wait/WaitWatch Watch App/` → `Wait/WaitWatch/`
 - Delete: `Wait/WaitWatch/{ContentView,PriceHistoryDataSource,PriceHistoryNetworkClient,Size,Stock,StockCurrentQuote,StockCurrentQuoteDataSource,StockCurrentQuoteNetworkClient,StockRow,StockTypeSwitchRow,TimeSection,TradeAction}.swift`, and `Wait/WaitWatch/Info.plist` if present
@@ -1856,12 +2051,13 @@ enum WatchFormat {
   }
 
   /// `distance` is `PriceLadder.distanceToBuy(from:)`: a percent number, ≥ 0 inside the buy band.
-  static func distanceToBuy(_ distance: Double?) -> String? {
+  /// `status` picks the wording inside the band: `.deepBuy` (at or below `buyLow`) reads "Deep buy", like `LadderStatus.title`.
+  static func distanceToBuy(_ distance: Double?, status: LadderStatus?) -> String? {
     guard let distance else {
       return nil
     }
     guard distance < 0 else {
-      return "In buy band"
+      return status == .deepBuy ? "Deep buy" : "In buy band"
     }
     return "\((-distance / 100).formatted(.percent.precision(.fractionLength(1)))) drop to buy"
   }
@@ -2019,7 +2215,8 @@ struct WatchlistListView: View {
       }
       if let quotesAsOf = store.snapshot?.quotesAsOf {
         Section {
-          Text("Quotes \(quotesAsOf.formatted(.relative(presentation: .named)))")
+          // The `style:` interpolation keeps counting on its own; a formatted string would freeze at render time.
+          Text("Quotes \(quotesAsOf, style: .relative) ago")
             .font(.footnote)
             .foregroundStyle(.secondary)
         }
@@ -2117,7 +2314,7 @@ struct WatchStockDetailView: View {
       if let change = WatchFormat.changePercent(row.changePercent) {
         Text(change)
           .font(.footnote.monospacedDigit())
-          .foregroundStyle((row.changePercent ?? 0) < 0 ? Color.red : Color.green)
+          .foregroundStyle(changeColor)
       }
       HStack {
         if let status = row.status {
@@ -2132,11 +2329,18 @@ struct WatchStockDetailView: View {
     }
   }
 
+  private var changeColor: Color {
+    guard let value = row.changePercent, value != 0 else {
+      return .secondary
+    }
+    return value < 0 ? .red : .green
+  }
+
   private var distanceText: String? {
     guard let price = row.price else {
       return nil
     }
-    return WatchFormat.distanceToBuy(row.ladder.distanceToBuy(from: price))
+    return WatchFormat.distanceToBuy(row.ladder.distanceToBuy(from: price), status: row.status)
   }
 }
 

@@ -30,12 +30,13 @@ enum WatchFormat {
   }
 
   /// `distance` is `PriceLadder.distanceToBuy(from:)`: a percent number, ≥ 0 inside the buy band.
-  static func distanceToBuy(_ distance: Double?) -> String? {
+  /// `status` picks the wording inside the band: `.deepBuy` (at or below `buyLow`) reads "Deep buy", like `LadderStatus.title`.
+  static func distanceToBuy(_ distance: Double?, status: LadderStatus?) -> String? {
     guard let distance else {
       return nil
     }
     guard distance < 0 else {
-      return "In buy band"
+      return status == .deepBuy ? "Deep buy" : "In buy band"
     }
     return "\((-distance / 100).formatted(.percent.precision(.fractionLength(1)))) drop to buy"
   }
