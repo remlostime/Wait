@@ -4101,7 +4101,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/MarketDataClient/DiskCache.swift`
 - Create: `Wait/Packages/WaitKit/Tests/MarketDataClientTests/DiskCacheTests.swift`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/MarketDataClientTests/DiskCacheTests.swift`:
 ```swift
@@ -4143,12 +4143,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests/DiskCacheTests`
 Expected FAIL: `error: cannot find 'CacheEntry' in scope`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `Wait/Packages/WaitKit/Sources/MarketDataClient/DiskCache.swift`:
 ```swift
@@ -4226,12 +4226,12 @@ public struct DiskCache: Sendable {
 }
 ```
 
-- [ ] **Step 4: Run the tests and confirm they pass**
+- [ ] **Step 4: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests/DiskCacheTests`
 Expected PASS: 3 tests pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/MarketDataClient/DiskCache.swift Wait/Packages/WaitKit/Tests/MarketDataClientTests/DiskCacheTests.swift
 git commit -m "feat(marketdata): sha256-keyed disk cache for market data
