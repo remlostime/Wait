@@ -2861,7 +2861,7 @@ EOF
 - Modify: `CLAUDE.md` (full rewrite below)
 - Create: `Wait/Packages/WaitKit/README.md`
 
-- [ ] **Step 1: Replace `CLAUDE.md` with the post-plan-01 version**
+- [x] **Step 1: Replace `CLAUDE.md` with the post-plan-01 version**
 
 `AGENTS.md` is a symlink to this file and needs no change.
 ````markdown
@@ -3002,7 +3002,7 @@ The tools enforce this style through `Wait/.swiftformat` and `Wait/.swiftlint.ym
   ```
 ````
 
-- [ ] **Step 2: Write `Wait/Packages/WaitKit/README.md`**
+- [x] **Step 2: Write `Wait/Packages/WaitKit/README.md`**
 
 ````markdown
 # WaitKit
@@ -3041,7 +3041,7 @@ cd Wait/Packages/WaitKit && xcodebuild test -scheme WaitKit-Package \
 | ChecklistTests, ChecklistEditFeatureTests | Swift 5 (legacy) | the module under test, Model, TCA |
 ````
 
-- [ ] **Step 3: Run the full definition-of-done check (overview §4.1, plan 01)**
+- [ ] **Step 3: Run the full definition-of-done check (overview §4.1, plan 01)** — PARTIAL (code-only): static checks run; builds and tests NOT RUN
 
 Run commands D, B and E, then:
 ```sh
@@ -3058,7 +3058,7 @@ Expected:
 - no matches and `deps-exit=1`
 - `3` (the three targets)
 
-- [ ] **Step 4 (manual: user): Update Bitrise**
+- [ ] **Step 4 (manual: user): Update Bitrise** — SKIPPED (manual)
 
 The CI config lives in Bitrise, not this repo. In the Bitrise workflow editor for Wait:
 1. **Stack:** choose an Xcode 27 stack (anything ≥ 16.3 works for TCA 1.26, but 27 matches local).
@@ -3073,7 +3073,7 @@ The CI config lives in Bitrise, not this repo. In the Bitrise workflow editor fo
 
 The executor prints this list for the user and continues. It doesn't block the commit.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add CLAUDE.md Wait/Packages/WaitKit/README.md && git commit -m "$(cat <<'EOF'
@@ -3084,6 +3084,6 @@ EOF
 )"
 ```
 
-- [ ] **Step 6: Finish the branch**
+- [ ] **Step 6: Finish the branch** — SKIPPED (session rules: no merge, PR or push)
 
 Use superpowers:finishing-a-development-branch to verify, then offer to merge into or open a PR against `ck/new-version`, never `master`. The next plan is `2026-11-22-wait-02-ios-ladder-and-features.md`.
