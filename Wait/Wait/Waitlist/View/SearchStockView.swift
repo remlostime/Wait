@@ -4,7 +4,7 @@ import Alamofire
 import Combine
 import Model
 import Networking
-import Size
+import DesignSystem
 import StockDetailsFeature
 import SwiftUI
 

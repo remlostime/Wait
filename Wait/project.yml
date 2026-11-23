@@ -19,6 +19,8 @@ settings:
     MARKETING_VERSION: "1.0"
     CURRENT_PROJECT_VERSION: "1"
 packages:
+  WaitKit:
+    path: Packages/WaitKit
   Alamofire:
     url: https://github.com/Alamofire/Alamofire
     from: 5.4.3
@@ -68,14 +70,8 @@ targetTemplates:
         GENERATE_INFOPLIST_FILE: YES
         TARGETED_DEVICE_FAMILY: "1,2"
 targets:
-  Color:
-    templates: [Framework]
-  Size:
-    templates: [Framework]
   UI:
     templates: [Framework]
-    dependencies:
-      - target: Color
   Logging:
     templates: [Framework]
     dependencies:
@@ -83,7 +79,8 @@ targets:
   Model:
     templates: [Framework]
     dependencies:
-      - target: Color
+      - package: WaitKit
+        product: DesignSystem
       - package: Money
   Networking:
     templates: [Framework]
@@ -102,7 +99,8 @@ targets:
       - target: CacheService
       - target: Networking
       - target: Model
-      - target: Color
+      - package: WaitKit
+        product: DesignSystem
       - target: Logging
       - package: Money
       - package: Alamofire
@@ -111,7 +109,8 @@ targets:
     templates: [Framework]
     dependencies:
       - target: CacheService
-      - target: Size
+      - package: WaitKit
+        product: DesignSystem
       - target: Model
       - target: Logging
       - package: ComposableArchitecture
@@ -134,7 +133,8 @@ targets:
       - target: Networking
       - target: Logging
       - target: Checklist
-      - target: Size
+      - package: WaitKit
+        product: DesignSystem
       - target: Model
       - target: StockCharts
       - package: ComposableArchitecture
@@ -176,7 +176,8 @@ targets:
     dependencies:
       - target: Model
       - target: Logging
-      - target: Size
+      - package: WaitKit
+        product: DesignSystem
       - target: Networking
       - target: CacheService
       - package: Alamofire
@@ -235,11 +236,11 @@ targets:
         Release:
           CODE_SIGN_ENTITLEMENTS: Wait/WaitRelease.entitlements
     dependencies:
-      - target: Color
       - target: UI
       - target: Model
       - target: Networking
-      - target: Size
+      - package: WaitKit
+        product: DesignSystem
       - target: Logging
       - target: Checklist
       - target: ChecklistEditFeature

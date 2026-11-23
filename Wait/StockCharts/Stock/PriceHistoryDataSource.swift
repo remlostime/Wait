@@ -1,6 +1,6 @@
 // Created by kai_chen on 5/17/21.
 
-import Color
+import DesignSystem
 import Foundation
 import Model
 import Money

@@ -8,7 +8,7 @@ import Combine
 import Logging
 import Model
 import Networking
-import Size
+import DesignSystem
 import SwiftUI
 import WidgetKit
 

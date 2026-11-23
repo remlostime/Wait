@@ -1216,7 +1216,7 @@ Expected: the `grep -c` prints `0`, which confirms `Secrets.xcconfig` is not sta
   - `Wait/WaitWidget/WaitWidget.swift`
   - `Wait/WaitWidget/WidgetStockRow.swift`
 
-- [ ] **Step 1: Move the sources**
+- [x] **Step 1: Move the sources**
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/DesignSystem \
@@ -1226,7 +1226,7 @@ cd /Users/ckai/code/Wait/Wait && mkdir -p Packages/WaitKit/Sources/DesignSystem 
 ```
 Expected: the five `.swift` files, then `ls: Color: No such file or directory` and `ls: Size: No such file or directory`.
 
-- [ ] **Step 2: Write `Wait/Packages/WaitKit/Package.swift`**
+- [x] **Step 2: Write `Wait/Packages/WaitKit/Package.swift`**
 
 ```swift
 // swift-tools-version: 6.1
@@ -1254,14 +1254,14 @@ let package = Package(
 )
 ```
 
-- [ ] **Step 3: Ignore the package's own build output**
+- [x] **Step 3: Ignore the package's own build output**
 
 ```sh
 cd /Users/ckai/code/Wait && printf '\n# WaitKit standalone builds (the app resolves packages through the Xcode project)\nWait/Packages/WaitKit/.build/\nWait/Packages/WaitKit/.swiftpm/\nWait/Packages/WaitKit/Package.resolved\n' >> .gitignore \
   && tail -4 .gitignore
 ```
 
-- [ ] **Step 4: Point the importers at `DesignSystem`**
+- [x] **Step 4: Point the importers at `DesignSystem`**
 
 ```sh
 cd /Users/ckai/code/Wait/Wait \
@@ -1273,7 +1273,7 @@ cd /Users/ckai/code/Wait/Wait \
 ```
 Expected: the first grep prints nothing, and the count prints `12`. `MainView.swift` imported both modules, and the `awk` keeps only its first `import DesignSystem`. The watch app has its own `Size.swift` copy and no `import Size`, so it isn't touched.
 
-- [ ] **Step 5: Update `Wait/project.yml`**
+- [x] **Step 5: Update `Wait/project.yml`**
 
 1. At the top of `packages:`, add:
    ```yaml
@@ -1297,7 +1297,7 @@ cd /Users/ckai/code/Wait/Wait && grep -nE "target: (Color|Size)$" project.yml; g
 ```
 Expected: nothing from the first grep, then `6`.
 
-- [ ] **Step 6: Regenerate and build the package on its own**
+- [ ] **Step 6: Regenerate and build the package on its own** — NOT RUN (code-only)
 
 ```sh
 cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 \
@@ -1306,11 +1306,11 @@ cd /Users/ckai/code/Wait/Wait && xcodegen generate | tail -1 \
 ```
 Expected: `Created project at …`, then `Schemes:` followed by the single scheme `WaitKit`, then `** BUILD SUCCEEDED **`. While the package has one product, Xcode names its only scheme after the package. Once Task 7 adds a second product, the schemes become `DesignSystem`, `Logging` and `WaitKit-Package`. Then repeat the Package.resolved check from Task 2 Step 3.
 
-- [ ] **Step 7: Build and test the app**
+- [ ] **Step 7: Build and test the app** — NOT RUN (code-only)
 
 Run commands B, C and E. Expected: `** BUILD SUCCEEDED **`, `Executed 5 tests, with 0 failures`, and `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```sh
 cd /Users/ckai/code/Wait && git add -A .gitignore Wait && git status --short | grep -v '^[RMAD] ' ; git commit -m "$(cat <<'EOF'

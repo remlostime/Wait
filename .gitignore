@@ -95,3 +95,8 @@ iOSInjectionProject/
 
 # Build-time secrets (see Wait/Config/Secrets.example.xcconfig)
 Wait/Config/Secrets.xcconfig
+
+# WaitKit standalone builds (the app resolves packages through the Xcode project)
+Wait/Packages/WaitKit/.build/
+Wait/Packages/WaitKit/.swiftpm/
+Wait/Packages/WaitKit/Package.resolved

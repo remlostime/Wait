@@ -4,7 +4,7 @@
 //
 
 import Model
-import Size
+import DesignSystem
 import SwiftUI
 
 // MARK: - StockCard

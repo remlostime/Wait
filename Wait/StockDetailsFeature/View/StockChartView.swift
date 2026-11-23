@@ -4,7 +4,7 @@
 //
 
 import Charts
-import Size
+import DesignSystem
 import StockCharts
 import SwiftUI
 

@@ -5,7 +5,7 @@ import Charts
 import Checklist
 import ComposableArchitecture
 import Model
-import Size
+import DesignSystem
 import StockCharts
 import SwiftUI
 

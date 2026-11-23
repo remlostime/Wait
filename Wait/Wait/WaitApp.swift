@@ -1,6 +1,6 @@
 // Created by kai_chen on 5/4/21.
 
-import Color
+import DesignSystem
 import Logging
 import SettingsTab
 import SwiftUI

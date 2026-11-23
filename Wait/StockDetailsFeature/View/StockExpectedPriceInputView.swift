@@ -2,7 +2,7 @@
 
 import Model
 import Money
-import Size
+import DesignSystem
 import SwiftUI
 
 // MARK: - ExpectedPriceModel
