@@ -4247,7 +4247,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/MarketDataClient/CachingMarketDataClient.swift`
 - Create: `Wait/Packages/WaitKit/Tests/MarketDataClientTests/CachingMarketDataClientTests.swift`
 
-- [ ] **Step 1: Write the failing tests.** These cover the 8 behaviors in overview §6.3, plus rotation of long watchlists under a per-call symbol limit.
+- [x] **Step 1: Write the failing tests.** These cover the 8 behaviors in overview §6.3, plus rotation of long watchlists under a per-call symbol limit.
 
 `Wait/Packages/WaitKit/Tests/MarketDataClientTests/CachingMarketDataClientTests.swift`:
 ```swift
@@ -4300,7 +4300,7 @@ import Testing
     now.advance(61)
     let quotes = try await client.quotes(["AAPL", "MSFT"], .useCache)
     #expect(quotes.map(\.symbol) == ["AAPL", "MSFT"])
-    #expect(quotes.allSatisfy(\.isStale))
+    #expect(quotes.allSatisfy { $0.isStale })
   }
 
   @Test func reloadBypassesAFreshEntry() async throws {
@@ -4380,12 +4380,12 @@ import Testing
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [ ] **Step 2: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests/CachingMarketDataClientTests`
 Expected FAIL: `error: type 'MarketDataClient' has no member 'cached'`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `Wait/Packages/WaitKit/Sources/MarketDataClient/CachingMarketDataClient.swift`:
 ```swift
@@ -4677,12 +4677,12 @@ actor CachingMarketDataStore {
 }
 ```
 
-- [ ] **Step 4: Run the tests and confirm they pass**
+- [ ] **Step 4: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh MarketDataClientTests`
 Expected PASS: `** TEST SUCCEEDED **`, with all 9 caching tests passing.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Sources/MarketDataClient/CachingMarketDataClient.swift Wait/Packages/WaitKit/Tests/MarketDataClientTests/CachingMarketDataClientTests.swift
 git commit -m "feat(marketdata): caching decorator with coalescing, stale fallback and 429 cooldown
