@@ -5720,7 +5720,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 The executor prints each instruction and waits for the user to confirm it.
 
-- [ ] **Step 1: (manual: user) Set the production env vars**
+- [ ] **Step 1: (manual: user) Set the production env vars** — SKIPPED (manual)
 
 Run from `server/`, pasting each value when `vercel` prompts:
 ```bash
@@ -5734,7 +5734,7 @@ done
 ```
 Set them for **Preview** as well as Production. `loadConfig` fails fast at cold start, so a preview deploy without them returns 500 on every route. `MASSIVE_BASE_URL` and `APNS_TOPIC` have defaults, so add them only to override them.
 
-- [ ] **Step 2: Apply migration 004 to production**
+- [ ] **Step 2: Apply migration 004 to production** — SKIPPED (manual)
 
 Follow plan 04's convention: `scripts/migrate.ts` reads `.env.development.local`, then `.env.local` with override, so the production URL must be in `.env.local`. Don't pass `DATABASE_URL` on the command line; `.env.local` would override it.
 ```bash
@@ -5744,7 +5744,7 @@ npm run migrate
 ```
 Expected: `migrations applied: [4] skipped: [1, 2, 3]`. A second `npm run migrate` prints `migrations applied: [] skipped: [1, 2, 3, 4]`.
 
-- [ ] **Step 3: (manual: user) Deploy**
+- [ ] **Step 3: (manual: user) Deploy** — SKIPPED (manual)
 
 Deploy the way plan 04 does it (`vercel --prod` from `server/`, or merging to the deploy branch). Then:
 ```bash
@@ -5754,7 +5754,7 @@ curl -sS -o /dev/null -w "%{http_code}\n" "$WAIT_API_BASE_URL/api/internal/daily
 ```
 Expected: `{"status":"ok",…}`, then `401` (no secret).
 
-- [ ] **Step 4: Check tap handling on the simulator (no APNs involved)**
+- [ ] **Step 4: Check tap handling on the simulator (no APNs involved)** — SKIPPED (manual)
 
 Write the payload file:
 ```bash
@@ -5768,7 +5768,7 @@ xcrun simctl push booted com.chenkai.wait /tmp/wait-push.apns
 ```
 Expected: a banner appears. Tapping it opens Wait on AAPL's details. The watchlist must contain AAPL; otherwise the deep link is ignored, as plan 02 designed.
 
-- [ ] **Step 5: (manual: user) Register a real device**
+- [ ] **Step 5: (manual: user) Register a real device** — SKIPPED (manual)
 
 1. Run the Debug build on a physical iPhone (Debug uses sandbox APNs).
 2. In Settings, turn on **Daily alerts**, then tap **Allow**.
@@ -5778,7 +5778,7 @@ Expected: a banner appears. Tapping it opens Wait on AAPL's details. The watchli
    ```
    Expected: one row, with environment `sandbox`.
 
-- [ ] **Step 6: (manual: user) Send a test push**
+- [ ] **Step 6: (manual: user) Send a test push** — SKIPPED (manual)
 
 Run from `server/`, using the token from Step 5:
 ```bash
@@ -5786,7 +5786,7 @@ npm run send-test-push -- --token <hex token> --env sandbox --symbol AAPL
 ```
 Expected: `{"environment":"sandbox","status":200,…}`, and the push arrives on the phone. Tapping it opens AAPL.
 
-- [ ] **Step 7: (manual: user) Run the job and force one transition**
+- [ ] **Step 7: (manual: user) Run the job and force one transition** — SKIPPED (manual)
 
 Seed today's statuses:
 ```bash
@@ -5802,12 +5802,12 @@ DELETE FROM alert_job_runs WHERE trading_date = '<today, YYYY-MM-DD in New York>
 Run the `curl` again.
 Expected: `"transitions":1,"alertsCreated":1,"alertsSent":1`, and a "BUY ZONE" push arrives.
 
-- [ ] **Step 8: Confirm the same-day rerun is silent**
+- [ ] **Step 8: Confirm the same-day rerun is silent** — SKIPPED (manual)
 
 Run the same `curl` once more.
 Expected: `"status":"resent","alertsSent":0`, and no new push.
 
-- [ ] **Step 9: (manual: user) Confirm the cron schedule**
+- [ ] **Step 9: (manual: user) Confirm the cron schedule** — SKIPPED (manual)
 
 In the Vercel dashboard, open the project → **Settings → Cron Jobs**.
 Expected: `/api/internal/daily-alerts` is listed with schedule `0 22 * * 1-5`.
