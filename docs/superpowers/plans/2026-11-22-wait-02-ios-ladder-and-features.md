@@ -1,5 +1,63 @@
 # Wait iOS — Ladder, Features and New UI Implementation Plan
 
+## Execution log
+
+**Executed:** 2026-11-23 on `ck/ios`, subagent-driven, in **code-only mode** (see the [plan 01 baseline log](2026-11-22-wait-01-baseline-log.md)). `xcodebuild` can't run inside the agent sandbox, so no test or build step here has been run under Xcode.
+
+**How the work was checked instead:**
+- **Pure targets** (Domain, Persistence file I/O, MarketDataClient, ChartGeometry, DeepLink):
+  - typechecked with `swiftc` in Swift 6 mode
+  - real Swift Testing files run in a `/tmp` harness, with hand-written stand-ins for the `@DependencyClient` types. Totals: Domain 5,384 checks, MarketDataClient 39/39 tests, ChartGeometry 8/8, migration 39 checks, DeepLink 10/10, all passing.
+- **TCA features:**
+  - every API checked by reviewers against the real TCA 1.26.2, swift-sharing 2.10.1 and swift-dependencies 1.17.2 sources
+  - views typechecked against stub `Store` types
+  - the `@Reducer` macro code and the `TestStore` tests were **not compiled**
+- **Reviews:** one review per chunk group (Domain, Persistence, MarketData, Design/Checklist/Chart, Features, App layer). Every Critical and Important finding was fixed in the `fix(...)` commits listed below.
+
+| Task | Commit | | Task | Commit |
+|---|---|---|---|---|
+| 1 PriceLadder + vectors | `11845c0` | | 16 Caching decorator | `a85006e` |
+| 2 Knots/temperature | `ebb64cb` | | 17 Twelve Data stopgap | `74035a5` |
+| 3 Status/distance | `ecd5734` | | 18 Design tokens | `e32be28` |
+| 4 PriceInput | `39d8d73` | | 19 Checklist features | `344019e` |
+| 5 Market types/calendar | `a667d72` | | 20 StockChartFeature | `a514f20` |
+| 6 Watchlist models | `b59c407` | | 21 StockChartView | `c884e2d` |
+| 7 Legacy decoding | `a680fe1` | | 22 Ladder/notes editors | `3f03dd1` |
+| 8 Log channels | `faa2d83` | | 23 StockDetailsFeature | `e922583` |
+| 9 App group | `56e861d` | | 24 AddStockFeature | `44c0db8` |
+| 10 @Shared keys/helpers | `f258e0a` | | 25 WatchlistFeature | `d77c588` |
+| 11 SnapshotStore/Client | `bb22c04` | | 26 SettingsFeature | `ed04490` |
+| 12 LegacyMigration | `de4e230` | | 27 AppFeature/WaitApp | `72eeb51` |
+| 13 MarketDataClient | `83d1858` | | 28 Widget | `439eb38` |
+| 14 CacheTTL | `b27da0e` | | 29 Cutover, Swift 6 | `8dc99f0` |
+| 15 DiskCache | `be695aa` | | 30 Docs | `9f9fe83` |
+
+**Review fixes:** `fe9731e` (Domain), `584da14` (migration), `afe6545` (market data), `42a9dbc` (chart), `43bee6b` (watchlist), `cc6db3a` (app/widget), `b08d1c1` (restored checkboxes).
+
+**Notable deviations** (the plan text is updated in each case):
+- **Plan test bugs, fixed:**
+  - an out-of-order ladder fixture (Task 1)
+  - `allSatisfy(\.isStale)` inside `#expect` (Task 16)
+  - `.lineLimit(6 ...)` (Task 22)
+- **TCA forms:** canonical forms throughout (`scope(\.x, action: \.x)`, and `.onChange(of:) { _, state in Effect }`), because `ComposableArchitecture2Deprecations` deprecates the labeled forms.
+- **DesignSystem watchOS guard:** `#if os(iOS)`, because the watchOS SDK has UIKit but no `CAGradientLayer`.
+- **Behavior hardening:**
+  - `PriceInput` uses strict grouping, so `de_DE` "12.50" is rejected.
+  - Partial quotes survive chunk errors.
+  - A cancelled coalesced fetch is cancelled once it has no waiters left.
+  - An unset Twelve Data key throws `.unavailable` without a network call.
+  - The chart recovers from a cancelled load.
+  - A single-symbol load keeps the rate-limit banner.
+  - The background save catches and logs errors and publishes the snapshot immediately.
+  - The widget shows the real empty state.
+
+**Follow-ups for the user:**
+1. Run `scripts/test-waitkit.sh`, `scripts/build-app.sh` and `scripts/build-app.sh WaitWatch` locally, and fix anything the compiler finds. The riskiest code is the uncompiled `@Reducer` and `TestStore` code.
+2. Refresh `Package.resolved` with a package resolve, and commit it.
+3. Manual checks: Task 27 Step 11 (a legacy `stocks` file migrates on first launch), Task 28 Step 5 (the widget shows the real watchlist), and the Task 29 UI check.
+4. Put a real key in `Wait/Config/Secrets.xcconfig` (`TWELVE_DATA_API_KEY`). Without one, quotes show "unavailable".
+5. Known accepted risk: one undecodable item in `watchlist.json` makes the whole file load as empty. `WatchlistItem` decoding is lenient, but consider lossy array decoding.
+
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Replace the legacy Waitlist and StockDetails screens with TCA 1.26 features built on a new Swift 6 `Domain` (price ladder plus a 0–100 temperature), an app-group `Persistence` layer that migrates the old data, and a cached, rate-limit-safe `MarketDataClient`. Rewrite the widget to use a shared snapshot. Then delete every legacy module.
