@@ -5474,7 +5474,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Packages/WaitKit/Tests/APIClientTests/Support/StubURLProtocol.swift`
 - Test: `Packages/WaitKit/Tests/APIClientTests/HTTPSessionTests.swift`
 
-- [ ] **Step 1: Write the URL stub**
+- [x] **Step 1: Write the URL stub**
 
 The stub routes each request by its unique host, so suites can run in parallel. Create `Packages/WaitKit/Tests/APIClientTests/Support/StubURLProtocol.swift`:
 ```swift
@@ -5525,7 +5525,8 @@ final class StubURLProtocol: URLProtocol {
       request.httpBody = Data(reading: stream)
     }
     let host = request.url?.host() ?? ""
-    Self.captured.withValue { $0[host, default: []].append(request) }
+    let recorded = request
+    Self.captured.withValue { $0[host, default: []].append(recorded) }
     guard let url = request.url, let handler = Self.handlers.value[host] else {
       client?.urlProtocol(self, didFailWithError: URLError(.cannotFindHost))
       return
@@ -5564,7 +5565,7 @@ extension Data {
 }
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `Packages/WaitKit/Tests/APIClientTests/HTTPSessionTests.swift`:
 ```swift
@@ -5676,12 +5677,12 @@ struct HTTPSessionTests {
 }
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [ ] **Step 3: Run the tests to verify they fail** — NOT RUN (code-only; red confirmed in a /tmp harness)
 
 Run: `scripts/test-waitkit.sh APIClientTests/HTTPSessionTests`
 Expected: the build fails with `cannot find 'HTTPSession' in scope`.
 
-- [ ] **Step 4: Implement the auth DTOs and `HTTPSession`**
+- [x] **Step 4: Implement the auth DTOs and `HTTPSession`**
 
 Create `Packages/WaitKit/Sources/APIClient/DTOs/AuthDTOs.swift`:
 ```swift
@@ -5799,8 +5800,12 @@ public actor HTTPSession {
   /// Returns the cached token unless it is `stale` (the one that just got a 401). Concurrent 401s for the
   /// same stale token share one registration; a caller holding an older token gets the newer one directly.
   private func validToken(replacing stale: String? = nil) async throws -> String {
-    if let token, token != stale { return token }
-    if let registration { return try await registration.value }
+    if let token, token != stale {
+      return token
+    }
+    if let registration {
+      return try await registration.value
+    }
     let task = Task { try await self.register() }
     registration = task
     defer { registration = nil }
@@ -5868,12 +5873,12 @@ public actor HTTPSession {
 }
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [ ] **Step 5: Run the tests to verify they pass** — NOT RUN (code-only; 14/14 pass in a /tmp harness)
 
 Run: `scripts/test-waitkit.sh APIClientTests`
 Expected: `** TEST SUCCEEDED **`, with 14 tests passing.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
