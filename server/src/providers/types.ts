@@ -85,3 +85,11 @@ export class ProviderError extends Error {
     this.name = "ProviderError"
   }
 }
+
+/** One symbol's close for a trading day (decimal string). */
+export type DailyClose = { symbol: string; close: string; at: Date }
+
+export interface GroupedDailyProvider {
+  /** All US stocks' closes for `date` ("YYYY-MM-DD") in one call. Empty map = no data for that day (yet). */
+  getGroupedDaily(date: string): Promise<Map<string, DailyClose>>
+}

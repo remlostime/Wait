@@ -1535,7 +1535,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/test/support/fixtures/massive/grouped-empty.json`
 - Test: `server/test/providers/massive.test.ts`
 
-- [ ] **Step 1: Add the fixtures**
+- [x] **Step 1: Add the fixtures**
 
 Create `server/test/support/fixtures/massive/grouped-2026-11-20.json`. This is the Polygon/Massive grouped-daily response shape; `t` is 2026-11-20T21:00:00Z in milliseconds.
 ```json
@@ -1557,7 +1557,7 @@ Create `server/test/support/fixtures/massive/grouped-empty.json`:
 { "adjusted": true, "queryCount": 0, "resultsCount": 0, "status": "OK", "request_id": "fixture-grouped-2" }
 ```
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Create `server/test/providers/massive.test.ts`:
 ```ts
@@ -1638,12 +1638,12 @@ describe("createMassiveProvider", () => {
 })
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run: `npx vitest run test/providers/massive.test.ts`
 Expected: FAIL with `Failed to load url ../../src/providers/massive.js`.
 
-- [ ] **Step 4: Extend the provider types**
+- [x] **Step 4: Extend the provider types**
 
 Append to `server/src/providers/types.ts`:
 ```ts
@@ -1656,7 +1656,7 @@ export interface GroupedDailyProvider {
 }
 ```
 
-- [ ] **Step 5: Implement the adapter**
+- [x] **Step 5: Implement the adapter**
 
 Create `server/src/providers/massive.ts`:
 ```ts
@@ -1717,12 +1717,12 @@ export function parseGroupedDaily(body: unknown): Map<string, DailyClose> {
 }
 ```
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [x] **Step 6: Run the tests to verify they pass**
 
 Run: `npx vitest run test/providers/massive.test.ts && npm run typecheck`
 Expected: PASS (`Tests  7 passed (7)`).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add server/src/providers/types.ts server/src/providers/massive.ts server/test/providers/massive.test.ts server/test/support/fixtures/massive
