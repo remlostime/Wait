@@ -2410,7 +2410,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `server/src/apns/MockApnsTransport.ts`
 - Test: `server/test/apns/transports.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/apns/transports.test.ts`. The HTTP/2 transport is exercised against a local cleartext HTTP/2 server; no Apple host is contacted:
 ```ts
@@ -2506,12 +2506,12 @@ describe("MockApnsTransport", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/apns/transports.test.ts`
 Expected: FAIL with `Failed to load url ../../src/apns/Http2ApnsTransport.js`.
 
-- [ ] **Step 3: Write the transport types**
+- [x] **Step 3: Write the transport types**
 
 Create `server/src/apns/types.ts`:
 ```ts
@@ -2528,7 +2528,7 @@ export interface ApnsTransport {
 }
 ```
 
-- [ ] **Step 4: Write the HTTP/2 transport**
+- [x] **Step 4: Write the HTTP/2 transport**
 
 Create `server/src/apns/Http2ApnsTransport.ts`:
 ```ts
@@ -2618,7 +2618,7 @@ function parseReason(body: string): string | undefined {
 }
 ```
 
-- [ ] **Step 5: Write the mock transport**
+- [x] **Step 5: Write the mock transport**
 
 Create `server/src/apns/MockApnsTransport.ts`:
 ```ts
@@ -2644,12 +2644,12 @@ export class MockApnsTransport implements ApnsTransport {
 }
 ```
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [x] **Step 6: Run the tests to verify they pass**
 
 Run: `npx vitest run test/apns/transports.test.ts && npm run typecheck`
 Expected: PASS (`Tests  3 passed (3)`).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add server/src/apns/types.ts server/src/apns/Http2ApnsTransport.ts server/src/apns/MockApnsTransport.ts server/test/apns/transports.test.ts
