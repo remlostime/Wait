@@ -18,16 +18,16 @@ All of Wait's code except the three thin Xcode targets (`Wait`, `WaitWidgetExten
 | `StockChartFeature` | Price-history chart: loads one range at a time, chart geometry and view | Domain, MarketDataClient, DesignSystem, TCA | – | StockDetailsFeature |
 | `StockDetailsFeature` | The stock detail screen: quote, stats, chart, ladder editor, notes editor, ladder history | Domain, Persistence, MarketDataClient, StockChartFeature, DesignSystem, TCA | – | WatchlistFeature |
 | `WatchlistFeature` | The watchlist screen, add-stock sheet, and navigation to details and checklist | Domain, Persistence, MarketDataClient, StockDetailsFeature, ChecklistFeature, DesignSystem, TCA | – | AppFeature |
-| `SettingsFeature` | The settings tab: checklist template editor, account section (anonymous ID, Delete Account), data attribution | APIClient, ChecklistFeature, DesignSystem, TCA | – | AppFeature |
-| `AppFeature` | Root feature and `AppView`, deep links, `AppDelegate` (owns the store and runs the legacy migration), snapshot publishing to the widget and the watch | Domain, DesignSystem, Logging, Persistence, Connectivity, SettingsFeature, WatchlistFeature, TCA | – | app |
+| `SettingsFeature` | The settings tab: checklist template editor, account section (anonymous ID, Delete Account), sync section ("Last synced", "Sync now"), data attribution | APIClient, ChecklistFeature, DesignSystem, Persistence, SyncClient, TCA | – | AppFeature |
+| `AppFeature` | Root feature and `AppView`, deep links, `AppDelegate` (owns the store and runs the legacy migration), snapshot publishing to the widget and the watch, sync triggers | Domain, DesignSystem, Logging, Persistence, Connectivity, SyncClient, SettingsFeature, WatchlistFeature, TCA | – | app |
 | `APIClient` | Wait backend client: `HTTPSession` actor, `APIClient` endpoints and DTOs, `KeychainClient`, `IdentityClient` | Domain, Dependencies, DependenciesMacros | – | MarketDataClient, SettingsFeature, SyncClient |
-| `SyncClient` (plan 05) | Watchlist sync | Domain, Persistence, APIClient, Logging, Dependencies | – | AppFeature, SettingsFeature |
+| `SyncClient` | `\.syncClient` dependency: watchlist sync (single-flight `SyncEngine`, pure `SyncPlanner` and `SyncMerger`, DTO mapping) | Domain, Persistence, APIClient, Logging, Sharing, IdentifiedCollections, Dependencies, DependenciesMacros | – | AppFeature, SettingsFeature |
 | `NotificationClient` (plan 06) | Push registration | Logging, Dependencies, DependenciesMacros | – | AppFeature, SettingsFeature |
 
-The last two rows exist only after their plan has run. Each target has a matching `<Target>Tests` test target.
+The `NotificationClient` row exists only after plan 06 has run. Each target has a matching `<Target>Tests` test target.
 
 ## Conventions
-- **Mutations.** Mutate the watchlist only through the `Persistence` helpers. They stamp `updatedAt` truncated to milliseconds, which sync (plan 05) relies on.
+- **Mutations.** Mutate the watchlist only through the `Persistence` helpers. They stamp `updatedAt` truncated to milliseconds, which sync relies on.
 - **Wire format.** Prices are `Decimal` and are encoded as decimal strings.
 - **Dependencies.** New clients are `@DependencyClient` structs with `@Sendable` closures. Give each one an unimplemented `testValue`, a `previewValue` and a `DependencyValues` accessor.
 - **TCA.**
@@ -64,6 +64,20 @@ Or `scripts/test-waitkit.sh [Target[/Suite]]` from the repo root.
 ## APIClient (plan 04)
 
 - `HTTPSession` is an actor. It sends the JWT from memory, registers on first use with `IdentityClient.anonymousID()`, re-registers once on a 401, and maps every non-2xx response to `APIError`.
-- `APIClient` (`@Dependency(\.apiClient)`) exposes the market endpoints plus `deleteAccount`. Plans 05 and 06 add sync and device endpoints.
+- `APIClient` (`@Dependency(\.apiClient)`) exposes the market endpoints plus `deleteAccount`. `syncWatchlist` is the sync endpoint. Plan 06 adds device endpoints.
 - `KeychainClient` and `IdentityClient` store the anonymous ID under service `com.chenkai.wait`, account `anonymous-id`, synchronizable. Tests always use `KeychainClient.inMemory()`.
 - `MarketDataClient.backend(_:)` maps DTOs to Domain types. The live value is `.cached(.backend(.liveValue), disk: .live, now:)`.
+
+## SyncClient
+
+| File | Role |
+|---|---|
+| `SyncStamp.swift` | Millisecond comparison and a deterministic `yyyy-MM-ddTHH:mm:ss.SSSZ` formatter and parser |
+| `SyncChange.swift` | `SyncChange` (upsert or tombstone), `RemoteWatchlistItem`, `SyncReport` |
+| `SyncPlanner.swift` | Pure: which items and tombstones the server hasn't acknowledged |
+| `SyncMerger.swift` | Pure: acknowledge sent changes; apply remote rows (newer wins, ties go to the server, tombstones, resurrection) |
+| `SyncMapping.swift` | Domain ↔ `APIClient` DTOs; clamps outgoing values to the server limits (UTF-16 lengths, 6-decimal anchors) |
+| `SyncEngine.swift` | A single-flight actor; at most 10 rounds per run and 50 changes per request |
+| `SyncClient.swift` | `@DependencyClient` (`sync`, `reset`); `\.syncClient` |
+
+Tests: `xcodebuild test -scheme WaitKit-Package … -only-testing:SyncClientTests`.

@@ -65,3 +65,12 @@ Finnhub, Tiingo and Alpaca free tiers are **personal use only**. This server is 
 - **Catch-up:** the second call on the same trading day takes over a crashed run (a `running` row older than 10 min) or, when the day is `completed`, only delivers events that are still unsent (`attempts < 3`) and returns `resent`. Events are claimed one at a time (`attempts + 1 WHERE attempts = <read value>`), so overlapping calls never push the same alert twice.
 - **Delivery budget:** pushes go out 5 at a time. No new send starts 45 s after the run began; what is left stays pending for the catch-up. Each APNs request times out after 3 s, with one retry after 1 s. The job closes its HTTP/2 sessions at the end of every run.
 - **maxDuration:** the function needs **at least 60 s**. The legacy `builds` config in `vercel.json` cannot set `maxDuration`, so rely on the project default: with Fluid Compute on (the default for new projects) the default duration is 300 s on every plan; with it off, Hobby is capped at 10 s and the run would be killed mid-delivery. To verify, open Project Settings → Functions and check that Fluid Compute is enabled (or Function Max Duration is ≥ 60 s), then trigger the cron from the dashboard (Settings → Cron Jobs → Run) and look at the invocation in Logs: its duration, the `alerts.daily` line, and no `alerts.delivery_deadline` warning (that warning means the budget ran out and the catch-up had to finish the job).
+
+## Watchlist sync
+
+- `POST /api/watchlist/sync` with `{ cursor, changes[] }` (at most 200 changes) returns `{ changes[], cursor, hasMore }`. `GET /api/watchlist` returns the live items. Shapes and rules are in `docs/superpowers/plans/2026-11-22-wait-00-overview.md` §8.4–§8.5.
+- Migration: `migrations/003_watchlist.sql`. `npm run migrate` applies it.
+- Tests:
+  - `test/db/watchlistRepositoryContract.ts` runs against both `NeonWatchlistRepository` (on PGlite) and `MockWatchlistRepository`.
+  - The service is tested in `test/services/WatchlistSyncService.test.ts`, and the routes in `test/routes/watchlist.test.ts`.
+- `src/domain/ladder.ts` mirrors the Swift ladder. `test/domain/ladder.test.ts` reads `../shared/ladder-test-vectors.json`.

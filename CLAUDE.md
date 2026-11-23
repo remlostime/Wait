@@ -70,9 +70,9 @@ cd Wait && swiftformat .
 - **WaitKit library targets** (Swift 6 language mode; dependency graph in `Wait/Packages/WaitKit/README.md`):
   - Core: `Domain` (value types and ladder math), `Logging`, `DesignSystem`.
   - `Persistence`: `@Shared` files in the app group, mutation helpers, `SnapshotStore`, `SnapshotClient`, `LegacyMigration`.
-  - Clients: `APIClient` (Wait backend session, Keychain identity, DTOs), `MarketDataClient` (caching decorator plus the backend adapter) and `Connectivity` (WCSession).
+  - Clients: `APIClient` (Wait backend session, Keychain identity, DTOs), `MarketDataClient` (caching decorator plus the backend adapter), `SyncClient` (watchlist sync) and `Connectivity` (WCSession).
   - Features: `ChecklistFeature`, `StockChartFeature`, `StockDetailsFeature`, `WatchlistFeature`, `SettingsFeature`, `AppFeature`.
-  - Plans 05–06 add `SyncClient` and `NotificationClient`.
+  - Plan 06 adds `NotificationClient`.
 
 ### Data flow
 - **Watchlist:** the source of truth is `@Shared(.watchlist)`, an `IdentifiedArrayOf<WatchlistItem>` stored as `watchlist.json` in the app group `group.chenkai.wait.contents`.
@@ -96,7 +96,16 @@ cd Wait && swiftformat .
   - The stream yields the last received context first, then newer ones; the latest `generatedAt` wins.
   - The watch never touches the network and holds no keys. Its sources are the five files in `Wait/WaitWatch/`.
   - On simulators, pair the watch and iPhone first: `xcrun simctl pair <watch> <phone>`.
+- **Watchlist sync:** see the next subsection.
 - **Logging and credentials:** log through `Log.<channel>` (subsystem `com.chenkai.wait`). No credentials live in source: `scripts/check-secrets.sh` fails on anything that looks like a hard-coded key.
+
+### Watchlist sync
+- Offline-first, last-write-wins per item, keyed by `(user, symbol)` (overview §8.5). The local `@Shared(.watchlist)` file stays the UI's source of truth.
+- `SyncClient` (`Packages/WaitKit/Sources/SyncClient`) wraps a single-flight `SyncEngine` actor. It pushes pending changes (`SyncPlanner`), and `SyncMerger` applies the rows the server returns. Bookkeeping lives in `sync-state.json` in the app group: the cursor, acknowledged stamps, tombstones and `lastSyncedAt`.
+- Local edits go through the Persistence helpers, which stamp `updatedAt` (always truncated to milliseconds) and record tombstones. Remote rows are written directly, never through the helpers.
+- Triggers live in `AppFeature`: scene becomes active, a 2 s debounce after any watchlist change, and pull-to-refresh. Settings → Sync shows "Last synced" and has a "Sync now" button. Account deletion calls `syncClient.reset()`, which bumps a generation counter so an in-flight run discards its merge. The local list is kept and re-uploads under the new identity.
+- Stamps are compared as whole milliseconds (`SyncStamp`), and sync DTOs carry them as pre-formatted ISO strings. Never route them through `JSONEncoder` date strategies.
+- Server: `server/src/services/WatchlistSyncService.ts` and `server/src/db/NeonWatchlistRepository.ts` (one CTE for push, `(version, symbol)` cursor for pull). The server's ladder logic in `server/src/domain/ladder.ts` must keep passing `shared/ladder-test-vectors.json`.
 
 ### Ladder
 - `PriceLadder` (in `Domain`): validates that anchors are positive and non-decreasing.
@@ -116,7 +125,7 @@ cd Wait && swiftformat .
 - **`.onChange(of:)`:** use the effect-returning form `{ oldValue, state in Effect }` (see `AddStockFeature`, `AppFeature`). The reducer-builder overload is deprecated. It only sees mutations made by the reducer it wraps, so `AppFeature` attaches it outside `CombineReducers`.
 - **Effects:** report results through success/failure action pairs, never `Result<_, any Error>`. A load that must not touch screen-level state sends its own action: `WatchlistFeature` sends `symbolQuotesLoaded` after adding one stock, so a rate-limit banner from the full-list load stays.
 - **Debounce:** `continuousClock.sleep` plus `.cancellable(id:cancelInFlight:)`.
-- **Dependency keys:** `\.marketData`, `\.snapshotClient`, `\.connectivity`, `\.apiClient`, `\.identity`, `\.keychain`, and later `\.syncClient`, `\.notifications`. Every client is a `@DependencyClient` with an unimplemented `testValue`. Tests override what they use; use `.noop` where one exists (today `ConnectivityClient.noop`).
+- **Dependency keys:** `\.marketData`, `\.snapshotClient`, `\.connectivity`, `\.apiClient`, `\.identity`, `\.keychain`, `\.syncClient`, and later `\.notifications`. Every client is a `@DependencyClient` with an unimplemented `testValue`. Tests override what they use; use `.noop` where one exists (today `ConnectivityClient.noop`).
 
 ## Backend (`server/`)
 

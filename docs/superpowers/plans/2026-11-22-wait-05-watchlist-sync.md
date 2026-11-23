@@ -4659,7 +4659,7 @@ MSG
 
 **Files:** none changed. This task is verification only.
 
-- [ ] **Step 1: Deploy the server (manual: user)**
+- [ ] **Step 1: Deploy the server (manual: user)** — SKIPPED (manual)
 
 Merge or deploy this branch to the Vercel project, then run the migration from Task 7, Step 10. Export the base URL the app uses (plan 04's `WAIT_API_BASE_URL`):
 ```bash
@@ -4668,7 +4668,7 @@ curl -s "$WAIT_API_BASE_URL/health"
 ```
 Expected: `{"status":"ok","timestamp":"…"}`.
 
-- [ ] **Step 2: Install and launch the app on the simulator**
+- [ ] **Step 2: Install and launch the app on the simulator** — SKIPPED (manual)
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
@@ -4680,7 +4680,7 @@ xcrun simctl launch booted com.chenkai.wait
 ```
 Expected: the app opens and shows the watchlist. If the simulator has no data yet, add 2 stocks (for example AAPL and MSFT), and give one of them a note.
 
-- [ ] **Step 3: Get a token for the same identity**
+- [ ] **Step 3: Get a token for the same identity** — SKIPPED (manual)
 
 The anonymous ID is shown in Settings → Account (plan 04). Copy it, then:
 ```bash
@@ -4691,12 +4691,12 @@ curl -s "$WAIT_API_BASE_URL/api/watchlist" -H "authorization: Bearer $TOKEN" | j
 ```
 Expected: every stock on the device is listed, with the same memo, favorite flag and ladder. This was the first upload, which needs no special case.
 
-- [ ] **Step 4: A local edit reaches the server**
+- [ ] **Step 4: A local edit reaches the server** — SKIPPED (manual)
 
 In the app, change a stock's note. Wait about 3 seconds (the 2 s debounce plus the request), then repeat the `GET` from Step 3.
 Expected: the new memo appears, and the item's `clientUpdatedAt` is the edit time.
 
-- [ ] **Step 5: A remote edit reaches the device (simulates a second device)**
+- [ ] **Step 5: A remote edit reaches the device (simulates a second device)** — SKIPPED (manual)
 
 ```bash
 NOW=$(date -u +%Y-%m-%dT%H:%M:%S.000Z)
@@ -4706,7 +4706,7 @@ curl -s -X POST "$WAIT_API_BASE_URL/api/watchlist/sync" -H "authorization: Beare
 In the app, pull to refresh the watchlist.
 Expected: NVDA appears in Favorites with the note "added from curl". Settings → Sync shows "Last synced" a few seconds ago.
 
-- [ ] **Step 6: A delete becomes a tombstone**
+- [ ] **Step 6: A delete becomes a tombstone** — SKIPPED (manual)
 
 In the app, swipe to delete NVDA and wait about 3 seconds. Then:
 ```bash
@@ -4718,7 +4718,7 @@ Expected:
 - The first command prints `{"symbol":"NVDA","deleted":true}`.
 - The second command's list doesn't include NVDA.
 
-- [ ] **Step 7: A reinstall restores the list from the server**
+- [ ] **Step 7: A reinstall restores the list from the server** — SKIPPED (manual)
 
 ```bash
 xcrun simctl uninstall booted com.chenkai.wait
@@ -4730,7 +4730,7 @@ Expected:
 - Settings → Account shows the same anonymous ID, which survived in the Keychain.
 - If the ID is different, the simulator dropped the Keychain item (overview risk 9). Report it, and skip this step rather than failing the plan.
 
-- [ ] **Step 8: Record the results**
+- [ ] **Step 8: Record the results** — SKIPPED (manual)
 
 Add a note to the PR description (or tell the user) saying which of Steps 3–7 passed. If any failed, include the `curl` output.
 
@@ -4741,7 +4741,7 @@ Add a note to the PR description (or tell the user) saying which of Steps 3–7 
 - Modify: `Wait/Packages/WaitKit/README.md`
 - Modify: `server/README.md`
 
-- [ ] **Step 1: Update `CLAUDE.md`**
+- [x] **Step 1: Update `CLAUDE.md`**
 
 Under `## Architecture`, add this subsection after the data-flow subsection:
 ```markdown
@@ -4755,7 +4755,7 @@ Under `## Architecture`, add this subsection after the data-flow subsection:
 - Server: `server/src/services/WatchlistSyncService.ts` and `server/src/db/NeonWatchlistRepository.ts` (one CTE for push, `(version, symbol)` cursor for pull). The server's ladder logic in `server/src/domain/ladder.ts` must keep passing `shared/ladder-test-vectors.json`.
 ```
 
-- [ ] **Step 2: Update `Wait/Packages/WaitKit/README.md`**
+- [x] **Step 2: Update `Wait/Packages/WaitKit/README.md`**
 
 Append:
 ```markdown
@@ -4774,7 +4774,7 @@ Append:
 Tests: `xcodebuild test -scheme WaitKit-Package … -only-testing:SyncClientTests`.
 ```
 
-- [ ] **Step 3: Update `server/README.md`**
+- [x] **Step 3: Update `server/README.md`**
 
 Append:
 ```markdown
@@ -4788,7 +4788,7 @@ Append:
 - `src/domain/ladder.ts` mirrors the Swift ladder. `test/domain/ladder.test.ts` reads `../shared/ladder-test-vectors.json`.
 ```
 
-- [ ] **Step 4: Run every suite one last time**
+- [ ] **Step 4: Run every suite one last time** — server part done (typecheck clean, 396/396 vitest tests in 46 files); xcodebuild test and build NOT RUN (code-only)
 
 ```bash
 cd /Users/ckai/code/Wait-plan05/server && npm run typecheck && npm test
@@ -4802,7 +4802,7 @@ Expected, in order:
 - `** TEST SUCCEEDED **`.
 - `** BUILD SUCCEEDED **`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
@@ -4815,6 +4815,6 @@ MSG
 )"
 ```
 
-- [ ] **Step 6: Finish the branch**
+- [ ] **Step 6: Finish the branch** — SKIPPED (manual: no push or merge in this session)
 
 Use superpowers:finishing-a-development-branch.
