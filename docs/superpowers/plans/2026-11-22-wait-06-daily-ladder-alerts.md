@@ -4135,7 +4135,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `server/vercel.json`
 - Test: `server/test/vercelConfig.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `server/test/vercelConfig.test.ts`:
 ```ts
@@ -4158,12 +4158,12 @@ describe("vercel.json", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run test/vercelConfig.test.ts`
 Expected: FAIL. The first test sees `crons` as `undefined`. The second should already pass, because plan 04 routes `/api/(.*)` to `src/server.ts`.
 
-- [ ] **Step 3: Add the cron**
+- [x] **Step 3: Add the cron**
 
 Run (from `server/`):
 ```bash
@@ -4172,12 +4172,12 @@ git diff vercel.json
 ```
 Expected diff: only a top-level `"crons"` array was added. `builds` and `routes` are unchanged.
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 Run: `npx vitest run test/vercelConfig.test.ts`
 Expected: PASS (`Tests  2 passed (2)`).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add server/vercel.json server/test/vercelConfig.test.ts
