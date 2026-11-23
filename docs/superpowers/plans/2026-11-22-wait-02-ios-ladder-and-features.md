@@ -8348,7 +8348,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `Wait/Packages/WaitKit/Sources/WatchlistFeature/AddStockFeature.swift`, `Wait/Packages/WaitKit/Sources/WatchlistFeature/AddStockView.swift`
 - Create: `Wait/Packages/WaitKit/Tests/WatchlistFeatureTests/AddStockFeatureTests.swift`
 
-- [ ] **Step 1: Update `Package.swift`**
+- [x] **Step 1: Update `Package.swift`**
   - Append to `products:`: `.library(name: "WatchlistFeature", targets: ["WatchlistFeature"]),`
   - Append to `targets:`:
     ```swift
@@ -8380,7 +8380,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
     ```
   - Create `Wait/Packages/WaitKit/Sources/WatchlistFeature/AddStockFeature.swift` containing only the file header, so the package loads (SwiftPM rejects a target with no sources). Step 4 fills it in.
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 `Wait/Packages/WaitKit/Tests/WatchlistFeatureTests/AddStockFeatureTests.swift`:
 ```swift
@@ -8497,12 +8497,12 @@ struct AddStockFeatureTests {
 }
 ```
 
-- [ ] **Step 3: Run the tests and confirm they fail**
+- [ ] **Step 3: Run the tests and confirm they fail** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh WatchlistFeatureTests`
 Expected FAIL: `error: cannot find 'AddStockFeature' in scope`.
 
-- [ ] **Step 4: Implement** (replace the header-only `AddStockFeature.swift`)
+- [x] **Step 4: Implement** (replace the header-only `AddStockFeature.swift`)
 
 `Wait/Packages/WaitKit/Sources/WatchlistFeature/AddStockFeature.swift`:
 ```swift
@@ -8521,6 +8521,7 @@ import StockDetailsFeature
 // MARK: - AddStockFeature
 
 /// Search is debounced 300 ms with the injected clock (the legacy code used `asyncAfter` for 1 s). Tapping a result opens the ladder editor, and saving emits `.delegate(.added)`.
+/// Uses the effect-returning `onChange(of:)`; the reducer-builder overload is deprecated in TCA 1.26.
 @Reducer
 public struct AddStockFeature {
   // MARK: Lifecycle
@@ -8571,28 +8572,26 @@ public struct AddStockFeature {
 
   public var body: some ReducerOf<Self> {
     BindingReducer()
-      .onChange(of: \.query) { _, query in
-        Reduce { state, _ in
-          let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
-          state.errorMessage = nil
-          guard !trimmed.isEmpty else {
-            state.results = []
-            state.isSearching = false
-            return .cancel(id: CancelID.search)
-          }
-          state.isSearching = true
-          return .run { [clock, marketData] send in
-            try await clock.sleep(for: .milliseconds(300))
-            do {
-              try await send(.searchLoaded(query: trimmed, marketData.search(trimmed)))
-            } catch is CancellationError {
-              return
-            } catch {
-              try await send(.searchFailed(MarketDataError(error)))
-            }
-          }
-          .cancellable(id: CancelID.search, cancelInFlight: true)
+      .onChange(of: \.query) { _, state in
+        let trimmed = state.query.trimmingCharacters(in: .whitespacesAndNewlines)
+        state.errorMessage = nil
+        guard !trimmed.isEmpty else {
+          state.results = []
+          state.isSearching = false
+          return .cancel(id: CancelID.search)
         }
+        state.isSearching = true
+        return .run { [clock, marketData] send in
+          try await clock.sleep(for: .milliseconds(300))
+          do {
+            try await send(.searchLoaded(query: trimmed, marketData.search(trimmed)))
+          } catch is CancellationError {
+            return
+          } catch {
+            try await send(.searchFailed(MarketDataError(error))) // rethrows cancellation
+          }
+        }
+        .cancellable(id: CancelID.search, cancelInFlight: true)
       }
     Reduce { state, action in
       switch action {
@@ -8665,12 +8664,12 @@ public struct AddStockFeature {
 extension AddStockFeature.Destination.State: Equatable {}
 ```
 
-- [ ] **Step 5: Run the tests and confirm they pass**
+- [ ] **Step 5: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh WatchlistFeatureTests`
 Expected PASS: 5 tests pass.
 
-- [ ] **Step 6: Add the view** (`swiftui-expert:swiftui-expert-skill`)
+- [x] **Step 6: Add the view** (`swiftui-expert:swiftui-expert-skill`)
 
 `Wait/Packages/WaitKit/Sources/WatchlistFeature/AddStockView.swift`:
 ```swift
@@ -8736,7 +8735,7 @@ public struct AddStockView: View {
           Button("Cancel") { store.send(.cancelTapped) }
         }
       }
-      .navigationDestination(item: $store.scope(state: \.destination?.ladderEditor, action: \.destination.ladderEditor)) { editor in
+      .navigationDestination(item: $store.scope(\.$destination, action: \.destination).ladderEditor) { editor in
         LadderEditorView(store: editor)
       }
     }
@@ -8748,12 +8747,12 @@ public struct AddStockView: View {
 }
 ```
 
-- [ ] **Step 7: Compile**
+- [ ] **Step 7: Compile** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh WatchlistFeatureTests`
 Expected PASS: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 ```bash
 git add Wait/Packages/WaitKit/Package.swift Wait/Packages/WaitKit/Sources/WatchlistFeature Wait/Packages/WaitKit/Tests/WatchlistFeatureTests
 git commit -m "feat(watchlist): AddStockFeature with clock-debounced search and ladder editor
