@@ -30,7 +30,9 @@ public extension Shared where Value == IdentifiedArrayOf<WatchlistItem> {
   /// Appends at the end of the list (`max(sortIndex) + 1`). Returns false if the symbol is already present.
   @discardableResult
   func add(_ item: WatchlistItem, now: Date) -> Bool {
-    withLock { items in
+    @Shared<SyncState>(.syncState) var syncState
+    $syncState.withLock { $0.tombstones[item.symbol] = nil }
+    return withLock { items in
       guard items[id: item.symbol] == nil else {
         return false
       }
@@ -43,7 +45,10 @@ public extension Shared where Value == IdentifiedArrayOf<WatchlistItem> {
   }
 
   func remove(_ symbol: String, now: Date) {
-    _ = now // Plan 05 records a tombstone at `now`.
+    if wrappedValue[id: symbol] != nil {
+      @Shared<SyncState>(.syncState) var syncState
+      $syncState.withLock { $0.tombstones[symbol] = now.truncatedToMilliseconds }
+    }
     withLock { items in
       _ = items.remove(id: symbol)
     }

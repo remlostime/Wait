@@ -52,26 +52,26 @@
 
 ## Prerequisites
 
-- [ ] **Worktree.** Use superpowers:using-git-worktrees. Branch off the branch where plans 02 and 04 landed, never `master`:
+- [x] **Worktree** (work in place on `ck/sever` per session rules; no worktree created). Use superpowers:using-git-worktrees. Branch off the branch where plans 02 and 04 landed, never `master`:
   ```bash
   cd /Users/ckai/code/Wait && git worktree add ../Wait-plan05 -b ck/plan05-watchlist-sync
   ```
   Every path below is relative to the worktree root (`/Users/ckai/code/Wait-plan05`). Commands written with `/Users/ckai/code/Wait/...` mean the same paths inside the worktree.
-- [ ] **Plan 02 is done.** These exist:
+- [x] **Plan 02 is done.** These exist:
   - `shared/ladder-test-vectors.json`
   - `Wait/Packages/WaitKit/Sources/Persistence/{AppGroup,SharedKeys,Shared+Watchlist}.swift`
   - `Sources/AppFeature/AppFeature.swift`
   - `Sources/SettingsFeature/SettingsFeature.swift`
   - `Sources/WatchlistFeature/WatchlistFeature.swift`, which declares `Action.delegate(.refreshRequested)`
-- [ ] **Plan 04 is done.** These exist:
+- [x] **Plan 04 is done.** These exist:
   - `server/` with `npm test` passing
   - `server/migrations/001_*.sql` and `002_*.sql`
   - `Wait/Packages/WaitKit/Sources/APIClient/{APIClient,HTTPSession}.swift`
-- [ ] **Load these skills:**
+- [x] **Load these skills:**
   - superpowers:test-driven-development for every task
   - swiftui-expert:swiftui-expert-skill for Task 13 (the SwiftUI section)
   - ios-code-best-practice:ios-code-best-practice, only its Swift concurrency guidance (actor and `Sendable` rules)
-- [ ] **Check the cross-plan names this plan relies on.** Run:
+- [x] **Check the cross-plan names this plan relies on.** Run (2026-11-23: every name in the table exists; no substitution needed):
   ```bash
   cd /Users/ckai/code/Wait-plan05/server
   grep -n "export" src/db/sql.ts src/lib/errors.ts src/lib/clock.ts src/container.ts src/middleware/auth.ts src/schemas/common.ts test/support/pglite.ts test/support/app.ts
@@ -1929,14 +1929,14 @@ Shared iOS facts for Chunks 4–7:
 - Modify: `Wait/Packages/WaitKit/Package.swift` (the `PersistenceTests` dependencies)
 - Test: `Wait/Packages/WaitKit/Tests/PersistenceTests/SyncStateTests.swift`
 
-- [ ] **Step 0: Declare the test target's imports**
+- [x] **Step 0: Declare the test target's imports**
 
 The new test imports `Dependencies`, `DependenciesTestSupport`, `Domain`, `IdentifiedCollections`, `Persistence` and `Sharing`. Plan 02's `.testTarget(name: "PersistenceTests", …)` lists `"Persistence", .sharing, .identifiedCollections, .dependenciesTestSupport`. Add `"Domain"` and `.dependencies` to that array, so it reads:
 ```swift
     .testTarget(name: "PersistenceTests", dependencies: ["Persistence", "Domain", .dependencies, .sharing, .identifiedCollections, .dependenciesTestSupport]),
 ```
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `Wait/Packages/WaitKit/Tests/PersistenceTests/SyncStateTests.swift`:
 ```swift
@@ -2034,12 +2034,12 @@ struct SyncStateTests {
 }
 ```
 
-- [ ] **Step 2: Run the test and confirm it fails**
+- [ ] **Step 2: Run the test and confirm it fails — NOT RUN (code-only; a typecheck against typecheck-only module builds failed on `.syncState` as expected)**
 
 Run, with `-only-testing:PersistenceTests/SyncStateTests`, the package command from the chunk header.
 Expected: `** TEST BUILD FAILED **`. The errors include `cannot find 'SyncState' in scope`, and the `@Shared(.syncState)` lines fail because no member `syncState` exists yet.
 
-- [ ] **Step 3: Write `SyncState`**
+- [x] **Step 3: Write `SyncState`**
 
 Create `Wait/Packages/WaitKit/Sources/Persistence/SyncState.swift`:
 ```swift
@@ -2117,13 +2117,13 @@ public extension SharedReaderKey where Self == FileStorageKey<SyncState>.Default
 }
 ```
 
-- [ ] **Step 4: Record and clear tombstones in the mutation helpers**
+- [x] **Step 4: Record and clear tombstones in the mutation helpers**
 
 In `Wait/Packages/WaitKit/Sources/Persistence/Shared+Watchlist.swift`, keep both signatures exactly as plan 02 wrote them.
 
-Insert these lines as the **first statements** of `public func add(_ item: WatchlistItem, now: Date)`:
+Insert these lines as the **first statements** of `public func add(_ item: WatchlistItem, now: Date)`. Write the generic argument explicitly (`@Shared<SyncState>`): inside `extension Shared where Value == …`, a bare `@Shared(.syncState)` infers `Shared<Value>` of the extension and fails to compile (`requires the types 'IdentifiedArray<…>' and 'SyncState' be equivalent`):
 ```swift
-    @Shared(.syncState) var syncState
+    @Shared<SyncState>(.syncState) var syncState
     $syncState.withLock { $0.tombstones[item.symbol] = nil }
 ```
 Plan 02 wrote the body of `add` as a single implicit-return expression, `withLock { … }`. Once these statements come before it, the implicit return no longer applies, so that line must become `return withLock { … }`. Keep the closure's contents unchanged. If the helper returns `Void`, the explicit `return` is still valid and harmless. Apply the same rule to `remove` if its body is also a single `withLock { … }` expression.
@@ -2131,23 +2131,23 @@ Plan 02 wrote the body of `add` as a single implicit-return expression, `withLoc
 In `func remove(_ symbol: String, now: Date)`, delete plan 02's placeholder line `_ = now // Plan 05 records a tombstone at `now`.`, and insert these lines as the **first statements** in its place:
 ```swift
     if wrappedValue[id: symbol] != nil {
-      @Shared(.syncState) var syncState
+      @Shared<SyncState>(.syncState) var syncState
       $syncState.withLock { $0.tombstones[symbol] = now.truncatedToMilliseconds }
     }
 ```
 The helper's existing body then removes the item exactly as before. Local property wrappers (`@Shared` inside a function) are supported in Swift 5.4 and later.
 
-- [ ] **Step 5: Run the test and confirm it passes**
+- [ ] **Step 5: Run the test and confirm it passes — NOT RUN (code-only; 2 of the 5 tests, the Codable ones, ran in a /tmp macOS harness and passed 2/2; the 3 `@Shared` tests were typechecked only)**
 
 Run, with `-only-testing:PersistenceTests/SyncStateTests`, the package command from the chunk header.
 Expected: `** TEST SUCCEEDED **`, with 5 tests passing.
 
-- [ ] **Step 6: Run all Persistence tests (plan 02's helper tests must still pass)**
+- [ ] **Step 6: Run all Persistence tests (plan 02's helper tests must still pass) — NOT RUN (code-only)**
 
 Run, with `-only-testing:PersistenceTests`, the package command from the chunk header.
 Expected: `** TEST SUCCEEDED **`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05

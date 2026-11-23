@@ -56,7 +56,7 @@ let package = Package(
     .testTarget(name: "DomainTests", dependencies: ["Domain"], resources: [.copy("Fixtures")]),
     .testTarget(name: "LoggingTests", dependencies: ["Logging"]),
     .testTarget(name: "DesignSystemTests", dependencies: ["DesignSystem", "Domain"]),
-    .testTarget(name: "PersistenceTests", dependencies: ["Persistence", "Domain", .sharing, .identifiedCollections, .dependenciesTestSupport]),
+    .testTarget(name: "PersistenceTests", dependencies: ["Persistence", "Domain", .dependencies, .sharing, .identifiedCollections, .dependenciesTestSupport]),
     .testTarget(name: "ConnectivityTests", dependencies: ["Connectivity", "Domain"]),
     .testTarget(name: "MarketDataClientTests", dependencies: ["MarketDataClient", "Domain", "APIClient", .dependencies, .dependenciesTestSupport]),
     .testTarget(name: "APIClientTests", dependencies: ["APIClient", "Domain", .dependencies, .dependenciesTestSupport], resources: [.copy("Fixtures")]),
