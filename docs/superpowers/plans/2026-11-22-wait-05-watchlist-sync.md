@@ -2675,7 +2675,7 @@ MSG
 - Create: `Wait/Packages/WaitKit/Sources/SyncClient/SyncMerger.swift`
 - Test: `Wait/Packages/WaitKit/Tests/SyncClientTests/SyncMergerTests.swift`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 This test covers the full case matrix from overview §8.5, client step 3, plus deviation 2 (ties apply the remote row). Create `Wait/Packages/WaitKit/Tests/SyncClientTests/SyncMergerTests.swift`:
 ```swift
@@ -2806,12 +2806,12 @@ struct SyncMergerTests {
 }
 ```
 
-- [ ] **Step 2: Run the test and confirm it fails**
+- [ ] **Step 2: Run the test and confirm it fails — NOT RUN through Xcode (code-only; the /tmp harness failed with `cannot find 'SyncMerger' in scope`)**
 
 Run, with `-only-testing:SyncClientTests/SyncMergerTests`, the package command from the chunk header.
 Expected: `** TEST BUILD FAILED **` with `cannot find 'SyncMerger' in scope`.
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation** (adds `import Foundation` for `Date`)
 
 Create `Wait/Packages/WaitKit/Sources/SyncClient/SyncMerger.swift`:
 ```swift
@@ -2924,12 +2924,12 @@ public enum SyncMerger {
 }
 ```
 
-- [ ] **Step 4: Run the test and confirm it passes**
+- [ ] **Step 4: Run the test and confirm it passes — NOT RUN through Xcode (code-only; real `SyncMergerTests` ran in a /tmp macOS harness with a stand-in `IdentifiedArray`: 13 of 13 passed)**
 
 Run, with `-only-testing:SyncClientTests/SyncMergerTests`, the package command from the chunk header.
 Expected: `** TEST SUCCEEDED **`, with 13 tests passing.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait-plan05
