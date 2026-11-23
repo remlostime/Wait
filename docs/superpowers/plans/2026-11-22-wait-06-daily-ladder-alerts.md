@@ -5661,7 +5661,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 **Files:**
 - Verify (modify only if needed): `Wait/project.yml`, `Wait/Wait/Wait.entitlements`, `Wait/Wait/WaitRelease.entitlements`
 
-- [ ] **Step 1: Check the entitlement**
+- [x] **Step 1: Check the entitlement**
 
 Run:
 ```bash
@@ -5677,14 +5677,14 @@ If `project.yml` declares the app's entitlements with `properties:`, XcodeGen re
 /usr/libexec/PlistBuddy -c "Add :aps-environment string development" Wait/Wait.entitlements
 ```
 
-- [ ] **Step 2: (manual: user) Confirm the App ID has the Push Notifications capability**
+- [ ] **Step 2: (manual: user) Confirm the App ID has the Push Notifications capability** — SKIPPED (manual)
 
 1. Go to https://developer.apple.com/account/resources/identifiers/list and open `com.chenkai.wait`.
 2. Check that **Push Notifications** is ticked. If it isn't, tick it and click **Save**.
 
 Xcode's automatic signing usually enables it once `aps-environment` is in the entitlements. Without it, a device build fails `registerForRemoteNotifications` with "no valid aps-environment entitlement string found", which reaches `PushFeature.registrationFailed`.
 
-- [ ] **Step 3: Regenerate and build both apps**
+- [ ] **Step 3: Regenerate and build both apps** — NOT RUN (code-only; `xcodegen generate` ran, build not run)
 
 Run:
 ```bash
@@ -5693,7 +5693,7 @@ cd /Users/ckai/code/Wait && scripts/build-app.sh && scripts/build-app.sh WaitWat
 ```
 Expected: both print `** BUILD SUCCEEDED **`, and `git status` shows `Package.resolved` unchanged.
 
-- [ ] **Step 4: Run every suite**
+- [ ] **Step 4: Run every suite** — NOT RUN for `scripts/test-waitkit.sh` (code-only); server `npm run typecheck && npm test` ran: tsc exit 0, 46 files / 396 tests passed
 
 Run:
 ```bash
@@ -5702,7 +5702,7 @@ cd /Users/ckai/code/Wait/server && npm run typecheck && npm test
 ```
 Expected: `** TEST SUCCEEDED **`, `tsc` exits 0, and vitest reports every file passed.
 
-- [ ] **Step 5: Commit (only if Step 1 changed anything)**
+- [x] **Step 5: Commit (only if Step 1 changed anything)** — Step 1 changed nothing; only this plan file is committed
 
 ```bash
 cd /Users/ckai/code/Wait
