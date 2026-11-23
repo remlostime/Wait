@@ -9667,6 +9667,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 ### Task 27: `AppFeature`, `DeepLink`, `AppDelegate`, new `WaitApp`, and the `wait://` scheme
 
+> Review fix (2026-11-23): the background save logs failures per save (`Log.persistence.error`) and publishes the snapshot at once, cancelling the debounce. An unknown deep-link symbol no longer clears `destination` or `path`. `DeepLink` compares the scheme and host case-insensitively. Two new tests, so 8 in total.
+
 **Files:**
 - Modify: `Wait/Packages/WaitKit/Package.swift` (add the `AppFeature` target and product, and `AppFeatureTests`)
 - Create: `Wait/Packages/WaitKit/Sources/AppFeature/AppFeature.swift`, `AppView.swift`, `DeepLink.swift`, `AppDelegateAction.swift`, `AppDelegate.swift`
@@ -9748,6 +9750,9 @@ struct AppFeatureTests {
     #expect(DeepLink(url: URL(string: "wait://other/AAPL")!) == nil)
     #expect(DeepLink(url: URL(string: "https://stock/AAPL")!) == nil)
     #expect(DeepLink(url: URL(string: "wait://stock/")!) == nil)
+    #expect(DeepLink(url: URL(string: "WAIT://Stock/aapl")!) == .stock("AAPL"))
+    #expect(DeepLink(url: URL(string: "Wait://STOCK/BRK.B")!) == .stock("BRK.B"))
+    #expect(DeepLink(url: URL(string: "HTTPS://stock/AAPL")!) == nil)
     #expect(DeepLink.stock("AAPL").url.absoluteString == "wait://stock/AAPL")
   }
 
@@ -9786,6 +9791,38 @@ struct AppFeatureTests {
     await store.send(.openURL(URL(string: "wait://stock/NOPE")!)) {
       $0.selectedTab = .watchlist
     }
+  }
+
+  @Test func unknownDeepLinkSymbolKeepsTheNavigationStack() async {
+    seedAAPL()
+    var state = AppFeature.State()
+    state.watchlist.showDetails(symbol: "AAPL")
+    let store = TestStore(initialState: state) { AppFeature() }
+    await store.send(.openURL(URL(string: "wait://stock/NOPE")!))
+    #expect(store.state.watchlist.path.count == 1)
+  }
+
+  @Test func backgroundPublishesImmediatelyAndCancelsTheDebouncedPublish() async {
+    seedAAPL()
+    let clock = TestClock()
+    let published = LockIsolated<[WatchlistSnapshot]>([])
+    let quote = Quote(symbol: "AAPL", price: 90, asOf: appNow)
+    let store = TestStore(initialState: AppFeature.State()) {
+      AppFeature()
+    } withDependencies: {
+      $0.continuousClock = clock
+      $0.date.now = appNow
+      $0.snapshotClient.publish = { snapshot in published.withValue { $0.append(snapshot) } }
+    }
+    // The edit starts a 1 s debounced publish; `.background` must not wait for it.
+    await store.send(.watchlist(.quotesLoaded([quote]))) { $0.watchlist.quotes = ["AAPL": quote] }
+    await store.send(.scenePhaseChanged(.background))
+    await store.finish()
+    #expect(published.value.count == 1)
+    #expect(published.value.first?.rows.first?.price == 90)
+    // The cancelled debounce must not publish a second time.
+    await clock.advance(by: .seconds(2))
+    #expect(published.value.count == 1)
   }
 
   @Test func becomingActiveRefreshesQuotesAndPublishesOneSnapshot() async {
@@ -9859,7 +9896,7 @@ public enum DeepLink: Equatable, Sendable {
   // MARK: Lifecycle
 
   public init?(url: URL) {
-    guard url.scheme == "wait", url.host() == "stock" else {
+    guard url.scheme?.lowercased() == "wait", url.host()?.lowercased() == "stock" else {
       return nil
     }
     let symbol = url.pathComponents.dropFirst().first?.uppercased() ?? ""
@@ -9899,7 +9936,7 @@ public enum AppDelegateAction: Equatable, Sendable {
 
 The whole composition is wrapped in `CombineReducers`, and `.onChange(of: \.watchlist.snapshotInputs)` is attached outside it. That matters: `onChange` only sees mutations made by the reducer it wraps (overview §12.3). Attached to the inner `Reduce`, it would never see the watchlist child's changes. Plan 05 appends a second `.onChange` (the sync debounce on `\.watchlist.items`) to the same `CombineReducers`.
 
-The single `snapshotClient.publish(` call site is in `publishSnapshot(_:)`. It's the debounced effect with `CancelID.publishSnapshot`, used both on launch and on every change. Plan 03 adds `connectivity.send` next to it.
+The single `snapshotClient.publish(` call site is in `publishSnapshot(_:debounced:)`. It's the debounced effect with `CancelID.publishSnapshot`, used both on launch and on every change. On `.background` it runs with `debounced: false`, which publishes at once and cancels the pending debounced publish. Plan 03 adds `connectivity.send` next to it.
 ```swift
 //
 // Created by: Claude on 2026-11-22.
@@ -9909,6 +9946,7 @@ The single `snapshotClient.publish(` call site is in `publishSnapshot(_:)`. It's
 import ComposableArchitecture
 import Domain
 import Foundation
+import Logging
 import Persistence
 import SettingsFeature
 import SwiftUI
@@ -9972,11 +10010,25 @@ public struct AppFeature {
                 return .send(.watchlist(.sceneBecameActive))
               case .background:
                 // `@Shared(.fileStorage)` throttles writes, so flush them before the app is suspended (overview risk 5).
+                // The snapshot is published at once, because the debounce might never fire in a suspended app. Starting it also cancels
+                // the pending debounced publish (`cancelInFlight`).
                 @Shared(.checklistTemplate) var template
-                return .run { [items = state.watchlist.$items, template = $template] _ in
-                  try await items.save()
-                  try await template.save()
-                }
+                return .merge(
+                  publishSnapshot(state.watchlist.snapshotInputs, debounced: false),
+                  .run { [items = state.watchlist.$items, template = $template] _ in
+                    // Separate `do`/`catch` blocks, so a failed items save doesn't skip the template save and never reaches `reportIssue`.
+                    do {
+                      try await items.save()
+                    } catch {
+                      Log.persistence.error("Saving the watchlist on background failed: \(error)")
+                    }
+                    do {
+                      try await template.save()
+                    } catch {
+                      Log.persistence.error("Saving the checklist template on background failed: \(error)")
+                    }
+                  }
+                )
               default:
                 return .none
             }
@@ -9988,6 +10040,10 @@ public struct AppFeature {
             switch link {
               case let .stock(symbol):
                 state.selectedTab = .watchlist
+                // An unknown symbol leaves the current screen and stack alone: clear them only once there is something to push.
+                guard state.watchlist.items[id: symbol] != nil else {
+                  return .none
+                }
                 state.watchlist.destination = nil
                 state.watchlist.path.removeAll()
                 state.watchlist.showDetails(symbol: symbol)
@@ -10013,10 +10069,13 @@ public struct AppFeature {
 
   // MARK: Private
 
-  /// The only `snapshotClient.publish` call site: debounced 1 s and cancellable by `CancelID.publishSnapshot`.
-  private func publishSnapshot(_ inputs: WatchlistFeature.SnapshotInputs) -> Effect<Action> {
+  /// The only `snapshotClient.publish` call site: debounced 1 s by default and cancellable by `CancelID.publishSnapshot`.
+  /// With `debounced: false` it publishes at once and cancels any pending debounced publish.
+  private func publishSnapshot(_ inputs: WatchlistFeature.SnapshotInputs, debounced: Bool = true) -> Effect<Action> {
     .run { [clock, date, snapshotClient] _ in
-      try await clock.sleep(for: .seconds(1))
+      if debounced {
+        try await clock.sleep(for: .seconds(1))
+      }
       await snapshotClient.publish(WatchlistSnapshot.make(items: inputs.items, quotes: inputs.quotes, now: date.now))
     }
     .cancellable(id: CancelID.publishSnapshot, cancelInFlight: true)
@@ -10027,7 +10086,7 @@ public struct AppFeature {
 - [ ] **Step 6: Run the tests and confirm they pass** — NOT RUN (code-only)
 
 Run: `scripts/test-waitkit.sh AppFeatureTests`
-Expected PASS: 6 tests pass.
+Expected PASS: 8 tests pass.
 
 - [x] **Step 7: Implement `AppView.swift` and `AppDelegate.swift`** (`swiftui-expert:swiftui-expert-skill`)
 
@@ -10197,6 +10256,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 ### Task 28: Widget rewrite on the app-group snapshot
 
+> Review fix (2026-11-23): a real `getSnapshot` loads the app-group snapshot and shows the empty state when there is none (sample data only for `isPreview`). The quote time includes the date when it is not today. The widget has no `widgetURL`, so a small-widget tap opens the app and the medium rows are the only stock links.
+
 **Files:**
 - Modify: `Wait/WaitWidget/WaitWidget.swift` (full rewrite)
 - Create: `Wait/WaitWidget/WidgetRowView.swift`
@@ -10250,7 +10311,8 @@ struct SnapshotProvider: TimelineProvider {
   }
 
   func getSnapshot(in context: Context, completion: @escaping @Sendable (SnapshotEntry) -> Void) {
-    let snapshot = context.isPreview ? WatchlistSnapshot.sample : (SnapshotStore.appGroup.load() ?? .sample)
+    // Sample data is for the widget gallery only. A real snapshot request shows what is on disk, or the empty state.
+    let snapshot = context.isPreview ? WatchlistSnapshot.sample : SnapshotStore.appGroup.load()
     completion(SnapshotEntry(date: .now, snapshot: snapshot))
   }
 
@@ -10293,6 +10355,15 @@ struct WaitWidgetEntryView: View {
     }
   }
 
+  /// The time for today's quotes, and the date with the time for older ones, so yesterday's data doesn't look current.
+  private static func quoteTime(_ date: Date) -> String {
+    if Calendar.current.isDateInToday(date) {
+      date.formatted(.dateTime.hour().minute())
+    } else {
+      date.formatted(.dateTime.month(.abbreviated).day().hour().minute())
+    }
+  }
+
   private func content(_ snapshot: WatchlistSnapshot) -> some View {
     let rows = Array(snapshot.rows.prefix(maxRows))
     return VStack(alignment: .leading, spacing: Spacing.xs) {
@@ -10300,7 +10371,7 @@ struct WaitWidgetEntryView: View {
         Text("Wait").font(.caption.weight(.bold)).foregroundStyle(Palette.accent)
         Spacer()
         if let asOf = snapshot.quotesAsOf {
-          Text(asOf, style: .time).font(.caption2).foregroundStyle(.secondary)
+          Text(Self.quoteTime(asOf)).font(.caption2).foregroundStyle(.secondary)
         }
       }
       ForEach(rows) { row in
@@ -10314,7 +10385,7 @@ struct WaitWidgetEntryView: View {
       }
       Spacer(minLength: 0)
     }
-    .widgetURL(rows.first.map { Self.stockURL($0.symbol) })
+    // No `widgetURL`: the small widget can't hold `Link`s, so a tap opens the app, and the medium widget's rows are the only stock links.
   }
 
   /// The same format as `AppFeature.DeepLink`, which the widget can't import.
@@ -10548,7 +10619,7 @@ let package = Package(
 )
 ```
 
-- [x] **Step 4: Update the `Wait` target in `project.yml`** (xcodegen ran; the `xcodebuild -showBuildSettings` checks were NOT RUN (code-only), so the pbxproj was grepped instead)
+- [ ] **Step 4: Update the `Wait` target in `project.yml`** (xcodegen ran; the `xcodebuild -showBuildSettings` checks were NOT RUN (code-only), so the pbxproj was grepped instead) — NOT RUN (code-only)
   - `sources:` must contain only the `Wait` folder. Remove the `Shared` entry. The `WaitWatch` target keeps `Shared/Connectivity.swift` until plan 03 deletes it; under Swift 6 the app could no longer compile its `static let shared`.
   - `dependencies:`:
     - Keep `- package: WaitKit` with `product: AppFeature`.

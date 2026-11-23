@@ -14,7 +14,7 @@ public enum DeepLink: Equatable, Sendable {
   // MARK: Lifecycle
 
   public init?(url: URL) {
-    guard url.scheme == "wait", url.host() == "stock" else {
+    guard url.scheme?.lowercased() == "wait", url.host()?.lowercased() == "stock" else {
       return nil
     }
     let symbol = url.pathComponents.dropFirst().first?.uppercased() ?? ""

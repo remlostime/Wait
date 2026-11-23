@@ -6,6 +6,7 @@
 import ComposableArchitecture
 import Domain
 import Foundation
+import Logging
 import Persistence
 import SettingsFeature
 import SwiftUI
@@ -69,11 +70,25 @@ public struct AppFeature {
                 return .send(.watchlist(.sceneBecameActive))
               case .background:
                 // `@Shared(.fileStorage)` throttles writes, so flush them before the app is suspended (overview risk 5).
+                // The snapshot is published at once, because the debounce might never fire in a suspended app. Starting it also cancels
+                // the pending debounced publish (`cancelInFlight`).
                 @Shared(.checklistTemplate) var template
-                return .run { [items = state.watchlist.$items, template = $template] _ in
-                  try await items.save()
-                  try await template.save()
-                }
+                return .merge(
+                  publishSnapshot(state.watchlist.snapshotInputs, debounced: false),
+                  .run { [items = state.watchlist.$items, template = $template] _ in
+                    // Separate `do`/`catch` blocks, so a failed items save doesn't skip the template save and never reaches `reportIssue`.
+                    do {
+                      try await items.save()
+                    } catch {
+                      Log.persistence.error("Saving the watchlist on background failed: \(error)")
+                    }
+                    do {
+                      try await template.save()
+                    } catch {
+                      Log.persistence.error("Saving the checklist template on background failed: \(error)")
+                    }
+                  }
+                )
               default:
                 return .none
             }
@@ -85,6 +100,10 @@ public struct AppFeature {
             switch link {
               case let .stock(symbol):
                 state.selectedTab = .watchlist
+                // An unknown symbol leaves the current screen and stack alone: clear them only once there is something to push.
+                guard state.watchlist.items[id: symbol] != nil else {
+                  return .none
+                }
                 state.watchlist.destination = nil
                 state.watchlist.path.removeAll()
                 state.watchlist.showDetails(symbol: symbol)
@@ -110,10 +129,13 @@ public struct AppFeature {
 
   // MARK: Private
 
-  /// The only `snapshotClient.publish` call site: debounced 1 s and cancellable by `CancelID.publishSnapshot`.
-  private func publishSnapshot(_ inputs: WatchlistFeature.SnapshotInputs) -> Effect<Action> {
+  /// The only `snapshotClient.publish` call site: debounced 1 s by default and cancellable by `CancelID.publishSnapshot`.
+  /// With `debounced: false` it publishes at once and cancels any pending debounced publish.
+  private func publishSnapshot(_ inputs: WatchlistFeature.SnapshotInputs, debounced: Bool = true) -> Effect<Action> {
     .run { [clock, date, snapshotClient] _ in
-      try await clock.sleep(for: .seconds(1))
+      if debounced {
+        try await clock.sleep(for: .seconds(1))
+      }
       await snapshotClient.publish(WatchlistSnapshot.make(items: inputs.items, quotes: inputs.quotes, now: date.now))
     }
     .cancellable(id: CancelID.publishSnapshot, cancelInFlight: true)

@@ -35,6 +35,9 @@ struct AppFeatureTests {
     #expect(DeepLink(url: URL(string: "wait://other/AAPL")!) == nil)
     #expect(DeepLink(url: URL(string: "https://stock/AAPL")!) == nil)
     #expect(DeepLink(url: URL(string: "wait://stock/")!) == nil)
+    #expect(DeepLink(url: URL(string: "WAIT://Stock/aapl")!) == .stock("AAPL"))
+    #expect(DeepLink(url: URL(string: "Wait://STOCK/BRK.B")!) == .stock("BRK.B"))
+    #expect(DeepLink(url: URL(string: "HTTPS://stock/AAPL")!) == nil)
     #expect(DeepLink.stock("AAPL").url.absoluteString == "wait://stock/AAPL")
   }
 
@@ -73,6 +76,38 @@ struct AppFeatureTests {
     await store.send(.openURL(URL(string: "wait://stock/NOPE")!)) {
       $0.selectedTab = .watchlist
     }
+  }
+
+  @Test func unknownDeepLinkSymbolKeepsTheNavigationStack() async {
+    seedAAPL()
+    var state = AppFeature.State()
+    state.watchlist.showDetails(symbol: "AAPL")
+    let store = TestStore(initialState: state) { AppFeature() }
+    await store.send(.openURL(URL(string: "wait://stock/NOPE")!))
+    #expect(store.state.watchlist.path.count == 1)
+  }
+
+  @Test func backgroundPublishesImmediatelyAndCancelsTheDebouncedPublish() async {
+    seedAAPL()
+    let clock = TestClock()
+    let published = LockIsolated<[WatchlistSnapshot]>([])
+    let quote = Quote(symbol: "AAPL", price: 90, asOf: appNow)
+    let store = TestStore(initialState: AppFeature.State()) {
+      AppFeature()
+    } withDependencies: {
+      $0.continuousClock = clock
+      $0.date.now = appNow
+      $0.snapshotClient.publish = { snapshot in published.withValue { $0.append(snapshot) } }
+    }
+    // The edit starts a 1 s debounced publish; `.background` must not wait for it.
+    await store.send(.watchlist(.quotesLoaded([quote]))) { $0.watchlist.quotes = ["AAPL": quote] }
+    await store.send(.scenePhaseChanged(.background))
+    await store.finish()
+    #expect(published.value.count == 1)
+    #expect(published.value.first?.rows.first?.price == 90)
+    // The cancelled debounce must not publish a second time.
+    await clock.advance(by: .seconds(2))
+    #expect(published.value.count == 1)
   }
 
   @Test func becomingActiveRefreshesQuotesAndPublishesOneSnapshot() async {

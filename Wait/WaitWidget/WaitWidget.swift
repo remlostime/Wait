@@ -25,7 +25,8 @@ struct SnapshotProvider: TimelineProvider {
   }
 
   func getSnapshot(in context: Context, completion: @escaping @Sendable (SnapshotEntry) -> Void) {
-    let snapshot = context.isPreview ? WatchlistSnapshot.sample : (SnapshotStore.appGroup.load() ?? .sample)
+    // Sample data is for the widget gallery only. A real snapshot request shows what is on disk, or the empty state.
+    let snapshot = context.isPreview ? WatchlistSnapshot.sample : SnapshotStore.appGroup.load()
     completion(SnapshotEntry(date: .now, snapshot: snapshot))
   }
 
@@ -73,6 +74,15 @@ struct WaitWidgetEntryView: View {
     URL(string: "wait://stock/\(symbol)")!
   }
 
+  /// The time for today's quotes, and the date with the time for older ones, so yesterday's data doesn't look current.
+  private static func quoteTime(_ date: Date) -> String {
+    if Calendar.current.isDateInToday(date) {
+      date.formatted(.dateTime.hour().minute())
+    } else {
+      date.formatted(.dateTime.month(.abbreviated).day().hour().minute())
+    }
+  }
+
   private func content(_ snapshot: WatchlistSnapshot) -> some View {
     let rows = Array(snapshot.rows.prefix(maxRows))
     return VStack(alignment: .leading, spacing: Spacing.xs) {
@@ -80,7 +90,7 @@ struct WaitWidgetEntryView: View {
         Text("Wait").font(.caption.weight(.bold)).foregroundStyle(Palette.accent)
         Spacer()
         if let asOf = snapshot.quotesAsOf {
-          Text(asOf, style: .time).font(.caption2).foregroundStyle(.secondary)
+          Text(Self.quoteTime(asOf)).font(.caption2).foregroundStyle(.secondary)
         }
       }
       ForEach(rows) { row in
@@ -94,7 +104,7 @@ struct WaitWidgetEntryView: View {
       }
       Spacer(minLength: 0)
     }
-    .widgetURL(rows.first.map { Self.stockURL($0.symbol) })
+    // No `widgetURL`: the small widget can't hold `Link`s, so a tap opens the app, and the medium widget's rows are the only stock links.
   }
 }
 
