@@ -2950,7 +2950,7 @@ EOF
 **Files:**
 - Create: `docs/ci/bitrise-checklist.md`
 
-- [ ] **Step 1: Write the checklist**
+- [x] **Step 1: Write the checklist**
 
 Create `/Users/ckai/code/Wait/docs/ci/bitrise-checklist.md`:
 
@@ -2984,7 +2984,7 @@ The Bitrise workflow lives in the Bitrise dashboard, not in this repo. After pla
 - [ ] **Bitrise APM:** if the workflow still references the Bitrise APM token plist that plan 01 removed, delete that step, and rotate the token in Bitrise.
 ~~~
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 cd /Users/ckai/code/Wait
@@ -2997,6 +2997,6 @@ EOF
 )"
 ```
 
-- [ ] **Step 3: (manual: user) Apply the checklist in Bitrise**
+- [ ] **Step 3: (manual: user) Apply the checklist in Bitrise** — SKIPPED (manual)
 
 Print the checklist and ask the user to apply it in the Bitrise dashboard and trigger a build of this branch. Wait for the user to confirm a green build, or to paste the failing step's log. Then finish with superpowers:finishing-a-development-branch.
